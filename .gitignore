@@ -14,3 +14,7 @@
 
 # Mac OS X file
 .DS_Store
+
+# builds directory
+builds
+build
