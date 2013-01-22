@@ -53,9 +53,9 @@ if(NOT CONFIGURE_COMPILER_INCLUDED)
                         CACHE STRING "Flags used by the compiler during release with debug info builds." FORCE)
       set(CMAKE_C_FLAGS_MINSIZEREL "-DNDEBUG -Os -ipo -fast"
                         CACHE STRING "Flags used by the compiler during release minsize builds." FORCE)
-###
-###      # Hack because CMake does not set this flag for intel fortran compiler
-###      set(CMAKE_Fortran_COMPILER_ID "Intel")
+
+      # Hack because CMake does not set this flag for intel fortran compiler
+      set(CMAKE_Fortran_COMPILER_ID "Intel")
     endif()
   endif()
   if(CMAKE_CXX_COMPILER_ID STREQUAL "Intel")
@@ -129,9 +129,9 @@ if(NOT CONFIGURE_COMPILER_INCLUDED)
                       CACHE STRING "Flags used by the compiler during release with debug info builds." FORCE)
     set(CMAKE_C_FLAGS_MINSIZEREL "-DNDEBUG -Os"
                       CACHE STRING "Flags used by the compiler during release minsize builds." FORCE)
-###
-###    # Hack because CMake does not set this flag for GNU fortran compiler
-###    set(CMAKE_Fortran_COMPILER_ID "GNU")
+
+    # Hack because CMake does not set this flag for GNU fortran compiler
+    set(CMAKE_Fortran_COMPILER_ID "GNU")
   endif()
   if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
     set(CONFIGURE_COMPILER_SET_CXX_COMPILER_FLAGS ON)
@@ -189,9 +189,9 @@ if(NOT CONFIGURE_COMPILER_INCLUDED)
                       CACHE STRING "Flags used by the compiler during release with debug info builds." FORCE)
     set(CMAKE_C_FLAGS_MINSIZEREL "-DNDEBUG -Os"
                       CACHE STRING "Flags used by the compiler during release minsize builds." FORCE)
-###
-###    # Hack because CMake does not set this flag for Clang fortran compiler
-###    set(CMAKE_Fortran_COMPILER_ID "Clang")
+
+    # Hack because CMake does not set this flag for Clang fortran compiler
+    set(CMAKE_Fortran_COMPILER_ID "Clang")
   endif()
   if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
     set(CONFIGURE_COMPILER_SET_CXX_COMPILER_FLAGS ON)
@@ -207,10 +207,12 @@ if(NOT CONFIGURE_COMPILER_INCLUDED)
     set(CMAKE_CXX_FLAGS_DEBUG "-DDEBUG -O0 -g"
                         CACHE STRING "Flags used by the compiler during debug builds." FORCE)
     # FIX: SET SOURCE FILE PROPERTIES ON AFFECTED FILES INSTEAD OF THIS
+    #      (1) Try and figure out problem and fix code
+    #      (2) SET_SOURCE_FILES_PROPERTIES(${file} PROPERTIES COMPILE_FLAGS -O1)
     #      Clang 3.3 and lower produces wrong answer for mutilsimpsontestsuite hangs for -O2 or -O3
-    set(CMAKE_CXX_FLAGS_RELEASE "-DNDEBUG -O1"
+    set(CMAKE_CXX_FLAGS_RELEASE "-DNDEBUG -O3"
                         CACHE STRING "Flags used by the compiler during release builds." FORCE)
-    set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "-DDEBUG -O1 -g"
+    set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "-DDEBUG -O3 -g"
                         CACHE STRING "Flags used by the compiler during release with debug info builds." FORCE)
       set(CMAKE_CXX_FLAGS_MINSIZEREL "/DNDEBUG /Os /ipo /fast"
                         CACHE STRING "Flags used by the compiler during release minsize builds." FORCE)
@@ -221,9 +223,9 @@ if(NOT CONFIGURE_COMPILER_INCLUDED)
                       CACHE STRING "Flags used by the compiler during all build types." FORCE)
     set(CMAKE_Fortran_FLAGS_DEBUG "-DDEBUG -O0 -g"
                       CACHE STRING "Flags used by the compiler during debug builds." FORCE)
-    set(CMAKE_Fortran_FLAGS_RELEASE "-DNDEBUG -O1"
+    set(CMAKE_Fortran_FLAGS_RELEASE "-DNDEBUG -O3"
                       CACHE STRING "Flags used by the compiler during release builds." FORCE)
-    set(CMAKE_Fortran_FLAGS_RELWITHDEBINFO "-DDEBUG -O1 -g"
+    set(CMAKE_Fortran_FLAGS_RELWITHDEBINFO "-DDEBUG -O3 -g"
                       CACHE STRING "Flags used by the compiler during release with debug info builds." FORCE)
       set(CMAKE_Fortran_FLAGS_MINSIZEREL "/DNDEBUG /Os /ipo /fast"
                       CACHE STRING "Flags used by the compiler during release minsize builds." FORCE)
