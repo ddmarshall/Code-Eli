@@ -78,5 +78,6 @@ if (QD_FOUND)
 endif()
 
 # add subdirectories of project
-ADD_SUBDIRECTORY(constants)
+add_subdirectory(constants)
+add_subdirectory(dm)
 
