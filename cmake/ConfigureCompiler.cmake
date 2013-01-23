@@ -145,7 +145,7 @@ if(NOT CONFIGURE_COMPILER_INCLUDED)
     else()
       message(FATAL_ERROR "Version ${GCC_VERSION} of GCC compiler is not supported.")
     endif()
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ansi -pedantic -Wall -Wextra -fmessage-length=100"
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ansi -pedantic -Wall -Wextra -Wno-long-long -fmessage-length=100"
                         CACHE STRING "Flags used by the compiler during all build types." FORCE)
     set(CMAKE_CXX_FLAGS_DEBUG "-DDEBUG -O0 -g"
                         CACHE STRING "Flags used by the compiler during debug builds." FORCE)
@@ -201,7 +201,7 @@ if(NOT CONFIGURE_COMPILER_INCLUDED)
       set(CMAKE_XCODE_ATTRIBUTE_GCC_WARN_INHIBIT_ALL_WARNINGS "YES")
       set(CMAKE_XCODE_ATTRIBUTE_GCC_WARN_PEDANTIC "YES")
     else()
-      set(CMAKE_CXX_FLAGS "-pedantic -Wall -Wextra -fmessage-length=100 -std=c++11 -stdlib=libc++"
+      set(CMAKE_CXX_FLAGS "-pedantic -Wall -Wextra -Wno-long-long -fmessage-length=100 -std=c++11 -stdlib=libc++"
                           CACHE STRING "Flags used by the compiler during all build types." FORCE)
     endif()
     set(CMAKE_CXX_FLAGS_DEBUG "-DDEBUG -O0 -g"
