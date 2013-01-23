@@ -80,4 +80,5 @@ endif()
 # add subdirectories of project
 add_subdirectory(constants)
 add_subdirectory(dm)
+add_subdirectory(poly)
 

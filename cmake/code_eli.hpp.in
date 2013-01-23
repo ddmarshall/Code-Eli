@@ -25,6 +25,161 @@
 # include <qd/qd_real.h>
 # include <qd/fpu.h>
 
+dd_real operator+(int i, const dd_real &r) {return operator+(static_cast<double>(i), r);}
+dd_real operator+(long int i, const dd_real &r) {return operator+(static_cast<double>(i), r);}
+dd_real operator+(size_t i, const dd_real &r) {return operator+(static_cast<double>(i), r);}
+dd_real operator+(const dd_real &r, int i) {return operator+(r, static_cast<double>(i));}
+dd_real operator+(const dd_real &r, long int i) {return operator+(r, static_cast<double>(i));}
+dd_real operator+(const dd_real &r, size_t i) {return operator+(r, static_cast<double>(i));}
+qd_real operator+(int i, const qd_real &r) {return operator+(static_cast<double>(i), r);}
+qd_real operator+(long int i, const qd_real &r) {return operator+(static_cast<double>(i), r);}
+qd_real operator+(size_t i, const qd_real &r) {return operator+(static_cast<double>(i), r);}
+qd_real operator+(const qd_real &r, int i) {return operator+(r, static_cast<double>(i));}
+qd_real operator+(const qd_real &r, long int i) {return operator+(r, static_cast<double>(i));}
+qd_real operator+(const qd_real &r, size_t i) {return operator+(r, static_cast<double>(i));}
+
+dd_real operator-(int i, const dd_real &r) {return operator-(static_cast<double>(i), r);}
+dd_real operator-(long int i, const dd_real &r) {return operator-(static_cast<double>(i), r);}
+dd_real operator-(size_t i, const dd_real &r) {return operator-(static_cast<double>(i), r);}
+dd_real operator-(const dd_real &r, int i) {return operator-(r, static_cast<double>(i));}
+dd_real operator-(const dd_real &r, long int i) {return operator-(r, static_cast<double>(i));}
+dd_real operator-(const dd_real &r, size_t i) {return operator-(r, static_cast<double>(i));}
+qd_real operator-(int i, const qd_real &r) {return operator-(static_cast<double>(i), r);}
+qd_real operator-(long int i, const qd_real &r) {return operator-(static_cast<double>(i), r);}
+qd_real operator-(size_t i, const qd_real &r) {return operator-(static_cast<double>(i), r);}
+qd_real operator-(const qd_real &r, int i) {return operator-(r, static_cast<double>(i));}
+qd_real operator-(const qd_real &r, long int i) {return operator-(r, static_cast<double>(i));}
+qd_real operator-(const qd_real &r, size_t i) {return operator-(r, static_cast<double>(i));}
+
+dd_real operator*(int i, const dd_real &r) {return operator*(static_cast<double>(i), r);}
+dd_real operator*(long int i, const dd_real &r) {return operator*(static_cast<double>(i), r);}
+dd_real operator*(size_t i, const dd_real &r) {return operator*(static_cast<double>(i), r);}
+dd_real operator*(const dd_real &r, int i) {return operator*(r, static_cast<double>(i));}
+dd_real operator*(const dd_real &r, long int i) {return operator*(r, static_cast<double>(i));}
+dd_real operator*(const dd_real &r, size_t i) {return operator*(r, static_cast<double>(i));}
+qd_real operator*(int i, const qd_real &r) {return operator*(static_cast<double>(i), r);}
+qd_real operator*(long int i, const qd_real &r) {return operator*(static_cast<double>(i), r);}
+qd_real operator*(size_t i, const qd_real &r) {return operator*(static_cast<double>(i), r);}
+qd_real operator*(const qd_real &r, int i) {return operator*(r, static_cast<double>(i));}
+qd_real operator*(const qd_real &r, long int i) {return operator*(r, static_cast<double>(i));}
+qd_real operator*(const qd_real &r, size_t i) {return operator*(r, static_cast<double>(i));}
+
+dd_real operator/(int i, const dd_real &r) {return operator/(static_cast<double>(i), r);}
+dd_real operator/(long int i, const dd_real &r) {return operator/(static_cast<double>(i), r);}
+dd_real operator/(size_t i, const dd_real &r) {return operator/(static_cast<double>(i), r);}
+dd_real operator/(const dd_real &r, int i) {return operator/(r, static_cast<double>(i));}
+dd_real operator/(const dd_real &r, long int i) {return operator/(r, static_cast<double>(i));}
+dd_real operator/(const dd_real &r, size_t i) {return operator/(r, static_cast<double>(i));}
+qd_real operator/(int i, const qd_real &r) {return operator/(static_cast<double>(i), r);}
+qd_real operator/(long int i, const qd_real &r) {return operator/(static_cast<double>(i), r);}
+qd_real operator/(size_t i, const qd_real &r) {return operator/(static_cast<double>(i), r);}
+qd_real operator/(const qd_real &r, int i) {return operator/(r, static_cast<double>(i));}
+qd_real operator/(const qd_real &r, long int i) {return operator/(r, static_cast<double>(i));}
+qd_real operator/(const qd_real &r, size_t i) {return operator/(r, static_cast<double>(i));}
+
+bool operator==(int i, const dd_real &r)
+{
+  return operator==(static_cast<double>(i), r);
+}
+bool operator==(const dd_real &r, int i)
+{
+  return operator==(r, static_cast<double>(i));
+}
+bool operator==(int i, const qd_real &r)
+{
+  return operator==(static_cast<double>(i), r);
+}
+bool operator==(const qd_real &r, int i)
+{
+  return operator==(r, static_cast<double>(i));
+}
+
+bool operator!=(int i, const dd_real &r)
+{
+  return operator!=(static_cast<double>(i), r);
+}
+bool operator!=(const dd_real &r, int i)
+{
+  return operator!=(r, static_cast<double>(i));
+}
+bool operator!=(int i, const qd_real &r)
+{
+  return operator!=(static_cast<double>(i), r);
+}
+bool operator!=(const qd_real &r, int i)
+{
+  return operator!=(r, static_cast<double>(i));
+}
+
+bool operator>(int i, const dd_real &r)
+{
+  return operator>(static_cast<double>(i), r);
+}
+bool operator>(const dd_real &r, int i)
+{
+  return operator>(r, static_cast<double>(i));
+}
+bool operator>(int i, const qd_real &r)
+{
+  return operator>(static_cast<double>(i), r);
+}
+bool operator>(const qd_real &r, int i)
+{
+  return operator>(r, static_cast<double>(i));
+}
+
+bool operator>=(int i, const dd_real &r)
+{
+  return operator>=(static_cast<double>(i), r);
+}
+bool operator>=(const dd_real &r, int i)
+{
+  return operator>=(r, static_cast<double>(i));
+}
+bool operator>=(const qd_real &r, int i)
+{
+  return operator>=(r, static_cast<double>(i));
+}
+bool operator>=(int i, const qd_real &r)
+{
+  return operator>=(static_cast<double>(i), r);
+}
+
+bool operator<(int i, const dd_real &r)
+{
+  return operator<(static_cast<double>(i), r);
+}
+bool operator<(const dd_real &r, int i)
+{
+  return operator<(r, static_cast<double>(i));
+}
+bool operator<(int i, const qd_real &r)
+{
+  return operator<(static_cast<double>(i), r);
+}
+bool operator<(const qd_real &r, int i)
+{
+  return operator<(r, static_cast<double>(i));
+}
+
+bool operator<=(int i, const dd_real &r)
+{
+  return operator<=(static_cast<double>(i), r);
+}
+bool operator<=(const dd_real &r, int i)
+{
+  return operator<=(r, static_cast<double>(i));
+}
+bool operator<=(int i, const qd_real &r)
+{
+  return operator<=(static_cast<double>(i), r);
+}
+bool operator<=(const qd_real &r, int i)
+{
+  return operator<=(r, static_cast<double>(i));
+}
+
+
 // add c++11 functions
 dd_real cbrt(const dd_real &a)
 {
