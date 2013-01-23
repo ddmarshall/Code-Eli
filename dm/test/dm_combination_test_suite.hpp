@@ -23,8 +23,8 @@
 #include <vector>     // std::vector
 #include <functional> // std::less
 
-#include "code_eli.hpp"
-#include "dm/combination.hpp"
+#include "eli/code_eli.hpp"
+#include "eli/dm/combination.hpp"
 
 #include <string>
 #include <vector>

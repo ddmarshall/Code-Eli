@@ -15,8 +15,8 @@
 
 #include <vector>
 
-#include "poly/root/sign_changes.hpp"
-#include "poly/polynomial.hpp"
+#include "eli/poly/root/sign_changes.hpp"
+#include "eli/poly/polynomial.hpp"
 
 namespace eli
 {

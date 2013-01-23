@@ -22,9 +22,9 @@
 #include <iomanip>  // std::setw
 #include <vector>   // std::vector
 
-#include "code_eli.hpp"
+#include "eli/code_eli.hpp"
 
-#include "constants/math.hpp"
+#include "eli/constants/math.hpp"
 
 #include <cmath> // std::tan and others
 

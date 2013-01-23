@@ -19,9 +19,9 @@
 #include <iomanip>  // std::setw
 #include <limits>   // std::numeric_limits
 
-#include "code_eli.hpp"
+#include "eli/code_eli.hpp"
 
-#include "poly/polynomial.hpp"
+#include "eli/poly/polynomial.hpp"
 
 template<typename data__>
 class poly_basic_test_suite : public Test::Suite

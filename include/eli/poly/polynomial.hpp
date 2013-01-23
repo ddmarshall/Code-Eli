@@ -20,7 +20,7 @@
 
 #include "Eigen/Eigen"
 
-#include "dm/combination.hpp"
+#include "eli/dm/combination.hpp"
 
 namespace eli
 {

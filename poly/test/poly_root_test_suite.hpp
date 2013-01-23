@@ -19,12 +19,12 @@
 #include <iomanip>  // std::setw
 #include <limits>   // std::numeric_limits
 
-#include "code_eli.hpp"
+#include "eli/code_eli.hpp"
 
-#include "poly/polynomial.hpp"
-#include "poly/root/descartes_rule.hpp"
-#include "poly/root/sturm_count.hpp"
-#include "poly/root/closed_form.hpp"
+#include "eli/poly/polynomial.hpp"
+#include "eli/poly/root/descartes_rule.hpp"
+#include "eli/poly/root/sturm_count.hpp"
+#include "eli/poly/root/closed_form.hpp"
 
 template<typename data__>
 class poly_root_test_suite : public Test::Suite

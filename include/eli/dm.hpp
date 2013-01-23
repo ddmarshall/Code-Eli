@@ -12,8 +12,8 @@
 
 #ifndef eli_dm_hpp
 
-#include "dm/binomial_coefficient.hpp"
-#include "dm/combination.hpp"
-#include "dm/factorial.hpp"
+#include "eli/dm/binomial_coefficient.hpp"
+#include "eli/dm/combination.hpp"
+#include "eli/dm/factorial.hpp"
 
 #endif

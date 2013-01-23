@@ -64,7 +64,7 @@ endif ()
 
 # configure the main eli.hpp file now that know what packages and features
 # are to be included
-configure_file(${ELI_SOURCE_DIR}/cmake/code_eli.hpp.in ${ELI_BINARY_DIR}/include/code_eli.hpp)
+configure_file(${ELI_SOURCE_DIR}/cmake/code_eli.hpp.in ${ELI_BINARY_DIR}/include/eli/code_eli.hpp)
 
 # add the include and link directories and libraries that are needed
 include_directories(${ELI_BINARY_DIR}/include

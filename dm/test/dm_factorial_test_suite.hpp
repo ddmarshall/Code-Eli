@@ -22,8 +22,8 @@
 #include <vector>     // std::vector
 #include <functional> // std::less
 
-#include "code_eli.hpp"
-#include "dm/factorial.hpp"
+#include "eli/code_eli.hpp"
+#include "eli/dm/factorial.hpp"
 
 #include <string>
 #include <vector>

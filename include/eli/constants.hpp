@@ -13,6 +13,6 @@
 #ifndef eli_constants_hpp
 #define eli_constants_hpp
 
-#include "constants/math.hpp"
+#include "eli/constants/math.hpp"
 
 #endif

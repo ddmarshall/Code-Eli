@@ -22,9 +22,9 @@
 #include <vector>     // std::vector
 #include <functional> // std::less
 
-#include "code_eli.hpp"
-#include "dm/factorial.hpp"
-#include "dm/binomial_coefficient.hpp"
+#include "eli/code_eli.hpp"
+#include "eli/dm/factorial.hpp"
+#include "eli/dm/binomial_coefficient.hpp"
 
 #include <string>
 #include <vector>

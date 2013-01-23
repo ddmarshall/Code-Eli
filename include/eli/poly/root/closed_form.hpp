@@ -16,7 +16,7 @@
 #include <vector>
 #include <limits>
 
-#include "constants/math.hpp"
+#include "eli/constants/math.hpp"
 
 namespace eli
 {

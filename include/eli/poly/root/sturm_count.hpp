@@ -17,9 +17,9 @@
 #include <cmath>
 #include <vector>
 
-#include "poly/root/sign_changes.hpp"
-#include "poly/polynomial.hpp"
-#include "poly/root/radius.hpp"
+#include "eli/poly/root/sign_changes.hpp"
+#include "eli/poly/polynomial.hpp"
+#include "eli/poly/root/radius.hpp"
 
 namespace eli
 {

@@ -13,10 +13,10 @@
 #ifndef eli_poly_hpp
 #define eli_poly_hpp
 
-#include "poly/polynomial.hpp"
-#include "poly/root/closed_form.hpp"
-#include "poly/root/descartes_rule.hpp"
-#include "poly/root/radius.hpp"
-#include "poly/root/sturm_count.hpp"
+#include "eli/poly/polynomial.hpp"
+#include "eli/poly/root/closed_form.hpp"
+#include "eli/poly/root/descartes_rule.hpp"
+#include "eli/poly/root/radius.hpp"
+#include "eli/poly/root/sturm_count.hpp"
 
 #endif
