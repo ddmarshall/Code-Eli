@@ -15,7 +15,7 @@
 
 #include <cmath>
 
-#include "code_eli.hpp"
+#include "eli/code_eli.hpp"
 
 namespace eli
 {
