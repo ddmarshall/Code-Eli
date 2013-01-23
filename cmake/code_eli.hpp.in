@@ -28,13 +28,13 @@
 // add c++11 functions
 dd_real cbrt(const dd_real &a)
 {
-  dd_real n(1./3.);
-  return pow(a, n);
+  dd_real n(1./static_cast<dd_real>(3));
+  return (a<0 ? -1 : 1)*pow(std::abs(a), n);
 }
 qd_real cbrt(const qd_real &a)
 {
-  qd_real n(1./3.);
-  return pow(a, n);
+  qd_real n(1./static_cast<qd_real>(3));
+  return (a<0 ? -1 : 1)*pow(std::abs(a), n);
 }
 
 namespace std

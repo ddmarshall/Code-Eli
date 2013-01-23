@@ -124,7 +124,7 @@ namespace eli
         static dd_real pi_squared()     {return dd_real(9.8696044010893586,  6.265295508739711e-16);}
         static dd_real pi_cubed()       {return dd_real(31.006276680299820,  4.1641946985288283e-16);}
         static dd_real sqrt_pi()        {return dd_real(1.7724538509055161, -7.666586499825800e-17);}
-        static dd_real cbrt_pi()        {return dd_real(1.4645918875615232,  8.951724299897984e-17);}
+        static dd_real cbrt_pi()        {return dd_real(1.4645918875615234, -1.0150473108658175e-16);}
         static dd_real one_by_pi()      {return dd_real(0.31830988618379067,-1.9678676675182486e-17);}
         static dd_real two_by_pi()      {return dd_real(0.63661977236758134,-3.9357353350364972e-17);}
         static dd_real one_by_sqrt_pi() {return dd_real(0.56418958354775629, 7.6677298065829422e-18);}
@@ -153,8 +153,8 @@ namespace eli
                                                         2.1094349902320112e-32, 9.749332643144236e-49);}
         static qd_real sqrt_pi()        {return qd_real(1.7724538509055161,    -7.666586499825799e-17,
                                                        -1.3058334907945429e-33,-2.6110142087827117e-50);}
-        static qd_real cbrt_pi()        {return qd_real(1.4645918875615232,     8.9517242998979805e-17,
-                                                        6.0606006077868961e-33, 4.0070049249330775e-50);}
+        static qd_real cbrt_pi()        {return qd_real(1.4645918875615234,    -1.0150473108658177e-16,
+                                                       -1.3864695806293404e-33, 1.8314339704237657e-50);}
         static qd_real one_by_pi()      {return qd_real(0.31830988618379067,   -1.9678676675182486e-17,
                                                        -1.0721436282893004e-33, 8.0535639265941101e-50);}
         static qd_real two_by_pi()      {return qd_real(0.63661977236758134,   -3.9357353350364972e-17,
