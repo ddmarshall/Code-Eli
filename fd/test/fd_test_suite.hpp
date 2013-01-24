@@ -313,19 +313,19 @@ class fd_test_suite : public Test::Suite
         {
           int tertn;
           dop.evaluate(d, phi.begin(), dx[c]);
-          tertn=dop.truncation_error(phi_te[c], exp(x[ind0]), dx[c]);
+          tertn=dop.truncation_error(phi_te[c], std::exp(x[ind0]), dx[c]);
           if (tertn>0)
           {
             // need to evaluate the order+tertn derivative
-            phi_te[c]*=exp(x[ind0]);
+            phi_te[c]*=std::exp(x[ind0]);
           }
         }
         else
         {
           dop.evaluate(d, phi.begin(), x.begin());
-          dop.truncation_error(phi_te[c], exp(x[ind0]), x.begin());
+          dop.truncation_error(phi_te[c], std::exp(x[ind0]), x.begin());
         }
-        phi_err[c]=exp(x[ind0])-d;
+        phi_err[c]=std::exp(x[ind0])-d;
       }
 
       // calculate the order of accuracy
