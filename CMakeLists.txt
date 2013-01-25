@@ -84,4 +84,5 @@ add_subdirectory(dm)
 add_subdirectory(fd)
 add_subdirectory(opt)
 add_subdirectory(poly)
+add_subdirectory(quad)
 
