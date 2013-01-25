@@ -57,7 +57,7 @@ include(CTest)
 # find the cpptest library
 find_package(CPPTest REQUIRED)
 find_package(Eigen3 3.0.0 REQUIRED)
-find_package(QD)
+find_package(QD 2.3.13)
 if (QD_FOUND)
   set(ELI_QD_FOUND 1)
 endif ()
