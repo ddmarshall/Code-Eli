@@ -66,10 +66,19 @@ namespace eli
         template<typename yit__>
         data__ operator()(const data__ &dx, yit__ yb, yit__ ye) const
         {
-          data__ rtnval((*yb));
           yit__ ym1(yb), y(yb);
 
+          // short circuit special cases
+          if (yb==ye)
+            return static_cast<data__>(0);
+          if (y==ye)
+            return (*yb)/dx;
+          if (ym1==ye)
+            return ((*y)-(*yb))/dx;
+
           // cycle through the points until last odd point
+          data__ rtnval((*yb));
+
           ++ym1;
           ++y;
           for (++y; (ym1!=ye) && (y!=ye); ++y, ++ym1)
@@ -125,12 +134,22 @@ namespace eli
         data__ operator()(xit__ x, yit__ yb, yit__ ye) const
         {
           data__ rtnval(0), delta;
-          xit__ xm1(x), xp1(x);
+          xit__ xm1(x), xp1;
           yit__ ym1(yb), y(yb), yp1(yb);
 
           // set the initial iterators
-          ++x; ++xp1; ++xp1;
-          ++y; ++yp1; ++yp1;
+          ++x; xp1=x;
+          ++y; yp1=y;
+
+          // short circuit special cases
+          if (yb==ye)
+            return static_cast<data__>(0);
+          if (y==ye)
+            return static_cast<data__>(0);
+          ++xp1;
+          ++yp1;
+          if (yp1==ye)
+            return ((*y)-(*yb))/((*x)-(*xm1));
 
           // cycle through the points
           for (; (yp1!=ye) && (y!=ye); ++xm1, ++x, ++xp1, ++ym1, ++y, ++yp1)
