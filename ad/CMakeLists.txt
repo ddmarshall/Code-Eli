@@ -18,7 +18,7 @@ if (QD_FOUND)
   SET (_AD_LIBRARIES_LIST ${_AD_LIBRARIES_LIST} ${QD_LIBRARIES})
 endif()
 
-# add the mutil::constants test
+# add the automatic differentiation test
 add_executable(ADTest ${PROJECT_SOURCE_DIR}/test/ad_test.cpp)
 target_link_libraries(ADTest ${_AD_LIBRARIES_LIST})
 add_test(NAME ADTest COMMAND $<TARGET_FILE:ADTest> --text)

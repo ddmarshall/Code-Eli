@@ -18,7 +18,7 @@ if (QD_FOUND)
   SET (_DM_LIBRARIES_LIST ${_DM_LIBRARIES_LIST} ${QD_LIBRARIES})
 endif()
 
-# add the mutil::constants test
+# add the discrete math test
 add_executable(DMTest ${PROJECT_SOURCE_DIR}/test/dm_test.cpp)
 target_link_libraries(DMTest ${_DM_LIBRARIES_LIST})
 add_test(NAME DMTest COMMAND $<TARGET_FILE:DMTest> --text)

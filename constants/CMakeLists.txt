@@ -18,7 +18,7 @@ if (QD_FOUND)
   SET (_CONSTANTS_LIBRARIES_LIST ${_CONSTANTS_LIBRARIES_LIST} ${QD_LIBRARIES})
 endif()
 
-# add the mutil::constants test
+# add the constants test
 add_executable(ConstantsMathTest ${PROJECT_SOURCE_DIR}/test/constants_math_test.cpp)
 target_link_libraries(ConstantsMathTest ${_CONSTANTS_LIBRARIES_LIST})
 add_test(NAME ConstantsMathTest COMMAND $<TARGET_FILE:ConstantsMathTest> --text)
