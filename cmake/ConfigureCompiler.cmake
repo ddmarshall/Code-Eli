@@ -65,11 +65,11 @@ if(NOT CONFIGURE_COMPILER_INCLUDED)
                           CACHE STRING "Flags used by the compiler during all build types." FORCE)
       set(CMAKE_CXX_FLAGS_DEBUG "/DDEBUG /Zi"
                           CACHE STRING "Flags used by the compiler during debug builds." FORCE)
-      set(CMAKE_CXX_FLAGS_RELEASE "/DNDEBUG /O3 /ipo /fast"
+      set(CMAKE_CXX_FLAGS_RELEASE "/DNDEBUG /DEIGEN_NO_DEBUG /O3 /ipo /fast"
                           CACHE STRING "Flags used by the compiler during release builds." FORCE)
       set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "/DDEBUG /O3 /Zi"
                           CACHE STRING "Flags used by the compiler during release with debug info builds." FORCE)
-      set(CMAKE_CXX_FLAGS_MINSIZEREL "/DNDEBUG /Os /ipo /fast"
+      set(CMAKE_CXX_FLAGS_MINSIZEREL "/DNDEBUG /DEIGEN_NO_DEBUG /Os /ipo /fast"
                           CACHE STRING "Flags used by the compiler during release minsize builds." FORCE)
     else()
       set(CONFIGURE_COMPILER_SET_CXX_COMPILER_FLAGS ON)
@@ -77,11 +77,11 @@ if(NOT CONFIGURE_COMPILER_INCLUDED)
                           CACHE STRING "Flags used by the compiler during all build types." FORCE)
       set(CMAKE_CXX_FLAGS_DEBUG "-DDEBUG -O0 -g"
                           CACHE STRING "Flags used by the compiler during debug builds." FORCE)
-      set(CMAKE_CXX_FLAGS_RELEASE "-DNDEBUG -O3 -ipo -fast -g0"
+      set(CMAKE_CXX_FLAGS_RELEASE "-DNDEBUG -DEIGEN_NO_DEBUG -O3 -ipo -fast -g0"
                           CACHE STRING "Flags used by the compiler during release builds." FORCE)
       set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "-DDEBUG -O3 -ipo -g"
                           CACHE STRING "Flags used by the compiler during release with debug info builds." FORCE)
-      set(CMAKE_CXX_FLAGS_MINSIZEREL "-DNDEBUG -Os -ipo -fast"
+      set(CMAKE_CXX_FLAGS_MINSIZEREL "-DNDEBUG -DEIGEN_NO_DEBUG -Os -ipo -fast"
                           CACHE STRING "Flags used by the compiler during release minsize builds." FORCE)
     endif()
   endif()
@@ -149,11 +149,11 @@ if(NOT CONFIGURE_COMPILER_INCLUDED)
                         CACHE STRING "Flags used by the compiler during all build types." FORCE)
     set(CMAKE_CXX_FLAGS_DEBUG "-DDEBUG -O0 -g"
                         CACHE STRING "Flags used by the compiler during debug builds." FORCE)
-    set(CMAKE_CXX_FLAGS_RELEASE "-DNDEBUG -O3"
+    set(CMAKE_CXX_FLAGS_RELEASE "-DNDEBUG -DEIGEN_NO_DEBUG -O3"
                         CACHE STRING "Flags used by the compiler during release builds." FORCE)
     set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "-DDEBUG -O3 -g"
                         CACHE STRING "Flags used by the compiler during release with debug info builds." FORCE)
-    set(CMAKE_CXX_FLAGS_MINSIZEREL "-DNDEBUG -Os"
+    set(CMAKE_CXX_FLAGS_MINSIZEREL "-DNDEBUG -DEIGEN_NO_DEBUG -Os"
                         CACHE STRING "Flags used by the compiler during release minsize builds." FORCE)
   endif()
   if(CMAKE_Fortran_COMPILER_ID STREQUAL "GNU")
@@ -210,11 +210,11 @@ if(NOT CONFIGURE_COMPILER_INCLUDED)
     #      (1) Try and figure out problem and fix code
     #      (2) SET_SOURCE_FILES_PROPERTIES(${file} PROPERTIES COMPILE_FLAGS -O1)
     #      Clang 3.3 and lower produces wrong answer for mutilsimpsontestsuite hangs for -O2 or -O3
-    set(CMAKE_CXX_FLAGS_RELEASE "-DNDEBUG -O3"
+    set(CMAKE_CXX_FLAGS_RELEASE "-DNDEBUG -DEIGEN_NO_DEBUG -O3"
                         CACHE STRING "Flags used by the compiler during release builds." FORCE)
     set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "-DDEBUG -O3 -g"
                         CACHE STRING "Flags used by the compiler during release with debug info builds." FORCE)
-      set(CMAKE_CXX_FLAGS_MINSIZEREL "/DNDEBUG /Os /ipo /fast"
+      set(CMAKE_CXX_FLAGS_MINSIZEREL "-DNDEBUG -DEIGEN_NO_DEBUG -Os"
                         CACHE STRING "Flags used by the compiler during release minsize builds." FORCE)
   endif()
   if(CMAKE_Fortran_COMPILER_ID STREQUAL "Clang")
