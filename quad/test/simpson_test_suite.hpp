@@ -191,7 +191,7 @@ class simpson_test_suite : public Test::Suite
 #ifdef NDEBUG
 # ifdef __clang__
 #   if ( (__clang_major__ < 3) || ((__clang_major__==3) && (__clang_minor__<=3)) )
-      TEST_ASSERT_MESSAGE(false, "Clang release build bug cannot build this test.");
+      TEST_ASSERT_MSG(false, "Clang release build bug cannot build this test.");
       return;
 #   endif
 # endif
