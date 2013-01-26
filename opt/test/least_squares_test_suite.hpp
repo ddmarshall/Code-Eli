@@ -15,6 +15,8 @@
 
 #include "Eigen/Eigen"
 
+#include "eli/code_eli.hpp"
+
 #include "eli/opt/least_squares.hpp"
 
 #include <cmath>      // std::sqrt()

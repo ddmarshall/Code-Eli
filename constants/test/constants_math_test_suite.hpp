@@ -28,6 +28,39 @@
 
 #include <cmath> // std::tan and others
 
+template<typename T__>
+void set_pi(T__ &p)
+{
+  p=3.14;
+}
+template<>
+void set_pi<float>(float &p)
+{
+  p=3.141592653589793238462643383279502884196716939937510582f;
+}
+template<>
+void set_pi<double>(double &p)
+{
+  p=3.141592653589793238462643383279502884196716939937510582;
+}
+template<>
+void set_pi<long double>(long double &p)
+{
+  p=3.141592653589793238462643383279502884196716939937510582L;
+}
+#ifdef ELI_QD_FOUND
+template<>
+void set_pi<dd_real>(dd_real &p)
+{
+  p=dd_real::_pi;
+}
+template<>
+void set_pi<qd_real>(qd_real &p)
+{
+  p=qd_real::_pi;
+}
+#endif
+
 template<typename data__>
 class constants_math_test_suite : public Test::Suite
 {
@@ -100,32 +133,7 @@ class constants_math_test_suite : public Test::Suite
       data__ ans, one(1), two(2), four(4), pi;
 
       // set reference value for pi
-      if (typeid(data__)==typeid(float))
-      {
-        pi=3.141592653589793238462643383279502884196716939937510582f;
-      }
-      else if (typeid(data__)==typeid(double))
-      {
-        pi=3.141592653589793238462643383279502884196716939937510582;
-      }
-      else if (typeid(data__)==typeid(long double))
-      {
-        pi=3.141592653589793238462643383279502884196716939937510582L;
-      }
-#ifdef ELI_QD_FOUND
-      else if (typeid(data__)==typeid(dd_real))
-      {
-        pi=dd_real::_pi;
-      }
-      else if (typeid(data__)==typeid(qd_real))
-      {
-        pi=qd_real::_pi;
-      }
-#endif
-      else
-      {
-        pi=3.14;
-      }
+      set_pi(pi);
 
       // test pi
       ans=pi;
