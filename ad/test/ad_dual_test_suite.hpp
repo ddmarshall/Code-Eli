@@ -34,127 +34,127 @@ class ad_dual_test_suite : public Test::Suite
     void AddTests(const float &)
     {
       TEST_ADD(ad_dual_test_suite<float>::dual_assignment_test);
-//       TEST_ADD(ad_dual_test_suite<float>::dual_addition_test);
-//       TEST_ADD(ad_dual_test_suite<float>::dual_subtraction_test);
-//       TEST_ADD(ad_dual_test_suite<float>::dual_multiplication_test);
-//       TEST_ADD(ad_dual_test_suite<float>::dual_division_test);
-//       TEST_ADD(ad_dual_test_suite<float>::dual_exact_comparison_test);
-//       TEST_ADD(ad_dual_test_suite<float>::dual_inexact_comparison_test);
-//       TEST_ADD(ad_dual_test_suite<float>::dual_trig_test);
-//       TEST_ADD(ad_dual_test_suite<float>::dual_trig_nostd_test);
-//       TEST_ADD(ad_dual_test_suite<float>::dual_hyp_trig_test);
-//       TEST_ADD(ad_dual_test_suite<float>::dual_hyp_trig_nostd_test);
-//       TEST_ADD(ad_dual_test_suite<float>::dual_exp_test);
-//       TEST_ADD(ad_dual_test_suite<float>::dual_exp_nostd_test);
-//       TEST_ADD(ad_dual_test_suite<float>::dual_power_test);
-//       TEST_ADD(ad_dual_test_suite<float>::dual_power_nostd_test);
-//       TEST_ADD(ad_dual_test_suite<float>::dual_misc_test);
-//       TEST_ADD(ad_dual_test_suite<float>::dual_misc_nostd_test);
-//       TEST_ADD(ad_dual_test_suite<float>::dual_erf_test);
-//       TEST_ADD(ad_dual_test_suite<float>::dual_erf_nostd_test);
-//       TEST_ADD(ad_dual_test_suite<float>::dual_gamma_test);
-//       TEST_ADD(ad_dual_test_suite<float>::dual_gamma_nostd_test);
+      TEST_ADD(ad_dual_test_suite<float>::dual_addition_test);
+      TEST_ADD(ad_dual_test_suite<float>::dual_subtraction_test);
+      TEST_ADD(ad_dual_test_suite<float>::dual_multiplication_test);
+      TEST_ADD(ad_dual_test_suite<float>::dual_division_test);
+      TEST_ADD(ad_dual_test_suite<float>::dual_exact_comparison_test);
+      TEST_ADD(ad_dual_test_suite<float>::dual_inexact_comparison_test);
+      TEST_ADD(ad_dual_test_suite<float>::dual_trig_test);
+      TEST_ADD(ad_dual_test_suite<float>::dual_trig_nostd_test);
+      TEST_ADD(ad_dual_test_suite<float>::dual_hyp_trig_test);
+      TEST_ADD(ad_dual_test_suite<float>::dual_hyp_trig_nostd_test);
+      TEST_ADD(ad_dual_test_suite<float>::dual_exp_test);
+      TEST_ADD(ad_dual_test_suite<float>::dual_exp_nostd_test);
+      TEST_ADD(ad_dual_test_suite<float>::dual_power_test);
+      TEST_ADD(ad_dual_test_suite<float>::dual_power_nostd_test);
+      TEST_ADD(ad_dual_test_suite<float>::dual_misc_test);
+      TEST_ADD(ad_dual_test_suite<float>::dual_misc_nostd_test);
+      TEST_ADD(ad_dual_test_suite<float>::dual_erf_test);
+      TEST_ADD(ad_dual_test_suite<float>::dual_erf_nostd_test);
+      TEST_ADD(ad_dual_test_suite<float>::dual_gamma_test);
+      TEST_ADD(ad_dual_test_suite<float>::dual_gamma_nostd_test);
     }
 
     void AddTests(const double &)
     {
       TEST_ADD(ad_dual_test_suite<double>::dual_assignment_test);
-//       TEST_ADD(ad_dual_test_suite<double>::dual_addition_test);
-//       TEST_ADD(ad_dual_test_suite<double>::dual_subtraction_test);
-//       TEST_ADD(ad_dual_test_suite<double>::dual_multiplication_test);
-//       TEST_ADD(ad_dual_test_suite<double>::dual_division_test);
-//       TEST_ADD(ad_dual_test_suite<double>::dual_exact_comparison_test);
-//       TEST_ADD(ad_dual_test_suite<double>::dual_inexact_comparison_test);
-//       TEST_ADD(ad_dual_test_suite<double>::dual_trig_test);
-//       TEST_ADD(ad_dual_test_suite<double>::dual_trig_nostd_test);
-//       TEST_ADD(ad_dual_test_suite<double>::dual_hyp_trig_test);
-//       TEST_ADD(ad_dual_test_suite<double>::dual_hyp_trig_nostd_test);
-//       TEST_ADD(ad_dual_test_suite<double>::dual_exp_test);
-//       TEST_ADD(ad_dual_test_suite<double>::dual_exp_nostd_test);
-//       TEST_ADD(ad_dual_test_suite<double>::dual_power_test);
-//       TEST_ADD(ad_dual_test_suite<double>::dual_power_nostd_test);
-//       TEST_ADD(ad_dual_test_suite<double>::dual_misc_test);
-//       TEST_ADD(ad_dual_test_suite<double>::dual_misc_nostd_test);
-//       TEST_ADD(ad_dual_test_suite<double>::dual_erf_test);
-//       TEST_ADD(ad_dual_test_suite<double>::dual_erf_nostd_test);
-//       TEST_ADD(ad_dual_test_suite<double>::dual_gamma_test);
-//       TEST_ADD(ad_dual_test_suite<double>::dual_gamma_nostd_test);
+      TEST_ADD(ad_dual_test_suite<double>::dual_addition_test);
+      TEST_ADD(ad_dual_test_suite<double>::dual_subtraction_test);
+      TEST_ADD(ad_dual_test_suite<double>::dual_multiplication_test);
+      TEST_ADD(ad_dual_test_suite<double>::dual_division_test);
+      TEST_ADD(ad_dual_test_suite<double>::dual_exact_comparison_test);
+      TEST_ADD(ad_dual_test_suite<double>::dual_inexact_comparison_test);
+      TEST_ADD(ad_dual_test_suite<double>::dual_trig_test);
+      TEST_ADD(ad_dual_test_suite<double>::dual_trig_nostd_test);
+      TEST_ADD(ad_dual_test_suite<double>::dual_hyp_trig_test);
+      TEST_ADD(ad_dual_test_suite<double>::dual_hyp_trig_nostd_test);
+      TEST_ADD(ad_dual_test_suite<double>::dual_exp_test);
+      TEST_ADD(ad_dual_test_suite<double>::dual_exp_nostd_test);
+      TEST_ADD(ad_dual_test_suite<double>::dual_power_test);
+      TEST_ADD(ad_dual_test_suite<double>::dual_power_nostd_test);
+      TEST_ADD(ad_dual_test_suite<double>::dual_misc_test);
+      TEST_ADD(ad_dual_test_suite<double>::dual_misc_nostd_test);
+      TEST_ADD(ad_dual_test_suite<double>::dual_erf_test);
+      TEST_ADD(ad_dual_test_suite<double>::dual_erf_nostd_test);
+      TEST_ADD(ad_dual_test_suite<double>::dual_gamma_test);
+      TEST_ADD(ad_dual_test_suite<double>::dual_gamma_nostd_test);
     }
 
     void AddTests(const long double &)
     {
       TEST_ADD(ad_dual_test_suite<long double>::dual_assignment_test);
-//       TEST_ADD(ad_dual_test_suite<long double>::dual_addition_test);
-//       TEST_ADD(ad_dual_test_suite<long double>::dual_subtraction_test);
-//       TEST_ADD(ad_dual_test_suite<long double>::dual_multiplication_test);
-//       TEST_ADD(ad_dual_test_suite<long double>::dual_division_test);
-//       TEST_ADD(ad_dual_test_suite<long double>::dual_exact_comparison_test);
-//       TEST_ADD(ad_dual_test_suite<long double>::dual_inexact_comparison_test);
-//       TEST_ADD(ad_dual_test_suite<long double>::dual_trig_test);
-//       TEST_ADD(ad_dual_test_suite<long double>::dual_trig_nostd_test);
-//       TEST_ADD(ad_dual_test_suite<long double>::dual_hyp_trig_test);
-//       TEST_ADD(ad_dual_test_suite<long double>::dual_hyp_trig_nostd_test);
-//       TEST_ADD(ad_dual_test_suite<long double>::dual_exp_test);
-//       TEST_ADD(ad_dual_test_suite<long double>::dual_exp_nostd_test);
-//       TEST_ADD(ad_dual_test_suite<long double>::dual_power_test);
-//       TEST_ADD(ad_dual_test_suite<long double>::dual_power_nostd_test);
-//       TEST_ADD(ad_dual_test_suite<long double>::dual_misc_test);
-//       TEST_ADD(ad_dual_test_suite<long double>::dual_misc_nostd_test);
-//       TEST_ADD(ad_dual_test_suite<long double>::dual_erf_test);
-//       TEST_ADD(ad_dual_test_suite<long double>::dual_erf_nostd_test);
-//       TEST_ADD(ad_dual_test_suite<long double>::dual_gamma_test);
-//       TEST_ADD(ad_dual_test_suite<long double>::dual_gamma_nostd_test);
+      TEST_ADD(ad_dual_test_suite<long double>::dual_addition_test);
+      TEST_ADD(ad_dual_test_suite<long double>::dual_subtraction_test);
+      TEST_ADD(ad_dual_test_suite<long double>::dual_multiplication_test);
+      TEST_ADD(ad_dual_test_suite<long double>::dual_division_test);
+      TEST_ADD(ad_dual_test_suite<long double>::dual_exact_comparison_test);
+      TEST_ADD(ad_dual_test_suite<long double>::dual_inexact_comparison_test);
+      TEST_ADD(ad_dual_test_suite<long double>::dual_trig_test);
+      TEST_ADD(ad_dual_test_suite<long double>::dual_trig_nostd_test);
+      TEST_ADD(ad_dual_test_suite<long double>::dual_hyp_trig_test);
+      TEST_ADD(ad_dual_test_suite<long double>::dual_hyp_trig_nostd_test);
+      TEST_ADD(ad_dual_test_suite<long double>::dual_exp_test);
+      TEST_ADD(ad_dual_test_suite<long double>::dual_exp_nostd_test);
+      TEST_ADD(ad_dual_test_suite<long double>::dual_power_test);
+      TEST_ADD(ad_dual_test_suite<long double>::dual_power_nostd_test);
+      TEST_ADD(ad_dual_test_suite<long double>::dual_misc_test);
+      TEST_ADD(ad_dual_test_suite<long double>::dual_misc_nostd_test);
+      TEST_ADD(ad_dual_test_suite<long double>::dual_erf_test);
+      TEST_ADD(ad_dual_test_suite<long double>::dual_erf_nostd_test);
+      TEST_ADD(ad_dual_test_suite<long double>::dual_gamma_test);
+      TEST_ADD(ad_dual_test_suite<long double>::dual_gamma_nostd_test);
     }
 
 #ifdef ELI_QD_FOUND
     void AddTests(const dd_real &)
     {
       TEST_ADD(ad_dual_test_suite<dd_real>::dual_assignment_test);
-//       TEST_ADD(ad_dual_test_suite<dd_real>::dual_addition_test);
-//       TEST_ADD(ad_dual_test_suite<dd_real>::dual_subtraction_test);
-//       TEST_ADD(ad_dual_test_suite<dd_real>::dual_multiplication_test);
-//       TEST_ADD(ad_dual_test_suite<dd_real>::dual_division_test);
-//       TEST_ADD(ad_dual_test_suite<dd_real>::dual_exact_comparison_test);
-//       TEST_ADD(ad_dual_test_suite<dd_real>::dual_inexact_comparison_test);
-//       TEST_ADD(ad_dual_test_suite<dd_real>::dual_trig_test);
-//       TEST_ADD(ad_dual_test_suite<dd_real>::dual_trig_nostd_test);
-//       TEST_ADD(ad_dual_test_suite<dd_real>::dual_hyp_trig_test);
-//       TEST_ADD(ad_dual_test_suite<dd_real>::dual_hyp_trig_nostd_test);
-//       TEST_ADD(ad_dual_test_suite<dd_real>::dual_exp_test);
-//       TEST_ADD(ad_dual_test_suite<dd_real>::dual_exp_nostd_test);
-//       TEST_ADD(ad_dual_test_suite<dd_real>::dual_power_test);
-//       TEST_ADD(ad_dual_test_suite<dd_real>::dual_power_nostd_test);
-//       TEST_ADD(ad_dual_test_suite<dd_real>::dual_misc_test);
-//       TEST_ADD(ad_dual_test_suite<dd_real>::dual_misc_nostd_test);
-//       TEST_ADD(ad_dual_test_suite<dd_real>::dual_erf_test);
-//       TEST_ADD(ad_dual_test_suite<dd_real>::dual_erf_nostd_test);
-//       TEST_ADD(ad_dual_test_suite<dd_real>::dual_gamma_test);
-//       TEST_ADD(ad_dual_test_suite<dd_real>::dual_gamma_nostd_test);
+      TEST_ADD(ad_dual_test_suite<dd_real>::dual_addition_test);
+      TEST_ADD(ad_dual_test_suite<dd_real>::dual_subtraction_test);
+      TEST_ADD(ad_dual_test_suite<dd_real>::dual_multiplication_test);
+      TEST_ADD(ad_dual_test_suite<dd_real>::dual_division_test);
+      TEST_ADD(ad_dual_test_suite<dd_real>::dual_exact_comparison_test);
+      TEST_ADD(ad_dual_test_suite<dd_real>::dual_inexact_comparison_test);
+      TEST_ADD(ad_dual_test_suite<dd_real>::dual_trig_test);
+      TEST_ADD(ad_dual_test_suite<dd_real>::dual_trig_nostd_test);
+      TEST_ADD(ad_dual_test_suite<dd_real>::dual_hyp_trig_test);
+      TEST_ADD(ad_dual_test_suite<dd_real>::dual_hyp_trig_nostd_test);
+      TEST_ADD(ad_dual_test_suite<dd_real>::dual_exp_test);
+      TEST_ADD(ad_dual_test_suite<dd_real>::dual_exp_nostd_test);
+      TEST_ADD(ad_dual_test_suite<dd_real>::dual_power_test);
+      TEST_ADD(ad_dual_test_suite<dd_real>::dual_power_nostd_test);
+      TEST_ADD(ad_dual_test_suite<dd_real>::dual_misc_test);
+      TEST_ADD(ad_dual_test_suite<dd_real>::dual_misc_nostd_test);
+      TEST_ADD(ad_dual_test_suite<dd_real>::dual_erf_test);
+      TEST_ADD(ad_dual_test_suite<dd_real>::dual_erf_nostd_test);
+      TEST_ADD(ad_dual_test_suite<dd_real>::dual_gamma_test);
+      TEST_ADD(ad_dual_test_suite<dd_real>::dual_gamma_nostd_test);
     }
 
     void AddTests(const qd_real &)
     {
       TEST_ADD(ad_dual_test_suite<qd_real>::dual_assignment_test);
-//       TEST_ADD(ad_dual_test_suite<qd_real>::dual_addition_test);
-//       TEST_ADD(ad_dual_test_suite<qd_real>::dual_subtraction_test);
-//       TEST_ADD(ad_dual_test_suite<qd_real>::dual_multiplication_test);
-//       TEST_ADD(ad_dual_test_suite<qd_real>::dual_division_test);
-//       TEST_ADD(ad_dual_test_suite<qd_real>::dual_exact_comparison_test);
-//       TEST_ADD(ad_dual_test_suite<qd_real>::dual_inexact_comparison_test);
-//       TEST_ADD(ad_dual_test_suite<qd_real>::dual_trig_test);
-//       TEST_ADD(ad_dual_test_suite<qd_real>::dual_trig_nostd_test);
-//       TEST_ADD(ad_dual_test_suite<qd_real>::dual_hyp_trig_test);
-//       TEST_ADD(ad_dual_test_suite<qd_real>::dual_hyp_trig_nostd_test);
-//       TEST_ADD(ad_dual_test_suite<qd_real>::dual_exp_test);
-//       TEST_ADD(ad_dual_test_suite<qd_real>::dual_exp_nostd_test);
-//       TEST_ADD(ad_dual_test_suite<qd_real>::dual_power_test);
-//       TEST_ADD(ad_dual_test_suite<qd_real>::dual_power_nostd_test);
-//       TEST_ADD(ad_dual_test_suite<qd_real>::dual_misc_test);
-//       TEST_ADD(ad_dual_test_suite<qd_real>::dual_misc_nostd_test);
-//       TEST_ADD(ad_dual_test_suite<qd_real>::dual_erf_test);
-//       TEST_ADD(ad_dual_test_suite<qd_real>::dual_erf_nostd_test);
-//       TEST_ADD(ad_dual_test_suite<qd_real>::dual_gamma_test);
-//       TEST_ADD(ad_dual_test_suite<qd_real>::dual_gamma_nostd_test);
+      TEST_ADD(ad_dual_test_suite<qd_real>::dual_addition_test);
+      TEST_ADD(ad_dual_test_suite<qd_real>::dual_subtraction_test);
+      TEST_ADD(ad_dual_test_suite<qd_real>::dual_multiplication_test);
+      TEST_ADD(ad_dual_test_suite<qd_real>::dual_division_test);
+      TEST_ADD(ad_dual_test_suite<qd_real>::dual_exact_comparison_test);
+      TEST_ADD(ad_dual_test_suite<qd_real>::dual_inexact_comparison_test);
+      TEST_ADD(ad_dual_test_suite<qd_real>::dual_trig_test);
+      TEST_ADD(ad_dual_test_suite<qd_real>::dual_trig_nostd_test);
+      TEST_ADD(ad_dual_test_suite<qd_real>::dual_hyp_trig_test);
+      TEST_ADD(ad_dual_test_suite<qd_real>::dual_hyp_trig_nostd_test);
+      TEST_ADD(ad_dual_test_suite<qd_real>::dual_exp_test);
+      TEST_ADD(ad_dual_test_suite<qd_real>::dual_exp_nostd_test);
+      TEST_ADD(ad_dual_test_suite<qd_real>::dual_power_test);
+      TEST_ADD(ad_dual_test_suite<qd_real>::dual_power_nostd_test);
+      TEST_ADD(ad_dual_test_suite<qd_real>::dual_misc_test);
+      TEST_ADD(ad_dual_test_suite<qd_real>::dual_misc_nostd_test);
+      TEST_ADD(ad_dual_test_suite<qd_real>::dual_erf_test);
+      TEST_ADD(ad_dual_test_suite<qd_real>::dual_erf_nostd_test);
+      TEST_ADD(ad_dual_test_suite<qd_real>::dual_gamma_test);
+      TEST_ADD(ad_dual_test_suite<qd_real>::dual_gamma_nostd_test);
     }
 #endif
 
@@ -1072,7 +1072,6 @@ class ad_dual_test_suite : public Test::Suite
       dref=d3;
       d0=std::atan(std::tan((d1+d2)/v1));
       TEST_ASSERT(d0.nearly(dref, tol));
-
       // TODO: ADD atan2 test when bin_fun implemented
     }
 
@@ -1325,7 +1324,7 @@ class ad_dual_test_suite : public Test::Suite
       // acosh(cosh(expression)) test
       d3=(d1+d2);
       dref=d3;
-      d0=std::acos(std::cosh(d1+d2));
+      d0=std::acosh(std::cosh(d1+d2));
       TEST_ASSERT(d0.nearly(dref, tol));
 
       // atanh(dual) test
@@ -1336,10 +1335,10 @@ class ad_dual_test_suite : public Test::Suite
       TEST_ASSERT(d0.nearly(dref, tol));
 
       // atanh(expression) test
-      d3=(d1+d2)/4;
+      d3=(d1+d2)/8;
       dref.set_real(std::atanh(d3.real()));
       dref.set_nonreal(d3.nonreal()/(1-d3.real()*d3.real()));
-      d0=std::atanh((d1+d2)/4);
+      d0=std::atanh((d1+d2)/8);
       TEST_ASSERT(d0.nearly(dref, tol));
 
       // atanh(tanh(expression)) test
@@ -1460,7 +1459,7 @@ class ad_dual_test_suite : public Test::Suite
       // acosh(cosh(expression)) test
       d3=(d1+d2);
       dref=d3;
-      d0=acos(cosh(d1+d2));
+      d0=acosh(cosh(d1+d2));
       TEST_ASSERT(d0.nearly(dref, tol));
 
       // atanh(dual) test
@@ -1471,10 +1470,10 @@ class ad_dual_test_suite : public Test::Suite
       TEST_ASSERT(d0.nearly(dref, tol));
 
       // atanh(expression) test
-      d3=(d1+d2)/4;
+      d3=(d1+d2)/8;
       dref.set_real(atanh(d3.real()));
       dref.set_nonreal(d3.nonreal()/(1-d3.real()*d3.real()));
-      d0=atanh((d1+d2)/4);
+      d0=atanh((d1+d2)/8);
       TEST_ASSERT(d0.nearly(dref, tol));
 
       // atanh(tanh(expression)) test
@@ -1487,7 +1486,7 @@ class ad_dual_test_suite : public Test::Suite
     void dual_exp_test()
     {
       eli::ad::dual<data__, false> d1(2,-2), d2(2,3), d3, d4, d0, dref;
-      data__ tol(std::sqrt(std::numeric_limits<data__>::epsilon()));
+      data__ tol(std::sqrt(std::numeric_limits<data__>::epsilon())), two(2), ten(10);
 
       // exp(dual) test
       d3=d1;
@@ -1538,23 +1537,23 @@ class ad_dual_test_suite : public Test::Suite
       // exp2(dual) test
       d3=d1;
       dref.set_real(std::exp2(d3.real()));
-      dref.set_nonreal(d3.nonreal()*std::log(2)*std::exp2(d3.real()));
+      dref.set_nonreal(d3.nonreal()*std::log(two)*std::exp2(d3.real()));
       d0=std::exp2(d3);
       TEST_ASSERT(d0.nearly(dref, tol));
 
       // exp2(expression) test
       d3=d1+d2;
       dref.set_real(std::exp2(d3.real()));
-      dref.set_nonreal(d3.nonreal()*std::log(2)*std::exp2(d3.real()));
+      dref.set_nonreal(d3.nonreal()*std::log(two)*std::exp2(d3.real()));
       d0=std::exp2(d1+d2);
       TEST_ASSERT(d0.nearly(dref, tol));
 
       // exp2(exp2(expression)) test
       d3=d1+d2;
       d4.set_real(std::exp2(d3.real()));
-      d4.set_nonreal(d3.nonreal()*std::log(2)*std::exp2(d3.real()));
+      d4.set_nonreal(d3.nonreal()*std::log(two)*std::exp2(d3.real()));
       dref.set_real(std::exp2(d4.real()));
-      dref.set_nonreal(d4.nonreal()*std::log(2)*std::exp2(d4.real()));
+      dref.set_nonreal(d4.nonreal()*std::log(two)*std::exp2(d4.real()));
       d0=std::exp2(std::exp2(d1+d2));
       TEST_ASSERT(d0.nearly(dref, tol));
 
@@ -1584,46 +1583,46 @@ class ad_dual_test_suite : public Test::Suite
       // log10(dual) test
       d3=d1;
       dref.set_real(std::log10(d3.real()));
-      dref.set_nonreal(d3.nonreal()/d3.real()/std::log(10));
+      dref.set_nonreal(d3.nonreal()/d3.real()/std::log(ten));
       d0=std::log10(d3);
       TEST_ASSERT(d0.nearly(dref, tol));
 
       // log10(expression) test
       d3=d1+d2;
       dref.set_real(std::log10(d3.real()));
-      dref.set_nonreal(d3.nonreal()/d3.real()/std::log(10));
+      dref.set_nonreal(d3.nonreal()/d3.real()/std::log(ten));
       d0=std::log10(d1+d2);
       TEST_ASSERT(d0.nearly(dref, tol));
 
       // log10(log10(expression)) test
       d3=d1+d2;
       d4.set_real(std::log10(d3.real()));
-      d4.set_nonreal(d3.nonreal()/d3.real()/std::log(10));
+      d4.set_nonreal(d3.nonreal()/d3.real()/std::log(ten));
       dref.set_real(std::log10(d4.real()));
-      dref.set_nonreal(d4.nonreal()/d4.real()/std::log(10));
+      dref.set_nonreal(d4.nonreal()/d4.real()/std::log(ten));
       d0=std::log10(std::log10(d1+d2));
       TEST_ASSERT(d0.nearly(dref, tol));
 
       // log2(dual) test
       d3=d1;
       dref.set_real(std::log2(d3.real()));
-      dref.set_nonreal(d3.nonreal()/d3.real()/std::log(2));
+      dref.set_nonreal(d3.nonreal()/d3.real()/std::log(two));
       d0=std::log2(d3);
       TEST_ASSERT(d0.nearly(dref, tol));
 
       // log2(expression) test
       d3=d1+d2;
       dref.set_real(std::log2(d3.real()));
-      dref.set_nonreal(d3.nonreal()/d3.real()/std::log(2));
+      dref.set_nonreal(d3.nonreal()/d3.real()/std::log(two));
       d0=std::log2(d1+d2);
       TEST_ASSERT(d0.nearly(dref, tol));
 
       // log2(log2(expression)) test
       d3=d1+d2;
       d4.set_real(std::log2(d3.real()));
-      d4.set_nonreal(d3.nonreal()/d3.real()/std::log(2));
+      d4.set_nonreal(d3.nonreal()/d3.real()/std::log(two));
       dref.set_real(std::log2(d4.real()));
-      dref.set_nonreal(d4.nonreal()/d4.real()/std::log(2));
+      dref.set_nonreal(d4.nonreal()/d4.real()/std::log(two));
       d0=std::log2(std::log2(d1+d2));
       TEST_ASSERT(d0.nearly(dref, tol));
 
@@ -1654,7 +1653,7 @@ class ad_dual_test_suite : public Test::Suite
     void dual_exp_nostd_test()
     {
       eli::ad::dual<data__, false> d1(2,-2), d2(2,3), d3, d4, d0, dref;
-      data__ tol(std::sqrt(std::numeric_limits<data__>::epsilon()));
+      data__ tol(std::sqrt(std::numeric_limits<data__>::epsilon())), two(2), ten(10);
 
       // exp(dual) test
       d3=d1;
@@ -1705,23 +1704,23 @@ class ad_dual_test_suite : public Test::Suite
       // exp2(dual) test
       d3=d1;
       dref.set_real(exp2(d3.real()));
-      dref.set_nonreal(d3.nonreal()*log(2)*exp2(d3.real()));
+      dref.set_nonreal(d3.nonreal()*log(two)*exp2(d3.real()));
       d0=exp2(d3);
       TEST_ASSERT(d0.nearly(dref, tol));
 
       // exp2(expression) test
       d3=d1+d2;
       dref.set_real(exp2(d3.real()));
-      dref.set_nonreal(d3.nonreal()*log(2)*exp2(d3.real()));
+      dref.set_nonreal(d3.nonreal()*log(two)*exp2(d3.real()));
       d0=exp2(d1+d2);
       TEST_ASSERT(d0.nearly(dref, tol));
 
       // exp2(exp2(expression)) test
       d3=d1+d2;
       d4.set_real(exp2(d3.real()));
-      d4.set_nonreal(d3.nonreal()*log(2)*exp2(d3.real()));
+      d4.set_nonreal(d3.nonreal()*log(two)*exp2(d3.real()));
       dref.set_real(exp2(d4.real()));
-      dref.set_nonreal(d4.nonreal()*log(2)*exp2(d4.real()));
+      dref.set_nonreal(d4.nonreal()*log(two)*exp2(d4.real()));
       d0=exp2(exp2(d1+d2));
       TEST_ASSERT(d0.nearly(dref, tol));
 
@@ -1751,46 +1750,46 @@ class ad_dual_test_suite : public Test::Suite
       // log10(dual) test
       d3=d1;
       dref.set_real(log10(d3.real()));
-      dref.set_nonreal(d3.nonreal()/d3.real()/log(10));
+      dref.set_nonreal(d3.nonreal()/d3.real()/log(ten));
       d0=log10(d3);
       TEST_ASSERT(d0.nearly(dref, tol));
 
       // log10(expression) test
       d3=d1+d2;
       dref.set_real(log10(d3.real()));
-      dref.set_nonreal(d3.nonreal()/d3.real()/log(10));
+      dref.set_nonreal(d3.nonreal()/d3.real()/log(ten));
       d0=log10(d1+d2);
       TEST_ASSERT(d0.nearly(dref, tol));
 
       // log10(log10(expression)) test
       d3=d1+d2;
       d4.set_real(log10(d3.real()));
-      d4.set_nonreal(d3.nonreal()/d3.real()/log(10));
+      d4.set_nonreal(d3.nonreal()/d3.real()/log(ten));
       dref.set_real(log10(d4.real()));
-      dref.set_nonreal(d4.nonreal()/d4.real()/log(10));
+      dref.set_nonreal(d4.nonreal()/d4.real()/log(ten));
       d0=log10(log10(d1+d2));
       TEST_ASSERT(d0.nearly(dref, tol));
 
       // log2(dual) test
       d3=d1;
       dref.set_real(log2(d3.real()));
-      dref.set_nonreal(d3.nonreal()/d3.real()/log(2));
+      dref.set_nonreal(d3.nonreal()/d3.real()/log(two));
       d0=log2(d3);
       TEST_ASSERT(d0.nearly(dref, tol));
 
       // log2(expression) test
       d3=d1+d2;
       dref.set_real(log2(d3.real()));
-      dref.set_nonreal(d3.nonreal()/d3.real()/log(2));
+      dref.set_nonreal(d3.nonreal()/d3.real()/log(two));
       d0=log2(d1+d2);
       TEST_ASSERT(d0.nearly(dref, tol));
 
       // log2(log2(expression)) test
       d3=d1+d2;
       d4.set_real(log2(d3.real()));
-      d4.set_nonreal(d3.nonreal()/d3.real()/log(2));
+      d4.set_nonreal(d3.nonreal()/d3.real()/log(two));
       dref.set_real(log2(d4.real()));
-      dref.set_nonreal(d4.nonreal()/d4.real()/log(2));
+      dref.set_nonreal(d4.nonreal()/d4.real()/log(two));
       d0=log2(log2(d1+d2));
       TEST_ASSERT(d0.nearly(dref, tol));
 

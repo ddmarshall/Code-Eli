@@ -19,12 +19,131 @@
 #define ELI_VERSION "@ELI_VERSION_PATCH@.@ELI_VERSION_MINOR@.@ELI_VERSION_PATCH@"
 #define ELI_BUILD_TIMESTAMP @ELI_BUILD_DATE@.@ELI_BUILD_TIME@
 
+// disable warnings from Eigen that still show up
+#ifdef _MSC_VER
+#elif defined __INTEL_COMPILER
+  #pragma warning( push )
+  #pragma warning disable 82 279 1595 2196 2536
+#endif
+
+// GCC versions 4.5 through latest (4.7) do not put these in the std namespace like they
+// should be.
+#ifdef __GNUC__
+# if ( (__GNUC__<5) || ((__GNUC__==4) && (__GNUC_MINOR__<8)) )
+#include <cmath>
+
+namespace std
+{
+  using ::asinh;
+  using ::acosh;
+  using ::atanh;
+  using ::expm1;
+  using ::exp2;
+  using ::log2;
+  using ::log1p;
+  using ::erf;
+  using ::erfc;
+}
+# endif
+#endif
+
+// Clang versions 3.0 through latest (3.3) do not put these in the std namespace like they
+// should be.
+#ifdef __clang__
+# if ( (__clang_major__ < 3) || ((__clang_major__==3) && (__clang_minor__<=3)) )
+#include <cmath>
+
+namespace std
+{
+  using ::asinh;
+  using ::acosh;
+  using ::atanh;
+  using ::expm1;
+  using ::exp2;
+  using ::log2;
+  using ::log1p;
+  using ::erf;
+  using ::erfc;
+}
+# endif
+#endif
+
 #cmakedefine ELI_QD_FOUND
 
 #ifdef ELI_QD_FOUND
 # include <qd/dd_real.h>
 # include <qd/qd_real.h>
 # include <qd/fpu.h>
+
+dd_real pow(const double &x, const dd_real&n) {
+  return pow(static_cast<dd_real>(x), n);
+}
+
+dd_real expm1(const dd_real &a) {
+  return exp(a)-1;
+}
+
+dd_real exp2(const dd_real &a) {
+  return pow(2, a);
+}
+
+dd_real log2(const dd_real &a) {
+  return log(a)/log(static_cast<dd_real>(2));
+}
+
+dd_real log1p(const dd_real &a) {
+  return log(1+a);
+}
+
+dd_real erf(const dd_real &a) {
+  return erf(a.x[0]);
+}
+
+dd_real erfc(const dd_real &a) {
+  return erfc(a.x[0]);
+}
+
+
+qd_real pow(const double &x, const qd_real&n) {
+  return pow(static_cast<qd_real>(x), n);
+}
+
+qd_real expm1(const qd_real &a) {
+  return exp(a)-1;
+}
+
+qd_real exp2(const qd_real &a) {
+  return pow(2, a);
+}
+
+qd_real log2(const qd_real &a) {
+  return log(a)/log(static_cast<qd_real>(2));
+}
+
+qd_real log1p(const qd_real &a) {
+  return log(1+a);
+}
+
+qd_real erf(const qd_real &a) {
+  return erf(a.x[0]);
+}
+
+qd_real erfc(const qd_real &a) {
+  return erfc(a.x[0]);
+}
+
+namespace std {
+  using ::asinh;
+  using ::acosh;
+  using ::atanh;
+  using ::expm1;
+  using ::exp2;
+  using ::log2;
+  using ::log1p;
+  using ::erf;
+  using ::erfc;
+}
+
 #endif
 
 #endif

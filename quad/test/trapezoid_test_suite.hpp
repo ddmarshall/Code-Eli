@@ -20,6 +20,8 @@
 #include <iomanip>  // std::setw
 #include <vector>   // std::vector
 
+#include "eli/code_eli.hpp"
+
 #include "eli/quad/trapezoid.hpp"
 #include "eli/constants/math.hpp"
 

@@ -18,28 +18,6 @@
 
 #include <cmath>
 
-// GCC versions 4.5 through latest (4.7) do not put these in the std namespace like they
-// should be.
-#ifdef __GNUC__
-# if (__GNUC__<5)
-#   if (__GNUC_MINOR__<8)
-namespace std
-{
-  using ::asinh;
-  using ::acosh;
-  using ::atanh;
-  using ::expm1;
-  using ::exp2;
-  using ::log2;
-  using ::log1p;
-  using ::erf;
-  using ::erfc;
-}
-
-#   endif
-#endif
-#endif
-
 // sin and std::sin
 namespace eli
 {
@@ -685,7 +663,7 @@ namespace eli
     struct log10_fun
     {
       static T__ f(const T__ &t)  {return std::log10(t);}
-      static T__ fp(const T__ &t) {return 1/t/std::log(10);}
+      static T__ fp(const T__ &t) {return 1/t/std::log(static_cast<T__>(10));}
       static T__ fp(const T__ &t, const size_t &n)
       {
         switch(n)
@@ -702,7 +680,7 @@ namespace eli
           }
           default:
           {
-            T__ val(fp(t)/std::log(10));
+            T__ val(fp(t)/std::log(static_cast<T__>(10)));
             for (size_t i=2; i<=n; ++i)
               val/=-t/i;
             return val;
