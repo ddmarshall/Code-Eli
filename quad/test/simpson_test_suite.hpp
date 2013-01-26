@@ -329,31 +329,9 @@ class simpson_test_suite : public Test::Suite
       TEST_ASSERT_DELTA(1, F_quad/F_exact, ap.tolerance);
       TEST_ASSERT(ap.recursion_depth==ap_ref.recursion_depth);
       TEST_ASSERT(ap.function_count==ap_ref.function_count);
-      TEST_ASSERT(std::abs(1-ap.coarse_value/ap_ref.coarse_value)<=std::numeric_limits<data__>::epsilon());
+      TEST_ASSERT_DELTA(1, ap.coarse_value/ap_ref.coarse_value, std::numeric_limits<data__>::epsilon());
       TEST_ASSERT_DELTA(1, ap.fine_value/ap_ref.fine_value, std::numeric_limits<data__>::epsilon());
       TEST_ASSERT_DELTA(1, ap.approximate_error/ap_ref.approximate_error, std::numeric_limits<data__>::epsilon());
-
-#if 0
-        std::cout << std::setprecision(20) << std::endl;
-        data__ v;
-        v=std::abs(1-ap.coarse_value/ap_ref.coarse_value);
-        std::cout << "eps=" << std::numeric_limits<data__>::epsilon() << std::endl;
-        std::cout << "v[0]="   << v[0] << "\tv[1]=" << v[1]
-                  << "\tv[2]=" << v[2] << "\tv[3]=" << v[3] << std::endl;
-        v=std::abs(1-ap.fine_value/ap_ref.fine_value);
-        std::cout << "v[0]="   << v[0] << "\tv[1]=" << v[1]
-                  << "\tv[2]=" << v[2] << "\tv[3]=" << v[3] << std::endl;
-        v=std::abs(1-ap.approximate_error/ap_ref.approximate_error);
-        std::cout << "v[0]="   << v[0] << "\tv[1]=" << v[1]
-                  << "\tv[2]=" << v[2] << "\tv[3]=" << v[3] << std::endl;
-        std::cout << std::endl;
-        std::cout << "cv[0]="   << ap.coarse_value[0] << "\tcv[1]=" << ap.coarse_value[1]
-                  << "\tcv[2]=" << ap.coarse_value[2] << "\tcv[3]=" << ap.coarse_value[3] << std::endl;
-        std::cout << "fv[0]="   << ap.fine_value[0] << "\tfv[1]=" << ap.fine_value[1]
-                  << "\tfv[2]=" << ap.fine_value[2] << "\tfv[3]=" << ap.fine_value[3] << std::endl;
-        std::cout << "ae[0]="   << ap.approximate_error[0] << "\tae[1]=" << ap.approximate_error[1]
-                  << "\tae[2]=" << ap.approximate_error[2] << "\tae[3]=" << ap.approximate_error[3] << std::endl;
-#endif
     }
 };
 
