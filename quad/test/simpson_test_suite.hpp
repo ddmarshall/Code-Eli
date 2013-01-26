@@ -111,36 +111,36 @@ class simpson_test_suite : public Test::Suite
     void AddTests(const float &)
     {
       TEST_ADD(simpson_test_suite<float>::uniform_points_test);
-//       TEST_ADD(simpson_test_suite<float>::nonuniform_points_test);
-//       TEST_ADD(simpson_test_suite<float>::adaptive_test);
+      TEST_ADD(simpson_test_suite<float>::nonuniform_points_test);
+      TEST_ADD(simpson_test_suite<float>::adaptive_test);
     }
 
     void AddTests(const double &)
     {
-//       TEST_ADD(simpson_test_suite<double>::uniform_points_test);
-//       TEST_ADD(simpson_test_suite<double>::nonuniform_points_test);
-//       TEST_ADD(simpson_test_suite<double>::adaptive_test);
+      TEST_ADD(simpson_test_suite<double>::uniform_points_test);
+      TEST_ADD(simpson_test_suite<double>::nonuniform_points_test);
+      TEST_ADD(simpson_test_suite<double>::adaptive_test);
     }
 
     void AddTests(const long double &)
     {
-//       TEST_ADD(simpson_test_suite<long double>::uniform_points_test);
-//       TEST_ADD(simpson_test_suite<long double>::nonuniform_points_test);
-//       TEST_ADD(simpson_test_suite<long double>::adaptive_test);
+      TEST_ADD(simpson_test_suite<long double>::uniform_points_test);
+      TEST_ADD(simpson_test_suite<long double>::nonuniform_points_test);
+      TEST_ADD(simpson_test_suite<long double>::adaptive_test);
     }
 
 #ifdef ELI_QD_FOUND
     void AddTests(const dd_real &)
     {
-//       TEST_ADD(simpson_test_suite<dd_real>::uniform_points_test);
-//       TEST_ADD(simpson_test_suite<dd_real>::nonuniform_points_test);
-//       TEST_ADD(simpson_test_suite<dd_real>::adaptive_test);
+      TEST_ADD(simpson_test_suite<dd_real>::uniform_points_test);
+      TEST_ADD(simpson_test_suite<dd_real>::nonuniform_points_test);
+      TEST_ADD(simpson_test_suite<dd_real>::adaptive_test);
     }
 
     void AddTests(const qd_real &)
     {
-//       TEST_ADD(simpson_test_suite<qd_real>::uniform_points_test);
-//       TEST_ADD(simpson_test_suite<qd_real>::nonuniform_points_test);
+      TEST_ADD(simpson_test_suite<qd_real>::uniform_points_test);
+      TEST_ADD(simpson_test_suite<qd_real>::nonuniform_points_test);
 //       TEST_ADD(simpson_test_suite<qd_real>::adaptive_test);
     }
 #endif
@@ -187,7 +187,15 @@ class simpson_test_suite : public Test::Suite
         }
       }
 
-#if 0
+// bug in release build for clang current version (3.3) and older
+#ifdef NDEBUG
+# ifdef __clang__
+#   if ( (__clang_major__ < 3) || ((__clang_major__==3) && (__clang_minor__<=3)) )
+      TEST_ASSERT_MESSAGE(false, "Clang release build bug cannot build this test.");
+      return;
+#   endif
+# endif
+#endif
       {
         size_t n, npts(1000);
         std::vector<data__> x(npts), f(npts);
@@ -214,7 +222,6 @@ class simpson_test_suite : public Test::Suite
           TEST_ASSERT_DELTA(1, F_quad/F_exact, 1e-12);
         }
       }
-#endif
     }
 
     void nonuniform_points_test()

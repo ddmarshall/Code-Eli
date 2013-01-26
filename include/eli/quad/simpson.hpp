@@ -66,42 +66,44 @@ namespace eli
         template<typename yit__>
         data__ operator()(const data__ &dx, yit__ yb, yit__ ye) const
         {
-          yit__ ym1(yb), y(yb);
+          yit__ ym1, y(yb);
 
           // short circuit special cases
           if (yb==ye)
             return static_cast<data__>(0);
+          ++y;
           if (y==ye)
             return (*yb)/dx;
-          if (ym1==ye)
-            return ((*y)-(*yb))/dx;
+          ym1=y;
+          ++y;
+          if (y==ye)
+            return ((*ym1)-(*yb))/dx;
 
           // cycle through the points until last odd point
           data__ rtnval((*yb));
+          bool even_pts(true);
 
-          ++ym1;
-          ++y;
-          for (++y; (ym1!=ye) && (y!=ye); ++y, ++ym1)
+          while (y!=ye)
           {
             rtnval+=4*(*ym1)+2*(*y);
-            ++y; ++ym1;
+            ym1=y;
+            ++y;
+            if (y==ye)
+            {
+              // remove extra last odd point
+              rtnval-=(*ym1);
+              even_pts=false;
+              break;
+            }
+            ym1=y;
+            ++y;
           }
-          // if (ym1==ye) NOTE(1): clang 3.3 release doesn't compile this line correctly...
-          if (y!=ye) // have odd number of points
-          {
-            ym1=ye; // NOTE(2): and have to do this to get ym1 correct :(
 
-            // remove extra last odd point
-            --ym1;
-
-            rtnval-=(*ym1);
-          }
-          else // have even number of points
+          if (even_pts) // have even number of points
           {
             yit__ ym2;
 
             // (re)set the iterators
-            assert(ym1!=ye);
             --y;
             --ym1;
             ym2=ym1; --ym2;
