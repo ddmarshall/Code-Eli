@@ -10,15 +10,19 @@
 #    David D. Marshall - initial code and implementation
 ################################################################################
 
-project(AD)
+project(ELI_TEST)
 
 # set what libraries need to be used
-set(_AD_LIBRARIES_LIST ${CPPTEST_LIBRARIES})
+set(_ELI_TEST_LIBRARIES_LIST ${CPPTEST_LIBRARIES})
 if (QD_FOUND)
-  SET (_AD_LIBRARIES_LIST ${_AD_LIBRARIES_LIST} ${QD_LIBRARIES})
+  SET (_ELI_TEST_LIBRARIES_LIST ${_ELI_TEST_LIBRARIES_LIST} ${QD_LIBRARIES})
 endif()
 
-# add the automatic differentiation test
-add_executable(ADTest ${PROJECT_SOURCE_DIR}/test/ad_test.cpp)
-target_link_libraries(ADTest ${_AD_LIBRARIES_LIST})
-add_test(NAME ADTest COMMAND $<TARGET_FILE:ADTest> --text)
+add_subdirectory(ad)
+add_subdirectory(constants)
+add_subdirectory(dm)
+add_subdirectory(fd)
+add_subdirectory(nls)
+add_subdirectory(opt)
+add_subdirectory(poly)
+add_subdirectory(quad)

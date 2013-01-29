@@ -10,15 +10,9 @@
 #    David D. Marshall - initial code and implementation
 ################################################################################
 
-project(POLY)
+project(CONSTANTS)
 
-# set what libraries need to be used
-set(_POLY_LIBRARIES_LIST ${CPPTEST_LIBRARIES})
-if (QD_FOUND)
-  SET (_POLY_LIBRARIES_LIST ${_POLY_LIBRARIES_LIST} ${QD_LIBRARIES})
-endif()
-
-# add the polynomial test
-add_executable(PolyTest ${PROJECT_SOURCE_DIR}/test/poly_test.cpp)
-target_link_libraries(PolyTest ${_POLY_LIBRARIES_LIST})
-add_test(NAME PolyTest COMMAND $<TARGET_FILE:PolyTest> --text)
+# add the constants test
+add_executable(ConstantsMathTest ${PROJECT_SOURCE_DIR}/constants_math_test.cpp)
+target_link_libraries(ConstantsMathTest ${_ELI_TEST_LIBRARIES_LIST})
+add_test(NAME ConstantsMathTest COMMAND $<TARGET_FILE:ConstantsMathTest> --text)

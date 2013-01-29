@@ -10,15 +10,9 @@
 #    David D. Marshall - initial code and implementation
 ################################################################################
 
-project(NLS)
+project(POLY)
 
-# set what libraries need to be used
-set(_NLS_LIBRARIES_LIST ${CPPTEST_LIBRARIES})
-if (QD_FOUND)
-  SET (_NLS_LIBRARIES_LIST ${_NLS_LIBRARIES_LIST} ${QD_LIBRARIES})
-endif()
-
-# add the nonlinear solver test
-add_executable(NLSTest ${PROJECT_SOURCE_DIR}/test/nls_test.cpp)
-target_link_libraries(NLSTest ${_NLS_LIBRARIES_LIST})
-add_test(NAME NLSTest COMMAND $<TARGET_FILE:NLSTest> --text)
+# add the polynomial test
+add_executable(PolyTest ${PROJECT_SOURCE_DIR}/poly_test.cpp)
+target_link_libraries(PolyTest ${_ELI_TEST_LIBRARIES_LIST})
+add_test(NAME PolyTest COMMAND $<TARGET_FILE:PolyTest> --text)

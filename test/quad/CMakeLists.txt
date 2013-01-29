@@ -12,13 +12,7 @@
 
 project(QUAD)
 
-# set what libraries need to be used
-set(_QUAD_LIBRARIES_LIST ${CPPTEST_LIBRARIES})
-if (QD_FOUND)
-  SET (_QUAD_LIBRARIES_LIST ${_QUAD_LIBRARIES_LIST} ${QD_LIBRARIES})
-endif()
-
 # add the quadrature test
-add_executable(QuadTest ${PROJECT_SOURCE_DIR}/test/quad_test.cpp)
-target_link_libraries(QuadTest ${_QUAD_LIBRARIES_LIST})
+add_executable(QuadTest ${PROJECT_SOURCE_DIR}/quad_test.cpp)
+target_link_libraries(QuadTest ${_ELI_TEST_LIBRARIES_LIST})
 add_test(NAME QuadTest COMMAND $<TARGET_FILE:QuadTest> --text)

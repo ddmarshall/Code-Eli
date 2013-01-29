@@ -10,15 +10,9 @@
 #    David D. Marshall - initial code and implementation
 ################################################################################
 
-project(OPT)
+project(DM)
 
-# set what libraries need to be used
-set(_OPT_LIBRARIES_LIST ${CPPTEST_LIBRARIES})
-if (QD_FOUND)
-  SET (_OPT_LIBRARIES_LIST ${_OPT_LIBRARIES_LIST} ${QD_LIBRARIES})
-endif()
-
-# add the optimization test
-add_executable(OptTest ${PROJECT_SOURCE_DIR}/test/opt_test.cpp)
-target_link_libraries(OptTest ${_OPT_LIBRARIES_LIST})
-add_test(NAME OptTest COMMAND $<TARGET_FILE:OptTest> --text)
+# add the discrete math test
+add_executable(DMTest ${PROJECT_SOURCE_DIR}/dm_test.cpp)
+target_link_libraries(DMTest ${_ELI_TEST_LIBRARIES_LIST})
+add_test(NAME DMTest COMMAND $<TARGET_FILE:DMTest> --text)

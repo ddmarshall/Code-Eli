@@ -10,15 +10,9 @@
 #    David D. Marshall - initial code and implementation
 ################################################################################
 
-project(CONSTANTS)
+project(NLS)
 
-# set what libraries need to be used
-set(_CONSTANTS_LIBRARIES_LIST ${CPPTEST_LIBRARIES})
-if (QD_FOUND)
-  SET (_CONSTANTS_LIBRARIES_LIST ${_CONSTANTS_LIBRARIES_LIST} ${QD_LIBRARIES})
-endif()
-
-# add the constants test
-add_executable(ConstantsMathTest ${PROJECT_SOURCE_DIR}/test/constants_math_test.cpp)
-target_link_libraries(ConstantsMathTest ${_CONSTANTS_LIBRARIES_LIST})
-add_test(NAME ConstantsMathTest COMMAND $<TARGET_FILE:ConstantsMathTest> --text)
+# add the nonlinear solver test
+add_executable(NLSTest ${PROJECT_SOURCE_DIR}/nls_test.cpp)
+target_link_libraries(NLSTest ${_ELI_TEST_LIBRARIES_LIST})
+add_test(NAME NLSTest COMMAND $<TARGET_FILE:NLSTest> --text)
