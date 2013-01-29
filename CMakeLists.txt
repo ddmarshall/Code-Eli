@@ -60,15 +60,25 @@ find_package(Eigen3 3.0.0 REQUIRED)
 find_package(QD 2.3.13)
 if (QD_FOUND)
   set(ELI_QD_FOUND 1)
+  set(DOC_ELI_QD_FOUND "ELI_QD_FOUND")
 endif ()
+find_package(Doxygen)
+if (DOXYGEN_FOUND)
+  configure_file(${ELI_SOURCE_DIR}/cmake/Doxyfile.in ${ELI_BINARY_DIR}/Doxyfile @ONLY)
+  add_custom_target(doc
+                    COMMAND ${DOXYGEN_EXECUTABLE} ${ELI_BINARY_DIR}/Doxyfile
+                    SOURCES ${ELI_BINARY_DIR}/Doxyfile
+                    WORKING_DIRECTORY ${ELI_BINARY_DIR}
+                    COMMENT "Generating API documentation with Doxygen")
+endif()
 
 # configure the main eli.hpp file now that know what packages and features
 # are to be included
-configure_file(${ELI_SOURCE_DIR}/cmake/code_eli.hpp.in ${ELI_BINARY_DIR}/include/eli/code_eli.hpp)
+configure_file(${ELI_SOURCE_DIR}/cmake/code_eli.hpp.in ${ELI_BINARY_DIR}/include/eli/code_eli.hpp @ONLY)
 
 # add the include and link directories and libraries that are needed
 include_directories(${ELI_BINARY_DIR}/include
-                    ${PROJECT_SOURCE_DIR}/include
+                    ${ELI_SOURCE_DIR}/include
                     ${CPPTEST_INCLUDE_DIRS}
                     ${EIGEN3_INCLUDE_DIR})
 link_directories(${CPPTEST_LIBRARY_DIRS})
