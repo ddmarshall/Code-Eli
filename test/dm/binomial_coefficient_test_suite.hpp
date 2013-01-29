@@ -10,8 +10,8 @@
 *    David D. Marshall - initial code and implementation
 ********************************************************************************/
 
-#ifndef dm_factorial_test_suite_hpp
-#define dm_factorial_test_suite_hpp
+#ifndef dm_binomial_coefficient_test_suite_hpp
+#define dm_binomial_coefficient_test_suite_hpp
 
 #include <cassert>  // assert()
 
@@ -23,46 +23,63 @@
 #include <functional> // std::less
 
 #include "eli/code_eli.hpp"
+
 #include "eli/dm/factorial.hpp"
+#include "eli/dm/binomial_coefficient.hpp"
 
 #include <string>
 #include <vector>
 
-class dm_factorial_test_suite : public Test::Suite
+class binomial_coefficient_test_suite : public Test::Suite
 {
   protected:
     void AddTests()
     {
-      TEST_ADD(dm_factorial_test_suite::factorial_test);
+      TEST_ADD(binomial_coefficient_test_suite::nchoosek_test);
+      TEST_ADD(binomial_coefficient_test_suite::binomial_coefficient_test);
     }
 
   public:
-    dm_factorial_test_suite()
+    binomial_coefficient_test_suite()
     {
       // add the tests
       AddTests();
     }
-    ~dm_factorial_test_suite()
+    ~binomial_coefficient_test_suite()
     {
     }
 
   private:
-    void factorial_test()
+    void nchoosek_test()
     {
       int iv;
       double dv;
 
-      eli::dm::factorial(iv, 6);
-      TEST_ASSERT(iv==720);
+      eli::dm::n_choose_k(iv, 10, 7);
+      TEST_ASSERT(iv==120);
 
-      eli::dm::factorial(dv, 6);
-      TEST_ASSERT(dv==720.0);
+      eli::dm::n_choose_k(dv, 10, 7);
+      TEST_ASSERT(dv==120.0);
 
-      eli::dm::factorial(iv, 12);
-      TEST_ASSERT(iv==479001600);
+      eli::dm::n_choose_k(iv, 20, 11);
+      TEST_ASSERT(iv==167960);
 
-      eli::dm::factorial(dv, 12);
-      TEST_ASSERT(dv==479001600.0);
+      eli::dm::n_choose_k(dv, 20, 11);
+      TEST_ASSERT(dv==167960.0);
+    }
+
+    void binomial_coefficient_test()
+    {
+      double dv;
+
+      eli::dm::binomial_coefficient(dv, 10, 7);
+      TEST_ASSERT(dv==120.0);
+
+      eli::dm::binomial_coefficient(dv, 20, 11);
+      TEST_ASSERT(dv==167960.0);
+
+      eli::dm::binomial_coefficient(dv, 10.5, 7);
+      TEST_ASSERT(std::abs(dv-202.98)<1e-2);
     }
 };
 

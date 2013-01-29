@@ -24,27 +24,28 @@
 #include <functional> // std::less
 
 #include "eli/code_eli.hpp"
+
 #include "eli/dm/combination.hpp"
 
 #include <string>
 #include <vector>
 
-class dm_combination_test_suite : public Test::Suite
+class combination_test_suite : public Test::Suite
 {
   protected:
     void AddTests()
     {
-      TEST_ADD(dm_combination_test_suite::string_test);
-      TEST_ADD(dm_combination_test_suite::vector_test);
+      TEST_ADD(combination_test_suite::string_test);
+      TEST_ADD(combination_test_suite::vector_test);
     }
 
   public:
-    dm_combination_test_suite()
+    combination_test_suite()
     {
       // add the tests
       AddTests();
     }
-    ~dm_combination_test_suite()
+    ~combination_test_suite()
     {
     }
 

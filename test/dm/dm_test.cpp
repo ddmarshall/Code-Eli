@@ -20,9 +20,9 @@
 
 #include <cpptest.h> // CppTest Framework
 
-#include "dm_combination_test_suite.hpp"  // dm_combination_test_suite
-#include "dm_factorial_test_suite.hpp"  // dm_factorial_test_suite
-#include "dm_binomial_coefficient_test_suite.hpp"  // dm_binomial_coefficient_test_suite
+#include "combination_test_suite.hpp"  // combination_test_suite
+#include "factorial_test_suite.hpp"  // factorial_test_suite
+#include "binomial_coefficient_test_suite.hpp"  // binomial_coefficient_test_suite
 
 enum TestType {testTypeText, testTypeCompiler, testTypeHTML};
 
@@ -153,9 +153,9 @@ int main(int argc, char *argv[])
     std::string ostr_filename("dm_test_results.html");
 
     // add the cppack test suites
-    ts.add(std::auto_ptr<Test::Suite>(new dm_combination_test_suite()));
-    ts.add(std::auto_ptr<Test::Suite>(new dm_factorial_test_suite()));
-    ts.add(std::auto_ptr<Test::Suite>(new dm_binomial_coefficient_test_suite()));
+    ts.add(std::auto_ptr<Test::Suite>(new combination_test_suite()));
+    ts.add(std::auto_ptr<Test::Suite>(new factorial_test_suite()));
+    ts.add(std::auto_ptr<Test::Suite>(new binomial_coefficient_test_suite()));
 
     //
     // NOTE: End of section that should be changed
