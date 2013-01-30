@@ -319,7 +319,7 @@ class nls_test_suite : public Test::Suite
 
     void secant_method_test()
     {
-      data__ delta(std::sqrt(std::numeric_limits<data__>::epsilon())), rhs(0.5), root;
+      data__ delta(std::sqrt(std::numeric_limits<data__>::epsilon())), rhs(0.5), root(0);
       eli::nls::secant_method<data__> sm;
       typename eli::nls::secant_method<data__>::status stat;
 
