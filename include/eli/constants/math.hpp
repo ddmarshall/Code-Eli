@@ -69,7 +69,15 @@ namespace eli
         static double pi_squared()     {return 9.8696044010893586;}
         static double pi_cubed()       {return 31.006276680299817;}
         static double sqrt_pi()        {return 1.7724538509055159;}
+#ifdef __GNUC__
+# if (__GNUC__==4) && (__GNUC_MINOR__==7) && (defined NDEBUG)
+        static double cbrt_pi()        {return 1.4645918875615231;}
+# else
         static double cbrt_pi()        {return 1.4645918875615233;}
+# endif
+#else
+        static double cbrt_pi()        {return 1.4645918875615233;}
+#endif
         static double one_by_pi()      {return 0.31830988618379067;}
         static double two_by_pi()      {return 0.63661977236758134;}
         static double one_by_sqrt_pi() {return 0.56418958354775629;}
@@ -96,6 +104,12 @@ namespace eli
         static long double sqrt_pi()        {return 1.7724538509055160273L;}
 #ifdef __clang__
         static long double cbrt_pi()        {return 1.464591887561523263L;}
+#elif defined __GNUC__
+# if (__GNUC__==4) && (__GNUC_MINOR__==7) && (defined NDEBUG)
+        static double cbrt_pi()        {return 1.4645918875615231425L;}
+# else
+        static double cbrt_pi()        {return 1.4645918875615233645L;}
+# endif
 #else
         static long double cbrt_pi()        {return 1.4645918875615233645L;}
 #endif
