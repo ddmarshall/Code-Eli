@@ -573,7 +573,7 @@ namespace eli
           {
             // find segment that corresponds to given t
             typename segment_collection_type::const_iterator it;
-            data_type tt;
+            data_type tt(0);
             find_segment(it, tt, t);
 
             if (it==segments.end())
