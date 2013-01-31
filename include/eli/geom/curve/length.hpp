@@ -38,7 +38,9 @@ namespace eli
       }
 
       template<template<typename, unsigned short, typename> class curve__, typename data__, unsigned short dim__, typename tol__>
-      void length(typename piecewise<curve__, data__, dim__, tol__>::data_type &len, const piecewise<curve__, data__, dim__, tol__> &pc)
+      void length(typename piecewise<curve__, data__, dim__, tol__>::data_type &len,
+                  const piecewise<curve__, data__, dim__, tol__> &pc,
+                  const typename piecewise<curve__, data__, dim__, tol__>::data_type &tol)
       {
         typedef piecewise<curve__, data__, dim__, tol__> piecewise_type;
         typedef typename piecewise_type::data_type data_type;
@@ -47,13 +49,16 @@ namespace eli
         data_type seg_len;
         for (len=0, it=pc.segments.begin(); it!=pc.segments.end(); ++it)
         {
-          length(seg_len, it->c);
+          length(seg_len, it->c, tol);
           len+=seg_len;
         }
       }
       template<template<typename, unsigned short, typename> class curve__, typename data__, unsigned short dim__, typename tol__>
-      void length(typename piecewise<curve__, data__, dim__, tol__>::data_type &len, const piecewise<curve__, data__, dim__, tol__> &pc,
-                  const typename piecewise<curve__, data__, dim__, tol__>::data_type &t0, const typename piecewise<curve__, data__, dim__, tol__>::data_type &t1)
+      void length(typename piecewise<curve__, data__, dim__, tol__>::data_type &len,
+                  const piecewise<curve__, data__, dim__, tol__> &pc,
+                  const typename piecewise<curve__, data__, dim__, tol__>::data_type &t0,
+                  const typename piecewise<curve__, data__, dim__, tol__>::data_type &t1,
+                  const typename piecewise<curve__, data__, dim__, tol__>::data_type &tol)
       {
         typedef piecewise<curve__, data__, dim__, tol__> piecewise_type;
         typedef typename piecewise_type::data_type data_type;
@@ -73,19 +78,19 @@ namespace eli
         pc.find_segment(it1, tt1, t1);
         if (it0==it1)
         {
-          length(len, it0->c, tt0, tt1);
+          length(len, it0->c, tt0, tt1, tol);
           return;
         }
-        length(seg_len, it0->c, tt0, 1);
+        length(seg_len, it0->c, tt0, 1, tol);
         len=seg_len;
-        length(seg_len, it1->c, 0, tt1);
+        length(seg_len, it1->c, 0, tt1, tol);
         len+=seg_len;
 
         // add the length of all of the complete segments between the start and end pieces
         it=it0;
         for (++it; it!=it1; ++it)
         {
-          length(seg_len, it->c);
+          length(seg_len, it->c, tol);
           len+=seg_len;
         }
       }

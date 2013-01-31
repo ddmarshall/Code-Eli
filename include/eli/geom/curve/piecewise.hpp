@@ -45,11 +45,18 @@ namespace eli
           };
 
         private:
-          template<template<typename, unsigned short, typename> class curve1__, typename data1__, unsigned short dim1__, typename tol1__>
-          friend void length(typename piecewise<curve1__, data1__, dim1__, tol1__>::data_type &len, const piecewise<curve1__, data1__, dim1__, tol1__> &pc);
-          template<template<typename, unsigned short, typename> class curve1__, typename data1__, unsigned short dim1__, typename tol1__>
-          friend void length(typename piecewise<curve1__, data1__, dim1__, tol1__>::data_type &len, const piecewise<curve1__, data1__, dim1__, tol1__> &pc,
-                             const typename piecewise<curve1__, data1__, dim1__, tol1__>::data_type &t0, const typename piecewise<curve1__, data1__, dim1__, tol1__>::data_type &t1);
+          template<template<typename, unsigned short, typename> class curve1__,
+                   typename data1__, unsigned short dim1__, typename tol1__>
+          friend void length(typename piecewise<curve1__, data1__, dim1__, tol1__>::data_type &len,
+                             const piecewise<curve1__, data1__, dim1__, tol1__> &pc,
+                             const typename piecewise<curve1__, data1__, dim1__, tol1__>::data_type &tol);
+          template<template<typename, unsigned short, typename> class curve1__,
+                            typename data1__, unsigned short dim1__, typename tol1__>
+          friend void length(typename piecewise<curve1__, data1__, dim1__, tol1__>::data_type &len,
+                             const piecewise<curve1__, data1__, dim1__, tol1__> &pc,
+                             const typename piecewise<curve1__, data1__, dim1__, tol1__>::data_type &t0,
+                             const typename piecewise<curve1__, data1__, dim1__, tol1__>::data_type &t1,
+                             const typename piecewise<curve1__, data1__, dim1__, tol1__>::data_type &tol);
 
           struct segment_info
           {

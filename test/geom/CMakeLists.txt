@@ -22,10 +22,10 @@ add_executable(BezierCurveTest ${PROJECT_SOURCE_DIR}/bezier_curve/bezier_curve_t
 target_link_libraries(BezierCurveTest ${_ELI_TEST_LIBRARIES_LIST})
 add_test(NAME BezierCurveTest COMMAND $<TARGET_FILE:BezierCurveTest> --text)
 
-#### add the piecewise_curve test
-###add_executable(PiecewiseCurveTest ${PROJECT_SOURCE_DIR}/piecewise_curve/piecewise_curve_test.cpp)
-###target_link_libraries(PiecewiseCurveTest ${_ELI_TEST_LIBRARIES_LIST})
-###add_test(NAME PiecewiseCurveTest COMMAND $<TARGET_FILE:PiecewiseCurveTest> --text)
+# add the piecewise_curve test
+add_executable(PiecewiseCurveTest ${PROJECT_SOURCE_DIR}/piecewise_curve/piecewise_curve_test.cpp)
+target_link_libraries(PiecewiseCurveTest ${_ELI_TEST_LIBRARIES_LIST})
+add_test(NAME PiecewiseCurveTest COMMAND $<TARGET_FILE:PiecewiseCurveTest> --text)
 
 # add the explicit_bezier_curve test
 add_executable(ExplicitBezierCurveTest ${PROJECT_SOURCE_DIR}/explicit_bezier_curve/explicit_bezier_curve_test.cpp)
