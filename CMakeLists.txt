@@ -89,4 +89,5 @@ endif()
 
 # add subdirectories of project
 add_subdirectory(test)
+add_subdirectory(example)
 
