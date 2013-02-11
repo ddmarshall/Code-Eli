@@ -103,20 +103,41 @@ if(NOT CONFIGURE_COMPILER_INCLUDED)
     endif()
   endif()
 
-  # set MS Visual Compiler flags (see documentation, there are many other options)
-  if(CMAKE_C_COMPILER_ID STREQUAL "MSVC")
-    SET(CONFIGURE_COMPILER_SET_C_COMPILER_FLAGS OFF)
-  endif()
-  if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
-    SET(CONFIGURE_COMPILER_SET_CXX_COMPILER_FLAGS OFF)
-    SET(CONFIGURE_COMPILER_SET_Fortran_COMPILER_FLAGS OFF)
-#    set(CMAKE_CXX_FLAGS " /O2 /Ot /GL /fp:fast -DNDEBUG")
-  endif()
-  if(CMAKE_Fortran_COMPILER_ID STREQUAL "MSVC")
-    SET(CONFIGURE_COMPILER_SET_Fortran_COMPILER_FLAGS OFF)
+  # set MS Visual 2008 Compiler flags
+  if (MSVC90)
+    if (CMAKE_CL_64)
+      set(CONFIGURE_COMPILER_SET_C_COMPILER_FLAGS OFF)
+      set(CONFIGURE_COMPILER_SET_CXX_COMPILER_FLAGS OFF)
+    else()
+      set(CONFIGURE_COMPILER_SET_C_COMPILER_FLAGS ON)
+      set(CMAKE_C_FLAGS "/DWIN32 /D_WINDOWS /W3 /Zm1000 /Qc99"
+                        CACHE STRING "Flags used by the compiler during all build types." FORCE)
+      set(CMAKE_C_FLAGS_DEBUG "/D_DEBUG /MDd /Zi  /Ob0 /Od /RTC1 /DDEBUG"
+                        CACHE STRING "Flags used by the compiler during debug builds." FORCE)
+      set(CMAKE_C_FLAGS_RELEASE "/MD /O2 /Ob2 /DNDEBUG"
+                        CACHE STRING "Flags used by the compiler during release builds." FORCE)
+      set(CMAKE_C_FLAGS_RELWITHDEBINFO "/MD /Zi /O2 /Ob1 /DNDEBUG"
+                        CACHE STRING "Flags used by the compiler during release with debug info builds." FORCE)
+      set(CMAKE_C_FLAGS_MINSIZEREL "/MD /O1 /Ob1 /DNDEBUG"
+                        CACHE STRING "Flags used by the compiler during release minsize builds." FORCE)
+
+      set(CONFIGURE_COMPILER_SET_CXX_COMPILER_FLAGS ON)
+      set(CMAKE_CXX_FLAGS "/DWIN32 /D_WINDOWS /W3 /Zm1000 /EHsc /GR"
+                          CACHE STRING "Flags used by the compiler during all build types." FORCE)
+      set(CMAKE_CXX_FLAGS_DEBUG "/D_DEBUG /MDd /Zi /Ob0 /Od /RTC1 /DDEBUG"
+                          CACHE STRING "Flags used by the compiler during debug builds." FORCE)
+      set(CMAKE_CXX_FLAGS_RELEASE "/MD /O2 /Ob2 /DNDEBUG /DEIGEN_NO_DEBUG"
+                          CACHE STRING "Flags used by the compiler during release builds." FORCE)
+      set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "/MD /Zi /O2 /Ob1 /DNDEBUG"
+                          CACHE STRING "Flags used by the compiler during release with debug info builds." FORCE)
+      set(CMAKE_CXX_FLAGS_MINSIZEREL "/MD /O1 /Ob1 /D NDEBUG /DEIGEN_NO_DEBUG"
+                          CACHE STRING "Flags used by the compiler during release minsize builds." FORCE)
+    endif()
+
+    set(CONFIGURE_COMPILER_SET_Fortran_COMPILER_FLAGS OFF)
   endif()
 
-   # set GNU Compiler Collection flags
+  # set GNU Compiler Collection flags
   if(CMAKE_C_COMPILER_ID STREQUAL "GNU")
     set(CONFIGURE_COMPILER_SET_C_COMPILER_FLAGS ON)
     set(CMAKE_C_FLAGS "-ansi -pedantic -Wall -Wextra -fmessage-length=100 -std=c99"
@@ -232,12 +253,12 @@ if(NOT CONFIGURE_COMPILER_INCLUDED)
   endif()
 
   if (NOT CONFIGURE_COMPILER_SET_C_COMPILER_FLAGS)
-    message(FATAL_ERROR "Could not set C Compiler flags! \n Need to fix ConfigureCompiler.cmake to support ${CMAKE_C_COMPILER_ID} compiler!")
+    message(FATAL_ERROR "Could not set C Compiler flags! \nNeed to fix ConfigureCompiler.cmake to support ${CMAKE_C_COMPILER_ID} compiler!")
   endif()
   if (NOT CONFIGURE_COMPILER_SET_CXX_COMPILER_FLAGS)
-    message(FATAL_ERROR "Could not set C++ Compiler flags! \n Need to fix ConfigureCompiler.cmake to support ${CMAKE_CXX_COMPILER_ID} compiler!")
+    message(FATAL_ERROR "Could not set C++ Compiler flags! \nNeed to fix ConfigureCompiler.cmake to support ${CMAKE_CXX_COMPILER_ID} compiler!")
   endif()
-  if (NOT CONFIGURE_COMPILER_SET_Fortran_COMPILER_FLAGS)
-    message(FATAL_ERROR "Could not set Fortran Compiler flags! \n Need to fix ConfigureCompiler.cmake to support ${CMAKE_Fortran_COMPILER_ID} compiler!")
-  endif()
+#  if (NOT CONFIGURE_COMPILER_SET_Fortran_COMPILER_FLAGS)
+#    message(FATAL_ERROR "Could not set Fortran Compiler flags! \nNeed to fix ConfigureCompiler.cmake to support ${CMAKE_Fortran_COMPILER_ID} compiler!")
+#  endif()
 endif()
