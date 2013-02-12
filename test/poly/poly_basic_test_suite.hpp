@@ -83,7 +83,7 @@ class poly_basic_test_suite : public Test::Suite
       typename eli::poly::polynomial<data__>::coefficient_type coef_in(6), coef_out;
 
       // test default constructor then set coefficients
-      coef_in << 2.0, 0.0, 1.0, 4.0, 1.0, 8.0;
+      coef_in << 2, 0, 1, 4, 1, 8;
       p1.set_coefficients(coef_in);
       p1.get_coefficients(coef_out);
       TEST_ASSERT(coef_in==coef_out);

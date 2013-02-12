@@ -136,6 +136,10 @@ namespace eli
 }
 
 // comparison operators
+#ifdef _MSC_VER
+# pragma warning(push)
+# pragma warning(disable: 4244)
+#endif
 template <typename data2__, typename data__, bool comp_real_only>
 bool operator==(const data2__ &v, const eli::ad::dual_number::expression<data__, comp_real_only> &e)
 {
@@ -166,6 +170,9 @@ bool operator>(const data2__ &v, const eli::ad::dual_number::expression<data__, 
 {
   return e<v;
 }
+#ifdef _MSC_VER
+# pragma warning(pop)
+#endif
 
 namespace eli
 {
@@ -780,6 +787,11 @@ namespace eli
   }
 }
 
+#ifdef _MSC_VER
+# pragma warning(push)
+# pragma warning(disable: 4244)
+#endif
+
 // comparison operators
 template <typename data2__, typename data__, bool comp_real_only>
 bool operator==(const data2__ &v, const eli::ad::dual<data__, comp_real_only> &d)
@@ -871,6 +883,9 @@ bool operator>(const eli::ad::dual_number::expression<data2__, comp_real_only> &
 {
   return d<e;
 }
+#ifdef _MSC_VER
+# pragma warning(pop)
+#endif
 
 // I/O functions
 template <typename data__, bool comp_real_only>

@@ -100,9 +100,9 @@ class least_squares_test_suite : public Test::Suite
       r(1)=2.0;
       r(2)=5.0;
       r(3)=-1.0;
-      x_ans(0)=-static_cast<data__>(18.0)/7.0;
-      x_ans(1)=-static_cast<data__>(151.0)/210.0;
-      x_ans(2)=static_cast<data__>(107.0)/210.0;
+      x_ans(0)=-static_cast<data__>(18)/7;
+      x_ans(1)=-static_cast<data__>(151)/210;
+      x_ans(2)=static_cast<data__>(107)/210;
 
       // calculate the answer and compare
       eli::opt::least_squares_uncon(x, A, r);

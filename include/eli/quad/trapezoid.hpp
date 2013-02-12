@@ -40,14 +40,14 @@ namespace eli
         template<typename yit__>
         data__ operator()(const data__ &dx, yit__ yb, yit__ ye) const
         {
-          data__ rtnval(-0.5*(*yb));
+          data__ rtnval(-(*yb)/2);
           yit__ y(yb);
 
           for (; y!=ye; ++y)
             rtnval+=(*y);
 
           --y;
-          rtnval-=0.5*(*y);
+          rtnval-=(*y)/2;
           rtnval*=dx;
 
           return rtnval;
@@ -72,7 +72,7 @@ namespace eli
           data__ rtnval(0);
 
           for (++x, ++y; y!=ye; ++x, ++xp, ++y, ++yp)
-            rtnval+=0.5*((*x)-(*xp))*((*y)+(*yp));
+            rtnval+=((*x)-(*xp))*((*y)+(*yp))/2;
 
           return rtnval;
         }

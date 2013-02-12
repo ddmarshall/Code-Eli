@@ -291,7 +291,7 @@ class nls_test_suite : public Test::Suite
 
       nrm.set_absolute_tolerance(delta);
       nrm.set_max_iteration(200);
-      nrm.set_initial_guess(0.3*eli::constants::math<data__>::pi_by_four());
+      nrm.set_initial_guess(static_cast<data__>(0.3)*eli::constants::math<data__>::pi_by_four());
 
       // test using user defined functions
       stat = nrm.find_root(root, std::ptr_fun(my_function<data__>), std::ptr_fun(my_function_derivative<data__>), rhs);

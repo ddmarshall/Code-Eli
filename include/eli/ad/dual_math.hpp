@@ -780,7 +780,7 @@ namespace eli
     struct sqrt_fun
     {
       static T__ f(const T__ &t)  {return std::sqrt(t);}
-      static T__ fp(const T__ &t) {return 0.5/std::sqrt(t);}
+      static T__ fp(const T__ &t) {return static_cast<T__>(0.5)/std::sqrt(t);}
       static T__ fp(const T__ &t, const size_t &n)
       {
         switch(n)
@@ -860,7 +860,7 @@ namespace eli
     struct abs_fun
     {
       static T__ f(const T__ &t)  {return std::abs(t);}
-      static T__ fp(const T__ &t) {return (t<0)?(-1):(1);}
+      static T__ fp(const T__ &t) {return (t<0)?(static_cast<T__>(-1)):(static_cast<T__>(1));}
       static T__ fp(const T__ &t, const size_t &n)
       {
         switch(n)

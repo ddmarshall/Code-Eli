@@ -122,7 +122,7 @@ namespace eli
 #if (DEBUG>1)
               std::cerr << "bisection_method_def.hpp:" << " Iterative root not found! Bounds are [" << xmn << ", " << xmx << "]=>[" << fun(xmn) << ", " << fun(xmx) << "] with f0=" << f0 << std::endl;
 #endif
-              root=0.5*(xmn+xmx);
+              root=(xmn+xmx)/2;
               return iterative_root_base<data__>::no_root_found;
             }
 

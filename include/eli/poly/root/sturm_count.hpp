@@ -83,10 +83,10 @@ namespace eli
 
         // evaluate functions at end points and count sign changes
         for (size_t i=0; i<eval.size(); ++i)
-          eval[i]=sturm_fun[i].f(xmin);
+          eval[i]=sturm_fun[i].f(static_cast<data__>(xmin));
         count_min = eli::poly::root::sign_changes(eval.begin(), eval.end());
         for (size_t i=0; i<eval.size(); ++i)
-          eval[i]=sturm_fun[i].f(xmax);
+          eval[i]=sturm_fun[i].f(static_cast<data__>(xmax));
         count_max = eli::poly::root::sign_changes(eval.begin(), eval.end());
 
         // return the difference between sign changes for min value and sign changes for max value

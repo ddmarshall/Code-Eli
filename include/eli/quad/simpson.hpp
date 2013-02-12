@@ -112,7 +112,7 @@ namespace eli
             rtnval-=(*ym1);
 
             // add the last even segment
-            rtnval+=1.25*(*y)+2*(*ym1)-0.25*(*ym2);
+            rtnval+=5*(*y)/4+2*(*ym1)-(*ym2)/4;
           }
 
           // multiply by factor
@@ -154,17 +154,23 @@ namespace eli
             return ((*y)-(*yb))/((*x)-(*xm1));
 
           // cycle through the points
+          bool even_pts(true);
           for (; (yp1!=ye) && (y!=ye); ++xm1, ++x, ++xp1, ++ym1, ++y, ++yp1)
           {
             delta=((*x)-(*xm1))/((*xp1)-(*x));
-            rtnval+=(((*xp1)-(*x))/6.0)*(1+1/delta)*((delta*(2-delta))*(*yp1)+(1+delta)*(1+delta)*(*y)+(2*delta-1)*(*ym1));
+            rtnval+=(((*xp1)-(*x))/6)*(1+1/delta)*((delta*(2-delta))*(*yp1)+(1+delta)*(1+delta)*(*y)+(2*delta-1)*(*ym1));
 
             ++xm1; ++x; ++xp1;
             ++ym1; ++y; ++yp1;
+            if (yp1==ye)
+            {
+              even_pts = false;
+              break;
+            }
           }
 
           // test if even number of point
-          if (yp1==ye)
+          if (even_pts)
           {
             // reset the iterators for last segment
             --xm1; --x; --xp1;
@@ -172,7 +178,7 @@ namespace eli
 
             // add last segment
             delta=((*x)-(*xm1))/((*xp1)-(*x));
-            rtnval+=(((*xp1)-(*x))/6.0)*(((2+3*delta)/(1+delta))*(*yp1)+(3+1/delta)*(*y)-(1.0/(delta*(1+delta)))*(*ym1));
+            rtnval+=(((*xp1)-(*x))/6)*(((2+3*delta)/(1+delta))*(*yp1)+(3+1/delta)*(*y)-(1/(delta*(1+delta)))*(*ym1));
           }
 
           return rtnval;
@@ -239,7 +245,7 @@ namespace eli
           // create the first level evaluation of integral
           xc[0]=x0;
           fc[0]=fun(xc[0]);
-          xc[1]=0.5*(x0+x1);
+          xc[1]=(x0+x1)/2;
           fc[1]=fun(xc[1]);
           xc[2]=x1;
           fc[2]=fun(xc[2]);
@@ -280,9 +286,9 @@ namespace eli
           //       template parameter that is the number of points in the stencil.
           //       That way would not have to dynamically allocate any memory.
           xf[0]=xc[0];
-          xf[1]=0.5*(xc[0]+xc[1]);
+          xf[1]=(xc[0]+xc[1])/2;
           xf[2]=xc[1];
-          xf[3]=0.5*(xc[1]+xc[2]);
+          xf[3]=(xc[1]+xc[2])/2;
           xf[4]=xc[2];
           ff[0]=fc[0];
           ff[1]=fun(xf[1]);

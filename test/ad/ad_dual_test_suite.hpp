@@ -518,14 +518,14 @@ class ad_dual_test_suite : public Test::Suite
       // test B+=v
       d4=d3;
       d5.set_real(d2.real()+v1);
-      d5.set_nonreal(d2.nonreal()+0.0);
+      d5.set_nonreal(d2.nonreal()+0);
       d4+=v1;
       TEST_ASSERT(d4.exact(d5));
 
        // test B+=int
       d4=d3;
       d5.set_real(d2.real()+2);
-      d5.set_nonreal(d2.nonreal()+0.0);
+      d5.set_nonreal(d2.nonreal()+0);
       d4+=2;
       TEST_ASSERT(d4.exact(d5));
 
@@ -562,37 +562,37 @@ class ad_dual_test_suite : public Test::Suite
 
       // test C=A+v
       d5.set_real(d2.real()+v1);
-      d5.set_nonreal(d2.nonreal()+0.0);
+      d5.set_nonreal(d2.nonreal()+0);
       d4=d2+v1;
       TEST_ASSERT(d4.exact(d5));
 
       // test C=v+A
       d5.set_real(v1+d2.real());
-      d5.set_nonreal(0.0+d2.nonreal());
+      d5.set_nonreal(0+d2.nonreal());
       d4=v1+d2;
       TEST_ASSERT(d4.exact(d5));
 
       // test C=A+B+v
       d5.set_real(d2.real()+d3.real()+v1);
-      d5.set_nonreal(d2.nonreal()+d3.nonreal()+0.0);
+      d5.set_nonreal(d2.nonreal()+d3.nonreal()+0);
       d4=d2+d3+v1;
       TEST_ASSERT(d4.exact(d5));
 
       // test C=v+A+B
       d5.set_real(v1+d2.real()+d3.real());
-      d5.set_nonreal(0.0+d2.nonreal()+d3.nonreal());
+      d5.set_nonreal(0+d2.nonreal()+d3.nonreal());
       d4=v1+d2+d3;
       TEST_ASSERT(d4.exact(d5));
 
       // test C=A+int
       d5.set_real(d2.real()+2);
-      d5.set_nonreal(d2.nonreal()+0.0);
+      d5.set_nonreal(d2.nonreal()+0);
       d4=d2+2;
       TEST_ASSERT(d4.exact(d5));
 
       // test C=int+A
       d5.set_real(2+d2.real());
-      d5.set_nonreal(d2.nonreal()+0.0);
+      d5.set_nonreal(d2.nonreal()+0);
       d4=2+d2;
       TEST_ASSERT(d4.exact(d5));
     }
@@ -625,14 +625,14 @@ class ad_dual_test_suite : public Test::Suite
       // test B-=v
       d4=d3;
       d5.set_real(d2.real()-v1);
-      d5.set_nonreal(d2.nonreal()-0.0);
+      d5.set_nonreal(d2.nonreal()-0);
       d4-=v1;
       TEST_ASSERT(d4.exact(d5));
 
        // test B-=int
       d4=d3;
       d5.set_real(d2.real()-2);
-      d5.set_nonreal(d2.nonreal()-0.0);
+      d5.set_nonreal(d2.nonreal()-0);
       d4-=2;
       TEST_ASSERT(d4.exact(d5));
 
@@ -669,37 +669,37 @@ class ad_dual_test_suite : public Test::Suite
 
       // test C=A-v
       d5.set_real(d2.real()-v1);
-      d5.set_nonreal(d2.nonreal()-0.0);
+      d5.set_nonreal(d2.nonreal()-0);
       d4=d2-v1;
       TEST_ASSERT(d4.exact(d5));
 
       // test C=v-A
       d5.set_real(v1-d2.real());
-      d5.set_nonreal(0.0-d2.nonreal());
+      d5.set_nonreal(0-d2.nonreal());
       d4=v1-d2;
       TEST_ASSERT(d4.exact(d5));
 
       // test C=A-B-v
       d5.set_real(d2.real()-d3.real()-v1);
-      d5.set_nonreal(d2.nonreal()-d3.nonreal()-0.0);
+      d5.set_nonreal(d2.nonreal()-d3.nonreal()-0);
       d4=d2-d3-v1;
       TEST_ASSERT(d4.exact(d5));
 
       // test C=v-A-B
       d5.set_real(v1-d2.real()-d3.real());
-      d5.set_nonreal(0.0-d2.nonreal()-d3.nonreal());
+      d5.set_nonreal(0-d2.nonreal()-d3.nonreal());
       d4=v1-d2-d3;
       TEST_ASSERT(d4.exact(d5));
 
       // test C=A-int
       d5.set_real(d2.real()-2);
-      d5.set_nonreal(d2.nonreal()-0.0);
+      d5.set_nonreal(d2.nonreal()-0);
       d4=d2-2;
       TEST_ASSERT(d4.exact(d5));
 
       // test C=int-A
       d5.set_real(2-d2.real());
-      d5.set_nonreal(0.0-d2.nonreal());
+      d5.set_nonreal(0-d2.nonreal());
       d4=2-d2;
       TEST_ASSERT(d4.exact(d5));
     }
@@ -1825,23 +1825,23 @@ class ad_dual_test_suite : public Test::Suite
       // sqrt(dual) test
       d3=d1;
       dref.set_real(std::sqrt(d3.real()));
-      dref.set_nonreal(0.5*d3.nonreal()/std::sqrt(d3.real()));
+      dref.set_nonreal(d3.nonreal()/std::sqrt(d3.real())/2);
       d0=std::sqrt(d3);
       TEST_ASSERT(d0.nearly(dref, tol));
 
       // sqrt(expression) test
       d3=d1+d2;
       dref.set_real(std::sqrt(d3.real()));
-      dref.set_nonreal(0.5*d3.nonreal()/std::sqrt(d3.real()));
+      dref.set_nonreal(d3.nonreal()/std::sqrt(d3.real())/2);
       d0=std::sqrt(d1+d2);
       TEST_ASSERT(d0.nearly(dref, tol));
 
       // sqrt(sqrt(expression)) test
       d3=d1+d2;
       d4.set_real(std::sqrt(d3.real()));
-      d4.set_nonreal(0.5*d3.nonreal()/std::sqrt(d3.real()));
+      d4.set_nonreal(d3.nonreal()/std::sqrt(d3.real())/2);
       dref.set_real(std::sqrt(d4.real()));
-      dref.set_nonreal(0.5*d4.nonreal()/std::sqrt(d4.real()));
+      dref.set_nonreal(d4.nonreal()/std::sqrt(d4.real())/2);
       d0=std::sqrt(std::sqrt(d1+d2));
       TEST_ASSERT(d0.nearly(dref, tol));
 
@@ -1881,23 +1881,23 @@ class ad_dual_test_suite : public Test::Suite
       // sqrt(dual) test
       d3=d1;
       dref.set_real(sqrt(d3.real()));
-      dref.set_nonreal(0.5*d3.nonreal()/sqrt(d3.real()));
+      dref.set_nonreal(d3.nonreal()/sqrt(d3.real())/2);
       d0=sqrt(d3);
       TEST_ASSERT(d0.nearly(dref, tol));
 
       // sqrt(expression) test
       d3=d1+d2;
       dref.set_real(sqrt(d3.real()));
-      dref.set_nonreal(0.5*d3.nonreal()/sqrt(d3.real()));
+      dref.set_nonreal(d3.nonreal()/sqrt(d3.real())/2);
       d0=sqrt(d1+d2);
       TEST_ASSERT(d0.nearly(dref, tol));
 
       // sqrt(sqrt(expression)) test
       d3=d1+d2;
       d4.set_real(sqrt(d3.real()));
-      d4.set_nonreal(0.5*d3.nonreal()/sqrt(d3.real()));
+      d4.set_nonreal(d3.nonreal()/sqrt(d3.real())/2);
       dref.set_real(sqrt(d4.real()));
-      dref.set_nonreal(0.5*d4.nonreal()/sqrt(d4.real()));
+      dref.set_nonreal(d4.nonreal()/sqrt(d4.real())/2);
       d0=sqrt(sqrt(d1+d2));
       TEST_ASSERT(d0.nearly(dref, tol));
 
