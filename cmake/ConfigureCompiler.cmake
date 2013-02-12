@@ -122,7 +122,7 @@ if(NOT CONFIGURE_COMPILER_INCLUDED)
                         CACHE STRING "Flags used by the compiler during release minsize builds." FORCE)
 
       set(CONFIGURE_COMPILER_SET_CXX_COMPILER_FLAGS ON)
-      set(CMAKE_CXX_FLAGS "/DWIN32 /D_WINDOWS /W3 /Zm1000 /EHsc /GR"
+      set(CMAKE_CXX_FLAGS "/DWIN32 /D_WINDOWS /D_CRT_SECURE_NO_WARNINGS /W3 /Zm1000 /EHsc /GR"
                           CACHE STRING "Flags used by the compiler during all build types." FORCE)
       set(CMAKE_CXX_FLAGS_DEBUG "/D_DEBUG /MDd /Zi /Ob0 /Od /RTC1 /DDEBUG"
                           CACHE STRING "Flags used by the compiler during debug builds." FORCE)

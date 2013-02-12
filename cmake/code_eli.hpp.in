@@ -26,6 +26,19 @@
   #pragma warning disable 82 279 1595 2196 2536
 #endif
 
+// Visual Studio 2008 does not have cbrt() function
+#ifdef _MSC_VER
+# if (_MSC_VER==1500)
+#   include <cmath>
+namespace std
+{
+  float cbrt(float v) {return ((v<0)?(-1):(1))*std::pow(std::abs(v), 1.0f/3);}
+  double cbrt(double v) {return ((v<0)?(-1):(1))*std::pow(std::abs(v), 1.0/3);}
+  long double cbrt(long double v) {return ((v<0)?(-1):(1))*std::pow(std::abs(v), 1.0L/3);}
+}
+# endif
+#endif
+
 // GCC versions 4.5 through latest (4.7) do not put these in the std namespace like they
 // should be.
 #ifdef __GNUC__
