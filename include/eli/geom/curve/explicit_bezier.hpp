@@ -97,7 +97,7 @@ namespace eli
           data_type fit(std::vector<data_type> &t, const fit_container_type &fcon, const index_type &deg_in)
           {
             size_t i, npts(fcon.number_points()), n;
-            std::vector<point_type> pts(npts);
+            std::vector<point_type, Eigen::aligned_allocator<point_type> > pts(npts);
             std::vector<Eigen::Matrix<data_type, 1, 1> > ypts(npts);
 
             // get the points from the container
@@ -228,7 +228,7 @@ namespace eli
           void interpolate(std::vector<data_type> &t, const fit_container_type &fcon)
           {
             size_t i, npts(fcon.number_points()), n, ai;
-            std::vector<point_type> pts(npts);
+            std::vector<point_type, Eigen::aligned_allocator<point_type> > pts(npts);
             std::vector<Eigen::Matrix<data_type, 1, 1> > ypts(npts);
 
             // get the points from the container

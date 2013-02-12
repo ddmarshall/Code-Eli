@@ -22,6 +22,8 @@
 #include "eli/geom/point/distance.hpp"
 #include "eli/geom/general/continuity.hpp"
 
+#include "Eigen/StdVector"
+
 namespace eli
 {
   namespace geom
@@ -115,7 +117,7 @@ namespace eli
 
         private:
           eli::geom::general::continuity end_continuity;
-          std::vector<point_type> points;
+          std::vector<point_type, Eigen::aligned_allocator<point_type> > points;
           typedef std::map<int, constraint_info> constraint_collection;
 
           constraint_collection constraints;
