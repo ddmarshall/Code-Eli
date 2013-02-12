@@ -86,6 +86,7 @@ class constants_math_test_suite : public Test::Suite
       TEST_ADD(constants_math_test_suite<long double>::sqrt_test);
     }
 
+#ifdef ELI_QD_FOUND
     void AddTests(const dd_real &)
     {
       TEST_ADD(constants_math_test_suite<dd_real>::exp_test);
@@ -99,6 +100,7 @@ class constants_math_test_suite : public Test::Suite
       TEST_ADD(constants_math_test_suite<qd_real>::pi_test);
       TEST_ADD(constants_math_test_suite<qd_real>::sqrt_test);
     }
+#endif
 
   public:
     constants_math_test_suite()
