@@ -86,7 +86,7 @@ namespace eli
           Tp.derived().resize(n);
           Tp.fill(0);
           for (j=0; j<n-1; ++j)
-            Tp(j)=n-j-1;
+            Tp(j)=static_cast<typename Derived::Scalar>(n-j-1);
 
           for (j=0; j<n-2; ++j)
             for (jj=0; jj<j+1; ++jj)
@@ -104,7 +104,7 @@ namespace eli
           Tpp.derived().resize(n);
           Tpp.fill(0);
           for (j=0; j<n-2; ++j)
-            Tpp(j)=(n-j-1)*(n-j-2);
+            Tpp(j)=static_cast<typename Derived::Scalar>(n-j-1)*(n-j-2);
 
           for (j=0; j<n-3; ++j)
             for (jj=0; jj<j+1; ++jj)
@@ -122,7 +122,7 @@ namespace eli
           Tppp.derived().resize(n);
           Tppp.fill(0);
           for (j=0; j<n-3; ++j)
-            Tppp(j)=(n-j-1)*(n-j-2)*(n-j-3);
+            Tppp(j)=static_cast<typename Derived::Scalar>(n-j-1)*(n-j-2)*(n-j-3);
 
           for (j=0; j<n-4; ++j)
             for (jj=0; jj<j+1; ++jj)
@@ -376,17 +376,17 @@ namespace eli
             // calculate B_I and B_II (note: n is the index of the last element in b)
             B_I.row(0)=B.row(0);
             for (i=1; i<n; ++i)
-              B_I.row(i)=(B.row(i)*n-B_I.row(i-1)*i)/(n-i);
+              B_I.row(i)=(B.row(i)*static_cast<data_type>(n)-B_I.row(i-1)*static_cast<data_type>(i))/static_cast<data_type>(n-i);
             B_II.row(n-1)=B.row(n);
             for (i=n-1; i>=1; --i)
-              B_II.row(i-1)=(B.row(i)*n-B_II.row(i)*(n-i))/i;
+              B_II.row(i-1)=(B.row(i)*static_cast<data_type>(n)-B_II.row(i)*static_cast<data_type>(n-i))/static_cast<data_type>(i);
 
             // calculate the blending terms
             if (continuity_degree==geom::general::NOT_CONNECTED)
             {
               // no interpolation on end points
               // note: this comes from "Degree Reduction of Bezier Curves" by Dave Morgan
-              data_type coef(1.0/(1<<(2*n-1))), sum(1), tmp;
+              data_type coef(1/static_cast<data_type>(1<<(2*n-1))), sum(1), tmp;
               lambda(0)=coef*sum;
               for (i=1; i<n; ++i)
               {
