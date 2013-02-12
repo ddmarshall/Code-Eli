@@ -49,7 +49,11 @@ void get_reference_adaptive_params<float>(typename eli::quad::simpson<float>::ad
   ap.function_count=9;
   ap.coarse_value=17.3731117248535f;
   ap.fine_value=17.3676300048828f;
-  ap.approximate_error=5.48267344129272e-05;
+#ifdef _MSC_VER
+  ap.approximate_error=5.4817199e-05f;
+#else
+  ap.approximate_error=5.48267344129272e-05f;
+#endif
 }
 
 template <>
@@ -65,11 +69,19 @@ void get_reference_adaptive_params<double>(typename eli::quad::simpson<double>::
 template <>
 void get_reference_adaptive_params<long double>(typename eli::quad::simpson<long double>::adaptive_params &ap)
 {
+#ifdef _MSC_VER
+  ap.recursion_depth=5;
+  ap.function_count=65;
+  ap.coarse_value=17.367256566284723363L;
+  ap.fine_value=17.367255186732954542L;
+  ap.approximate_error=1.3795517685433190629e-08L;
+#else
   ap.recursion_depth=6;
   ap.function_count=129;
   ap.coarse_value=17.367255186732954673478612761527983820997178554534912109375L;
   ap.fine_value=17.36725510047939464303157208746597461868077516555786133L;
   ap.approximate_error=8.62535600286716596198481699594144637825189614321885756e-10L;
+#endif
 }
 
 #ifdef ELI_QD_FOUND
@@ -143,7 +155,7 @@ class simpson_test_suite : public Test::Suite
     {
       TEST_ADD(simpson_test_suite<qd_real>::uniform_points_test);
       TEST_ADD(simpson_test_suite<qd_real>::nonuniform_points_test);
-//       TEST_ADD(simpson_test_suite<qd_real>::adaptive_test);
+      TEST_ADD(simpson_test_suite<qd_real>::adaptive_test);
     }
 #endif
 
@@ -276,7 +288,7 @@ class simpson_test_suite : public Test::Suite
 
         if (typeid(data__)==typeid(float))
         {
-          TEST_ASSERT_DELTA(1, F_quad/F_exact, 7e-7);
+          TEST_ASSERT_DELTA(1, F_quad/F_exact, 9e-7);
         }
         else
         {
