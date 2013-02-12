@@ -397,7 +397,7 @@ class fit_container_test_suite : public Test::Suite
       error_code ec;
       constraint_info ciout;
       std::vector<point_type> points(20);
-      data__ ts(0), te(2.0*eli::constants::math<data__>::pi()*static_cast<data__>(points.size()-1)/points.size());
+      data__ ts(0), te(2*eli::constants::math<data__>::pi()*static_cast<data__>(points.size()-1)/points.size());
 
       v1[0]=1; v1[1]=2; v1[2]=3;
       v2[0]=0; v2[1]=-1; v2[2]=-2;
@@ -748,7 +748,7 @@ class fit_container_test_suite : public Test::Suite
         error_code ec;
         constraint_info ciout;
         std::vector<point_type> points(20);
-        data__ t0(0), t1(2.0*eli::constants::math<data__>::pi()/points.size()), tnm2(2.0*eli::constants::math<data__>::pi()*static_cast<data__>(points.size()-1)/points.size()), tnm1(2.0*eli::constants::math<data__>::pi()*static_cast<data__>(points.size()-1)/points.size());
+        data__ t0(0), t1(2*eli::constants::math<data__>::pi()/points.size()), tnm2(2*eli::constants::math<data__>::pi()*static_cast<data__>(points.size()-1)/points.size()), tnm1(2*eli::constants::math<data__>::pi()*static_cast<data__>(points.size()-1)/points.size());
 
         // set points
         create_points(points.begin(), points.size());
@@ -759,10 +759,10 @@ class fit_container_test_suite : public Test::Suite
         index1=1;
         indexnm2=points.size()-2;
         indexnm1=points.size()-1;
-        t0  =2.0*eli::constants::math<data__>::pi()*static_cast<data__>(index0)/points.size();
-        t1  =2.0*eli::constants::math<data__>::pi()*static_cast<data__>(index1)/points.size();
-        tnm2=2.0*eli::constants::math<data__>::pi()*static_cast<data__>(indexnm2)/points.size();
-        tnm1=2.0*eli::constants::math<data__>::pi()*static_cast<data__>(indexnm1)/points.size();
+        t0  =2*eli::constants::math<data__>::pi()*static_cast<data__>(index0)/points.size();
+        t1  =2*eli::constants::math<data__>::pi()*static_cast<data__>(index1)/points.size();
+        tnm2=2*eli::constants::math<data__>::pi()*static_cast<data__>(indexnm2)/points.size();
+        tnm1=2*eli::constants::math<data__>::pi()*static_cast<data__>(indexnm1)/points.size();
         vp0(0)=-std::sin(t0);
         vp0(1)=std::cos(t0);
         vp0(2)=0;
@@ -881,7 +881,7 @@ class fit_container_test_suite : public Test::Suite
         error_code ec;
         constraint_info ciout;
         std::vector<point_type> points(20);
-        data__ t0(0), t1(2.0*eli::constants::math<data__>::pi()/points.size()), tnm2(2.0*eli::constants::math<data__>::pi()*static_cast<data__>(points.size()-1)/points.size()), tnm1(2.0*eli::constants::math<data__>::pi()*static_cast<data__>(points.size()-1)/points.size());
+        data__ t0(0), t1(2*eli::constants::math<data__>::pi()/points.size()), tnm2(2*eli::constants::math<data__>::pi()*static_cast<data__>(points.size()-1)/points.size()), tnm1(2*eli::constants::math<data__>::pi()*static_cast<data__>(points.size()-1)/points.size());
 
         // set points
         create_points(points.begin(), points.size());
@@ -893,10 +893,10 @@ class fit_container_test_suite : public Test::Suite
         index1=1;
         indexnm2=points.size()-2;
         indexnm1=points.size()-1;
-        t0  =2.0*eli::constants::math<data__>::pi()*static_cast<data__>(index0)/points.size();
-        t1  =2.0*eli::constants::math<data__>::pi()*static_cast<data__>(index1)/points.size();
-        tnm2=2.0*eli::constants::math<data__>::pi()*static_cast<data__>(indexnm2)/points.size();
-        tnm1=2.0*eli::constants::math<data__>::pi()*static_cast<data__>(indexnm1)/points.size();
+        t0  =2*eli::constants::math<data__>::pi()*static_cast<data__>(index0)/points.size();
+        t1  =2*eli::constants::math<data__>::pi()*static_cast<data__>(index1)/points.size();
+        tnm2=2*eli::constants::math<data__>::pi()*static_cast<data__>(indexnm2)/points.size();
+        tnm1=2*eli::constants::math<data__>::pi()*static_cast<data__>(indexnm1)/points.size();
         vpp0(0)=-std::cos(t0);
         vpp0(1)=-std::sin(t0);
         vpp0(2)=0;
@@ -1031,7 +1031,7 @@ class fit_container_test_suite : public Test::Suite
         error_code ec;
         constraint_info ciout;
         std::vector<point_type> points(20);
-        data__ t0(0), t1(2.0*eli::constants::math<data__>::pi()/points.size()), tnm2(2.0*eli::constants::math<data__>::pi()*static_cast<data__>(points.size()-1)/points.size()), tnm1(2.0*eli::constants::math<data__>::pi()*static_cast<data__>(points.size()-1)/points.size());
+        data__ t0(0), t1(2*eli::constants::math<data__>::pi()/points.size()), tnm2(2*eli::constants::math<data__>::pi()*static_cast<data__>(points.size()-1)/points.size()), tnm1(2*eli::constants::math<data__>::pi()*static_cast<data__>(points.size()-1)/points.size());
 
         // set points
         create_points(points.begin(), points.size());
@@ -1042,10 +1042,10 @@ class fit_container_test_suite : public Test::Suite
         index1=1;
         indexnm2=points.size()-2;
         indexnm1=points.size()-1;
-        t0  =2.0*eli::constants::math<data__>::pi()*static_cast<data__>(index0)/points.size();
-        t1  =2.0*eli::constants::math<data__>::pi()*static_cast<data__>(index1)/points.size();
-        tnm2=2.0*eli::constants::math<data__>::pi()*static_cast<data__>(indexnm2)/points.size();
-        tnm1=2.0*eli::constants::math<data__>::pi()*static_cast<data__>(indexnm1)/points.size();
+        t0  =2*eli::constants::math<data__>::pi()*static_cast<data__>(index0)/points.size();
+        t1  =2*eli::constants::math<data__>::pi()*static_cast<data__>(index1)/points.size();
+        tnm2=2*eli::constants::math<data__>::pi()*static_cast<data__>(indexnm2)/points.size();
+        tnm1=2*eli::constants::math<data__>::pi()*static_cast<data__>(indexnm1)/points.size();
         vp0(0)=-std::sin(t0);
         vp0(1)=std::cos(t0);
         vp0(2)=0;
