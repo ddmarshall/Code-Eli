@@ -23,12 +23,12 @@
 #include "eli/geom/curve/bezier.hpp"
 
 typedef eli::geom::curve::bezier2d bezier_type;
-typedef typename bezier_type::data_type data_type;
-typedef typename bezier_type::point_type point_type;
-typedef typename bezier_type::fit_container_type fit_container_type;
-typedef typename fit_container_type::constraint_info constraint_info_type;
+typedef bezier_type::data_type data_type;
+typedef bezier_type::point_type point_type;
+typedef bezier_type::fit_container_type fit_container_type;
+typedef fit_container_type::constraint_info constraint_info_type;
 
-void create_airfoil(std::vector<point_type> &pts, int &le)
+void create_airfoil(std::vector<point_type, Eigen::aligned_allocator<point_type> > &pts, int &le)
 {
   pts.resize(40);
   // lower surface
@@ -76,7 +76,7 @@ void create_airfoil(std::vector<point_type> &pts, int &le)
   pts[39] << 1.0000, 0.0050;
 }
 
-void create_circle(std::vector<point_type> &pts)
+void create_circle(std::vector<point_type, Eigen::aligned_allocator<point_type> > &pts)
 {
   // NOTE: This will not create a closed circle, the last point will be
   //       the point just prior to the 2*pi point
@@ -90,7 +90,7 @@ void create_circle(std::vector<point_type> &pts)
   }
 }
 
-void octave_print(std::ostream &ostr, const std::string &varname, const std::vector<point_type> &pts)
+void octave_print(std::ostream &ostr, const std::string &varname, const std::vector<point_type, Eigen::aligned_allocator<point_type> > &pts)
 {
   size_t i;
 
@@ -108,14 +108,14 @@ void octave_print(std::ostream &ostr, const std::string &varname, const bezier_t
 {
   size_t i;
 
-  std::vector<point_type> pts(101);
+  std::vector<point_type, Eigen::aligned_allocator<point_type> > pts(101);
   for (i=0; i<pts.size(); ++i)
     pts[i]=bez.f(static_cast<double>(i)/(pts.size()-1));
 
   octave_print(ostr, varname, pts);
 }
 
-data_type example_fit_1(bezier_type &bez, const std::vector<point_type> &pts, const size_t dim)
+data_type example_fit_1(bezier_type &bez, const std::vector<point_type, Eigen::aligned_allocator<point_type> > &pts, const size_t dim)
 {
   // set up fit container
   fit_container_type fcon;
@@ -125,7 +125,7 @@ data_type example_fit_1(bezier_type &bez, const std::vector<point_type> &pts, co
   return bez.fit(fcon, dim);
 }
 
-data_type example_fit_2(bezier_type &bez, const std::vector<point_type> &pts, const size_t dim)
+data_type example_fit_2(bezier_type &bez, const std::vector<point_type, Eigen::aligned_allocator<point_type> > &pts, const size_t dim)
 {
   // set up fit container
   fit_container_type fcon;
@@ -137,7 +137,7 @@ data_type example_fit_2(bezier_type &bez, const std::vector<point_type> &pts, co
   return bez.fit(fcon, dim);
 }
 
-data_type example_fit_3(bezier_type &bez, constraint_info_type ci[2], const std::vector<point_type> &pts, const size_t dim)
+data_type example_fit_3(bezier_type &bez, constraint_info_type ci[2], const std::vector<point_type, Eigen::aligned_allocator<point_type> > &pts, const size_t dim)
 {
   // set up fit container
   fit_container_type fcon;
@@ -151,7 +151,7 @@ data_type example_fit_3(bezier_type &bez, constraint_info_type ci[2], const std:
   return bez.fit(fcon, dim);
 }
 
-data_type example_fit_4(bezier_type &bez, constraint_info_type ci[2], const std::vector<point_type> &pts, const size_t dim, const int &index)
+data_type example_fit_4(bezier_type &bez, constraint_info_type ci[2], const std::vector<point_type, Eigen::aligned_allocator<point_type> > &pts, const size_t dim, const int &index)
 {
   // set up fit container
   fit_container_type fcon;
@@ -166,7 +166,7 @@ data_type example_fit_4(bezier_type &bez, constraint_info_type ci[2], const std:
   return bez.fit(fcon, dim);
 }
 
-data_type example_fit_5(bezier_type &bez, constraint_info_type ci[2], const std::vector<point_type> &pts, const size_t dim, const int index[3])
+data_type example_fit_5(bezier_type &bez, constraint_info_type ci[2], const std::vector<point_type, Eigen::aligned_allocator<point_type> > &pts, const size_t dim, const int index[3])
 {
   // set up fit container
   fit_container_type fcon;
@@ -183,7 +183,7 @@ data_type example_fit_5(bezier_type &bez, constraint_info_type ci[2], const std:
   return bez.fit(fcon, dim);
 }
 
-void example_fit_6(bezier_type bez[4], data_type err[4], typename bezier_type::fit_container_type::constraint_info ci[6], const std::vector<point_type> &pts, const typename bezier_type::dimension_type dim[4])
+void example_fit_6(bezier_type bez[4], data_type err[4], bezier_type::fit_container_type::constraint_info ci[6], const std::vector<point_type, Eigen::aligned_allocator<point_type> > &pts, const bezier_type::dimension_type dim[4])
 {
   size_t i;
 
@@ -295,9 +295,9 @@ int main(int /*argc*/, char * /*argv*/[])
   //             The use would have to specify the degree for the bezier curve.
   {
     int le;
-    typename bezier_type::dimension_type d(8);
+    bezier_type::dimension_type d(8);
     bezier_type bez;
-    std::vector<point_type> pts;
+    std::vector<point_type, Eigen::aligned_allocator<point_type> > pts;
     data_type err;
 
     // get points to print out
@@ -321,9 +321,9 @@ int main(int /*argc*/, char * /*argv*/[])
   //             that the curve goes through the first and last points.
   {
     int le;
-    typename bezier_type::dimension_type d(8);
+    bezier_type::dimension_type d(8);
     bezier_type bez;
-    std::vector<point_type> pts;
+    std::vector<point_type, Eigen::aligned_allocator<point_type> > pts;
     data_type err;
 
     // get points to print out
@@ -351,10 +351,10 @@ int main(int /*argc*/, char * /*argv*/[])
   //             is used of the 1st derivative vector is not specified.
   {
     int le;
-    typename bezier_type::dimension_type d(8);
-    typename bezier_type::fit_container_type::constraint_info ci[2];
+    bezier_type::dimension_type d(8);
+    bezier_type::fit_container_type::constraint_info ci[2];
     bezier_type bez;
-    std::vector<point_type> pts;
+    std::vector<point_type, Eigen::aligned_allocator<point_type> > pts;
     data_type err;
 
     // get points to print out
@@ -386,11 +386,11 @@ int main(int /*argc*/, char * /*argv*/[])
   //             improve the quality of the fit by ensuring that the curve goes through that
   //             point. For this airfoil the leading edge goes through point 16.
   {
-    typename bezier_type::dimension_type d(8);
-    typename bezier_type::fit_container_type::constraint_info ci[2];
+    bezier_type::dimension_type d(8);
+    bezier_type::fit_container_type::constraint_info ci[2];
     int le;
     bezier_type bez;
-    std::vector<point_type> pts;
+    std::vector<point_type, Eigen::aligned_allocator<point_type> > pts;
     data_type err;
 
     // get points to print out
@@ -424,11 +424,11 @@ int main(int /*argc*/, char * /*argv*/[])
   //             The location of maximum thickness is 5 on lower surface and 30 on upper
   //             surface.
   {
-    typename bezier_type::dimension_type d(8);
+    bezier_type::dimension_type d(8);
     constraint_info_type ci[3];
     int le, index[3];
     bezier_type bez;
-    std::vector<point_type> pts;
+    std::vector<point_type, Eigen::aligned_allocator<point_type> > pts;
     data_type err;
 
     // get points to print out
@@ -464,10 +464,10 @@ int main(int /*argc*/, char * /*argv*/[])
   //             by a bezier curve. Several different constraints are used to improve the
   //             quality of the fit.
   {
-    typename bezier_type::dimension_type d[6]={5, 5, 7, 7, 9, 12};
-    typename bezier_type::fit_container_type::constraint_info ci[6];
+    bezier_type::dimension_type d[6]={5, 5, 7, 7, 9, 12};
+    bezier_type::fit_container_type::constraint_info ci[6];
     bezier_type bez[6];
-    std::vector<point_type> pts;
+    std::vector<point_type, Eigen::aligned_allocator<point_type> > pts;
     data_type err[6];
 
     // get points to print out
@@ -550,13 +550,13 @@ int main(int /*argc*/, char * /*argv*/[])
   std::cout << "figure(3);" << std::endl;
   {
     int le;
-    typename bezier_type::dimension_type d(8);
+    bezier_type::dimension_type d(8);
     bezier_type bez;
-    std::vector<point_type> pts;
+    std::vector<point_type, Eigen::aligned_allocator<point_type> > pts;
     std::vector<data_type> t;
     data_type err;
-    std::vector<point_type> af_pts;
-    typename bezier_type::fit_container_type::constraint_info ci[2];
+    std::vector<point_type, Eigen::aligned_allocator<point_type> > af_pts;
+    bezier_type::fit_container_type::constraint_info ci[2];
     // get points to print out
     create_airfoil(pts, le);
 

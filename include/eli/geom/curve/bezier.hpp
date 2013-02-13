@@ -151,7 +151,7 @@ namespace eli
         }
 
         template<typename Derived1, typename Derived2, typename PointType>
-        void build_fit_Ab(Eigen::MatrixBase<Derived1> &A, Eigen::MatrixBase<Derived2> &b, std::vector<typename Derived1::Scalar> &t, const std::vector<PointType> &pts, const typename Derived1::Index &n, const size_t &dim)
+        void build_fit_Ab(Eigen::MatrixBase<Derived1> &A, Eigen::MatrixBase<Derived2> &b, std::vector<typename Derived1::Scalar> &t, const std::vector<PointType, Eigen::aligned_allocator<PointType> > &pts, const typename Derived1::Index &n, const size_t &dim)
         {
           typedef Eigen::Matrix<typename Derived1::Scalar, Eigen::Dynamic, Eigen::Dynamic> mat_type;
           typedef Eigen::Matrix<typename Derived1::Scalar, Eigen::Dynamic, 1> col_type;
@@ -262,7 +262,7 @@ namespace eli
             return B.rows();
           }
 
-          void determine_t(std::vector<data_type> &t, const std::vector<point_type> &pts, bool closed) const
+          void determine_t(std::vector<data_type> &t, const std::vector<point_type, Eigen::aligned_allocator<point_type> > &pts, bool closed) const
           {
             index_type i, npts(pts.size());
             data_type len, small_dist(std::numeric_limits<data_type>::epsilon());
@@ -452,7 +452,7 @@ namespace eli
           data_type fit(std::vector<data_type> &t, const fit_container_type &fcon, const index_type &deg_in)
           {
             size_t i, npts(fcon.number_points()), n, nclosed;
-            std::vector<point_type> pts(npts);
+            std::vector<point_type, Eigen::aligned_allocator<point_type> > pts(npts);
 
             // get the points from the container
             fcon.get_points(pts.begin());
@@ -633,7 +633,7 @@ namespace eli
           void interpolate(std::vector<data_type> &t, const fit_container_type &fcon)
           {
             size_t i, npts(fcon.number_points()), n, nclosed, ai;
-            std::vector<point_type> pts(npts);
+            std::vector<point_type, Eigen::aligned_allocator<point_type> > pts(npts);
 
             // get the points from the container
             fcon.get_points(pts.begin());

@@ -118,7 +118,7 @@ namespace eli
         private:
           eli::geom::general::continuity end_continuity;
           std::vector<point_type, Eigen::aligned_allocator<point_type> > points;
-          typedef std::map<int, constraint_info> constraint_collection;
+          typedef std::map<int, constraint_info, std::less<int>, Eigen::aligned_allocator<std::pair<const int, point_type> > > constraint_collection;
 
           constraint_collection constraints;
 
