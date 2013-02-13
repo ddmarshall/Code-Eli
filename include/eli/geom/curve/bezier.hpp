@@ -403,7 +403,7 @@ namespace eli
             }
             else
             {
-              int ncd(static_cast<index_type>(continuity_degree));
+              index_type ncd(static_cast<index_type>(continuity_degree));
 
               // store whether able to maintain desired continuity
               if (2*(ncd+1)<=n)

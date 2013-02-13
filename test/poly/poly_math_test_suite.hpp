@@ -448,7 +448,7 @@ class poly_math_test_suite : public Test::Suite
 
       // create polynomial with many roots
       {
-        size_t i, nr;
+        int i, nr;
 
         // NOTE: different types fail the below tests at different number of roots
         if (typeid(data__)==typeid(float))

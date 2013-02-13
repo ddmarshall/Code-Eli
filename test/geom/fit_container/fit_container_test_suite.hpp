@@ -426,7 +426,7 @@ class fit_container_test_suite : public Test::Suite
       TEST_ASSERT(ccon.number_constraints()==2);
 
       // check for the constraint
-      index=ccon.number_points()-1;
+      index=static_cast<int>(ccon.number_points())-1;
       ec=ccon.get_constraint(index, ciout);
       TEST_ASSERT(ec==fit_container_type::NO_ERROR);
       TEST_ASSERT(ciout.using_fp()==constraint_info::NOT_USED);
@@ -454,7 +454,7 @@ class fit_container_test_suite : public Test::Suite
       TEST_ASSERT(ccon.number_constraints()==4);
 
       // check for the constraint
-      index=ccon.number_points()-1;
+      index=static_cast<int>(ccon.number_points())-1;
       ec=ccon.get_constraint(index, ciout);
       v1out=ciout.get_fp();
       TEST_ASSERT(ec==fit_container_type::NO_ERROR);
@@ -486,7 +486,7 @@ class fit_container_test_suite : public Test::Suite
       TEST_ASSERT(ccon.number_constraints()==6);
 
       // check for the constraint
-      index=ccon.number_points()-1;
+      index=static_cast<int>(ccon.number_points())-1;
       ec=ccon.get_constraint(index, ciout);
       v1out=ciout.get_fp();
       v2out=ciout.get_fpp();
@@ -523,7 +523,7 @@ class fit_container_test_suite : public Test::Suite
       TEST_ASSERT(ccon.number_constraints()==4);
 
       // check for the constraint
-      index=ccon.number_points()-1;
+      index=static_cast<int>(ccon.number_points())-1;
       v1[0]=-std::sin(te);
       v1[1]=std::cos(te);
       v1[2]=0;
@@ -567,7 +567,7 @@ class fit_container_test_suite : public Test::Suite
       TEST_ASSERT(ccon.number_constraints()==6);
 
       // check for the constraint
-      index=ccon.number_points()-1;
+      index=static_cast<int>(ccon.number_points())-1;
       v2[0]=-std::cos(te);
       v2[1]=-std::sin(te);
       v2[2]=0;
@@ -616,7 +616,7 @@ class fit_container_test_suite : public Test::Suite
       TEST_ASSERT(ccon.number_constraints()==6);
 
       // check for the constraint
-      index=ccon.number_points()-1;
+      index=static_cast<int>(ccon.number_points())-1;
       v1[0]=-std::sin(te);
       v1[1]=std::cos(te);
       v1[2]=0;
@@ -694,7 +694,7 @@ class fit_container_test_suite : public Test::Suite
         TEST_ASSERT((v2out[0]==v2[0]) && (v2out[1]==v2[1]) && (v2out[2]==v2[2]));
 
         // check for the constraint
-        index=ccon.number_points()-1;
+        index=static_cast<int>(ccon.number_points())-1;
         ec=ccon.get_constraint(index, ciout);
         v1out=ciout.get_fp();
         v2out=ciout.get_fpp();
@@ -729,7 +729,7 @@ class fit_container_test_suite : public Test::Suite
         TEST_ASSERT((v2out[0]==v2[0]) && (v2out[1]==v2[1]) && (v2out[2]==v2[2]));
 
         // check for the constraint
-        index=ccon.number_points()-1;
+        index=static_cast<int>(ccon.number_points())-1;
         ec=ccon.get_constraint(index, ciout);
         v1out=ciout.get_fp();
         v2out=ciout.get_fpp();
@@ -757,8 +757,8 @@ class fit_container_test_suite : public Test::Suite
         // set the reference values
         index0=0;
         index1=1;
-        indexnm2=points.size()-2;
-        indexnm1=points.size()-1;
+        indexnm2=static_cast<int>(points.size())-2;
+        indexnm1=static_cast<int>(points.size())-1;
         t0  =2*eli::constants::math<data__>::pi()*static_cast<data__>(index0)/points.size();
         t1  =2*eli::constants::math<data__>::pi()*static_cast<data__>(index1)/points.size();
         tnm2=2*eli::constants::math<data__>::pi()*static_cast<data__>(indexnm2)/points.size();
@@ -789,7 +789,7 @@ class fit_container_test_suite : public Test::Suite
         TEST_ASSERT(ccon.number_constraints()==4);
 
         // add C1 constraint at end-1
-        ec=ccon.add_C1_constraint(points.size()-2);
+        ec=ccon.add_C1_constraint(static_cast<int>(points.size())-2);
         TEST_ASSERT(ec==fit_container_type::NO_ERROR);
         TEST_ASSERT(ccon.number_constraint_points()==3);
         TEST_ASSERT(ccon.number_constraints()==6);
@@ -891,8 +891,8 @@ class fit_container_test_suite : public Test::Suite
         v1(0)=1; v1(1)=2; v1(2)=3;
         index0=0;
         index1=1;
-        indexnm2=points.size()-2;
-        indexnm1=points.size()-1;
+        indexnm2=static_cast<int>(points.size())-2;
+        indexnm1=static_cast<int>(points.size())-1;
         t0  =2*eli::constants::math<data__>::pi()*static_cast<data__>(index0)/points.size();
         t1  =2*eli::constants::math<data__>::pi()*static_cast<data__>(index1)/points.size();
         tnm2=2*eli::constants::math<data__>::pi()*static_cast<data__>(indexnm2)/points.size();
@@ -923,7 +923,7 @@ class fit_container_test_suite : public Test::Suite
         TEST_ASSERT(ccon.number_constraints()==6);
 
         // add C2 constraint at end-1
-        ec=ccon.add_C2_constraint(points.size()-2, v1);
+        ec=ccon.add_C2_constraint(static_cast<int>(points.size())-2, v1);
         TEST_ASSERT(ec==fit_container_type::NO_ERROR);
         TEST_ASSERT(ccon.number_constraint_points()==3);
         TEST_ASSERT(ccon.number_constraints()==9);
@@ -1040,8 +1040,8 @@ class fit_container_test_suite : public Test::Suite
         // set the reference values
         index0=0;
         index1=1;
-        indexnm2=points.size()-2;
-        indexnm1=points.size()-1;
+        indexnm2=static_cast<int>(points.size())-2;
+        indexnm1=static_cast<int>(points.size())-1;
         t0  =2*eli::constants::math<data__>::pi()*static_cast<data__>(index0)/points.size();
         t1  =2*eli::constants::math<data__>::pi()*static_cast<data__>(index1)/points.size();
         tnm2=2*eli::constants::math<data__>::pi()*static_cast<data__>(indexnm2)/points.size();
@@ -1084,7 +1084,7 @@ class fit_container_test_suite : public Test::Suite
         TEST_ASSERT(ccon.number_constraints()==6);
 
         // add C2 constraint at end-1
-        ec=ccon.add_C2_constraint(points.size()-2);
+        ec=ccon.add_C2_constraint(static_cast<int>(points.size())-2);
         TEST_ASSERT(ec==fit_container_type::NO_ERROR);
         TEST_ASSERT(ccon.number_constraint_points()==3);
         TEST_ASSERT(ccon.number_constraints()==9);

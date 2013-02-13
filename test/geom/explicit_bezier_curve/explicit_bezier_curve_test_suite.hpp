@@ -441,7 +441,12 @@ class explicit_bezier_curve_test_suite : public Test::Suite
       t=1;
       eval_out=ebc.fp(t);
       eval_ref=bc.fp(t);
-      if (typeid(data_type)==typeid(double))
+      if (typeid(data_type)==typeid(float))
+      {
+        TEST_ASSERT((eval_out-eval_ref).norm()<17*eps);
+//         std::cout << "447: " << (eval_out-eval_ref).norm()/eps << std::endl;
+      }
+      else if (typeid(data_type)==typeid(double))
       {
         TEST_ASSERT((eval_out-eval_ref).norm()<24.1*eps);
       }
@@ -519,7 +524,12 @@ class explicit_bezier_curve_test_suite : public Test::Suite
       t=1;
       eli::geom::curve::curvature(curv_out, ebc, t);
       eli::geom::curve::curvature(curv_ref, bc, t);
-      if (typeid(data_type)==typeid(double))
+      if (typeid(data_type)==typeid(float))
+      {
+        TEST_ASSERT(std::abs(curv_out-curv_ref)<32*eps);
+//         std::cout << "530: " << std::abs(curv_out-curv_ref)/eps << std::endl;
+      }
+      else if (typeid(data_type)==typeid(double))
       {
         TEST_ASSERT(std::abs(curv_out-curv_ref)<47.1*eps);
       }
@@ -817,10 +827,10 @@ class explicit_bezier_curve_test_suite : public Test::Suite
 
       // check if went through points
       TEST_ASSERT(pts[0]==ebez.f(t[0]));
-      TEST_ASSERT((pts[pts.size()-1]-ebez.f(t[t.size()-1])).norm()<48*eps);
-//       if (typeid(data__)==typeid(long double))
+      TEST_ASSERT((pts[pts.size()-1]-ebez.f(t[t.size()-1])).norm()<65*eps);
+//       if (typeid(data__)==typeid(double))
 //       {
-//         std::cout << "751 rat=" << (pts[pts.size()-1]-ebez.f(t[t.size()-1])).norm()/eps << std::endl;
+//         std::cout << "833 rat=" << (pts[pts.size()-1]-ebez.f(t[t.size()-1])).norm()/eps << std::endl;
 //       }
 
 //       octave_print(2, pts, ebez);
@@ -1028,10 +1038,13 @@ class explicit_bezier_curve_test_suite : public Test::Suite
         TEST_ASSERT((ebez.f(t[0])-pts[0]).norm()<3*eps);
         TEST_ASSERT((ebez.f(t[1])-pts[1]).norm()<3*eps);
         TEST_ASSERT((ebez.f(t[2])-pts[2]).norm()<9*eps);
-        TEST_ASSERT((ebez.f(t[3])-pts[3]).norm()<60*eps);
+        TEST_ASSERT((ebez.f(t[3])-pts[3]).norm()<70*eps);
         TEST_ASSERT((fp-ebez.fp(t[1])).norm()<48*eps);
         TEST_ASSERT((fpp-ebez.fpp(t[1])).norm()<49*eps);
-//       std::cout << "894: " << (ebez.f(t[3])-pts[3]).norm()/eps << std::endl;
+//       if (typeid(data_type)==typeid(long double))
+//       {
+//         std::cout << "1044: " << (ebez.f(t[3])-pts[3]).norm()/eps << std::endl;
+//       }
 
 //         octave_print(7, pts, ebez);
       }

@@ -118,7 +118,7 @@ namespace eli
         private:
           eli::geom::general::continuity end_continuity;
           std::vector<point_type, Eigen::aligned_allocator<point_type> > points;
-          typedef std::map<int, constraint_info, std::less<int>, Eigen::aligned_allocator<std::pair<const int, point_type> > > constraint_collection;
+          typedef std::map<index_type, constraint_info, std::less<index_type>, Eigen::aligned_allocator<std::pair<const index_type, point_type> > > constraint_collection;
 
           constraint_collection constraints;
 
@@ -530,32 +530,32 @@ namespace eli
 
           error_code add_end_C0_constraint()
           {
-            return add_C0_constraint(number_points()-1);
+            return add_C0_constraint(static_cast<int>(number_points())-1);
           }
 
           error_code add_end_C1_constraint()
           {
-            return add_C1_constraint(number_points()-1);
+            return add_C1_constraint(static_cast<int>(number_points())-1);
           }
 
           error_code add_end_C1_constraint(const constraint_point_type &fp)
           {
-            return add_C1_constraint(number_points()-1, fp);
+            return add_C1_constraint(static_cast<int>(number_points())-1, fp);
           }
 
           error_code add_end_C2_constraint()
           {
-            return add_C2_constraint(number_points()-1);
+            return add_C2_constraint(static_cast<int>(number_points())-1);
           }
 
           error_code add_end_C2_constraint(const constraint_point_type &fp)
           {
-            return add_C2_constraint(number_points()-1, fp);
+            return add_C2_constraint(static_cast<int>(number_points())-1, fp);
           }
 
           error_code add_end_C2_constraint(const constraint_point_type &fp, const constraint_point_type &fpp)
           {
-            return add_C2_constraint(number_points()-1, fp, fpp);
+            return add_C2_constraint(static_cast<int>(number_points())-1, fp, fpp);
           }
 
           error_code add_C0_constraint(const index_type &i)

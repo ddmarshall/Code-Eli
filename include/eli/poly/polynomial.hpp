@@ -163,11 +163,11 @@ namespace eli
         template<typename itroot__>
         void set_roots(itroot__ its, itroot__ ite)
         {
-          size_t deg=std::distance(its, ite), n=deg+1;
+          int deg=static_cast<int>(std::distance(its, ite)), n=deg+1;
           coefficient_type a_new(n);
           std::vector<data_type> root(deg);
           std::vector<int> index(deg);
-          size_t i, j;
+          int i, j;
 
           // fill vector of roots
           i=0;
@@ -228,13 +228,14 @@ namespace eli
             return rtn;
           }
 
-          index_type i, n(this->degree());
+          index_type i, n;
+          n=static_cast<index_type>(this->degree());
           for (i=n; i>1; --i)
           {
-            rtn=t*(i*a(i)+rtn);
+            rtn=t*(static_cast<data_type>(i)*a(i)+rtn);
           }
           i=1;
-          rtn+=i*a(i);
+          rtn+=static_cast<data_type>(i)*a(i);
 
           return rtn;
         }
@@ -250,13 +251,14 @@ namespace eli
             return rtn;
           }
 
-          index_type i, n(this->degree());
+          index_type i, n;
+          n=static_cast<index_type>(this->degree());
           for (i=n; i>2; --i)
           {
-            rtn=t*(i*(i-1)*a(i)+rtn);
+            rtn=t*(static_cast<data_type>(i)*static_cast<data_type>(i-1)*a(i)+rtn);
           }
           i=2;
-          rtn+=i*(i-1)*a(i);
+          rtn+=static_cast<data_type>(i)*static_cast<data_type>(i-1)*a(i);
 
           return rtn;
         }
@@ -272,13 +274,14 @@ namespace eli
             return rtn;
           }
 
-          index_type i, n(this->degree());
+          index_type i, n;
+          n=static_cast<index_type>(this->degree());
           for (i=n; i>3; --i)
           {
-            rtn=t*(i*(i-1)*(i-2)*a(i)+rtn);
+            rtn=t*(static_cast<data_type>(i)*static_cast<data_type>(i-1)*static_cast<data_type>(i-2)*a(i)+rtn);
           }
           i=3;
-          rtn+=i*(i-1)*(i-2)*a(i);
+          rtn+=static_cast<data_type>(i)*static_cast<data_type>(i-1)*static_cast<data_type>(i-2)*a(i);
 
           return rtn;
         }
@@ -299,7 +302,7 @@ namespace eli
           index_type new_deg(this->degree()-1), deg(this->degree());
           coefficient_type a_new(new_deg+1);
           for (index_type i=1; i<=deg; ++i)
-            a_new(i-1)=i*a(i);
+            a_new(i-1)=static_cast<data_type>(i)*a(i);
 
           return new polynomial<data_type>(a_new);
         }
@@ -312,7 +315,7 @@ namespace eli
           index_type new_deg(this->degree()-2), deg(this->degree());
           coefficient_type a_new(new_deg+1);
           for (index_type i=2; i<=deg; ++i)
-            a_new(i-2)=i*(i-1)*a(i);
+            a_new(i-2)=static_cast<data_type>(i)*static_cast<data_type>(i-1)*a(i);
 
           return new polynomial<data_type>(a_new);
         }
@@ -325,7 +328,7 @@ namespace eli
           index_type new_deg(this->degree()-3), deg(this->degree());
           coefficient_type a_new(new_deg+1);
           for (index_type i=3; i<=deg; ++i)
-            a_new(i-3)=i*(i-1)*(i-2)*a(i);
+            a_new(i-3)=static_cast<data_type>(i)*static_cast<data_type>(i-1)*static_cast<data_type>(i-2)*a(i);
 
           return new polynomial<data_type>(a_new);
         }

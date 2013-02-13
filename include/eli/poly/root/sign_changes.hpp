@@ -26,7 +26,7 @@ namespace eli
         if (itb==ite)
           return 0;
 
-        size_t count(0);
+        int count(0);
         it__ it(itb);
         bool prev_sign=((*it)>0);
 

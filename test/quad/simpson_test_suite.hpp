@@ -50,7 +50,11 @@ void get_reference_adaptive_params<float>(typename eli::quad::simpson<float>::ad
   ap.coarse_value=17.3731117248535f;
   ap.fine_value=17.3676300048828f;
 #ifdef _MSC_VER
+# ifdef _WIN64
+  ap.approximate_error=5.48267344129272e-05f;
+# else
   ap.approximate_error=5.4817199e-05f;
+# endif
 #else
   ap.approximate_error=5.48267344129272e-05f;
 #endif
@@ -344,6 +348,7 @@ class simpson_test_suite : public Test::Suite
       TEST_ASSERT_DELTA(1, ap.coarse_value/ap_ref.coarse_value, std::numeric_limits<data__>::epsilon());
       TEST_ASSERT_DELTA(1, ap.fine_value/ap_ref.fine_value, std::numeric_limits<data__>::epsilon());
       TEST_ASSERT_DELTA(1, ap.approximate_error/ap_ref.approximate_error, std::numeric_limits<data__>::epsilon());
+//       std::cout << "err=" << std::setprecision(20) << ap.approximate_error << "\terr_ref=" << ap_ref.approximate_error << "\trat=" << 1-ap.approximate_error/ap_ref.approximate_error << "\teps=" << std::numeric_limits<data__>::epsilon() << std::endl;
     }
 };
 

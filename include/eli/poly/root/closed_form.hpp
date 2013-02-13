@@ -363,7 +363,7 @@ namespace eli
 //           std::cout << "\troot[" << i << "]=" << root[i];
 //         std::cout << std::endl;
         std::sort(root.begin(), root.end());
-        return root.size();
+        return static_cast<int>(root.size());
       }
 
       template<typename data__>

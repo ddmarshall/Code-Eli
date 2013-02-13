@@ -73,7 +73,7 @@ class combination_test_suite : public Test::Suite
 
       // set s values
       for (i=0; i<s.size(); ++i)
-        s[i]=i+1;
+        s[i]=static_cast<int>(i)+1;
 
       TEST_ASSERT(eli::dm::next_combination(s.begin(),s.begin() + comb_size,s.end(), std::less<int>()));
       TEST_ASSERT((s[0]==1) && (s[1]==2) && (s[2]==4) && (s[3]==3));

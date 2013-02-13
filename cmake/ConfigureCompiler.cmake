@@ -105,34 +105,29 @@ if(NOT CONFIGURE_COMPILER_INCLUDED)
 
   # set MS Visual 2008 Compiler flags
   if (MSVC90)
-    if (CMAKE_CL_64)
-      set(CONFIGURE_COMPILER_SET_C_COMPILER_FLAGS OFF)
-      set(CONFIGURE_COMPILER_SET_CXX_COMPILER_FLAGS OFF)
-    else()
-      set(CONFIGURE_COMPILER_SET_C_COMPILER_FLAGS ON)
-      set(CMAKE_C_FLAGS "/DWIN32 /D_WINDOWS /W3 /Zm1000 /Qc99"
-                        CACHE STRING "Flags used by the compiler during all build types." FORCE)
-      set(CMAKE_C_FLAGS_DEBUG "/D_DEBUG /MDd /Zi  /Ob0 /Od /RTC1 /DDEBUG"
-                        CACHE STRING "Flags used by the compiler during debug builds." FORCE)
-      set(CMAKE_C_FLAGS_RELEASE "/MD /O2 /Ob2 /DNDEBUG"
-                        CACHE STRING "Flags used by the compiler during release builds." FORCE)
-      set(CMAKE_C_FLAGS_RELWITHDEBINFO "/MD /Zi /O2 /Ob1 /DNDEBUG"
-                        CACHE STRING "Flags used by the compiler during release with debug info builds." FORCE)
-      set(CMAKE_C_FLAGS_MINSIZEREL "/MD /O1 /Ob1 /DNDEBUG"
-                        CACHE STRING "Flags used by the compiler during release minsize builds." FORCE)
+    set(CONFIGURE_COMPILER_SET_C_COMPILER_FLAGS ON)
+    set(CMAKE_C_FLAGS "/DWIN32 /D_WINDOWS /W3 /Zm1000 /Qc99"
+                      CACHE STRING "Flags used by the compiler during all build types." FORCE)
+    set(CMAKE_C_FLAGS_DEBUG "/D_DEBUG /MDd /Zi  /Ob0 /Od /RTC1 /DDEBUG"
+                      CACHE STRING "Flags used by the compiler during debug builds." FORCE)
+    set(CMAKE_C_FLAGS_RELEASE "/MD /O2 /Ob2 /DNDEBUG"
+                      CACHE STRING "Flags used by the compiler during release builds." FORCE)
+    set(CMAKE_C_FLAGS_RELWITHDEBINFO "/MD /Zi /O2 /Ob1 /DNDEBUG"
+                      CACHE STRING "Flags used by the compiler during release with debug info builds." FORCE)
+    set(CMAKE_C_FLAGS_MINSIZEREL "/MD /O1 /Ob1 /DNDEBUG"
+                      CACHE STRING "Flags used by the compiler during release minsize builds." FORCE)
 
-      set(CONFIGURE_COMPILER_SET_CXX_COMPILER_FLAGS ON)
-      set(CMAKE_CXX_FLAGS "/DWIN32 /D_WINDOWS /D_CRT_SECURE_NO_WARNINGS /W3 /Zm1000 /EHsc /GR"
-                          CACHE STRING "Flags used by the compiler during all build types." FORCE)
-      set(CMAKE_CXX_FLAGS_DEBUG "/D_DEBUG /MDd /Zi /Ob0 /Od /RTC1 /DDEBUG"
-                          CACHE STRING "Flags used by the compiler during debug builds." FORCE)
-      set(CMAKE_CXX_FLAGS_RELEASE "/MD /O2 /Ob2 /DNDEBUG /DEIGEN_NO_DEBUG"
-                          CACHE STRING "Flags used by the compiler during release builds." FORCE)
-      set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "/MD /Zi /O2 /Ob1 /DNDEBUG"
-                          CACHE STRING "Flags used by the compiler during release with debug info builds." FORCE)
-      set(CMAKE_CXX_FLAGS_MINSIZEREL "/MD /O1 /Ob1 /D NDEBUG /DEIGEN_NO_DEBUG"
-                          CACHE STRING "Flags used by the compiler during release minsize builds." FORCE)
-    endif()
+    set(CONFIGURE_COMPILER_SET_CXX_COMPILER_FLAGS ON)
+    set(CMAKE_CXX_FLAGS "/DWIN32 /D_WINDOWS /D_CRT_SECURE_NO_WARNINGS /W3 /Zm1000 /EHsc /GR /bigobj"
+                        CACHE STRING "Flags used by the compiler during all build types." FORCE)
+    set(CMAKE_CXX_FLAGS_DEBUG "/D_DEBUG /MDd /Zi /Ob0 /Od /RTC1 /DDEBUG"
+                        CACHE STRING "Flags used by the compiler during debug builds." FORCE)
+    set(CMAKE_CXX_FLAGS_RELEASE "/MD /O2 /Ob2 /DNDEBUG /DEIGEN_NO_DEBUG"
+                        CACHE STRING "Flags used by the compiler during release builds." FORCE)
+    set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "/MD /Zi /O2 /Ob1 /DNDEBUG"
+                        CACHE STRING "Flags used by the compiler during release with debug info builds." FORCE)
+    set(CMAKE_CXX_FLAGS_MINSIZEREL "/MD /O1 /Ob1 /D NDEBUG /DEIGEN_NO_DEBUG"
+                        CACHE STRING "Flags used by the compiler during release minsize builds." FORCE)
 
     set(CONFIGURE_COMPILER_SET_Fortran_COMPILER_FLAGS OFF)
   endif()
