@@ -151,7 +151,11 @@ namespace eli
         }
 
         template<typename Derived1, typename Derived2, typename PointType>
-        void build_fit_Ab(Eigen::MatrixBase<Derived1> &A, Eigen::MatrixBase<Derived2> &b, std::vector<typename Derived1::Scalar> &t, const std::vector<PointType, Eigen::aligned_allocator<PointType> > &pts, const typename Derived1::Index &n, const size_t &dim)
+        void build_fit_Ab(Eigen::MatrixBase<Derived1> &A,
+                          Eigen::MatrixBase<Derived2> &b, 
+                          std::vector<typename Derived1::Scalar> &t, 
+                          const std::vector<PointType, Eigen::aligned_allocator<PointType> > &pts,
+                          const typename Derived1::Index &n, const size_t &dim)
         {
           typedef Eigen::Matrix<typename Derived1::Scalar, Eigen::Dynamic, Eigen::Dynamic> mat_type;
           typedef Eigen::Matrix<typename Derived1::Scalar, Eigen::Dynamic, 1> col_type;

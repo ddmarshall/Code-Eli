@@ -98,7 +98,7 @@ namespace eli
           {
             size_t i, npts(fcon.number_points()), n;
             std::vector<point_type, Eigen::aligned_allocator<point_type> > pts(npts);
-            std::vector<Eigen::Matrix<data_type, 1, 1> > ypts(npts);
+            std::vector<Eigen::Matrix<data_type, 1, 1>, Eigen::aligned_allocator<Eigen::Matrix<data_type, 1, 1> > > ypts(npts);
 
             // get the points from the container
             fcon.get_points(pts.begin());
@@ -229,7 +229,7 @@ namespace eli
           {
             size_t i, npts(fcon.number_points()), n, ai;
             std::vector<point_type, Eigen::aligned_allocator<point_type> > pts(npts);
-            std::vector<Eigen::Matrix<data_type, 1, 1> > ypts(npts);
+            std::vector<Eigen::Matrix<data_type, 1, 1>, Eigen::aligned_allocator<Eigen::Matrix<data_type, 1, 1> > > ypts(npts);
 
             // get the points from the container
             fcon.get_points(pts.begin());
