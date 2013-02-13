@@ -491,7 +491,10 @@ class piecewise_curve_test_suite : public Test::Suite
         typename curve_type::control_point_type cntrl_in(4,3), cntrl_out, cntrl_ref(4,3);
         curve_type bc1, bc1l, bc1r;
         point_type eval_out, eval_ref;
-        data_type t, tl(0.3), tr(0.87), ts(0.586);
+        data_type t, tl, tr, ts;
+        tl = static_cast<data__>(0.3);
+        tr = static_cast<data__>(0.87);
+        ts = static_cast<data__>(0.586);
 
         // set control points
         cntrl_in << 0.0, 0.0, 0.0,
@@ -543,7 +546,10 @@ class piecewise_curve_test_suite : public Test::Suite
         typename curve_type::control_point_type cntrl_in(4,3), cntrl_out, cntrl_ref(4,3);
         curve_type bc1, bc1l, bc1r;
         point_type eval_out, eval_ref;
-        data_type tl(0.3), tr(0.87), ts(0.586);
+        data_type tl, tr, ts;
+        tl = static_cast<data__>(0.3);
+        tr = static_cast<data__>(0.87);
+        ts = static_cast<data__>(0.586);
 
         // set control points
         cntrl_in << 0.0, 0.0, 0.0,
@@ -600,7 +606,8 @@ class piecewise_curve_test_suite : public Test::Suite
         typename piecewise_curve_type::error_code err;
         curve_type bc;
         point_type eval_out, eval_ref;
-        data_type ts(1.56), t;
+        data_type ts, t;
+        ts=static_cast<data__>(1.56);
 
         // build piecewise curve
         cntrl_in << 0.0, 0.0, 0.0,
