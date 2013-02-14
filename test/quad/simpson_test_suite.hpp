@@ -105,20 +105,20 @@ void get_reference_adaptive_params<dd_real>(typename eli::quad::simpson<dd_real>
 template <>
 void get_reference_adaptive_params<qd_real>(typename eli::quad::simpson<qd_real>::adaptive_params &ap)
 {
-  ap.recursion_depth=22;
-  ap.function_count=7156565;
+  ap.recursion_depth=14;
+  ap.function_count=32769;
   ap.coarse_value[0]=17.367255094728623;
-  ap.coarse_value[1]=-7.7141015426376560e-16;
-  ap.coarse_value[2]=-3.4210443089346671e-32;
-  ap.coarse_value[3]=-1.1498970208629305e-48;
+  ap.coarse_value[1]=-7.4998623600422523e-16;
+  ap.coarse_value[2]=-2.5435669095450626e-32;
+  ap.coarse_value[3]=-2.2283737312991023e-48;
   ap.fine_value[0]=17.367255094728623277;
-  ap.fine_value[1]=-7.7141015427721933e-16;
-  ap.fine_value[2]=3.8102434542702275e-32;
-  ap.fine_value[3]=1.4902752473661369e-48;
-  ap.approximate_error[0]=1.3453654602827267e-28;
-  ap.approximate_error[1]=-9.3486029965134068e-45;
-  ap.approximate_error[2]=5.5484642242269147e-61;
-  ap.approximate_error[3]=3.0399313313932445e-77;
+  ap.fine_value[1]=-7.7007115938421655e-16;
+  ap.fine_value[2]=1.8287856875573634e-32;
+  ap.fine_value[3]=-9.9248260172646811e-49;
+  ap.approximate_error[0]=2.0084923379991280e-19;
+  ap.approximate_error[1]=-1.0121273065336855e-36;
+  ap.approximate_error[2]=2.2671223775753999e-53;
+  ap.approximate_error[3]=-1.8430118061228113e-69;
 }
 #endif
 
@@ -335,20 +335,28 @@ class simpson_test_suite : public Test::Suite
 
       // integrate to a known state
       ap=ap2;
+#ifdef ELI_QD_FOUND
+      // do this because it takes too long to converge to default tolerance
+      if (typeid(data__)==typeid(qd_real))
+      {
+        TEST_ASSERT(ap.tolerance==std::sqrt(std::numeric_limits<data__>::epsilon()));
+        ap.tolerance=tol;
+        ap_ref.tolerance=tol;
+      }
+#endif
       F_quad=quad(exp_functor<data__>(), x0, x1, ap);
       get_reference_adaptive_params<data__>(ap_ref);
 
       TEST_ASSERT(ap.max_depth==30);
       TEST_ASSERT(ap.tol_factor==1.25);
       TEST_ASSERT(ap.error_factor==100.0);
-      TEST_ASSERT(ap.tolerance==std::sqrt(std::numeric_limits<data__>::epsilon()));
+      TEST_ASSERT(ap.tolerance==ap_ref.tolerance);
       TEST_ASSERT_DELTA(1, F_quad/F_exact, ap.tolerance);
       TEST_ASSERT(ap.recursion_depth==ap_ref.recursion_depth);
       TEST_ASSERT(ap.function_count==ap_ref.function_count);
       TEST_ASSERT_DELTA(1, ap.coarse_value/ap_ref.coarse_value, std::numeric_limits<data__>::epsilon());
       TEST_ASSERT_DELTA(1, ap.fine_value/ap_ref.fine_value, std::numeric_limits<data__>::epsilon());
       TEST_ASSERT_DELTA(1, ap.approximate_error/ap_ref.approximate_error, std::numeric_limits<data__>::epsilon());
-//       std::cout << "err=" << std::setprecision(20) << ap.approximate_error << "\terr_ref=" << ap_ref.approximate_error << "\trat=" << 1-ap.approximate_error/ap_ref.approximate_error << "\teps=" << std::numeric_limits<data__>::epsilon() << std::endl;
     }
 };
 
