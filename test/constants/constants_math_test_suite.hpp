@@ -168,6 +168,7 @@ class constants_math_test_suite : public Test::Suite
       // test cbrt(pi)
       ans=std::cbrt(pi);
       TEST_ASSERT(ans==eli::constants::math<data__>::cbrt_pi());
+      std::cout << "ans=" << std::setprecision(20) << ans << "\t cnst=" << eli::constants::math<data__>::cbrt_pi() << std::endl;
 
       // test 1/pi
       ans=one/pi;

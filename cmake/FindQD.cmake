@@ -42,7 +42,9 @@ macro(_qd_check_version)
   endif()
 endmacro()
 
-if(QD_LIBRARIES AND QD_LIBRARIES AND QD_LIBRARY_DIRS)
+if ( (CMAKE_CXX_COMPILER_ID STREQUAL "Intel") AND (CMAKE_CXX_COMPILER_VERSION VERSION_LESS "13.0") )
+    message(WARNING "Version ${CMAKE_CXX_COMPILER_VERSION} of Intel compiler does not work with QD library.")
+elseif(QD_LIBRARIES AND QD_LIBRARIES AND QD_LIBRARY_DIRS)
   _qd_check_version()
 else()
 

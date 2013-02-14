@@ -75,6 +75,8 @@ namespace eli
 # else
         static double cbrt_pi()        {return 1.4645918875615233;}
 # endif
+#elif defined(__INTEL_COMPILER)
+        static double cbrt_pi()        {return 1.4645918875615234;}
 #elif defined(_MSC_VER)
         static double cbrt_pi()        {return 1.4645918875615231;}
 #else
@@ -113,6 +115,8 @@ namespace eli
         static long double sqrt_pi()        {return 1.7724538509055160273L;}
 #endif
 #ifdef __clang__
+        static long double cbrt_pi()        {return 1.464591887561523263L;}
+#elif defined __INTEL_COMPILER
         static long double cbrt_pi()        {return 1.464591887561523263L;}
 #elif defined __GNUC__
 # if (__GNUC__==4) && (__GNUC_MINOR__==7) && (defined NDEBUG)
