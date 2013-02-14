@@ -470,11 +470,11 @@ class poly_math_test_suite : public Test::Suite
 
         std::vector<data__> roots(nr);
         roots[0]=2;
-        for (i=1; i<roots.size(); ++i)
+        for (i=1; i<static_cast<int>(roots.size()); ++i)
           roots[i]=3*i-roots[i-1];
 
         eli::poly::polynomial<data__> p(roots.begin(), roots.end());
-        for (i=0; i<roots.size(); ++i)
+        for (i=0; i<static_cast<int>(roots.size()); ++i)
         {
           TEST_ASSERT(p.f(roots[i])==0);
         }
