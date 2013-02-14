@@ -28,7 +28,7 @@
 
 // Visual Studio 2008 does not have cbrt(), asinh(), acosh(), atanh(), expm1() function
 #ifdef _MSC_VER
-# if (_MSC_VER==1500)
+# if (_MSC_VER<=1600)
 #   define _NEED_EXTRA_MATH_FUNCTIONS
 # endif
 #endif
