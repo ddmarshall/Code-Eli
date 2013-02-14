@@ -84,7 +84,11 @@ void get_reference_adaptive_params<long double>(typename eli::quad::simpson<long
   ap.function_count=129;
   ap.coarse_value=17.367255186732954673478612761527983820997178554534912109375L;
   ap.fine_value=17.36725510047939464303157208746597461868077516555786133L;
+# ifdef __INTEL_COMPILER
+  ap.approximate_error=8.6253560028725869727e-10L;
+# else
   ap.approximate_error=8.62535600286716596198481699594144637825189614321885756e-10L;
+# endif
 #endif
 }
 

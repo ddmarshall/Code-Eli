@@ -69,14 +69,14 @@ namespace eli
         static double pi_squared()     {return 9.8696044010893586;}
         static double pi_cubed()       {return 31.006276680299817;}
         static double sqrt_pi()        {return 1.7724538509055159;}
-#ifdef __GNUC__
+#if defined(__INTEL_COMPILER)
+        static double cbrt_pi()        {return 1.4645918875615231;}
+#elif defined(__GNUC__) && !defined(__clang__)
 # if (__GNUC__==4) && (__GNUC_MINOR__==7) && (defined NDEBUG)
         static double cbrt_pi()        {return 1.4645918875615231;}
 # else
         static double cbrt_pi()        {return 1.4645918875615233;}
 # endif
-#elif defined(__INTEL_COMPILER)
-        static double cbrt_pi()        {return 1.4645918875615234;}
 #elif defined(_MSC_VER)
         static double cbrt_pi()        {return 1.4645918875615231;}
 #else
