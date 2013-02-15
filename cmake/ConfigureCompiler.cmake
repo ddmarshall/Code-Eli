@@ -135,7 +135,7 @@ if(NOT CONFIGURE_COMPILER_INCLUDED)
   # set GNU Compiler Collection flags
   if(CMAKE_C_COMPILER_ID STREQUAL "GNU")
     set(CONFIGURE_COMPILER_SET_C_COMPILER_FLAGS ON)
-    set(CMAKE_C_FLAGS "-pedantic -Wall -Wextra -fmessage-length=100 -std=c99"
+    set(CMAKE_C_FLAGS "-ansi -pedantic -Wall -Wextra -fmessage-length=100 -std=c99"
                       CACHE STRING "Flags used by the compiler during all build types." FORCE)
     set(CMAKE_C_FLAGS_DEBUG "-DDEBUG -O0 -g"
                       CACHE STRING "Flags used by the compiler during debug builds." FORCE)
@@ -156,7 +156,7 @@ if(NOT CONFIGURE_COMPILER_INCLUDED)
     else()
       set(CMAKE_CXX_FLAGS "-std=c++11")
     endif()
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pedantic -Wall -Wextra -Wno-long-long -fmessage-length=100"
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ansi -pedantic -Wall -Wextra -Wno-long-long -fmessage-length=100"
                         CACHE STRING "Flags used by the compiler during all build types." FORCE)
     set(CMAKE_CXX_FLAGS_DEBUG "-DDEBUG -O0 -g"
                         CACHE STRING "Flags used by the compiler during debug builds." FORCE)
