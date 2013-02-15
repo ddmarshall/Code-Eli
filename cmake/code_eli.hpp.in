@@ -145,12 +145,13 @@ namespace std
   long double erfc(long double v) {return 1-erf(v);}
 }
 #endif
+#undef _NEED_EXTRA_MATH_FUNCTIONS
 
 // GCC versions 4.5 through latest (4.7) do not put these in the std namespace like they
 // should be.
 #if defined(__GNUC__) && !defined(__INTEL_COMPILER) && !defined(__clang__)
-# if ( (__GNUC__<5) || ((__GNUC__==4) && (__GNUC_MINOR__<8)) )
-#include <cmath>
+# if ( (__GNUC__<4) || ((__GNUC__==4) && (__GNUC_MINOR__<8)) )
+#   include <cmath>
 
 namespace std
 {
@@ -175,7 +176,11 @@ namespace std
 // Clang versions 3.0 through latest (3.3) do not put these in the std namespace like they
 // should be.
 #ifdef __clang__
+<<<<<<< HEAD
 # if ( (__clang_major__ < 3) || ((__clang_major__==3) && (__clang_minor__<=3)) )
+=======
+# if ( (__clang_major__<3) || ((__clang_major__==3) && (__clang_minor__<=3)) )
+>>>>>>> Additional fixes for CMake compiler support.
 #   include <cmath>
 
 namespace std
