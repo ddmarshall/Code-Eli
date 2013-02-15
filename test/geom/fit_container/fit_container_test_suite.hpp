@@ -385,7 +385,7 @@ class fit_container_test_suite : public Test::Suite
       TEST_ASSERT(v1out[2]==v1[2]);
       TEST_ASSERT(ciout.using_fpp()==constraint_info::FD);
       TEST_ASSERT_DELTA(v2out[0], v2[0], 11*std::numeric_limits<data__>::epsilon());
-      TEST_ASSERT_DELTA(v2out[1], v2[1], 11*std::numeric_limits<data__>::epsilon());
+      TEST_ASSERT_DELTA(v2out[1], v2[1], 15*std::numeric_limits<data__>::epsilon());
       TEST_ASSERT(v2out[2]==v2[2]);
     }
 
@@ -952,7 +952,7 @@ class fit_container_test_suite : public Test::Suite
         TEST_ASSERT(ciout.using_fp()==constraint_info::SET);
         TEST_ASSERT((vp(0)==v1(0)) && (vp(1)==v1(1)) && (vp(2)==v1(2)));
         TEST_ASSERT(ciout.using_fpp()==constraint_info::FD);
-        TEST_ASSERT_DELTA(vpp(0), vpp1(0), 11*std::numeric_limits<data__>::epsilon());
+        TEST_ASSERT_DELTA(vpp(0), vpp1(0), 16*std::numeric_limits<data__>::epsilon());
         TEST_ASSERT_DELTA(vpp(1), vpp1(1), 11*std::numeric_limits<data__>::epsilon());
         TEST_ASSERT(vpp(2)==vpp1(2));
         ec=ccon.get_constraint(indexnm2, ciout);
@@ -1115,7 +1115,7 @@ class fit_container_test_suite : public Test::Suite
         TEST_ASSERT_DELTA(vp(0), vp1(0), 4e-3);
         TEST_ASSERT_DELTA(vp(1), vp1(1), 2e-2);
         TEST_ASSERT(ciout.using_fpp()==constraint_info::FD);
-        TEST_ASSERT_DELTA(vpp(0), vpp1(0), 11*std::numeric_limits<data__>::epsilon());
+        TEST_ASSERT_DELTA(vpp(0), vpp1(0), 16*std::numeric_limits<data__>::epsilon());
         TEST_ASSERT_DELTA(vpp(1), vpp1(1), 11*std::numeric_limits<data__>::epsilon());
         TEST_ASSERT(vpp(2)==vpp1(2));
         ec=ccon.get_constraint(indexnm2, ciout);

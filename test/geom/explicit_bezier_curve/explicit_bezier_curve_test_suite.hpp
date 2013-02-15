@@ -418,7 +418,14 @@ class explicit_bezier_curve_test_suite : public Test::Suite
       t=1;
       eval_out=ebc.f(t);
       eval_ref=bc.f(t);
-      TEST_ASSERT(eval_out==eval_ref);
+      if (typeid(data_type)==typeid(double))
+      {
+        TEST_ASSERT((eval_out-eval_ref).norm()<5*eps);
+      }
+      else
+      {
+        TEST_ASSERT(eval_out==eval_ref);
+      }
 
       // test evaluation at interior point
       t=static_cast<data__>(0.45);
@@ -441,19 +448,7 @@ class explicit_bezier_curve_test_suite : public Test::Suite
       t=1;
       eval_out=ebc.fp(t);
       eval_ref=bc.fp(t);
-      if (typeid(data_type)==typeid(float))
-      {
-        TEST_ASSERT((eval_out-eval_ref).norm()<17*eps);
-//         std::cout << "447: " << (eval_out-eval_ref).norm()/eps << std::endl;
-      }
-      else if (typeid(data_type)==typeid(double))
-      {
-        TEST_ASSERT((eval_out-eval_ref).norm()<24.1*eps);
-      }
-      else
-      {
-        TEST_ASSERT(eval_out==eval_ref);
-      }
+      TEST_ASSERT((eval_out-eval_ref).norm()<25*eps);
 
       // test 1st derivative at interior point
       t=static_cast<data__>(0.45);
@@ -524,19 +519,7 @@ class explicit_bezier_curve_test_suite : public Test::Suite
       t=1;
       eli::geom::curve::curvature(curv_out, ebc, t);
       eli::geom::curve::curvature(curv_ref, bc, t);
-      if (typeid(data_type)==typeid(float))
-      {
-        TEST_ASSERT(std::abs(curv_out-curv_ref)<32*eps);
-//         std::cout << "530: " << std::abs(curv_out-curv_ref)/eps << std::endl;
-      }
-      else if (typeid(data_type)==typeid(double))
-      {
-        TEST_ASSERT(std::abs(curv_out-curv_ref)<47.1*eps);
-      }
-      else
-      {
-        TEST_ASSERT(curv_out==curv_ref);
-      }
+      TEST_ASSERT(std::abs(curv_out-curv_ref)<48*eps);
 
       // test curvature at interior point
       t=static_cast<data__>(0.45);
@@ -544,7 +527,7 @@ class explicit_bezier_curve_test_suite : public Test::Suite
       eli::geom::curve::curvature(curv_ref, bc, t);
       if ((typeid(data_type)==typeid(float)) || (typeid(data_type)==typeid(double)))
       {
-        TEST_ASSERT(std::abs(curv_out-curv_ref)<6.1*eps);
+        TEST_ASSERT(std::abs(curv_out-curv_ref)<10*eps);
       }
       else
       {

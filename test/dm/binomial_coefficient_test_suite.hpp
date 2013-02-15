@@ -59,13 +59,17 @@ class binomial_coefficient_test_suite : public Test::Suite
       TEST_ASSERT(iv==120);
 
       eli::dm::n_choose_k(dv, 10, 7);
-      TEST_ASSERT(dv==120.0);
+#if defined(__INTEL_COMPILER) && defined(NDEBUG)
+      TEST_ASSERT(std::abs(1-dv/120)<std::numeric_limits<double>::epsilon());
+#else
+      TEST_ASSERT(dv==120);
+#endif
 
       eli::dm::n_choose_k(iv, 20, 11);
       TEST_ASSERT(iv==167960);
 
       eli::dm::n_choose_k(dv, 20, 11);
-      TEST_ASSERT(dv==167960.0);
+      TEST_ASSERT(dv==167960);
     }
 
     void binomial_coefficient_test()
@@ -73,10 +77,18 @@ class binomial_coefficient_test_suite : public Test::Suite
       double dv;
 
       eli::dm::binomial_coefficient(dv, 10, 7);
-      TEST_ASSERT(dv==120.0);
+#if defined(__INTEL_COMPILER) && defined(NDEBUG)
+      TEST_ASSERT(std::abs(1-dv/120)<std::numeric_limits<double>::epsilon());
+#else
+      TEST_ASSERT(dv==120);
+#endif
 
       eli::dm::binomial_coefficient(dv, 20, 11);
-      TEST_ASSERT(dv==167960.0);
+#if defined(__INTEL_COMPILER) && defined(NDEBUG)
+      TEST_ASSERT(std::abs(1-dv/167960)<2*std::numeric_limits<double>::epsilon());
+#else
+      TEST_ASSERT(dv==167960);
+#endif
 
       eli::dm::binomial_coefficient(dv, 10.5, 7);
       TEST_ASSERT(std::abs(dv-202.98)<1e-2);

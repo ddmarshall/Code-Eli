@@ -230,7 +230,14 @@ class poly_root_test_suite : public Test::Suite
         coef_ref.resize(3);
         coef_ref << 1, 7, 3;
         p[3].get_coefficients(coef_out);
-        TEST_ASSERT(coef_out==coef_ref);
+        if ((typeid(data__)==typeid(float)) || (typeid(data__)==typeid(double)))
+        {
+          TEST_ASSERT((coef_out-coef_ref).norm()<5*std::numeric_limits<data__>::epsilon());
+        }
+        else
+        {
+          TEST_ASSERT(coef_out==coef_ref);
+        }
 
         // test p[4]
         coef_ref.resize(2);
@@ -706,7 +713,7 @@ class poly_root_test_suite : public Test::Suite
       {
         if (typeid(data__)==typeid(double))
         {
-          TEST_ASSERT(root[0]==root_val[0]);
+          TEST_ASSERT_DELTA(root[0], root_val[0], 2*std::numeric_limits<data__>::epsilon());
         }
         else if (typeid(data__)==typeid(long double))
         {
