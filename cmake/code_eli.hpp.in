@@ -176,12 +176,8 @@ namespace std
 // Clang versions 3.0 through latest (3.3) do not put these in the std namespace like they
 // should be.
 #ifdef __clang__
-<<<<<<< HEAD
 # if ( (__clang_major__ < 3) || ((__clang_major__==3) && (__clang_minor__<=3)) )
-=======
-# if ( (__clang_major__<3) || ((__clang_major__==3) && (__clang_minor__<=3)) )
->>>>>>> Additional fixes for CMake compiler support.
-#   include <cmath>
+#include <cmath>
 
 namespace std
 {
