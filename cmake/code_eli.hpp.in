@@ -38,7 +38,7 @@
 #   define _NEED_EXTRA_MATH_FUNCTIONS
 # endif
 # if (__INTEL_COMPILER<1210)
-#   define nullptr ((void *)0)
+#   define nullptr (0)
 # endif
 #endif
 
