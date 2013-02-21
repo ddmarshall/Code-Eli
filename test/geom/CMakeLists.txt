@@ -36,3 +36,9 @@ add_test(NAME ExplicitBezierCurveTest COMMAND $<TARGET_FILE:ExplicitBezierCurveT
 ###add_executable(CSTAirfoilCurveTest ${PROJECT_SOURCE_DIR}/cst_airfoil_curve/cst_airfoil_curve_test.cpp)
 ###target_link_libraries(CSTAirfoilCurveTest ${_ELI_TEST_LIBRARIES_LIST})
 ###add_test(NAME CSTAirfoilCurveTest COMMAND $<TARGET_FILE:CSTAirfoilCurveTest> --text)
+
+# add the bezier_surface test
+add_executable(BezierSurfaceTest ${PROJECT_SOURCE_DIR}/bezier_surface/bezier_surface_test.cpp)
+target_link_libraries(BezierSurfaceTest ${_ELI_TEST_LIBRARIES_LIST})
+add_test(NAME BezierSurfaceTest COMMAND $<TARGET_FILE:BezierSurfaceTest> --text)
+
