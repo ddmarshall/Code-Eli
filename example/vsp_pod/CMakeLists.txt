@@ -10,13 +10,8 @@
 #    David D. Marshall - initial code and implementation
 ################################################################################
 
-project(ELI_EXAMPLE)
+project(VSP_POD)
 
-# set what libraries need to be used
-set(_ELI_EXAMPLE_LIBRARIES_LIST "")
-if (QD_FOUND)
-  SET (_ELI_EXAMPLE_LIBRARIES_LIST ${_ELI_EXAMPLE_LIBRARIES_LIST} ${QD_LIBRARIES})
-endif()
-
-add_subdirectory(airfoil_fit)
-add_subdirectory(vsp_pod)
+# add the OpenVSP Pod construction example
+add_executable(VSPPodExample ${PROJECT_SOURCE_DIR}/vsp_pod.cpp)
+target_link_libraries(VSPPodExample ${_ELI_EXAMPLE_LIBRARIES_LIST})
