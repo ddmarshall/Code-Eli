@@ -152,8 +152,8 @@ namespace eli
 
         template<typename Derived1, typename Derived2, typename PointType>
         void build_fit_Ab(Eigen::MatrixBase<Derived1> &A,
-                          Eigen::MatrixBase<Derived2> &b, 
-                          std::vector<typename Derived1::Scalar> &t, 
+                          Eigen::MatrixBase<Derived2> &b,
+                          std::vector<typename Derived1::Scalar> &t,
                           const std::vector<PointType, Eigen::aligned_allocator<PointType> > &pts,
                           const typename Derived1::Index &n, const size_t &dim)
         {
@@ -344,6 +344,20 @@ namespace eli
 
           bool open() const {return open_flag;}
           bool closed() const {return !open_flag;}
+
+          void reverse()
+          {
+            index_type i, n(this->size()-1);
+            control_point_type B_new(n+1, dim__);
+
+            for (i=0; i<=n; ++i)
+            {
+              B_new.row(n-i)=B.row(i);
+            }
+
+            // set the new control points
+            set_control_points(B_new);
+          }
 
           void degree_promote()
           {
