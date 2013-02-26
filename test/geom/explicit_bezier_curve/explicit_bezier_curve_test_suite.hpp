@@ -46,6 +46,7 @@ class explicit_bezier_curve_test_suite : public Test::Suite
     {
       // add the tests
       TEST_ADD(explicit_bezier_curve_test_suite<float>::assignment_test);
+      TEST_ADD(explicit_bezier_curve_test_suite<float>::reverse_test);
       TEST_ADD(explicit_bezier_curve_test_suite<float>::evaluation_test);
       TEST_ADD(explicit_bezier_curve_test_suite<float>::derivative_test);
       TEST_ADD(explicit_bezier_curve_test_suite<float>::promotion_test);
@@ -61,6 +62,7 @@ class explicit_bezier_curve_test_suite : public Test::Suite
     {
       // add the tests
       TEST_ADD(explicit_bezier_curve_test_suite<double>::assignment_test);
+      TEST_ADD(explicit_bezier_curve_test_suite<double>::reverse_test);
       TEST_ADD(explicit_bezier_curve_test_suite<double>::evaluation_test);
       TEST_ADD(explicit_bezier_curve_test_suite<double>::derivative_test);
       TEST_ADD(explicit_bezier_curve_test_suite<double>::promotion_test);
@@ -76,6 +78,7 @@ class explicit_bezier_curve_test_suite : public Test::Suite
     {
       // add the tests
       TEST_ADD(explicit_bezier_curve_test_suite<long double>::assignment_test);
+      TEST_ADD(explicit_bezier_curve_test_suite<long double>::reverse_test);
       TEST_ADD(explicit_bezier_curve_test_suite<long double>::evaluation_test);
       TEST_ADD(explicit_bezier_curve_test_suite<long double>::derivative_test);
       TEST_ADD(explicit_bezier_curve_test_suite<long double>::promotion_test);
@@ -92,6 +95,7 @@ class explicit_bezier_curve_test_suite : public Test::Suite
     {
       // add the tests
       TEST_ADD(explicit_bezier_curve_test_suite<dd_real>::assignment_test);
+      TEST_ADD(explicit_bezier_curve_test_suite<dd_real>::reverse_test);
       TEST_ADD(explicit_bezier_curve_test_suite<dd_real>::evaluation_test);
       TEST_ADD(explicit_bezier_curve_test_suite<dd_real>::derivative_test);
       TEST_ADD(explicit_bezier_curve_test_suite<dd_real>::promotion_test);
@@ -108,6 +112,7 @@ class explicit_bezier_curve_test_suite : public Test::Suite
     {
       // add the tests
       TEST_ADD(explicit_bezier_curve_test_suite<qd_real>::assignment_test);
+      TEST_ADD(explicit_bezier_curve_test_suite<qd_real>::reverse_test);
       TEST_ADD(explicit_bezier_curve_test_suite<qd_real>::evaluation_test);
       TEST_ADD(explicit_bezier_curve_test_suite<qd_real>::derivative_test);
       TEST_ADD(explicit_bezier_curve_test_suite<qd_real>::promotion_test);
@@ -210,6 +215,30 @@ class explicit_bezier_curve_test_suite : public Test::Suite
 
       // test order
       TEST_ASSERT(ebc2.degree()==3);
+    }
+
+    void reverse_test()
+    {
+      curve_type ebc1(3), ebc2;
+      control_point_type cntrl_in[4];
+
+      // test default constructor then set control points
+      cntrl_in[0] << 2.0;
+      cntrl_in[1] << 1.0;
+      cntrl_in[2] << 3.5;
+      cntrl_in[3] << 4.0;
+
+      for (index_type i=0; i<4; ++i)
+      {
+        ebc1.set_control_point(cntrl_in[i], i);
+      }
+
+      ebc2=ebc1;
+      ebc1.reverse();
+      for (index_type i=0; i<4; ++i)
+      {
+        TEST_ASSERT(ebc1.get_control_point(i)==ebc2.get_control_point(3-i));
+      }
     }
 
     void evaluation_test()

@@ -62,6 +62,7 @@ class piecewise_curve_test_suite : public Test::Suite
     {
       // add the tests
       TEST_ADD(piecewise_curve_test_suite<double>::creation_test);
+      TEST_ADD(piecewise_curve_test_suite<double>::reverse_test);
       TEST_ADD(piecewise_curve_test_suite<double>::replace_test);
       TEST_ADD(piecewise_curve_test_suite<double>::evaluation_test);
       TEST_ADD(piecewise_curve_test_suite<double>::split_test);
@@ -77,6 +78,7 @@ class piecewise_curve_test_suite : public Test::Suite
     {
       // add the tests
       TEST_ADD(piecewise_curve_test_suite<long double>::creation_test);
+      TEST_ADD(piecewise_curve_test_suite<long double>::reverse_test);
       TEST_ADD(piecewise_curve_test_suite<long double>::replace_test);
       TEST_ADD(piecewise_curve_test_suite<long double>::evaluation_test);
       TEST_ADD(piecewise_curve_test_suite<long double>::split_test);
@@ -93,6 +95,7 @@ class piecewise_curve_test_suite : public Test::Suite
     {
       // add the tests
       TEST_ADD(piecewise_curve_test_suite<dd_real>::creation_test);
+      TEST_ADD(piecewise_curve_test_suite<dd_real>::reverse_test);
       TEST_ADD(piecewise_curve_test_suite<dd_real>::replace_test);
       TEST_ADD(piecewise_curve_test_suite<dd_real>::evaluation_test);
       TEST_ADD(piecewise_curve_test_suite<dd_real>::split_test);
@@ -109,6 +112,7 @@ class piecewise_curve_test_suite : public Test::Suite
     {
       // add the tests
       TEST_ADD(piecewise_curve_test_suite<qd_real>::creation_test);
+      TEST_ADD(piecewise_curve_test_suite<qd_real>::reverse_test);
       TEST_ADD(piecewise_curve_test_suite<qd_real>::replace_test);
       TEST_ADD(piecewise_curve_test_suite<qd_real>::evaluation_test);
       TEST_ADD(piecewise_curve_test_suite<qd_real>::split_test);
@@ -236,6 +240,64 @@ class piecewise_curve_test_suite : public Test::Suite
       // test assignment operator
       c2=c1;
       TEST_ASSERT(c2==c1);
+    }
+
+    void reverse_test()
+    {
+      piecewise_curve_type c1, c2;
+      curve_type bc[3], bc1_out, bc2_out;
+      data_type dt[3], dt1_out, dt2_out;
+      index_type i;
+      typename curve_type::control_point_type cntrl1_in[4], cntrl2_in[5], cntrl3_in[3];
+      typename piecewise_curve_type::error_code err;
+
+      // create bezier curves
+      cntrl1_in[0] << 2.0, 2.0, 0.0;
+      cntrl1_in[1] << 1.0, 1.5, 0.0;
+      cntrl1_in[2] << 3.5, 0.0, 0.0;
+      cntrl1_in[3] << 4.0, 1.0, 0.0;
+      dt[0]=0.5;
+      bc[0].resize(3);
+      for (i=0; i<4; ++i)
+      {
+        bc[0].set_control_point(cntrl1_in[i], i);
+      }
+      cntrl2_in[0] << 4.0, 1.0, 0.0;
+      cntrl2_in[1] << 5.0, 2.5, 0.0;
+      cntrl2_in[2] << 5.5, 1.0, 0.0;
+      cntrl2_in[3] << 6.0, 0.0, 0.0;
+      cntrl2_in[4] << 6.5,-0.5, 0.0;
+      dt[1]=2.0;
+      bc[1].resize(4);
+      for (i=0; i<5; ++i)
+      {
+        bc[1].set_control_point(cntrl2_in[i], i);
+      }
+      cntrl3_in[0] << 6.5,-0.5, 0.0;
+      cntrl3_in[1] << 6.0,-1.0, 0.0;
+      cntrl3_in[2] << 5.5,-2.0, 0.0;
+      dt[2]=1.5;
+      bc[2].resize(2);
+      for (i=0; i<3; ++i)
+      {
+        bc[2].set_control_point(cntrl3_in[i], i);
+      }
+
+      // initialize by passing iterators to curve collection
+      err=c1.set(bc, bc+3);
+      TEST_ASSERT(err==piecewise_curve_type::NO_ERROR);
+
+      c1=c2;
+      c2.reverse();
+      for (i=0; i<c1.number_segments(); ++i)
+      {
+        c1.get(bc1_out, dt1_out, i);
+        c2.get(bc2_out, dt2_out, c1.number_segments()-i-1);
+        for (index_type ii=0; ii<=bc1_out.degree(); ++ii)
+        {
+          TEST_ASSERT(bc1_out.get_control_point(ii)==bc2_out.get_control_point(bc1_out.degree()-ii));
+        }
+      }
     }
 
     void replace_test()

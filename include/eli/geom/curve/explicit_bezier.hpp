@@ -90,6 +90,11 @@ namespace eli
             return y_curve.get_control_point(i);
           }
 
+          void reverse()
+          {
+            y_curve.reverse();
+          }
+
           point_type f(const data_type &t) const
           {
             point_type rtn;

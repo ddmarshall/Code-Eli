@@ -145,6 +145,44 @@ namespace eli
             B_u[j].row(i) = cp;
           }
 
+          void reverse_u()
+          {
+            typedef Eigen::Matrix<data_type, Eigen::Dynamic, dim__> control_col_type;
+            typedef std::vector<control_col_type, Eigen::aligned_allocator<control_col_type> > control_col_collection_type;
+
+            index_type i, n(degree_u()), m(degree_v());
+            control_col_collection_type current_col(n+1, control_col_type(m+1, dim__));
+
+            // copy the control cols
+            for (i=0; i<=n; ++i)
+              current_col[i]=B_v[i];
+
+            // set the new control points
+            for (i=0; i<=n; ++i)
+            {
+              B_v[i]=current_col[n-i];
+            }
+          }
+
+          void reverse_v()
+          {
+            typedef Eigen::Matrix<data_type, Eigen::Dynamic, dim__> control_row_type;
+            typedef std::vector<control_row_type, Eigen::aligned_allocator<control_row_type> > control_row_collection_type;
+
+            index_type i, n(degree_u()), m(degree_v());
+            control_row_collection_type current_row(m+1, control_row_type(n+1, dim__));
+
+            // copy the control rows
+            for (i=0; i<=m; ++i)
+              current_row[i]=B_u[i];
+
+            // set the new control points
+            for (i=0; i<=m; ++i)
+            {
+              B_u[i]=current_row[m-i];
+            }
+          }
+
 // NOTE: These would need to be done for u-direction and v-direction
 //           bool open() const {return open_flag;}
 //           bool closed() const {return !open_flag;}

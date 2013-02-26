@@ -89,6 +89,21 @@ namespace eli
             return !open();
           }
 
+          void reverse()
+          {
+            // reverse order of segments
+            segments.reverse();
+
+            // reverse each segment
+            for (typename segment_collection_type::iterator it=segments.begin(); it!=segments.end(); ++it)
+            {
+              it->c.reverse();
+            }
+
+            // check if still connected
+            assert(check_continuity(eli::geom::general::C0));
+          }
+
           void clear() {segments.clear();}
 
           template<typename it__>
