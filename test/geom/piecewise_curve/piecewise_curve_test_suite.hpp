@@ -39,12 +39,14 @@ class piecewise_curve_test_suite : public Test::Suite
     typedef typename piecewise_curve_type::curve_type curve_type;
     typedef typename piecewise_curve_type::point_type point_type;
     typedef typename piecewise_curve_type::data_type data_type;
+    typedef typename piecewise_curve_type::index_type index_type;
 
   protected:
     void AddTests(const float &)
     {
       // add the tests
       TEST_ADD(piecewise_curve_test_suite<float>::creation_test);
+      TEST_ADD(piecewise_curve_test_suite<float>::reverse_test);
       TEST_ADD(piecewise_curve_test_suite<float>::replace_test);
       TEST_ADD(piecewise_curve_test_suite<float>::evaluation_test);
       TEST_ADD(piecewise_curve_test_suite<float>::split_test);
@@ -134,28 +136,41 @@ class piecewise_curve_test_suite : public Test::Suite
       piecewise_curve_type c1, c2;
       curve_type bc[3], bc2, bc_out;
       data_type dt[3], dt_out;
-      typename curve_type::control_point_type cntrl1_in(4,3), cntrl2_in(5,3), cntrl3_in(3,3), cntrl2a_in(2,3);
+      index_type i;
+      typename curve_type::control_point_type cntrl1_in[4], cntrl2_in[5], cntrl3_in[3], cntrl2a_in[2];
       typename piecewise_curve_type::error_code err;
 
       // create bezier curves
-      cntrl1_in << 2.0, 2.0, 0.0,
-                   1.0, 1.5, 0.0,
-                   3.5, 0.0, 0.0,
-                   4.0, 1.0, 0.0;
+      cntrl1_in[0] << 2.0, 2.0, 0.0;
+      cntrl1_in[1] << 1.0, 1.5, 0.0;
+      cntrl1_in[2] << 3.5, 0.0, 0.0;
+      cntrl1_in[3] << 4.0, 1.0, 0.0;
       dt[0]=0.5;
-      bc[0].set_control_points(cntrl1_in);
-      cntrl2_in << 4.0, 1.0, 0.0,
-                   5.0, 2.5, 0.0,
-                   5.5, 1.0, 0.0,
-                   6.0, 0.0, 0.0,
-                   6.5,-0.5, 0.0;
+      bc[0].resize(3);
+      for (i=0; i<4; ++i)
+      {
+        bc[0].set_control_point(cntrl1_in[i], i);
+      }
+      cntrl2_in[0] << 4.0, 1.0, 0.0;
+      cntrl2_in[1] << 5.0, 2.5, 0.0;
+      cntrl2_in[2] << 5.5, 1.0, 0.0;
+      cntrl2_in[3] << 6.0, 0.0, 0.0;
+      cntrl2_in[4] << 6.5,-0.5, 0.0;
       dt[1]=2.0;
-      bc[1].set_control_points(cntrl2_in);
-      cntrl3_in << 6.5,-0.5, 0.0,
-                   6.0,-1.0, 0.0,
-                   5.5,-2.0, 0.0;
+      bc[1].resize(4);
+      for (i=0; i<5; ++i)
+      {
+        bc[1].set_control_point(cntrl2_in[i], i);
+      }
+      cntrl3_in[0] << 6.5,-0.5, 0.0;
+      cntrl3_in[1] << 6.0,-1.0, 0.0;
+      cntrl3_in[2] << 5.5,-2.0, 0.0;
       dt[2]=1.5;
-      bc[2].set_control_points(cntrl3_in);
+      bc[2].resize(2);
+      for (i=0; i<3; ++i)
+      {
+        bc[2].set_control_point(cntrl3_in[i], i);
+      }
 
       // initialize by passing iterators to curve collection
       err=c1.set(bc, bc+2);
@@ -196,9 +211,13 @@ class piecewise_curve_test_suite : public Test::Suite
       TEST_ASSERT(err==piecewise_curve_type::SEGMENT_NOT_CONNECTED);
 
       // append segment to start
-      cntrl2a_in << 1.0, 1.0, 0.0,
-                    2.0, 2.0, 0.0;
-      bc2.set_control_points(cntrl2a_in);
+      cntrl2a_in[0] << 1.0, 1.0, 0.0;
+      cntrl2a_in[1] << 2.0, 2.0, 0.0;
+      bc2.resize(1);
+      for (i=0; i<2; ++i)
+      {
+        bc2.set_control_point(cntrl2a_in[i], i);
+      }
       err=c1.push_front(bc2);
       TEST_ASSERT(err==piecewise_curve_type::NO_ERROR);
       err=c1.get(bc_out, dt_out, 0);
@@ -224,36 +243,54 @@ class piecewise_curve_test_suite : public Test::Suite
       piecewise_curve_type c1, c1c, c2, c3;
       curve_type bc[3], bc2, bc_out;
       data_type dt[3], dt2, dt_out;
-      typename curve_type::control_point_type cntrl1_in(4,3), cntrl2_in(5,3), cntrl3_in(3,3), cntrl2a_in(2,3);
+      index_type i;
+      typename curve_type::control_point_type cntrl1_in[4], cntrl2_in[5], cntrl3_in[3], cntrl2a_in[2];
       typename piecewise_curve_type::error_code err;
 
       // create bezier curves
-      cntrl1_in << 2.0, 2.0, 0.0,
-                   1.0, 1.5, 0.0,
-                   3.5, 0.0, 0.0,
-                   4.0, 1.0, 0.0;
+      cntrl1_in[0] << 2.0, 2.0, 0.0;
+      cntrl1_in[1] << 1.0, 1.5, 0.0;
+      cntrl1_in[2] << 3.5, 0.0, 0.0;
+      cntrl1_in[3] << 4.0, 1.0, 0.0;
       dt[0]=0.5;
-      bc[0].set_control_points(cntrl1_in);
-      cntrl2_in << 4.0, 1.0, 0.0,
-                   5.0, 2.5, 0.0,
-                   5.5, 1.0, 0.0,
-                   6.0, 0.0, 0.0,
-                   6.5,-0.5, 0.0;
+      bc[0].resize(3);
+      for (i=0; i<4; ++i)
+      {
+        bc[0].set_control_point(cntrl1_in[i], i);
+      }
+      cntrl2_in[0] << 4.0, 1.0, 0.0;
+      cntrl2_in[1] << 5.0, 2.5, 0.0;
+      cntrl2_in[2] << 5.5, 1.0, 0.0;
+      cntrl2_in[3] << 6.0, 0.0, 0.0;
+      cntrl2_in[4] << 6.5,-0.5, 0.0;
       dt[1]=2.0;
-      bc[1].set_control_points(cntrl2_in);
-      cntrl3_in << 6.5,-0.5, 0.0,
-                   6.0,-1.0, 0.0,
-                   5.5,-2.0, 0.0;
+      bc[1].resize(4);
+      for (i=0; i<5; ++i)
+      {
+        bc[1].set_control_point(cntrl2_in[i], i);
+      }
+      cntrl3_in[0] << 6.5,-0.5, 0.0;
+      cntrl3_in[1] << 6.0,-1.0, 0.0;
+      cntrl3_in[2] << 5.5,-2.0, 0.0;
       dt[2]=1.5;
-      bc[2].set_control_points(cntrl3_in);
+      bc[2].resize(2);
+      for (i=0; i<3; ++i)
+      {
+        bc[2].set_control_point(cntrl3_in[i], i);
+      }
 
       // initialize by passing iterators to curve collection
       err=c1.set(bc, bc+3, dt);
+      TEST_ASSERT(err==piecewise_curve_type::NO_ERROR);
 
       // replace segment correctly
-      cntrl2a_in << 4.0, 1.0, 0.0,
-                    6.5,-0.5, 0.0;
-      bc2.set_control_points(cntrl2a_in);
+      cntrl2a_in[0] << 4.0, 1.0, 0.0;
+      cntrl2a_in[1] << 6.5,-0.5, 0.0;
+      bc2.resize(1);
+      for (i=0; i<2; ++i)
+      {
+        bc2.set_control_point(cntrl2a_in[i], i);
+      }
       err=c1.replace(bc2, 1);
       TEST_ASSERT(err==piecewise_curve_type::NO_ERROR);
       err=c1.get(bc_out, dt_out, 1);
@@ -262,36 +299,56 @@ class piecewise_curve_test_suite : public Test::Suite
       TEST_ASSERT(dt[1]==dt_out);
 
       // replace segment with segment that doesn't connect to neighbor(s)
-      cntrl2a_in << 4.0, 1.0, 0.0,
-                    5.5,-0.5, 0.0;
-      bc2.set_control_points(cntrl2a_in);
+      cntrl2a_in[0] << 4.0, 1.0, 0.0;
+      cntrl2a_in[1] << 5.5,-0.5, 0.0;
+      bc2.resize(1);
+      for (i=0; i<2; ++i)
+      {
+        bc2.set_control_point(cntrl2a_in[i], i);
+      }
       err=c1.replace(bc2, 1);
       TEST_ASSERT(err==piecewise_curve_type::SEGMENT_NOT_CONNECTED);
-      cntrl2a_in << 4.0, 2.0, 0.0,
-                    6.5,-0.5, 0.0;
-      bc2.set_control_points(cntrl2a_in);
+      cntrl2a_in[0] << 4.0, 2.0, 0.0;
+      cntrl2a_in[1] << 6.5,-0.5, 0.0;
+      bc2.resize(1);
+      for (i=0; i<2; ++i)
+      {
+        bc2.set_control_point(cntrl2a_in[i], i);
+      }
       err=c1.replace(bc2, 1);
       TEST_ASSERT(err==piecewise_curve_type::SEGMENT_NOT_CONNECTED);
 
       // replace one segment with several segments
-      cntrl1_in << 4.0, 1.0, 0.0,
-                   3.0, 1.5, 0.0,
-                   3.5, 2.0, 0.0,
-                   5.5, 2.5, 0.0;
+      cntrl1_in[0] << 4.0, 1.0, 0.0;
+      cntrl1_in[1] << 3.0, 1.5, 0.0;
+      cntrl1_in[2] << 3.5, 2.0, 0.0;
+      cntrl1_in[3] << 5.5, 2.5, 0.0;
       dt[0]=0.25;
-      bc[0].set_control_points(cntrl1_in);
-      cntrl2_in << 5.5, 2.5, 0.0,
-                   5.0, 2.5, 0.0,
-                   5.5, 2.0, 0.0,
-                   5.0, 2.0, 0.0,
-                   5.0, 0.5, 0.0;
+      bc[0].resize(3);
+      for (i=0; i<4; ++i)
+      {
+        bc[0].set_control_point(cntrl1_in[i], i);
+      }
+      cntrl2_in[0] << 5.5, 2.5, 0.0;
+      cntrl2_in[1] << 5.0, 2.5, 0.0;
+      cntrl2_in[2] << 5.5, 2.0, 0.0;
+      cntrl2_in[3] << 5.0, 2.0, 0.0;
+      cntrl2_in[4] << 5.0, 0.5, 0.0;
       dt[1]=1.0;
-      bc[1].set_control_points(cntrl2_in);
-      cntrl3_in << 5.0, 0.5, 0.0,
-                   5.5, 0.0, 0.0,
-                   6.5,-0.5, 0.0;
+      bc[1].resize(4);
+      for (i=0; i<5; ++i)
+      {
+        bc[1].set_control_point(cntrl2_in[i], i);
+      }
+      cntrl3_in[0] << 5.0, 0.5, 0.0;
+      cntrl3_in[1] << 5.5, 0.0, 0.0;
+      cntrl3_in[2] << 6.5,-0.5, 0.0;
       dt[2]=3.0;
-      bc[2].set_control_points(cntrl3_in);
+      bc[2].resize(2);
+      for (i=0; i<3; ++i)
+      {
+        bc[2].set_control_point(cntrl3_in[i], i);
+      }
       err=c2.set(bc, bc+3, dt);
       TEST_ASSERT(err==piecewise_curve_type::NO_ERROR);
       c1c=c1;
@@ -314,46 +371,70 @@ class piecewise_curve_test_suite : public Test::Suite
 
       // replace segment with piecewise that doesn't connect to neighbor(s)
       c1=c1c;
-      cntrl1_in << 5.0, 1.0, 0.0,
-                   3.0, 1.5, 0.0,
-                   3.5, 2.0, 0.0,
-                   5.5, 2.5, 0.0;
+      cntrl1_in[0] << 5.0, 1.0, 0.0;
+      cntrl1_in[1] << 3.0, 1.5, 0.0;
+      cntrl1_in[2] << 3.5, 2.0, 0.0;
+      cntrl1_in[3] << 5.5, 2.5, 0.0;
       dt[0]=0.25;
-      bc[0].set_control_points(cntrl1_in);
-      cntrl2_in << 5.5, 2.5, 0.0,
-                   5.0, 2.5, 0.0,
-                   5.5, 2.0, 0.0,
-                   5.0, 2.0, 0.0,
-                   5.0, 0.5, 0.0;
+      bc[0].resize(3);
+      for (i=0; i<4; ++i)
+      {
+        bc[0].set_control_point(cntrl1_in[i], i);
+      }
+      cntrl2_in[0] << 5.5, 2.5, 0.0;
+      cntrl2_in[1] << 5.0, 2.5, 0.0;
+      cntrl2_in[2] << 5.5, 2.0, 0.0;
+      cntrl2_in[3] << 5.0, 2.0, 0.0;
+      cntrl2_in[4] << 5.0, 0.5, 0.0;
       dt[1]=1.0;
-      bc[1].set_control_points(cntrl2_in);
-      cntrl3_in << 5.0, 0.5, 0.0,
-                   5.5, 0.0, 0.0,
-                   6.5,-0.5, 0.0;
+      bc[1].resize(4);
+      for (i=0; i<5; ++i)
+      {
+        bc[1].set_control_point(cntrl2_in[i], i);
+      }
+      cntrl3_in[0] << 5.0, 0.5, 0.0;
+      cntrl3_in[1] << 5.5, 0.0, 0.0;
+      cntrl3_in[2] << 6.5,-0.5, 0.0;
       dt[2]=3.0;
-      bc[2].set_control_points(cntrl3_in);
+      bc[2].resize(2);
+      for (i=0; i<3; ++i)
+      {
+        bc[2].set_control_point(cntrl3_in[i], i);
+      }
       err=c2.set(bc, bc+3, dt);
       TEST_ASSERT(err==piecewise_curve_type::NO_ERROR);
       err=c1.replace(c2, 1);
       TEST_ASSERT(err==piecewise_curve_type::SEGMENT_NOT_CONNECTED);
-      cntrl1_in << 4.0, 1.0, 0.0,
-                   3.0, 1.5, 0.0,
-                   3.5, 2.0, 0.0,
-                   5.5, 2.5, 0.0;
+      cntrl1_in[0] << 4.0, 1.0, 0.0;
+      cntrl1_in[1] << 3.0, 1.5, 0.0;
+      cntrl1_in[2] << 3.5, 2.0, 0.0;
+      cntrl1_in[3] << 5.5, 2.5, 0.0;
       dt[0]=0.25;
-      bc[0].set_control_points(cntrl1_in);
-      cntrl2_in << 5.5, 2.5, 0.0,
-                   5.0, 2.5, 0.0,
-                   5.5, 2.0, 0.0,
-                   5.0, 2.0, 0.0,
-                   5.0, 0.5, 0.0;
+      bc[0].resize(3);
+      for (i=0; i<4; ++i)
+      {
+        bc[0].set_control_point(cntrl1_in[i], i);
+      }
+      cntrl2_in[0] << 5.5, 2.5, 0.0;
+      cntrl2_in[1] << 5.0, 2.5, 0.0;
+      cntrl2_in[2] << 5.5, 2.0, 0.0;
+      cntrl2_in[3] << 5.0, 2.0, 0.0;
+      cntrl2_in[4] << 5.0, 0.5, 0.0;
       dt[1]=1.0;
-      bc[1].set_control_points(cntrl2_in);
-      cntrl3_in << 5.0, 0.5, 0.0,
-                   5.5, 0.0, 0.0,
-                   7.5,-0.5, 0.0;
+      bc[1].resize(4);
+      for (i=0; i<5; ++i)
+      {
+        bc[1].set_control_point(cntrl2_in[i], i);
+      }
+      cntrl3_in[0] << 5.0, 0.5, 0.0;
+      cntrl3_in[1] << 5.5, 0.0, 0.0;
+      cntrl3_in[2] << 7.5,-0.5, 0.0;
       dt[2]=3.0;
-      bc[2].set_control_points(cntrl3_in);
+      bc[2].resize(2);
+      for (i=0; i<3; ++i)
+      {
+        bc[2].set_control_point(cntrl3_in[i], i);
+      }
       err=c2.set(bc, bc+3, dt);
       TEST_ASSERT(err==piecewise_curve_type::NO_ERROR);
       err=c1.replace(c2, 1);
@@ -362,10 +443,14 @@ class piecewise_curve_test_suite : public Test::Suite
       // replace several segments with one segment
       c1=c3;
       c1c=c1;
-      cntrl2a_in << 4.0, 1.0, 0.0,
-                    5.0, 0.5, 0.0;
+      cntrl2a_in[0] << 4.0, 1.0, 0.0;
+      cntrl2a_in[1] << 5.0, 0.5, 0.0;
       dt2=1.25;
-      bc2.set_control_points(cntrl2a_in);
+      bc2.resize(1);
+      for (i=0; i<2; ++i)
+      {
+        bc2.set_control_point(cntrl2a_in[i], i);
+      }
       err=c1.replace(bc2, dt2, 1, 3);
       TEST_ASSERT(err==piecewise_curve_type::NO_ERROR);
       TEST_ASSERT(c1.number_segments()==4);
@@ -377,40 +462,60 @@ class piecewise_curve_test_suite : public Test::Suite
 
       // replace segments with segment that doesn't connect to neighbor(s)
       c1=c1c;
-      cntrl2a_in << 4.5, 1.0, 0.0,
-                    5.0, 0.5, 0.0;
+      cntrl2a_in[0] << 4.5, 1.0, 0.0;
+      cntrl2a_in[1] << 5.0, 0.5, 0.0;
       dt2=1.25;
-      bc2.set_control_points(cntrl2a_in);
+      bc2.resize(1);
+      for (i=0; i<2; ++i)
+      {
+        bc2.set_control_point(cntrl2a_in[i], i);
+      }
       err=c1.replace(bc2, dt2, 1, 3);
       TEST_ASSERT(err==piecewise_curve_type::SEGMENT_NOT_CONNECTED);
-      cntrl2a_in << 4.0, 1.0, 0.0,
-                    5.5, 0.5, 0.0;
+      cntrl2a_in[0] << 4.0, 1.0, 0.0;
+      cntrl2a_in[1] << 5.5, 0.5, 0.0;
       dt2=1.25;
-      bc2.set_control_points(cntrl2a_in);
+      bc2.resize(1);
+      for (i=0; i<2; ++i)
+      {
+        bc2.set_control_point(cntrl2a_in[i], i);
+      }
       err=c1.replace(bc2, dt2, 1, 3);
       TEST_ASSERT(err==piecewise_curve_type::SEGMENT_NOT_CONNECTED);
 
       // replace several segments with several segments
       c1=c3;
       c1c=c1;
-      cntrl1_in << 4.0, 1.0, 0.0,
-                   3.0, 1.5, 0.0,
-                   3.5, 2.0, 0.0,
-                   5.5, 2.5, 0.0;
-      dt[0]=1.25;
-      bc[0].set_control_points(cntrl1_in);
-      cntrl2_in << 5.5, 2.5, 0.0,
-                   5.0, 2.5, 0.0,
-                   4.5, 2.0, 0.0,
-                   4.0, 2.0, 0.0,
-                   3.5, 0.5, 0.0;
-      dt[1]=1.5;
-      bc[1].set_control_points(cntrl2_in);
-      cntrl3_in << 3.5, 0.5, 0.0,
-                   4.5, 0.0, 0.0,
-                   6.5,-0.5, 0.0;
-      dt[2]=3.5;
-      bc[2].set_control_points(cntrl3_in);
+      cntrl1_in[0] << 4.0, 1.0, 0.0;
+      cntrl1_in[1] << 3.0, 1.5, 0.0;
+      cntrl1_in[2] << 3.5, 2.0, 0.0;
+      cntrl1_in[3] << 5.5, 2.5, 0.0;
+      dt[0]=0.25;
+      bc[0].resize(3);
+      for (i=0; i<4; ++i)
+      {
+        bc[0].set_control_point(cntrl1_in[i], i);
+      }
+      cntrl2_in[0] << 5.5, 2.5, 0.0;
+      cntrl2_in[1] << 5.0, 2.5, 0.0;
+      cntrl2_in[2] << 4.5, 2.0, 0.0;
+      cntrl2_in[3] << 4.0, 2.0, 0.0;
+      cntrl2_in[4] << 3.5, 0.5, 0.0;
+      dt[1]=1.0;
+      bc[1].resize(4);
+      for (i=0; i<5; ++i)
+      {
+        bc[1].set_control_point(cntrl2_in[i], i);
+      }
+      cntrl3_in[0] << 3.5, 0.5, 0.0;
+      cntrl3_in[1] << 4.5, 0.0, 0.0;
+      cntrl3_in[2] << 6.5,-0.5, 0.0;
+      dt[2]=3.0;
+      bc[2].resize(2);
+      for (i=0; i<3; ++i)
+      {
+        bc[2].set_control_point(cntrl3_in[i], i);
+      }
       err=c2.set(bc, bc+3, dt);
       TEST_ASSERT(err==piecewise_curve_type::NO_ERROR);
       err=c1.replace(c2, 1, 3);
@@ -431,46 +536,70 @@ class piecewise_curve_test_suite : public Test::Suite
 
       // replace segments with piecewise that doesn't connect to neighbor(s)
       c1=c1c;
-      cntrl1_in << 3.0, 1.0, 0.0,
-                   3.0, 1.5, 0.0,
-                   3.5, 2.0, 0.0,
-                   5.5, 2.5, 0.0;
+      cntrl1_in[0] << 3.0, 1.0, 0.0;
+      cntrl1_in[1] << 3.0, 1.5, 0.0;
+      cntrl1_in[2] << 3.5, 2.0, 0.0;
+      cntrl1_in[3] << 5.5, 2.5, 0.0;
       dt[0]=1.25;
-      bc[0].set_control_points(cntrl1_in);
-      cntrl2_in << 5.5, 2.5, 0.0,
-                   5.0, 2.5, 0.0,
-                   4.5, 2.0, 0.0,
-                   4.0, 2.0, 0.0,
-                   3.5, 0.5, 0.0;
+      bc[0].resize(3);
+      for (i=0; i<4; ++i)
+      {
+        bc[0].set_control_point(cntrl1_in[i], i);
+      }
+      cntrl2_in[0] << 5.5, 2.5, 0.0;
+      cntrl2_in[1] << 5.0, 2.5, 0.0;
+      cntrl2_in[2] << 4.5, 2.0, 0.0;
+      cntrl2_in[3] << 4.0, 2.0, 0.0;
+      cntrl2_in[4] << 3.5, 0.5, 0.0;
       dt[1]=1.5;
-      bc[1].set_control_points(cntrl2_in);
-      cntrl3_in << 3.5, 0.5, 0.0,
-                   4.5, 0.0, 0.0,
-                   6.5,-0.5, 0.0;
+      bc[1].resize(4);
+      for (i=0; i<5; ++i)
+      {
+        bc[1].set_control_point(cntrl2_in[i], i);
+      }
+      cntrl3_in[0] << 3.5, 0.5, 0.0;
+      cntrl3_in[1] << 4.5, 0.0, 0.0;
+      cntrl3_in[2] << 6.5,-0.5, 0.0;
       dt[2]=3.5;
-      bc[2].set_control_points(cntrl3_in);
+      bc[2].resize(2);
+      for (i=0; i<3; ++i)
+      {
+        bc[2].set_control_point(cntrl3_in[i], i);
+      }
       err=c2.set(bc, bc+3, dt);
       TEST_ASSERT(err==piecewise_curve_type::NO_ERROR);
       err=c1.replace(c2, 1, 3);
       TEST_ASSERT(err==piecewise_curve_type::SEGMENT_NOT_CONNECTED);
-      cntrl1_in << 4.0, 1.0, 0.0,
-                   3.0, 1.5, 0.0,
-                   3.5, 2.0, 0.0,
-                   5.5, 2.5, 0.0;
+      cntrl1_in[0] << 4.0, 1.0, 0.0;
+      cntrl1_in[1] << 3.0, 1.5, 0.0;
+      cntrl1_in[2] << 3.5, 2.0, 0.0;
+      cntrl1_in[3] << 5.5, 2.5, 0.0;
       dt[0]=1.25;
-      bc[0].set_control_points(cntrl1_in);
-      cntrl2_in << 5.5, 2.5, 0.0,
-                   5.0, 2.5, 0.0,
-                   4.5, 2.0, 0.0,
-                   4.0, 2.0, 0.0,
-                   3.5, 0.5, 0.0;
+      bc[0].resize(3);
+      for (i=0; i<4; ++i)
+      {
+        bc[0].set_control_point(cntrl1_in[i], i);
+      }
+      cntrl2_in[0] << 5.5, 2.5, 0.0;
+      cntrl2_in[1] << 5.0, 2.5, 0.0;
+      cntrl2_in[2] << 4.5, 2.0, 0.0;
+      cntrl2_in[3] << 4.0, 2.0, 0.0;
+      cntrl2_in[4] << 3.5, 0.5, 0.0;
       dt[1]=1.5;
-      bc[1].set_control_points(cntrl2_in);
-      cntrl3_in << 3.5, 0.5, 0.0,
-                   4.5, 0.0, 0.0,
-                   5.5,-0.5, 0.0;
+      bc[1].resize(4);
+      for (i=0; i<5; ++i)
+      {
+        bc[1].set_control_point(cntrl2_in[i], i);
+      }
+      cntrl3_in[0] << 3.5, 0.5, 0.0;
+      cntrl3_in[1] << 4.5, 0.0, 0.0;
+      cntrl3_in[2] << 5.5,-0.5, 0.0;
       dt[2]=3.5;
-      bc[2].set_control_points(cntrl3_in);
+      bc[2].resize(2);
+      for (i=0; i<3; ++i)
+      {
+        bc[2].set_control_point(cntrl3_in[i], i);
+      }
       err=c2.set(bc, bc+3, dt);
       TEST_ASSERT(err==piecewise_curve_type::NO_ERROR);
       err=c1.replace(c2, 1, 3);
@@ -488,7 +617,7 @@ class piecewise_curve_test_suite : public Test::Suite
       // test two curves with delta t=1
       {
         piecewise_curve_type pwc;
-        typename curve_type::control_point_type cntrl_in(4,3), cntrl_out, cntrl_ref(4,3);
+        typename curve_type::control_point_type cntrl_in[4];
         curve_type bc1, bc1l, bc1r;
         point_type eval_out, eval_ref;
         data_type t, tl, tr, ts;
@@ -497,11 +626,15 @@ class piecewise_curve_test_suite : public Test::Suite
         ts = static_cast<data__>(0.586);
 
         // set control points
-        cntrl_in << 0.0, 0.0, 0.0,
-                    0.0, 2.0, 0.0,
-                    8.0, 2.0, 0.0,
-                    4.0, 0.0, 0.0;
-        bc1.set_control_points(cntrl_in);
+        cntrl_in[0] << 0, 0, 0;
+        cntrl_in[1] << 0, 2, 0;
+        cntrl_in[2] << 8, 2, 0;
+        cntrl_in[3] << 4, 0, 0;
+        bc1.resize(3);
+        for (index_type i=0; i<4; ++i)
+        {
+          bc1.set_control_point(cntrl_in[i], i);
+        }
 
         // split curve and create piecewise
         bc1.split(bc1l, bc1r, ts);
@@ -543,7 +676,7 @@ class piecewise_curve_test_suite : public Test::Suite
       // test two curves with delta t!=1
       {
         piecewise_curve_type pwc;
-        typename curve_type::control_point_type cntrl_in(4,3), cntrl_out, cntrl_ref(4,3);
+        typename curve_type::control_point_type cntrl_in[4];
         curve_type bc1, bc1l, bc1r;
         point_type eval_out, eval_ref;
         data_type tl, tr, ts;
@@ -552,11 +685,15 @@ class piecewise_curve_test_suite : public Test::Suite
         ts = static_cast<data__>(0.586);
 
         // set control points
-        cntrl_in << 0.0, 0.0, 0.0,
-                    0.0, 2.0, 0.0,
-                    8.0, 2.0, 0.0,
-                    4.0, 0.0, 0.0;
-        bc1.set_control_points(cntrl_in);
+        cntrl_in[0] << 0, 0, 0;
+        cntrl_in[1] << 0, 2, 0;
+        cntrl_in[2] << 8, 2, 0;
+        cntrl_in[3] << 4, 0, 0;
+        bc1.resize(3);
+        for (index_type i=0; i<4; ++i)
+        {
+          bc1.set_control_point(cntrl_in[i], i);
+        }
 
         // split curve and create piecewise
         bc1.split(bc1l, bc1r, ts);
@@ -602,7 +739,7 @@ class piecewise_curve_test_suite : public Test::Suite
         eps=std::numeric_limits<double>::epsilon();
 #endif
         piecewise_curve_type pwc0, pwc1;
-        typename curve_type::control_point_type cntrl_in(4,3);
+        typename curve_type::control_point_type cntrl_in[4];
         typename piecewise_curve_type::error_code err;
         curve_type bc;
         point_type eval_out, eval_ref;
@@ -610,18 +747,26 @@ class piecewise_curve_test_suite : public Test::Suite
         ts=static_cast<data__>(1.56);
 
         // build piecewise curve
-        cntrl_in << 0.0, 0.0, 0.0,
-                    0.0, 2.0, 0.0,
-                    8.0, 2.0, 0.0,
-                    4.0, 0.0, 0.0;
-        bc.set_control_points(cntrl_in);
+        cntrl_in[0] << 0, 0, 0;
+        cntrl_in[1] << 0, 2, 0;
+        cntrl_in[2] << 8, 2, 0;
+        cntrl_in[3] << 4, 0, 0;
+        bc.resize(3);
+        for (index_type i=0; i<4; ++i)
+        {
+          bc.set_control_point(cntrl_in[i], i);
+        }
         err=pwc0.push_back(bc);
         TEST_ASSERT(err==piecewise_curve_type::NO_ERROR);
-        cntrl_in << 4.0, 0.0, 0.0,
-                    3.0,-0.5, 0.0,
-                    2.0,-1.0, 0.0,
-                    1.0,-1.0, 0.0;
-        bc.set_control_points(cntrl_in);
+        cntrl_in[0] << 4,  0,   0;
+        cntrl_in[1] << 3, -0.5, 0;
+        cntrl_in[2] << 2, -1,   0;
+        cntrl_in[3] << 1, -1,   0;
+        bc.resize(3);
+        for (index_type i=0; i<4; ++i)
+        {
+          bc.set_control_point(cntrl_in[i], i);
+        }
         err=pwc0.push_back(bc);
         TEST_ASSERT(err==piecewise_curve_type::NO_ERROR);
         TEST_ASSERT(pwc0.number_segments()==2);
@@ -691,7 +836,7 @@ class piecewise_curve_test_suite : public Test::Suite
         t=1.5;
         eval_out=pwc0.f(t);
         eval_ref=pwc1.f(t);
-        TEST_ASSERT((eval_out-eval_ref).norm()<1*eps);
+        TEST_ASSERT((eval_out-eval_ref).norm()<3*eps);
         eval_out=pwc0.fp(t);
         eval_ref=pwc1.fp(t);
         TEST_ASSERT((eval_out-eval_ref).norm()<7*eps);
@@ -705,7 +850,7 @@ class piecewise_curve_test_suite : public Test::Suite
         t=1.75;
         eval_out=pwc0.f(t);
         eval_ref=pwc1.f(t);
-        TEST_ASSERT((eval_out-eval_ref).norm()<1.1*eps);
+        TEST_ASSERT((eval_out-eval_ref).norm()<2*eps);
         eval_out=pwc0.fp(t);
         eval_ref=pwc1.fp(t);
         TEST_ASSERT((eval_out-eval_ref).norm()<3*eps);
@@ -741,31 +886,43 @@ class piecewise_curve_test_suite : public Test::Suite
       piecewise_curve_type c1;
       curve_type bc[3];
       data_type dt[3], len, bc_len[3], ref_len, t0, t1, temp0, temp1;
-      typename curve_type::control_point_type cntrl1_in(4,3), cntrl2_in(5,3), cntrl3_in(3,3);
+      typename curve_type::control_point_type cntrl1_in[4], cntrl2_in[5], cntrl3_in[3];
       typename piecewise_curve_type::error_code err;
       data_type tol(std::sqrt(eps));
 
       // create piecewise curve
-      cntrl1_in << 2.0, 2.0, 0.0,
-                   1.0, 1.5, 0.0,
-                   3.5, 0.0, 0.0,
-                   4.0, 1.0, 0.0;
+      cntrl1_in[0] << 2.0, 2.0, 0.0;
+      cntrl1_in[1] << 1.0, 1.5, 0.0;
+      cntrl1_in[2] << 3.5, 0.0, 0.0;
+      cntrl1_in[3] << 4.0, 1.0, 0.0;
       dt[0]=0.5;
-      bc[0].set_control_points(cntrl1_in);
+      bc[0].resize(3);
+      for (index_type i=0; i<4; ++i)
+      {
+        bc[0].set_control_point(cntrl1_in[i], i);
+      }
       eli::geom::curve::length(bc_len[0], bc[0], tol);
-      cntrl2_in << 4.0, 1.0, 0.0,
-                   5.0, 2.5, 0.0,
-                   5.5, 1.0, 0.0,
-                   6.0, 0.0, 0.0,
-                   6.5,-0.5, 0.0;
+      cntrl2_in[0] << 4.0, 1.0, 0.0;
+      cntrl2_in[1] << 5.0, 2.5, 0.0;
+      cntrl2_in[2] << 5.5, 1.0, 0.0;
+      cntrl2_in[3] << 6.0, 0.0, 0.0;
+      cntrl2_in[4] << 6.5,-0.5, 0.0;
       dt[1]=2.0;
-      bc[1].set_control_points(cntrl2_in);
+      bc[1].resize(4);
+      for (index_type i=0; i<5; ++i)
+      {
+        bc[1].set_control_point(cntrl2_in[i], i);
+      }
       eli::geom::curve::length(bc_len[1], bc[1], tol);
-      cntrl3_in << 6.5,-0.5, 0.0,
-                   6.0,-1.0, 0.0,
-                   5.5,-2.0, 0.0;
+      cntrl3_in[0] << 6.5,-0.5, 0.0;
+      cntrl3_in[1] << 6.0,-1.0, 0.0;
+      cntrl3_in[2] << 5.5,-2.0, 0.0;
       dt[2]=1.5;
-      bc[2].set_control_points(cntrl3_in);
+      bc[2].resize(2);
+      for (index_type i=0; i<3; ++i)
+      {
+        bc[2].set_control_point(cntrl3_in[i], i);
+      }
       eli::geom::curve::length(bc_len[2], bc[2], tol);
       err=c1.set(bc, bc+3, dt);
       TEST_ASSERT(err==piecewise_curve_type::NO_ERROR);
@@ -784,7 +941,6 @@ class piecewise_curve_test_suite : public Test::Suite
       {
         TEST_ASSERT(len==ref_len);
       }
-//       std::cout << "773 " << "len=" << len << " ref_len=" << ref_len << " rat=" << std::abs(len-ref_len)/tol << std::endl;
 
       // choose part of first segment to calc length and compare
       t0=0.125;
@@ -801,7 +957,6 @@ class piecewise_curve_test_suite : public Test::Suite
       eli::geom::curve::length(temp1, bc[1], 0, 0.5, tol);
       ref_len=temp0+temp1;
       TEST_ASSERT(std::abs(len-ref_len)<2*tol);
-//       std::cout << "790 " << "len=" << len << " ref_len=" << ref_len << " rat=" << std::abs(len-ref_len)/tol << std::endl;
 
       // choose part of third segment to calc length and compare
       t0=0.25;
@@ -811,8 +966,8 @@ class piecewise_curve_test_suite : public Test::Suite
       eli::geom::curve::length(temp1, bc[2], 0, 0.5, tol);
       ref_len=temp0+bc_len[1]+temp1;
       TEST_ASSERT(std::abs(len-ref_len)<166*tol);
-//       std::cout << "807 " << "len=" << len << " ref_len=" << ref_len << " rat=" << std::abs(len-ref_len)/tol << std::endl;
     }
+
 #if 0
     void fit_free_ends_test()
     {

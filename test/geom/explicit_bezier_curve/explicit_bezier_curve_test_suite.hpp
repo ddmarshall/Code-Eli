@@ -35,9 +35,10 @@ class explicit_bezier_curve_test_suite : public Test::Suite
 {
   private:
     typedef eli::geom::curve::explicit_bezier<data__> curve_type;
+    typedef typename curve_type::control_point_type control_point_type;
     typedef typename curve_type::point_type point_type;
     typedef typename curve_type::data_type data_type;
-    typedef typename curve_type::control_point_type control_point_type;
+    typedef typename curve_type::index_type index_type;
     typedef typename curve_type::fit_container_type fit_container_type;
 
   protected:
@@ -174,39 +175,41 @@ class explicit_bezier_curve_test_suite : public Test::Suite
 
     void assignment_test()
     {
-      curve_type ebc1, ebc2;
-      control_point_type cntrl_in(4,1), cntrl_out;
+      curve_type ebc1(3), ebc2;
+      control_point_type cntrl_in[4];
 
       // test default constructor then set control points
-      cntrl_in << 2.0,
-                  1.0,
-                  3.5,
-                  4.0;
-      ebc1.set_control_points(cntrl_in);
-      ebc1.get_control_points(cntrl_out);
-      TEST_ASSERT(cntrl_in==cntrl_out);
-      cntrl_out.setZero();
+      cntrl_in[0] << 2.0;
+      cntrl_in[1] << 1.0;
+      cntrl_in[2] << 3.5;
+      cntrl_in[3] << 4.0;
 
-      // test constructor with vector of control points
-      curve_type ebcc1(cntrl_in);
-      ebcc1.get_control_points(cntrl_out);
-      TEST_ASSERT(cntrl_in==cntrl_out);
-      cntrl_out.setZero();
+      for (index_type i=0; i<4; ++i)
+      {
+        ebc1.set_control_point(cntrl_in[i], i);
+      }
+
+      for (index_type i=0; i<4; ++i)
+      {
+        TEST_ASSERT(ebc1.get_control_point(i)==cntrl_in[i]);
+      }
 
       // test copy ctr
-      curve_type ebcc2(ebc1);
-      ebcc2.get_control_points(cntrl_out);
-      TEST_ASSERT(cntrl_in==cntrl_out);
-      cntrl_out.setZero();
+      curve_type ebcc1(ebc1);
+      for (index_type i=0; i<4; ++i)
+      {
+        TEST_ASSERT(ebcc1.get_control_point(i)==cntrl_in[i]);
+      }
 
       // test assignment operator
       ebc2=ebc1;
-      ebc2.get_control_points(cntrl_out);
-      TEST_ASSERT(cntrl_in==cntrl_out);
-      cntrl_out.setZero();
+      for (index_type i=0; i<4; ++i)
+      {
+        TEST_ASSERT(ebc2.get_control_point(i)==cntrl_in[i]);
+      }
 
       // test order
-      TEST_ASSERT(ebc2.degree()==cntrl_in.rows()-1);
+      TEST_ASSERT(ebc2.degree()==3);
     }
 
     void evaluation_test()
@@ -218,23 +221,32 @@ class explicit_bezier_curve_test_suite : public Test::Suite
         eps=std::numeric_limits<double>::epsilon();
 #endif
 
-      control_point_type cntrl_in(5, 1);
-      typename bezier_curve_type::control_point_type bez_cntrl(5,2);
+      control_point_type cntrl_in[5];
+      typename bezier_curve_type::control_point_type bez_cntrl[5];
       curve_type ebc;
       bezier_curve_type bc;
       typename curve_type::point_type eval_out, eval_ref;
       typename curve_type::data_type t;
 
       // set control points and create curves
-      cntrl_in << 2.0,
-                  1.5,
-                  0.0,
-                  1.0,
-                  0.5;
-      bez_cntrl.col(0) << 0, 0.25, 0.5, 0.75, 1;
-      bez_cntrl.col(1)=cntrl_in;
-      ebc.set_control_points(cntrl_in);
-      bc.set_control_points(bez_cntrl);
+      cntrl_in[0] << 2.0;
+      cntrl_in[1] << 1.5;
+      cntrl_in[2] << 0.0;
+      cntrl_in[3] << 1.0;
+      cntrl_in[4] << 0.5;
+      bez_cntrl[0] << 0,    2;
+      bez_cntrl[1] << 0.25, 1.5;
+      bez_cntrl[2] << 0.5,  0;
+      bez_cntrl[3] << 0.75, 1;
+      bez_cntrl[4] << 1,    0.5;
+
+      ebc.resize(4);
+      bc.resize(4);
+      for (index_type i=0; i<5; ++i)
+      {
+        ebc.set_control_point(cntrl_in[i], i);
+        bc.set_control_point(bez_cntrl[i], i);
+      }
 
       // test evaluation at end points
       t=0;
@@ -250,14 +262,7 @@ class explicit_bezier_curve_test_suite : public Test::Suite
       t=static_cast<data__>(0.45);
       eval_out=ebc.f(t);
       eval_ref=bc.f(t);
-      if (typeid(data__)==typeid(float))
-      {
-        TEST_ASSERT((eval_out-eval_ref).norm()<1.1*eps);
-      }
-      else
-      {
-        TEST_ASSERT(eval_out==eval_ref);
-      }
+      TEST_ASSERT((eval_out-eval_ref).norm()<1.1*eps);
     }
 
     void derivative_test()
@@ -269,23 +274,32 @@ class explicit_bezier_curve_test_suite : public Test::Suite
         eps=std::numeric_limits<double>::epsilon();
 #endif
 
-      control_point_type cntrl_in(5, 1);
-      typename bezier_curve_type::control_point_type bez_cntrl(5,2);
+      control_point_type cntrl_in[5];
+      typename bezier_curve_type::control_point_type bez_cntrl[5];
       curve_type ebc;
       bezier_curve_type bc;
       typename curve_type::point_type eval_out, eval_ref;
       typename curve_type::data_type t;
 
       // set control points and create curves
-      cntrl_in << 2.0,
-                  1.5,
-                  0.0,
-                  1.0,
-                  0.5;
-      bez_cntrl.col(0) << 0, 0.25, 0.5, 0.75, 1;
-      bez_cntrl.col(1)=cntrl_in;
-      ebc.set_control_points(cntrl_in);
-      bc.set_control_points(bez_cntrl);
+      cntrl_in[0] << 2.0;
+      cntrl_in[1] << 1.5;
+      cntrl_in[2] << 0.0;
+      cntrl_in[3] << 1.0;
+      cntrl_in[4] << 0.5;
+      bez_cntrl[0] << 0,    2;
+      bez_cntrl[1] << 0.25, 1.5;
+      bez_cntrl[2] << 0.5,  0;
+      bez_cntrl[3] << 0.75, 1;
+      bez_cntrl[4] << 1,    0.5;
+
+      ebc.resize(4);
+      bc.resize(4);
+      for (index_type i=0; i<5; ++i)
+      {
+        ebc.set_control_point(cntrl_in[i], i);
+        bc.set_control_point(bez_cntrl[i], i);
+      }
 
       // test 1st derivative at end points
       t=0;
@@ -309,7 +323,6 @@ class explicit_bezier_curve_test_suite : public Test::Suite
       {
         TEST_ASSERT(eval_out==eval_ref);
       }
-//       std::cout << "300: " << (eval_out-eval_ref).norm()/eps << std::endl;
 
       // test 2nd derivative at end points
       t=0;
@@ -333,7 +346,6 @@ class explicit_bezier_curve_test_suite : public Test::Suite
       {
         TEST_ASSERT(eval_out==eval_ref);
       }
-//       std::cout << "316: " << (eval_out-eval_ref).norm()/eps << std::endl;
 
       // test 3rd derivative at end points
       t=0;
@@ -374,7 +386,6 @@ class explicit_bezier_curve_test_suite : public Test::Suite
       {
         TEST_ASSERT(curv_out==curv_ref);
       }
-//       std::cout << "349: " << std::abs(curv_out-curv_ref)/eps << std::endl;
     }
 
     void promotion_test()
@@ -386,23 +397,32 @@ class explicit_bezier_curve_test_suite : public Test::Suite
         eps=std::numeric_limits<double>::epsilon();
 #endif
 
-      control_point_type cntrl_in(5, 1);
-      typename bezier_curve_type::control_point_type bez_cntrl(5,2);
+      control_point_type cntrl_in[5];
+      typename bezier_curve_type::control_point_type bez_cntrl[5];
       curve_type ebc;
       bezier_curve_type bc;
       typename curve_type::point_type eval_out, eval_ref;
       typename curve_type::data_type t, curv_out, curv_ref;
 
       // set control points and create curves
-      cntrl_in << 2.0,
-                  1.5,
-                  0.0,
-                  1.0,
-                  0.5;
-      bez_cntrl.col(0) << 0, 0.25, 0.5, 0.75, 1;
-      bez_cntrl.col(1)=cntrl_in;
-      ebc.set_control_points(cntrl_in);
-      bc.set_control_points(bez_cntrl);
+      cntrl_in[0] << 2.0;
+      cntrl_in[1] << 1.5;
+      cntrl_in[2] << 0.0;
+      cntrl_in[3] << 1.0;
+      cntrl_in[4] << 0.5;
+      bez_cntrl[0] << 0,    2;
+      bez_cntrl[1] << 0.25, 1.5;
+      bez_cntrl[2] << 0.5,  0;
+      bez_cntrl[3] << 0.75, 1;
+      bez_cntrl[4] << 1,    0.5;
+
+      ebc.resize(4);
+      bc.resize(4);
+      for (index_type i=0; i<5; ++i)
+      {
+        ebc.set_control_point(cntrl_in[i], i);
+        bc.set_control_point(bez_cntrl[i], i);
+      }
 
       ebc.degree_promote();
       bc.degree_promote();
@@ -431,14 +451,7 @@ class explicit_bezier_curve_test_suite : public Test::Suite
       t=static_cast<data__>(0.45);
       eval_out=ebc.f(t);
       eval_ref=bc.f(t);
-      if (typeid(data_type)==typeid(double))
-      {
-        TEST_ASSERT((eval_out-eval_ref).norm()<2.1*eps);
-      }
-      else
-      {
-        TEST_ASSERT(eval_out==eval_ref);
-      }
+      TEST_ASSERT((eval_out-eval_ref).norm()<2.1*eps);
 
       // test 1st derivative at end points
       t=0;
@@ -454,14 +467,7 @@ class explicit_bezier_curve_test_suite : public Test::Suite
       t=static_cast<data__>(0.45);
       eval_out=ebc.fp(t);
       eval_ref=bc.fp(t);
-      if ((typeid(data_type)==typeid(float)) || (typeid(data_type)==typeid(double)))
-      {
-        TEST_ASSERT((eval_out-eval_ref).norm()<4.1*eps);
-      }
-      else
-      {
-        TEST_ASSERT(eval_out==eval_ref);
-      }
+      TEST_ASSERT((eval_out-eval_ref).norm()<4.1*eps);
 
       // test 2nd derivative at end points
       t=0;
@@ -471,45 +477,29 @@ class explicit_bezier_curve_test_suite : public Test::Suite
       t=1;
       eval_out=ebc.fpp(t);
       eval_ref=bc.fpp(t);
-      TEST_ASSERT(eval_out==eval_ref);
+      TEST_ASSERT((eval_out-eval_ref).norm()<11*eps);
 
       // test 2nd derivative at interior point
       t=static_cast<data__>(0.45);
       eval_out=ebc.fpp(t);
       eval_ref=bc.fpp(t);
-      if ((typeid(float)==typeid(float)) || (typeid(data_type)==typeid(double)))
-      {
-        TEST_ASSERT((eval_out-eval_ref).norm()<17*eps);
-      }
-      else
-      {
-        TEST_ASSERT(eval_out==eval_ref);
-      }
-//       std::cout << "459: " << (eval_out-eval_ref).norm()/eps << std::endl;
+      TEST_ASSERT((eval_out-eval_ref).norm()<17*eps);
 
       // test 3rd derivative at end points
       t=0;
       eval_out=ebc.fppp(t);
       eval_ref=bc.fppp(t);
-      TEST_ASSERT(eval_out==eval_ref);
+      TEST_ASSERT((eval_out-eval_ref).norm()<31*eps);
       t=1;
       eval_out=ebc.fppp(t);
       eval_ref=bc.fppp(t);
-      TEST_ASSERT(eval_out==eval_ref);
+      TEST_ASSERT((eval_out-eval_ref).norm()<151*eps);
 
       // test 3rd derivative at interior point
       t=static_cast<data__>(0.45);
       eval_out=ebc.fppp(t);
       eval_ref=bc.fppp(t);
-      if (typeid(data_type)==typeid(float))
-      {
-        TEST_ASSERT((eval_out-eval_ref).norm()<65*eps);
-      }
-      else
-      {
-        TEST_ASSERT(eval_out==eval_ref);
-      }
-//       std::cout << "475: " << (eval_out-eval_ref).norm()/eps << std::endl;
+      TEST_ASSERT((eval_out-eval_ref).norm()<65*eps);
 
       // test curvature at end points
       t=0;
@@ -525,14 +515,7 @@ class explicit_bezier_curve_test_suite : public Test::Suite
       t=static_cast<data__>(0.45);
       eli::geom::curve::curvature(curv_out, ebc, t);
       eli::geom::curve::curvature(curv_ref, bc, t);
-      if ((typeid(data_type)==typeid(float)) || (typeid(data_type)==typeid(double)))
-      {
-        TEST_ASSERT(std::abs(curv_out-curv_ref)<10*eps);
-      }
-      else
-      {
-        TEST_ASSERT(curv_out==curv_ref);
-      }
+      TEST_ASSERT(std::abs(curv_out-curv_ref)<10*eps);
     }
 
     void demotion_test()
@@ -541,156 +524,180 @@ class explicit_bezier_curve_test_suite : public Test::Suite
       {
         typedef eli::geom::curve::bezier<data__, 2> bezier_curve_type;
 
-        control_point_type cntrl_in(9, 1), cntrl_out;
-        typename bezier_curve_type::control_point_type bez_cntrl(9,2), bez_cntrl_out;
+        control_point_type cntrl_in[9];
+        typename bezier_curve_type::control_point_type bez_cntrl[9];
         curve_type ebc;
         bezier_curve_type bc;
 
         // set control points and create curves
-        cntrl_in << 2.0,
-                    1.5,
-                    1.0,
-                    0.5,
-                    0.0,
-                   -0.5,
-                   -1.0,
-                    1.0,
-                    0.5;
-        bez_cntrl.col(0) << 0,
-                            static_cast<data__>(0.125),
-                            static_cast<data__>(0.25),
-                            static_cast<data__>(0.325),
-                            static_cast<data__>(0.5),
-                            static_cast<data__>(0.625),
-                            static_cast<data__>(0.75),
-                            static_cast<data__>(0.875),
-                            1;
-        bez_cntrl.col(1)=cntrl_in;
-        ebc.set_control_points(cntrl_in);
-        bc.set_control_points(bez_cntrl);
+        cntrl_in[0] <<  2.0;
+        cntrl_in[1] <<  1.5;
+        cntrl_in[2] <<  1.0;
+        cntrl_in[3] <<  0.5;
+        cntrl_in[4] <<  0.0;
+        cntrl_in[5] << -0.5;
+        cntrl_in[6] << -1.0;
+        cntrl_in[7] <<  1.0;
+        cntrl_in[8] <<  0.5;
+        bez_cntrl[0] << static_cast<data__>(0),     2.0;
+        bez_cntrl[1] << static_cast<data__>(0.125), 1.5;
+        bez_cntrl[2] << static_cast<data__>(0.25),  1.0;
+        bez_cntrl[3] << static_cast<data__>(0.375), 0.5;
+        bez_cntrl[4] << static_cast<data__>(0.5),   0.0;
+        bez_cntrl[5] << static_cast<data__>(0.625),-0.5;
+        bez_cntrl[6] << static_cast<data__>(0.75), -1.0;
+        bez_cntrl[7] << static_cast<data__>(0.875), 1.0;
+        bez_cntrl[8] << static_cast<data__>(1),     0.5;
+
+        ebc.resize(8);
+        bc.resize(8);
+        for (index_type i=0; i<9; ++i)
+        {
+          ebc.set_control_point(cntrl_in[i], i);
+          bc.set_control_point(bez_cntrl[i], i);
+        }
 
         ebc.degree_demote(eli::geom::general::NOT_CONNECTED);
         bc.degree_demote(eli::geom::general::NOT_CONNECTED);
-        bc.get_control_points(bez_cntrl_out);
-        ebc.get_control_points(cntrl_out);
-        TEST_ASSERT(bez_cntrl_out.col(1)==cntrl_out);
+        for(index_type i=0; i<8; ++i)
+        {
+          TEST_ASSERT(ebc.get_control_point(i).col(0)==bc.get_control_point(i).col(1));
+        }
       }
 
       // C0 constraint
       {
         typedef eli::geom::curve::bezier<data__, 2> bezier_curve_type;
 
-        control_point_type cntrl_in(9, 1), cntrl_out;
-        typename bezier_curve_type::control_point_type bez_cntrl(9,2), bez_cntrl_out;
+        control_point_type cntrl_in[9];
+        typename bezier_curve_type::control_point_type bez_cntrl[9];
         curve_type ebc;
         bezier_curve_type bc;
 
         // set control points and create curves
-        cntrl_in << 2.0,
-                    1.5,
-                    1.0,
-                    0.5,
-                    0.0,
-                   -0.5,
-                   -1.0,
-                    1.0,
-                    0.5;
-        bez_cntrl.col(0) << 0,
-                            static_cast<data__>(0.125),
-                            static_cast<data__>(0.25),
-                            static_cast<data__>(0.325),
-                            static_cast<data__>(0.5),
-                            static_cast<data__>(0.625),
-                            static_cast<data__>(0.75),
-                            static_cast<data__>(0.875),
-                            1;
-        bez_cntrl.col(1)=cntrl_in;
-        ebc.set_control_points(cntrl_in);
-        bc.set_control_points(bez_cntrl);
+        cntrl_in[0] <<  2.0;
+        cntrl_in[1] <<  1.5;
+        cntrl_in[2] <<  1.0;
+        cntrl_in[3] <<  0.5;
+        cntrl_in[4] <<  0.0;
+        cntrl_in[5] << -0.5;
+        cntrl_in[6] << -1.0;
+        cntrl_in[7] <<  1.0;
+        cntrl_in[8] <<  0.5;
+        bez_cntrl[0] << static_cast<data__>(0),     2.0;
+        bez_cntrl[1] << static_cast<data__>(0.125), 1.5;
+        bez_cntrl[2] << static_cast<data__>(0.25),  1.0;
+        bez_cntrl[3] << static_cast<data__>(0.375), 0.5;
+        bez_cntrl[4] << static_cast<data__>(0.5),   0.0;
+        bez_cntrl[5] << static_cast<data__>(0.625),-0.5;
+        bez_cntrl[6] << static_cast<data__>(0.75), -1.0;
+        bez_cntrl[7] << static_cast<data__>(0.875), 1.0;
+        bez_cntrl[8] << static_cast<data__>(1),     0.5;
+
+        ebc.resize(8);
+        bc.resize(8);
+        for (index_type i=0; i<9; ++i)
+        {
+          ebc.set_control_point(cntrl_in[i], i);
+          bc.set_control_point(bez_cntrl[i], i);
+        }
 
         ebc.degree_demote(eli::geom::general::C0);
         bc.degree_demote(eli::geom::general::C0);
-        bc.get_control_points(bez_cntrl_out);
-        ebc.get_control_points(cntrl_out);
-        TEST_ASSERT(bez_cntrl_out.col(1)==cntrl_out);
+        for(index_type i=0; i<8; ++i)
+        {
+          TEST_ASSERT(ebc.get_control_point(i).col(0)==bc.get_control_point(i).col(1));
+        }
       }
 
       // C1 constraint
       {
         typedef eli::geom::curve::bezier<data__, 2> bezier_curve_type;
 
-        control_point_type cntrl_in(9, 1), cntrl_out;
-        typename bezier_curve_type::control_point_type bez_cntrl(9,2), bez_cntrl_out;
+        control_point_type cntrl_in[9];
+        typename bezier_curve_type::control_point_type bez_cntrl[9];
         curve_type ebc;
         bezier_curve_type bc;
 
         // set control points and create curves
-        cntrl_in << 2.0,
-                    1.5,
-                    1.0,
-                    0.5,
-                    0.0,
-                   -0.5,
-                   -1.0,
-                    1.0,
-                    0.5;
-        bez_cntrl.col(0) << 0,
-                            static_cast<data__>(0.125),
-                            static_cast<data__>(0.25),
-                            static_cast<data__>(0.325),
-                            static_cast<data__>(0.5),
-                            static_cast<data__>(0.625),
-                            static_cast<data__>(0.75),
-                            static_cast<data__>(0.875),
-                            1;
-        bez_cntrl.col(1)=cntrl_in;
-        ebc.set_control_points(cntrl_in);
-        bc.set_control_points(bez_cntrl);
+        cntrl_in[0] <<  2.0;
+        cntrl_in[1] <<  1.5;
+        cntrl_in[2] <<  1.0;
+        cntrl_in[3] <<  0.5;
+        cntrl_in[4] <<  0.0;
+        cntrl_in[5] << -0.5;
+        cntrl_in[6] << -1.0;
+        cntrl_in[7] <<  1.0;
+        cntrl_in[8] <<  0.5;
+        bez_cntrl[0] << static_cast<data__>(0),     2.0;
+        bez_cntrl[1] << static_cast<data__>(0.125), 1.5;
+        bez_cntrl[2] << static_cast<data__>(0.25),  1.0;
+        bez_cntrl[3] << static_cast<data__>(0.375), 0.5;
+        bez_cntrl[4] << static_cast<data__>(0.5),   0.0;
+        bez_cntrl[5] << static_cast<data__>(0.625),-0.5;
+        bez_cntrl[6] << static_cast<data__>(0.75), -1.0;
+        bez_cntrl[7] << static_cast<data__>(0.875), 1.0;
+        bez_cntrl[8] << static_cast<data__>(1),     0.5;
+
+        ebc.resize(8);
+        bc.resize(8);
+        for (index_type i=0; i<9; ++i)
+        {
+          ebc.set_control_point(cntrl_in[i], i);
+          bc.set_control_point(bez_cntrl[i], i);
+        }
 
         ebc.degree_demote(eli::geom::general::C1);
         bc.degree_demote(eli::geom::general::C1);
-        bc.get_control_points(bez_cntrl_out);
-        ebc.get_control_points(cntrl_out);
-        TEST_ASSERT(bez_cntrl_out.col(1)==cntrl_out);
+        for(index_type i=0; i<8; ++i)
+        {
+          TEST_ASSERT(ebc.get_control_point(i).col(0)==bc.get_control_point(i).col(1));
+        }
       }
 
       // C2 constraint
       {
         typedef eli::geom::curve::bezier<data__, 2> bezier_curve_type;
 
-        control_point_type cntrl_in(9, 1), cntrl_out;
-        typename bezier_curve_type::control_point_type bez_cntrl(9,2), bez_cntrl_out;
+        control_point_type cntrl_in[9];
+        typename bezier_curve_type::control_point_type bez_cntrl[9];
         curve_type ebc;
         bezier_curve_type bc;
 
         // set control points and create curves
-        cntrl_in << 2.0,
-                    1.5,
-                    1.0,
-                    0.5,
-                    0.0,
-                   -0.5,
-                   -1.0,
-                    1.0,
-                    0.5;
-        bez_cntrl.col(0) << 0,
-                            static_cast<data__>(0.125),
-                            static_cast<data__>(0.25),
-                            static_cast<data__>(0.325),
-                            static_cast<data__>(0.5),
-                            static_cast<data__>(0.625),
-                            static_cast<data__>(0.75),
-                            static_cast<data__>(0.875),
-                            1;
-        bez_cntrl.col(1)=cntrl_in;
-        ebc.set_control_points(cntrl_in);
-        bc.set_control_points(bez_cntrl);
+        cntrl_in[0] <<  2.0;
+        cntrl_in[1] <<  1.5;
+        cntrl_in[2] <<  1.0;
+        cntrl_in[3] <<  0.5;
+        cntrl_in[4] <<  0.0;
+        cntrl_in[5] << -0.5;
+        cntrl_in[6] << -1.0;
+        cntrl_in[7] <<  1.0;
+        cntrl_in[8] <<  0.5;
+        bez_cntrl[0] << static_cast<data__>(0),     2.0;
+        bez_cntrl[1] << static_cast<data__>(0.125), 1.5;
+        bez_cntrl[2] << static_cast<data__>(0.25),  1.0;
+        bez_cntrl[3] << static_cast<data__>(0.375), 0.5;
+        bez_cntrl[4] << static_cast<data__>(0.5),   0.0;
+        bez_cntrl[5] << static_cast<data__>(0.625),-0.5;
+        bez_cntrl[6] << static_cast<data__>(0.75), -1.0;
+        bez_cntrl[7] << static_cast<data__>(0.875), 1.0;
+        bez_cntrl[8] << static_cast<data__>(1),     0.5;
+
+        ebc.resize(8);
+        bc.resize(8);
+        for (index_type i=0; i<9; ++i)
+        {
+          ebc.set_control_point(cntrl_in[i], i);
+          bc.set_control_point(bez_cntrl[i], i);
+        }
 
         ebc.degree_demote(eli::geom::general::C2);
         bc.degree_demote(eli::geom::general::C2);
-        bc.get_control_points(bez_cntrl_out);
-        ebc.get_control_points(cntrl_out);
-        TEST_ASSERT(bez_cntrl_out.col(1)==cntrl_out);
+        for(index_type i=0; i<8; ++i)
+        {
+          TEST_ASSERT(ebc.get_control_point(i).col(0)==bc.get_control_point(i).col(1));
+        }
       }
     }
 
@@ -703,22 +710,32 @@ class explicit_bezier_curve_test_suite : public Test::Suite
 #endif
       typedef eli::geom::curve::bezier<data__, 2> bezier_curve_type;
 
-      control_point_type cntrl_in(5, 1);
-      typename bezier_curve_type::control_point_type bez_cntrl(5,2);
+      control_point_type cntrl_in[5];
+      typename bezier_curve_type::control_point_type bez_cntrl[5];
       curve_type ebc;
       bezier_curve_type bc;
+      typename curve_type::point_type eval_out, eval_ref;
       typename curve_type::data_type length_cal, length_ref;
 
       // set control points and create curves
-      cntrl_in << 2.0,
-                  1.5,
-                  0.0,
-                  1.0,
-                  0.5;
-      bez_cntrl.col(0) << 0, 0.25, 0.5, 0.75, 1;
-      bez_cntrl.col(1)=cntrl_in;
-      ebc.set_control_points(cntrl_in);
-      bc.set_control_points(bez_cntrl);
+      cntrl_in[0] << 2.0;
+      cntrl_in[1] << 1.5;
+      cntrl_in[2] << 0.0;
+      cntrl_in[3] << 1.0;
+      cntrl_in[4] << 0.5;
+      bez_cntrl[0] << 0,    2;
+      bez_cntrl[1] << 0.25, 1.5;
+      bez_cntrl[2] << 0.5,  0;
+      bez_cntrl[3] << 0.75, 1;
+      bez_cntrl[4] << 1,    0.5;
+
+      ebc.resize(4);
+      bc.resize(4);
+      for (index_type i=0; i<5; ++i)
+      {
+        ebc.set_control_point(cntrl_in[i], i);
+        bc.set_control_point(bez_cntrl[i], i);
+      }
 
       // calculate the length of curve
       data_type tol(std::sqrt(eps));
@@ -811,10 +828,6 @@ class explicit_bezier_curve_test_suite : public Test::Suite
       // check if went through points
       TEST_ASSERT(pts[0]==ebez.f(t[0]));
       TEST_ASSERT((pts[pts.size()-1]-ebez.f(t[t.size()-1])).norm()<65*eps);
-//       if (typeid(data__)==typeid(double))
-//       {
-//         std::cout << "833 rat=" << (pts[pts.size()-1]-ebez.f(t[t.size()-1])).norm()/eps << std::endl;
-//       }
 
 //       octave_print(2, pts, ebez);
     }
@@ -865,10 +878,6 @@ class explicit_bezier_curve_test_suite : public Test::Suite
       TEST_ASSERT((pts[pts.size()-1]-ebez.f(t[t.size()-1])).norm()<40*eps);
       TEST_ASSERT((pts[4]-ebez.f(t[4])).norm()<35*eps);
       TEST_ASSERT((fp-ebez.fp(t[4])).norm()<48*eps);
-//       if (typeid(data__)==typeid(long double))
-//       {
-//         std::cout << "805 rat=" << (pts[pts.size()-1]-ebez.f(t[t.size()-1])).norm()/eps << std::endl;
-//       }
 
 //       octave_print(3, pts, ebez);
     }
@@ -921,7 +930,6 @@ class explicit_bezier_curve_test_suite : public Test::Suite
       TEST_ASSERT((pts[4]-ebez.f(t[4])).norm()<35*eps);
       TEST_ASSERT((fp-ebez.fp(t[4])).norm()<240*eps);
       TEST_ASSERT((fpp-ebez.fpp(t[4])).norm()<1.54e3*eps);
-//       std::cout << "893: " << (pts[0]-ebez.f(t[0])).norm()/eps << std::endl;
 
 //       octave_print(4, pts, ebez);
     }
@@ -1023,11 +1031,7 @@ class explicit_bezier_curve_test_suite : public Test::Suite
         TEST_ASSERT((ebez.f(t[2])-pts[2]).norm()<9*eps);
         TEST_ASSERT((ebez.f(t[3])-pts[3]).norm()<70*eps);
         TEST_ASSERT((fp-ebez.fp(t[1])).norm()<48*eps);
-        TEST_ASSERT((fpp-ebez.fpp(t[1])).norm()<49*eps);
-//       if (typeid(data_type)==typeid(long double))
-//       {
-//         std::cout << "1044: " << (ebez.f(t[3])-pts[3]).norm()/eps << std::endl;
-//       }
+        TEST_ASSERT((fpp-ebez.fpp(t[1])).norm()<81*eps);
 
 //         octave_print(7, pts, ebez);
       }

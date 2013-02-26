@@ -35,23 +35,15 @@ namespace eli
         public:
           typedef typename curve_type::dimension_type dimension_type;
           typedef typename curve_type::data_type data_type;
-          typedef typename curve_type::control_point_type control_point_type;
           typedef Eigen::Matrix<data_type, 1, 2> point_type;
+          typedef typename curve_type::point_type control_point_type;
           typedef typename curve_type::index_type index_type;
           typedef geom::curve::fit_container<data_type, index_type, 2, 1> fit_container_type;
           typedef typename curve_type::tolerance_type tolerance_type;
 
-        private:
-          typedef Eigen::Matrix<data_type, Eigen::Dynamic, 1> row_pts_type;
-          typedef Eigen::Matrix<data_type, Eigen::Dynamic, 1> col_type;
-          typedef Eigen::Matrix<data_type, Eigen::Dynamic, Eigen::Dynamic> mat_type;
-
-        private:
-          curve_type y_curve;
-
         public:
           explicit_bezier() {}
-          explicit_bezier(const control_point_type &bin) : y_curve(bin) {}
+          explicit_bezier(const index_type &n) : y_curve(n) {}
           explicit_bezier(const explicit_bezier<data_type, tolerance_type> &eb) : y_curve(eb.y_curve) {}
           ~explicit_bezier() {}
 
@@ -69,6 +61,11 @@ namespace eli
 
           static dimension_type dimension() {return 2;}
 
+          void resize(const index_type &t_dim)
+          {
+            y_curve.resize(t_dim);
+          }
+
           bool open() const
           {
             return true;
@@ -76,6 +73,49 @@ namespace eli
           bool closed() const
           {
             return false;
+          }
+
+          index_type degree() const
+          {
+            return y_curve.degree();
+          }
+
+          void set_control_point(const control_point_type &cp_in, const index_type &i)
+          {
+            y_curve.set_control_point(cp_in, i);
+          }
+
+          control_point_type get_control_point(const index_type &i) const
+          {
+            return y_curve.get_control_point(i);
+          }
+
+          point_type f(const data_type &t) const
+          {
+            point_type rtn;
+            rtn << t, y_curve.f(t);
+            return rtn;
+          }
+
+          point_type fp(const data_type &t) const
+          {
+            point_type rtn;
+            rtn << 1, y_curve.fp(t);
+            return rtn;
+          }
+
+          point_type fpp(const data_type &t) const
+          {
+            point_type rtn;
+            rtn << 0, y_curve.fpp(t);
+            return rtn;
+          }
+
+          point_type fppp(const data_type &t) const
+          {
+            point_type rtn;
+            rtn << 0, y_curve.fppp(t);
+            return rtn;
           }
 
           void degree_promote()
@@ -167,8 +207,8 @@ namespace eli
                   // set the C0 constraint
                   col_type T;
                   mat_type N;
-                  internal::build_T(T, t[indexes[i]], n+1);
-                  internal::build_N(N, n+1);
+                  eli::geom::utility::bezier_T(T, t[indexes[i]], n);
+                  eli::geom::utility::bezier_N(N, n);
                   B.row(bi)=T.transpose()*N;
                   d.row(bi)=ypts[indexes[i]];
                   ++bi;
@@ -178,7 +218,7 @@ namespace eli
                   {
                     col_type Tp;
 
-                    internal::build_Tp(Tp, t[indexes[i]], n+1);
+                    eli::geom::utility::bezier_T_p(Tp, t[indexes[i]], n);
                     B.row(bi)=Tp.transpose()*N;
                     d.row(bi)=ci.get_fp();
                     ++bi;
@@ -189,7 +229,7 @@ namespace eli
                   {
                     col_type Tpp;
 
-                    internal::build_Tpp(Tpp, t[indexes[i]], n+1);
+                    eli::geom::utility::bezier_T_pp(Tpp, t[indexes[i]], n);
                     B.row(bi)=Tpp.transpose()*N;
                     d.row(bi)=ci.get_fpp();
                     ++bi;
@@ -202,17 +242,17 @@ namespace eli
             }
 
             // extract the control points and set them
-            control_point_type ctrl(n+1, 1);
-            for (i=0; i<n+1; ++i)
-              ctrl.row(i)=x.row(i);
-
-            set_control_points(ctrl);
+            resize(n);
+            for (i=0; i<=n; ++i)
+            {
+              set_control_point(x.row(i), i);
+            }
 
             // calculate the error at the point
             data_type err(0), d;
             for (i=0; i<pts.size(); ++i)
             {
-              geom::point::distance(d, pts[i], f(t[i]));
+              eli::geom::point::distance(d, pts[i], f(t[i]));
               err+=d;
             }
 
@@ -281,9 +321,9 @@ namespace eli
                 {
                   col_type Tp;
                   mat_type N;
-                  internal::build_N(N, n+1);
+                  eli::geom::utility::bezier_N(N, n);
 
-                  internal::build_Tp(Tp, t[indexes[i]], n+1);
+                  eli::geom::utility::bezier_T_p(Tp, t[indexes[i]], n);
                   A.row(ai)=Tp.transpose()*N;
                   b.row(ai)=ci.get_fp();
                   ++ai;
@@ -294,9 +334,9 @@ namespace eli
                 {
                   col_type Tpp;
                   mat_type N;
-                  internal::build_N(N, n+1);
+                  eli::geom::utility::bezier_N(N, n);
 
-                  internal::build_Tpp(Tpp, t[indexes[i]], n+1);
+                  eli::geom::utility::bezier_T_pp(Tpp, t[indexes[i]], n);
                   A.row(ai)=Tpp.transpose()*N;
                   b.row(ai)=ci.get_fpp();
                   ++ai;
@@ -308,58 +348,20 @@ namespace eli
             x=A.lu().solve(b);
 
             // extract the control points and set them
-            control_point_type ctrl(n+1, 1);
-            for (i=0; i<n+1; ++i)
-              ctrl.row(i)=x.row(i);
-
-            set_control_points(ctrl);
+            resize(n);
+            for (i=0; i<=n; ++i)
+            {
+              set_control_point(x.row(i), i);
+            }
           }
 
-          index_type degree() const
-          {
-            return y_curve.degree();
-          }
+        private:
+          typedef Eigen::Matrix<data_type, Eigen::Dynamic, 1> row_pts_type;
+          typedef Eigen::Matrix<data_type, Eigen::Dynamic, 1> col_type;
+          typedef Eigen::Matrix<data_type, Eigen::Dynamic, Eigen::Dynamic> mat_type;
 
-          void set_control_points(const control_point_type &Bin)
-          {
-            y_curve.set_control_points(Bin);
-          }
-
-          void get_control_points(control_point_type &Bout) const
-          {
-            y_curve.get_control_points(Bout);
-          }
-
-          point_type f(const data_type &t) const
-          {
-            point_type rtn;
-            rtn << t, y_curve.f(t);
-            return rtn;
-          }
-
-          point_type fp(const data_type &t) const
-          {
-            point_type rtn;
-            rtn << 1, y_curve.fp(t);
-            return rtn;
-          }
-
-          point_type fpp(const data_type &t) const
-          {
-            point_type rtn;
-            rtn << 0, y_curve.fpp(t);
-            return rtn;
-          }
-
-          point_type fppp(const data_type &t) const
-          {
-            point_type rtn;
-            rtn << 0, y_curve.fppp(t);
-            return rtn;
-          }
-
-          // TODO: Implement additional functionality
-          // derivative of the curve with respect to the ith control point
+        private:
+          curve_type y_curve;
       };
     }
   }

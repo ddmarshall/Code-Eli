@@ -26,6 +26,7 @@
 typedef eli::geom::curve::bezier3d bezier_curve_type;
 typedef bezier_curve_type::control_point_type curve_control_point_type;
 typedef eli::geom::surface::bezier3d bezier_surface_type;
+typedef bezier_surface_type::control_point_type surface_control_point_type;
 typedef bezier_curve_type::data_type data_type;
 typedef bezier_curve_type::point_type point_type;
 typedef bezier_curve_type::index_type index_type;
@@ -136,41 +137,49 @@ int main(int /*argc*/, char * /*argv*/[])
   // build the curve through the points
   //////////////
   double dia;
-  curve_control_point_type cp(7,3);
+  curve_control_point_type cp[7];
   bezier_curve_type bez_c, bez_c2;
 
   dia = len/fine_ratio;
   // FIX: THIS SHOULD BE TWO 3rd ORDER BEZIER CURVES
-  cp << 0.00*len, 0, 0.00*dia,
-        0.05*len, 0, 0.95*dia,
-        0.20*len, 0, 1.00*dia,
-        0.50*len, 0, 1.00*dia,
-        0.60*len, 0, 1.00*dia,
-        0.95*len, 0, 0.30*dia,
-        1.00*len, 0, 0.00*dia;
+  cp[0] << 0.00*len, 0, 0.00*dia;
+  cp[1] << 0.05*len, 0, 0.95*dia;
+  cp[2] << 0.20*len, 0, 1.00*dia;
+  cp[3] << 0.50*len, 0, 1.00*dia;
+  cp[4] << 0.60*len, 0, 1.00*dia;
+  cp[5] << 0.95*len, 0, 0.30*dia;
+  cp[6] << 1.00*len, 0, 0.00*dia;
 
   // create top reference curve
-  bez_c.set_control_points(cp);
+  bez_c.resize(6);
+  for (index_type i=0; i<7; ++i)
+  {
+    bez_c.set_control_point(cp[i], i);
+  }
 
   // create bottom reference curve
-  cp.col(2)*=-1;
-  bez_c2.set_control_points(cp);
-  cp.col(2)*=-1;
+  bez_c.resize(6);
+  for (index_type i=0; i<7; ++i)
+  {
+    cp[i].col(2)*=-1;
+    bez_c2.set_control_point(cp[i], i);
+    cp[i].col(2)*=-1;
+  }
 
   // create bezier surface by rotating the control points of curve
   // FIX: THIS NEEDS TO BE A PIECEWISE
   index_type i, j, n(6), m(9);
   bezier_surface_type bez_s(n, m);
-  point_type tmp;
+  surface_control_point_type tmp;
 
   for (j=0; j<=m; ++j)
   {
     data_type alpha=(static_cast<data_type>(j)/m)*eli::constants::math<data_type>::two_pi();
     for (i=0; i<=n; ++i)
     {
-      tmp(0)=cp(i, 0);
-      tmp(1)= std::cos(alpha)*cp(i,1)+std::sin(alpha)*cp(i,2);
-      tmp(2)=-std::sin(alpha)*cp(i,1)+std::cos(alpha)*cp(i,2);
+      tmp(0)=cp[i](0);
+      tmp(1)= std::cos(alpha)*cp[i](1)+std::sin(alpha)*cp[i](2);
+      tmp(2)=-std::sin(alpha)*cp[i](1)+std::cos(alpha)*cp[i](2);
       bez_s.set_control_point(tmp, i, j);
     }
   }

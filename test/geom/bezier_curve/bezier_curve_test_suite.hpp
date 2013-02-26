@@ -37,10 +37,9 @@ class bezier_curve_test_suite : public Test::Suite
     typedef eli::geom::curve::bezier<data__, 3> bezier_type;
     typedef typename bezier_type::fit_container_type fit_container_type;
     typedef typename fit_container_type::constraint_point_type constraint_point_type;
-    typedef typename bezier_type::control_point_type control_point_type;
+    typedef typename bezier_type::index_type index_type;
     typedef typename bezier_type::point_type point_type;
     typedef typename bezier_type::data_type data_type;
-
 
   protected:
     void AddTests(const float &)
@@ -204,43 +203,45 @@ class bezier_curve_test_suite : public Test::Suite
     void assignment_test()
     {
       bezier_type bc1, bc2;
-      control_point_type cntrl_in(4,3), cntrl_out;
+      point_type cntrl_in[4];
+      index_type i;
 
       // test default constructor then set control points
-      cntrl_in << 2.0, 2.0, 0.0,
-                  1.0, 1.5, 0.0,
-                  3.5, 0.0, 0.0,
-                  4.0, 1.0, 0.0;
-      bc1.set_control_points(cntrl_in);
-      bc1.get_control_points(cntrl_out);
-      TEST_ASSERT(cntrl_in==cntrl_out);
-      cntrl_out.setZero();
-
-      // test constructor with vector of control points
-      bezier_type bcc1(cntrl_in);
-      bcc1.get_control_points(cntrl_out);
-      TEST_ASSERT(cntrl_in==cntrl_out);
-      cntrl_out.setZero();
+      cntrl_in[0] << 2, 2, 0;
+      cntrl_in[1] << 1, 1, 0;
+      cntrl_in[2] << 3, 0, 0;
+      cntrl_in[3] << 4, 1, 0;
+      bc1.resize(3);
+      for (i=0; i<4; ++i)
+      {
+        bc1.set_control_point(cntrl_in[i], i);
+      }
+      for (i=0; i<4; ++i)
+      {
+        TEST_ASSERT(cntrl_in[i]==bc1.get_control_point(i));
+      }
 
       // test copy ctr
-      bezier_type bcc2(bc1);
-      bcc2.get_control_points(cntrl_out);
-      TEST_ASSERT(cntrl_in==cntrl_out);
-      cntrl_out.setZero();
+      bezier_type bcc1(bc1);
+      for (i=0; i<4; ++i)
+      {
+        TEST_ASSERT(bc1.get_control_point(i)==bcc1.get_control_point(i));
+      }
 
       // test assignment operator
       bc2=bc1;
-      bc2.get_control_points(cntrl_out);
-      TEST_ASSERT(cntrl_in==cntrl_out);
-      cntrl_out.setZero();
+      for (i=0; i<4; ++i)
+      {
+        TEST_ASSERT(bc1.get_control_point(i)==bc2.get_control_point(i));
+      }
 
       // test order
-      TEST_ASSERT(bc2.degree()==cntrl_in.rows()-1);
+      TEST_ASSERT(bc2.degree()==4-1);
     }
 
     void evaluation_test()
     {
-      control_point_type cntrl_in(4,3);
+      point_type cntrl_in[4];
       data_type eps(std::numeric_limits<data__>::epsilon());
 #ifdef ELI_QD_FOUND
       if ( (typeid(data_type)==typeid(dd_real)) || (typeid(data_type)==typeid(qd_real)) )
@@ -248,52 +249,59 @@ class bezier_curve_test_suite : public Test::Suite
 #endif
 
       // set control points
-      cntrl_in << 2.0, 2.0, 0.0,
-                  1.0, 1.5, 0.0,
-                  3.5, 0.0, 0.0,
-                  4.0, 1.0, 0.0;
+      cntrl_in[0] << 2.0, 2.0, 0.0;
+      cntrl_in[1] << 1.0, 1.5, 0.0;
+      cntrl_in[2] << 3.5, 0.0, 0.0;
+      cntrl_in[3] << 4.0, 1.0, 0.0;
 
-      bezier_type bc1(cntrl_in), bc2;
+      bezier_type bc1(3);
       point_type  eval_out, eval_ref;
       data_type  t;
+
+      // set control points
+      for (index_type i=0; i<4; ++i)
+      {
+        bc1.set_control_point(cntrl_in[i], i);
+      }
 
       // test evaluation at end points
       t=0;
       eval_out=bc1.f(t);
-      TEST_ASSERT(eval_out==cntrl_in.row(0));
+      TEST_ASSERT(eval_out==cntrl_in[0]);
       t=1;
       eval_out=bc1.f(t);
-      TEST_ASSERT(eval_out==cntrl_in.row(3));
+      TEST_ASSERT(eval_out==cntrl_in[3]);
 
       // test evaluation at interior point
       t=static_cast<data__>(0.45);
       eval_out=bc1.f(t);
       eval_ref << static_cast<data__>(2.2750625), static_cast<data__>(1.0364375), static_cast<data__>(0);
       TEST_ASSERT((eval_out-eval_ref).norm()<5e3*eps);
-//       if ( (typeid(data__)==typeid(dd_real)) || (typeid(data__)==typeid(qd_real)) )
-//       {
-//         std::cout << "257 rat=" << (eval_out-eval_ref).norm()/std::numeric_limits<double>::epsilon() << std::endl;
-//       }
-
     }
 
     void derivative_1_test()
     {
-      control_point_type cntrl_in(4,3);
+      point_type cntrl_in[4];
       data_type eps(std::numeric_limits<data__>::epsilon());
 #ifdef ELI_QD_FOUND
       if ( (typeid(data_type)==typeid(dd_real)) || (typeid(data_type)==typeid(qd_real)) )
         eps=std::numeric_limits<double>::epsilon();
 #endif
       // set control points
-      cntrl_in << 2.0, 2.0, 0.0,
-                  1.0, 1.5, 0.0,
-                  3.5, 0.0, 0.0,
-                  4.0, 1.0, 0.0;
+      cntrl_in[0] << 2.0, 2.0, 0.0;
+      cntrl_in[1] << 1.0, 1.5, 0.0;
+      cntrl_in[2] << 3.5, 0.0, 0.0;
+      cntrl_in[3] << 4.0, 1.0, 0.0;
 
-      bezier_type bc1(cntrl_in), bc2;
+      bezier_type bc1(3);
       point_type eval_out, eval_ref;
       data_type t;
+
+      // set control points
+      for (index_type i=0; i<4; ++i)
+      {
+        bc1.set_control_point(cntrl_in[i], i);
+      }
 
       // test 1st derivative at end points
       t=0;
@@ -310,29 +318,31 @@ class bezier_curve_test_suite : public Test::Suite
       eval_out=bc1.fp(t);
       eval_ref << static_cast<data__>(3.10875), static_cast<data__>(-2.07375), static_cast<data__>(0);
       TEST_ASSERT((eval_out-eval_ref).norm() < 5e3*eps);
-//       if ( (typeid(data__)==typeid(dd_real)) || (typeid(data__)==typeid(qd_real)) )
-//       {
-//         std::cout << "293 rat=" << (eval_out-eval_ref).norm()/std::numeric_limits<double>::epsilon() << std::endl;
-//       }
     }
 
     void derivative_2_test()
     {
-      control_point_type cntrl_in(4,3);
+      point_type cntrl_in[4];
       data_type eps(std::numeric_limits<data__>::epsilon());
 #ifdef ELI_QD_FOUND
       if ( (typeid(data_type)==typeid(dd_real)) || (typeid(data_type)==typeid(qd_real)) )
         eps=std::numeric_limits<double>::epsilon();
 #endif
       // set control points
-      cntrl_in << 2.0, 2.0, 0.0,
-                  1.0, 1.5, 0.0,
-                  3.5, 0.0, 0.0,
-                  4.0, 1.0, 0.0;
+      cntrl_in[0] << 2.0, 2.0, 0.0;
+      cntrl_in[1] << 1.0, 1.5, 0.0;
+      cntrl_in[2] << 3.5, 0.0, 0.0;
+      cntrl_in[3] << 4.0, 1.0, 0.0;
 
-      bezier_type bc1(cntrl_in), bc2;
+      bezier_type bc1(3);
       point_type eval_out, eval_ref;
       data_type t;
+
+      // set control points
+      for (index_type i=0; i<4; ++i)
+      {
+        bc1.set_control_point(cntrl_in[i], i);
+      }
 
       // test 2nd derivative at end points
       t=0;
@@ -349,29 +359,31 @@ class bezier_curve_test_suite : public Test::Suite
       eval_out=bc1.fpp(t);
       eval_ref << static_cast<data__>(6.15), static_cast<data__>(3.45), static_cast<data__>(0);
       TEST_ASSERT_DELTA((eval_out-eval_ref).norm(), 0, 1e4*eps);
-//       if ( (typeid(data__)==typeid(dd_real)) || (typeid(data__)==typeid(qd_real)) )
-//       {
-//         std::cout << "313 rat=" << (eval_out-eval_ref).norm()/std::numeric_limits<double>::epsilon() << std::endl;
-//       }
     }
 
     void derivative_3_test()
     {
-      control_point_type cntrl_in(4,3);
+      point_type cntrl_in[4];
       data_type eps(std::numeric_limits<data__>::epsilon());
 #ifdef ELI_QD_FOUND
       if ( (typeid(data_type)==typeid(dd_real)) || (typeid(data_type)==typeid(qd_real)) )
         eps=std::numeric_limits<double>::epsilon();
 #endif
       // set control points
-      cntrl_in << 2.0, 2.0, 0.0,
-                  1.0, 1.5, 0.0,
-                  3.5, 0.0, 0.0,
-                  4.0, 1.0, 0.0;
+      cntrl_in[0] << 2.0, 2.0, 0.0;
+      cntrl_in[1] << 1.0, 1.5, 0.0;
+      cntrl_in[2] << 3.5, 0.0, 0.0;
+      cntrl_in[3] << 4.0, 1.0, 0.0;
 
-      bezier_type bc1(cntrl_in), bc2;
+      bezier_type bc1(3);
       point_type eval_out, eval_ref;
       data_type t;
+
+      // set control points
+      for (index_type i=0; i<4; ++i)
+      {
+        bc1.set_control_point(cntrl_in[i], i);
+      }
 
       // test 3rd derivative at end points
       t=0;
@@ -409,31 +421,35 @@ class bezier_curve_test_suite : public Test::Suite
 
     void reverse_test()
     {
-      control_point_type cntrl_in(4,3), cntrl_ref(4,3), cntrl_out;
+      point_type cntrl_in[4];
 
       // set control points
-      cntrl_in << 2,   2,   0,
-                  1,   1.5, 0,
-                  3.5, 0,   0,
-                  4,   1,   0;
-      cntrl_ref << 4,   1,   0,
-                   3.5, 0,   0,
-                   1,   1.5, 0,
-                   2,   2,   0;
+      cntrl_in[0] << 2.0, 2.0, 0.0;
+      cntrl_in[1] << 1.0, 1.5, 0.0;
+      cntrl_in[2] << 3.5, 0.0, 0.0;
+      cntrl_in[3] << 4.0, 1.0, 0.0;
 
-      bezier_type bc1(cntrl_in);
+      bezier_type bc1(3);
+
+      // set control points
+      for (index_type i=0; i<4; ++i)
+      {
+        bc1.set_control_point(cntrl_in[i], i);
+      }
 
       // reverse curve parameterization
       bc1.reverse();
 
       // get control points and check them
-      bc1.get_control_points(cntrl_out);
-      TEST_ASSERT(cntrl_out==cntrl_ref);
+      for (index_type i=0; i<4; ++i)
+      {
+        TEST_ASSERT(bc1.get_control_point(i)==cntrl_in[3-i]);
+      }
     }
 
     void promotion_test()
     {
-      control_point_type cntrl_in(5,3), cntrl_out;
+      point_type cntrl_in[5];
       data_type eps(std::numeric_limits<data__>::epsilon());
 #ifdef ELI_QD_FOUND
       if ( (typeid(data_type)==typeid(dd_real)) || (typeid(data_type)==typeid(qd_real)) )
@@ -441,51 +457,56 @@ class bezier_curve_test_suite : public Test::Suite
 #endif
 
       // set control points
-      cntrl_in << 0.0, 0.0, 0.0,
-                  0.0, 4.0, 0.0,
-                  2.0, 4.0, 0.0,
-                  2.0, 3.0, 0.0,
-                  1.5, 3.0, 0.0;
+      cntrl_in[0] << 0,   0, 0;
+      cntrl_in[1] << 0,   4, 0;
+      cntrl_in[2] << 2,   4, 0;
+      cntrl_in[3] << 2,   3, 0;
+      cntrl_in[4] << 1.5, 3, 0;
 
-      bezier_type bc1(cntrl_in), bc2(bc1);
+      bezier_type bc1(4), bc2;
       point_type eval_out, eval_ref;
       data_type t, curv_out, curv_ref;
 
+      // set control points
+      for (index_type i=0; i<5; ++i)
+      {
+        bc1.set_control_point(cntrl_in[i], i);
+      }
+      bc2=bc1;
+
+      // promote curve
       bc2.degree_promote();
 
       // test to see if degree has increased
       TEST_ASSERT(bc1.degree()+1==bc2.degree());
 
       // test to see if get expected polygon
-      bc2.get_control_points(cntrl_out);
-      if (cntrl_out.rows()!=cntrl_in.rows()+1)
+      if (bc1.degree()+1==bc2.degree())
       {
-        TEST_ASSERT(false);
-      }
-      else
-      {
-        control_point_type cntrl_ref(6,3);
+        point_type cntrl_ref[6];
 
-        cntrl_ref << 0.0,                      0.0,                      0.0,
-                     0.0,                      static_cast<data__>(3.2), 0.0,
-                     static_cast<data__>(1.2), 4.0,                      0.0,
-                     2.0,                      static_cast<data__>(3.6), 0.0,
-                     static_cast<data__>(1.9), 3.0,                      0.0,
-                     static_cast<data__>(1.5), 3.0,                      0.0;
-        if (typeid(data__)==typeid(long double))
+        cntrl_ref[0] << 0.0,                      0.0,                      0.0;
+        cntrl_ref[1] << 0.0,                      static_cast<data__>(3.2), 0.0;
+        cntrl_ref[2] << static_cast<data__>(1.2), 4.0,                      0.0;
+        cntrl_ref[3] << 2.0,                      static_cast<data__>(3.6), 0.0;
+        cntrl_ref[4] << static_cast<data__>(1.9), 3.0,                      0.0;
+        cntrl_ref[5] << static_cast<data__>(1.5), 3.0,                      0.0;
+        for (index_type i=0; i<6; ++i)
         {
-          TEST_ASSERT((cntrl_out-cntrl_ref).norm()<std::sqrt(eps));
-        }
+          if (typeid(data__)==typeid(long double))
+          {
+            TEST_ASSERT((bc2.get_control_point(i)-cntrl_ref[i]).norm()<std::sqrt(eps));
+          }
 #ifdef ELI_QD_FOUND
-        else if ( (typeid(data__)==typeid(dd_real)) || (typeid(data__)==typeid(qd_real)) )
-        {
-          TEST_ASSERT((cntrl_out-cntrl_ref).norm()<2.0*eps);
-//         std::cout << "407 rat=" << (cntrl_out-cntrl_ref).norm()/std::numeric_limits<double>::epsilon() << std::endl;
-        }
+          else if ( (typeid(data__)==typeid(dd_real)) || (typeid(data__)==typeid(qd_real)) )
+          {
+            TEST_ASSERT((bc2.get_control_point(i)-cntrl_ref[i]).norm()<2.0*eps);
+          }
 #endif
-        else
-        {
-          TEST_ASSERT(cntrl_out==cntrl_ref);
+          else
+          {
+            TEST_ASSERT(bc2.get_control_point(i)==cntrl_ref[i]);
+          }
         }
       }
 
@@ -503,14 +524,7 @@ class bezier_curve_test_suite : public Test::Suite
       t=static_cast<data__>(0.45);
       eval_out=bc2.f(t);
       eval_ref=bc1.f(t);
-      if (typeid(data__)==typeid(long double))
-      {
-        TEST_ASSERT((eval_out-eval_ref).norm()<5*eps);
-      }
-      else
-      {
-        TEST_ASSERT(eval_out==eval_ref);
-      }
+      TEST_ASSERT((eval_out-eval_ref).norm()<5*eps);
 
       // test 1st derivative at end points
       t=0;
@@ -520,52 +534,45 @@ class bezier_curve_test_suite : public Test::Suite
       t=1;
       eval_out=bc2.fp(t);
       eval_ref=bc1.fp(t);
-      TEST_ASSERT(eval_out==eval_ref);
+      TEST_ASSERT((eval_out-eval_ref).norm()<5*eps);
 
       // test 1st derivative at interior point
       t=static_cast<data__>(0.45);
       eval_out=bc2.fp(t);
       eval_ref=bc1.fp(t);
-      TEST_ASSERT(eval_out==eval_ref);
+      TEST_ASSERT((eval_out-eval_ref).norm()<5*eps);
 
       // test 2nd derivative at end points
       t=0;
       eval_out=bc2.fpp(t);
       eval_ref=bc1.fpp(t);
-      TEST_ASSERT(eval_out==eval_ref);
+      TEST_ASSERT((eval_out-eval_ref).norm()<33*eps);
       t=1;
       eval_out=bc2.fpp(t);
       eval_ref=bc1.fpp(t);
-      TEST_ASSERT(eval_out==eval_ref);
+      TEST_ASSERT((eval_out-eval_ref).norm()<18*eps);
 
       // test 2nd derivative at interior point
       t=static_cast<data__>(0.45);
       eval_out=bc2.fpp(t);
       eval_ref=bc1.fpp(t);
-      if (typeid(data__)==typeid(long double))
-      {
-        TEST_ASSERT((eval_out-eval_ref).norm()<17*eps);
-      }
-      else
-      {
-        TEST_ASSERT(eval_out==eval_ref);
-      }
+      TEST_ASSERT((eval_out-eval_ref).norm()<33*eps);
 
       // test 3rd derivative at end points
       t=0;
       eval_out=bc2.fppp(t);
       eval_ref=bc1.fppp(t);
-      TEST_ASSERT(eval_out==eval_ref);
+      TEST_ASSERT((eval_out-eval_ref).norm()<390*eps);
       t=1;
       eval_out=bc2.fppp(t);
       eval_ref=bc1.fppp(t);
-      TEST_ASSERT(eval_out==eval_ref);
+      TEST_ASSERT((eval_out-eval_ref).norm()<390*eps);
 
       // test 3rd derivative at interior point
       t=static_cast<data__>(0.45);
       eval_out=bc2.fppp(t);
       eval_ref=bc1.fppp(t);
-      TEST_ASSERT(eval_out==eval_ref);
+      TEST_ASSERT((eval_out-eval_ref).norm()<203*eps);
 
       // test curvature at end points
       t=0;
@@ -575,20 +582,13 @@ class bezier_curve_test_suite : public Test::Suite
       t=1;
       eli::geom::curve::curvature(curv_out, bc2, t);
       eli::geom::curve::curvature(curv_ref, bc1, t);
-      TEST_ASSERT(curv_out==curv_ref);
+      TEST_ASSERT(std::abs(curv_out-curv_ref)<203*eps);
 
       // test curvature at interior point
       t=static_cast<data__>(0.45);
       eli::geom::curve::curvature(curv_out, bc2, t);
       eli::geom::curve::curvature(curv_ref, bc1, t);
-      if (typeid(data__)==typeid(long double))
-      {
-        TEST_ASSERT(std::abs(curv_out-curv_ref)<2*eps);
-      }
-      else
-      {
-        TEST_ASSERT(curv_out==curv_ref);
-      }
+      TEST_ASSERT(std::abs(curv_out-curv_ref)<203*eps);
     }
 
     void demotion_test()
@@ -601,52 +601,65 @@ class bezier_curve_test_suite : public Test::Suite
 
       {
         // hand checked with "Degree Reduction of Bezier Curves" by Dave Morgan
-        control_point_type cntrl_in(7,3), cntrl_out, cntrl_ref(6,3);
+        point_type cntrl_in[7], cntrl_ref[6];
 
-        cntrl_in << 0.0, 0.0, 0.0,
-                    2.0, 6.0, 0.0,
-                    3.0, 0.0, 0.0,
-                    5.0, 4.0, 0.0,
-                    7.0, 1.0, 0.0,
-                    5.0, 5.0, 0.0,
-                   10.0, 6.0, 0.0;
+        cntrl_in[0] <<  0, 0, 0;
+        cntrl_in[1] <<  2, 6, 0;
+        cntrl_in[2] <<  3, 0, 0;
+        cntrl_in[3] <<  5, 4, 0;
+        cntrl_in[4] <<  7, 1, 0;
+        cntrl_in[5] <<  5, 5, 0;
+        cntrl_in[6] << 10, 6, 0;
 
-        bezier_type bc1(cntrl_in), bc2(bc1);
+        bezier_type bc1(6), bc2;
+
+        // set control points
+        for (index_type i=0; i<7; ++i)
+        {
+          bc1.set_control_point(cntrl_in[i], i);
+        }
+
+        bc2=bc1;
         bc1.degree_demote(eli::geom::general::NOT_CONNECTED);
 
         // test if the degree is correct
         TEST_ASSERT(bc1.degree()+1==bc2.degree());
 
-        // test of get the correct control points
-        cntrl_ref << static_cast<data__>(-0.00878906), static_cast<data__>(0.0610352),  0.0,
-                     static_cast<data__>( 2.5177734),  static_cast<data__>(6.3821289),  0.0,
-                     static_cast<data__>( 2.8060547), static_cast<data__>(-0.16982422), 0.0,
-                     static_cast<data__>( 8.0060547), static_cast<data__>( 2.5301758),  0.0,
-                     static_cast<data__>( 4.1177734), static_cast<data__>( 3.9821289),  0.0,
-                     static_cast<data__>( 9.9912109), static_cast<data__>( 6.0610352),  0.0;
-        bc1.get_control_points(cntrl_out);
-        if (cntrl_out.rows()!=cntrl_ref.rows())
+        if (bc1.degree()+1==bc2.degree())
         {
-          TEST_ASSERT(false);
-        }
-        else
-        {
-          TEST_ASSERT_DELTA((cntrl_out-cntrl_ref).norm(), 0, 1e-6);
+          // test of get the correct control points
+          cntrl_ref[0] << static_cast<data__>(-0.00878906), static_cast<data__>(0.0610352),  0;
+          cntrl_ref[1] << static_cast<data__>( 2.5177734),  static_cast<data__>(6.3821289),  0;
+          cntrl_ref[2] << static_cast<data__>( 2.8060547), static_cast<data__>(-0.16982422), 0;
+          cntrl_ref[3] << static_cast<data__>( 8.0060547), static_cast<data__>( 2.5301758),  0;
+          cntrl_ref[4] << static_cast<data__>( 4.1177734), static_cast<data__>( 3.9821289),  0;
+          cntrl_ref[5] << static_cast<data__>( 9.9912109), static_cast<data__>( 6.0610352),  0;
+          for (index_type i=0; i<6; ++i)
+          {
+            TEST_ASSERT_DELTA((bc1.get_control_point(i)-cntrl_ref[i]).norm(), 0, 1e-6);
+          }
         }
       }
 
       // test whether can promote and demote and get the same control points
       {
-        control_point_type cntrl_in(5,3), cntrl_out, cntrl_ref;
+        point_type cntrl_in[5];
 
         // set control points
-        cntrl_in << 0.0, 0.0, 0.0,
-                    0.0, 4.0, 0.0,
-                    2.0, 4.0, 0.0,
-                    2.0, 3.0, 0.0,
-                    1.5, 3.0, 0.0;
+        cntrl_in[0] << 0,   0, 0;
+        cntrl_in[1] << 0,   4, 0;
+        cntrl_in[2] << 2,   4, 0;
+        cntrl_in[3] << 2,   3, 0;
+        cntrl_in[4] << 1.5, 3, 0;
 
-        bezier_type bc1(cntrl_in), bc2(bc1);
+        bezier_type bc1(5), bc2;
+
+        // set control points
+        for (index_type i=0; i<5; ++i)
+        {
+          bc1.set_control_point(cntrl_in[i], i);
+        }
+        bc2=bc1;
         bc2.degree_promote();
         bc2.degree_demote(eli::geom::general::NOT_CONNECTED);
 
@@ -654,39 +667,41 @@ class bezier_curve_test_suite : public Test::Suite
         TEST_ASSERT(bc1.degree()==bc2.degree());
 
         // test to see if get expected polygon
-        bc2.get_control_points(cntrl_out);
-        cntrl_ref=cntrl_in;
-        if (cntrl_out.rows()!=cntrl_ref.rows())
-        {
-          TEST_ASSERT(false);
-        }
-        else
+        for (index_type i=0; i<5; ++i)
         {
           if (typeid(data__)==typeid(long double))
           {
-            TEST_ASSERT((cntrl_out-cntrl_ref).norm()<std::sqrt(eps));
+            TEST_ASSERT((bc2.get_control_point(i)-cntrl_in[i]).norm()<std::sqrt(eps));
           }
           else
           {
-            TEST_ASSERT(cntrl_out==cntrl_ref);
+            TEST_ASSERT((bc2.get_control_point(i)-cntrl_in[i]).norm()<4*eps);
           }
         }
       }
 
-      // test whether can demote and maintain continuity at end points going all the way
-      // to the n/2 limit and checking how close an interior point is
+      // test whether can demote and maintain continuity at end points
       {
-        control_point_type cntrl_in(7,3);
+        point_type cntrl_in[10];
 
-        cntrl_in << 0.0, 0.0, 0.0,
-                    2.0, 6.0, 0.0,
-                    3.0, 0.0, 0.0,
-                    5.0, 4.0, 0.0,
-                    7.0, 1.0, 0.0,
-                    5.0, 5.0, 0.0,
-                   10.0, 6.0, 0.0;
+        cntrl_in[0] <<  0, 0, 0,
+        cntrl_in[1] <<  2, 6, 0,
+        cntrl_in[2] <<  3, 0, 0,
+        cntrl_in[3] <<  5, 4, 0,
+        cntrl_in[4] <<  7, 1, 0,
+        cntrl_in[5] <<  5, 5, 0,
+        cntrl_in[6] <<  6, 6, 0,
+        cntrl_in[7] <<  7, 5, 0,
+        cntrl_in[8] <<  5, 5, 0,
+        cntrl_in[9] << 10, 6, 0;
 
-        bezier_type bc1(cntrl_in);
+        bezier_type bc1(9);
+
+        // set control points
+        for (index_type i=0; i<10; ++i)
+        {
+          bc1.set_control_point(cntrl_in[i], i);
+        }
 
         // No End Constraint
         {
@@ -713,15 +728,15 @@ class bezier_curve_test_suite : public Test::Suite
 
             if (k<2)
             {
-              TEST_ASSERT_DELTA(d[0], 0.061665, 5e-6);
-              TEST_ASSERT_DELTA(d[1], 4.43986, 5e-5);
-              TEST_ASSERT_DELTA(d[2], 103.597, 5e-3);
+              TEST_ASSERT_DELTA(d[0], 0.00435372, 5e-6);
+              TEST_ASSERT_DELTA(d[1], 0.70530, 5e-5);
+              TEST_ASSERT_DELTA(d[2], 37.6161, 5e-3);
             }
             else
             {
-              TEST_ASSERT_DELTA(d[0], 0.05086, 1e-5);
-              TEST_ASSERT_DELTA(d[1], 0.4205, 5e-4);
-              TEST_ASSERT_DELTA(d[2], 7.4826, 5e-4);
+              TEST_ASSERT_DELTA(d[0], 0.003414, 1e-5);
+              TEST_ASSERT_DELTA(d[1], 0.04887, 5e-4);
+              TEST_ASSERT_DELTA(d[2], 1.10759, 5e-4);
             }
           }
         }
@@ -752,14 +767,14 @@ class bezier_curve_test_suite : public Test::Suite
             if (k<2)
             {
               TEST_ASSERT_DELTA(d[0], 0.0, 5e-6);
-              TEST_ASSERT_DELTA(d[1], 3.82695, 5e-5);
-              TEST_ASSERT_DELTA(d[2], 99.5007, 5e-4);
+              TEST_ASSERT_DELTA(d[1], 0.64553, 5e-5);
+              TEST_ASSERT_DELTA(d[2], 37.4409, 5e-4);
             }
             else
             {
-              TEST_ASSERT_DELTA(d[0], 0.048737, 5e-6);
-              TEST_ASSERT_DELTA(d[1], 0.43030, 5e-5);
-              TEST_ASSERT_DELTA(d[2], 7.64895, 1e-4);
+              TEST_ASSERT_DELTA(d[0], 0.00305362, 5e-6);
+              TEST_ASSERT_DELTA(d[1], 0.042752, 5e-5);
+              TEST_ASSERT_DELTA(d[2], 1.043406, 1e-4);
             }
           }
         }
@@ -789,15 +804,15 @@ class bezier_curve_test_suite : public Test::Suite
 
             if (k<2)
             {
-              TEST_ASSERT(d[0] < 5e2*eps);
-              TEST_ASSERT(d[1] < 1e3*eps);
-              TEST_ASSERT_DELTA(d[2], 57.4042, 5e-4);
+              TEST_ASSERT(d[0]==0);
+              TEST_ASSERT(d[1]==0);
+              TEST_ASSERT_DELTA(d[2], 16.7838, 5e-4);
             }
             else
             {
-              TEST_ASSERT_DELTA(d[0], 0.156476, 5e-6);
-              TEST_ASSERT_DELTA(d[1], 0.900073, 5e-5);
-              TEST_ASSERT_DELTA(d[2], 16.6997, 5e-4);
+              TEST_ASSERT_DELTA(d[0], 0.0057941, 5e-6);
+              TEST_ASSERT_DELTA(d[1], 0.086370, 5e-5);
+              TEST_ASSERT_DELTA(d[2], 1.69369, 5e-4);
             }
           }
         }
@@ -827,25 +842,24 @@ class bezier_curve_test_suite : public Test::Suite
 
             if (k<2)
             {
-              TEST_ASSERT(d[0] < 5e2*eps);
-              TEST_ASSERT(d[1] < 5e3*eps);
-              TEST_ASSERT(d[2] < 5e3*eps);
+              TEST_ASSERT(d[0]==0);
+              TEST_ASSERT(d[1]==0);
+              TEST_ASSERT(d[2] < 129*eps);
             }
             else
             {
-              TEST_ASSERT_DELTA(d[0], 1.91466, 5e-5);
-              TEST_ASSERT_DELTA(d[1], 2.32081, 5e-5);
-              TEST_ASSERT_DELTA(d[2], 44.5408, 5e-4);
+              TEST_ASSERT_DELTA(d[0], 0.0180029, 5e-5);
+              TEST_ASSERT_DELTA(d[1], 0.294979, 5e-5);
+              TEST_ASSERT_DELTA(d[2], 3.78229, 5e-4);
             }
           }
         }
-
       }
     }
 
     void split_test()
     {
-      control_point_type cntrl_in(4,3), cntrl_out, cntrl_ref(4,3);
+      point_type cntrl_in[4], cntrl_ref[4];
       data_type eps(std::numeric_limits<data__>::epsilon());
 #ifdef ELI_QD_FOUND
       if ( (typeid(data_type)==typeid(dd_real)) || (typeid(data_type)==typeid(qd_real)) )
@@ -853,30 +867,40 @@ class bezier_curve_test_suite : public Test::Suite
 #endif
 
       // set control points
-      cntrl_in << 0.0, 0.0, 0.0,
-                  0.0, 2.0, 0.0,
-                  8.0, 2.0, 0.0,
-                  4.0, 0.0, 0.0;
+      cntrl_in[0] << 0, 0, 0;
+      cntrl_in[1] << 0, 2, 0;
+      cntrl_in[2] << 8, 2, 0;
+      cntrl_in[3] << 4, 0, 0;
 
-      bezier_type bc1(cntrl_in), bc1l, bc1r;
+      bezier_type bc1(3), bc1l, bc1r;
       point_type eval_out, eval_ref;
       data_type t;
+
+      // set control points
+      for (index_type i=0; i<4; ++i)
+      {
+        bc1.set_control_point(cntrl_in[i], i);
+      }
 
       // test split with known control points
       t=0.5;
       bc1.split(bc1l, bc1r, t);
-      cntrl_ref << 0.0, 0.0, 0.0,
-                   0.0, 1.0, 0.0,
-                   2.0, 1.5, 0.0,
-                   3.5, 1.5, 0.0;
-      bc1l.get_control_points(cntrl_out);
-      TEST_ASSERT(cntrl_out==cntrl_ref);
-      cntrl_ref << 3.5, 1.5, 0.0,
-                   5.0, 1.5, 0.0,
-                   6.0, 1.0, 0.0,
-                   4.0, 0.0, 0.0;
-      bc1r.get_control_points(cntrl_out);
-      TEST_ASSERT(cntrl_out==cntrl_ref);
+      cntrl_ref[0] << 0.0, 0.0, 0.0;
+      cntrl_ref[1] << 0.0, 1.0, 0.0;
+      cntrl_ref[2] << 2.0, 1.5, 0.0;
+      cntrl_ref[3] << 3.5, 1.5, 0.0;
+      for (index_type i=0; i<4; ++i)
+      {
+        TEST_ASSERT(bc1l.get_control_point(i)==cntrl_ref[i]);
+      }
+      cntrl_ref[0] << 3.5, 1.5, 0.0;
+      cntrl_ref[1] << 5.0, 1.5, 0.0;
+      cntrl_ref[2] << 6.0, 1.0, 0.0;
+      cntrl_ref[3] << 4.0, 0.0, 0.0;
+      for (index_type i=0; i<4; ++i)
+      {
+        TEST_ASSERT(bc1r.get_control_point(i)==cntrl_ref[i]);
+      }
 
       // split the curve and check the evaluations
       data_type tl, tr, ts;
@@ -919,7 +943,7 @@ class bezier_curve_test_suite : public Test::Suite
 
     void length_test()
     {
-      control_point_type  cntrl_in(4,3);
+      point_type  cntrl_in[4];
       data_type eps(std::numeric_limits<data__>::epsilon());
 #ifdef ELI_QD_FOUND
       if ( (typeid(data_type)==typeid(dd_real)) || (typeid(data_type)==typeid(qd_real)) )
@@ -927,13 +951,19 @@ class bezier_curve_test_suite : public Test::Suite
 #endif
 
       // set control points
-      cntrl_in << 0.0, 0.0, 0.0,
-                  0.0, 2.0, 0.0,
-                  8.0, 2.0, 0.0,
-                  4.0, 0.0, 0.0;
+      cntrl_in[0] << 0, 0, 0;
+      cntrl_in[1] << 0, 2, 0;
+      cntrl_in[2] << 8, 2, 0;
+      cntrl_in[3] << 4, 0, 0;
 
-      bezier_type bc1(cntrl_in);
+      bezier_type bc1(3);
       data_type length_cal, length_ref;
+
+      // set control points
+      for (index_type i=0; i<4; ++i)
+      {
+        bc1.set_control_point(cntrl_in[i], i);
+      }
 
       // calculate the reference length using simpson's rule
       size_t i, npts(1001), n(npts-1);
@@ -1041,7 +1071,7 @@ class bezier_curve_test_suite : public Test::Suite
         // check if went through points
         TEST_ASSERT(pts[0]!=bez.f(t[0]));
         TEST_ASSERT(pts[pts.size()-1]!=bez.f(t[t.size()-1]));
-        TEST_ASSERT(bez.f(0)!=bez.f(1));
+        TEST_ASSERT(bez.f(0)==bez.f(1));
 
 //         octave_print(2, pts, bez);
       }
@@ -1133,7 +1163,7 @@ class bezier_curve_test_suite : public Test::Suite
         // check if went through points
         TEST_ASSERT(pts[0]==bez.f(t[0]));
         TEST_ASSERT(pts[pts.size()-1]!=bez.f(t[t.size()-1]));
-        TEST_ASSERT((bez.f(0)-bez.f(1)).norm()<172*eps);
+        TEST_ASSERT(bez.f(0)==bez.f(1));
 
 //         octave_print(4, pts, bez);
       }
@@ -1173,7 +1203,7 @@ class bezier_curve_test_suite : public Test::Suite
         // check if went through points
         TEST_ASSERT(pts[0]==bez.f(t[0]));
         TEST_ASSERT(pts[pts.size()-1]!=bez.f(t[t.size()-1]));
-        TEST_ASSERT((bez.f(0)-bez.f(1)).norm()<197*eps);
+        TEST_ASSERT(bez.f(0)==bez.f(1));
         TEST_ASSERT((bez.f(t[5])-pts[5]).norm()<15*eps);
 
 //         octave_print(5, pts, bez);
@@ -1232,14 +1262,15 @@ class bezier_curve_test_suite : public Test::Suite
         if (typeid(data__)==typeid(qd_real))
         {
           TEST_ASSERT((pts[0]-bez.f(t[0])).norm()<2.0*eps);
+          TEST_ASSERT((fp1-bez.fp(t[0])).norm()<2.0*eps);
 //         std::cout << "1132 rat=" << (pts[0]-bez.f(t[0])).norm()/eps << std::endl;
         }
         else
 #endif
         {
           TEST_ASSERT(pts[0]==bez.f(t[0]));
+          TEST_ASSERT(fp1==bez.fp(t[0]));
         }
-        TEST_ASSERT(fp1==bez.fp(t[0]));
         TEST_ASSERT((pts[pts.size()-1]-bez.f(t[t.size()-1])).norm()<88*eps);
         TEST_ASSERT((fp2-bez.fp(t[t.size()-1])).norm()<351*eps);
         TEST_ASSERT(bez.f(0)!=bez.f(1));
@@ -1292,16 +1323,18 @@ class bezier_curve_test_suite : public Test::Suite
         if (typeid(data__)==typeid(qd_real))
         {
           TEST_ASSERT((pts[0]-bez.f(t[0])).norm()<2.0*eps);
+          TEST_ASSERT((fp1-bez.fp(t[0])).norm()<2.0*eps);
 //         std::cout << "1182 rat=" << (pts[0]-bez.f(t[0])).norm()/eps << std::endl;
+//       std::cout << "fp1=" << fp1 << "\tbez.fp(t[0])=" << bez.fp(t[0]) << "\trat=" << (fp1-bez.fp(t[0])).norm()/eps << std::endl;
         }
         else
 #endif
         {
           TEST_ASSERT(pts[0]==bez.f(t[0]));
+          TEST_ASSERT(fp1==bez.fp(t[0]));
         }
-        TEST_ASSERT(fp1==bez.fp(t[0]));
         TEST_ASSERT(pts[pts.size()-1]!=bez.f(t[t.size()-1]));
-        TEST_ASSERT((bez.f(0)-bez.f(1)).norm()<70*eps);
+        TEST_ASSERT(bez.f(0)==bez.f(1));
 
 //         octave_print(7, pts, bez);
       }
@@ -1347,9 +1380,19 @@ class bezier_curve_test_suite : public Test::Suite
 
         // check if went through points
         TEST_ASSERT((bez.f(t[0])-pts[0]).norm()<5*eps);
-        TEST_ASSERT(fp1==bez.fp(t[0]));
+#ifdef ELI_QD_FOUND
+        if (typeid(data__)==typeid(qd_real))
+        {
+          TEST_ASSERT((fp1-bez.fp(t[0])).norm()<2.0*eps);
+//       std::cout << "fp1=" << fp1 << "\tbez.fp(t[0])=" << bez.fp(t[0]) << "\trat=" << (fp1-bez.fp(t[0])).norm()/eps << std::endl;
+        }
+        else
+#endif
+        {
+          TEST_ASSERT(fp1==bez.fp(t[0]));
+        }
         TEST_ASSERT(pts[pts.size()-1]!=bez.f(t[t.size()-1]));
-        TEST_ASSERT((bez.f(0)-bez.f(1)).norm()<129*eps);
+        TEST_ASSERT(bez.f(0)==bez.f(1));
         TEST_ASSERT((bez.f(t[5])-pts[5]).norm()<19*eps);
         TEST_ASSERT((bez.fp(t[5])-fp2).norm()<73*eps);
 
@@ -1417,13 +1460,7 @@ class bezier_curve_test_suite : public Test::Suite
         TEST_ASSERT(bez.f(0)!=bez.f(1));
         TEST_ASSERT((pts[0]-bez.f(t[0])).norm()<4*eps);
         TEST_ASSERT((fp1-bez.fp(t[0])).norm()<9*eps);
-        TEST_ASSERT(fpp1==bez.fpp(t[0]));
-//         if (typeid(data__)==typeid(long double))
-//         {
-//           std::cout << "1223 rat=" << (pts[pts.size()-1]-bez.f(t[t.size()-1])).norm()/eps << std::endl;
-//           std::cout << "1224 rat=" << (fp2-bez.fp(t[t.size()-1])).norm()/eps << std::endl;
-//           std::cout << "1225 rat=" << (fpp2-bez.fpp(t[t.size()-1])).norm()/eps << std::endl;
-//         }
+        TEST_ASSERT((fpp1-bez.fpp(t[0])).norm()<38*eps);
 
 //         octave_print(9, pts, bez);
       }
@@ -1467,7 +1504,7 @@ class bezier_curve_test_suite : public Test::Suite
         TEST_ASSERT(err < 0.0479);
 
         // check if went through points
-        TEST_ASSERT((bez.f(0)-bez.f(1)).norm()<430*eps);
+        TEST_ASSERT(bez.f(0)==bez.f(1));
         TEST_ASSERT((pts[0]-bez.f(t[0])).norm()<3*eps);
         TEST_ASSERT((fp1-bez.fp(t[0])).norm()<17*eps);
         TEST_ASSERT((fpp1-bez.fpp(t[0])).norm()<65*eps);
@@ -1522,13 +1559,13 @@ class bezier_curve_test_suite : public Test::Suite
         TEST_ASSERT(err < 0.0785);
 
         // check if went through points
-        TEST_ASSERT((bez.f(0)-bez.f(1)).norm()<526*eps);
+        TEST_ASSERT(bez.f(0)==bez.f(1));
         TEST_ASSERT((bez.f(t[10])-pts[10]).norm()<41*eps);
         TEST_ASSERT((bez.fp(t[10])-fp2).norm()<176*eps);
         TEST_ASSERT((bez.fpp(t[10])-fpp2).norm()<1.44e3*eps);
         TEST_ASSERT((bez.f(t[0])-pts[0]).norm()<8*eps);
         TEST_ASSERT((bez.fp(t[0])-fp1).norm()<17*eps);
-        TEST_ASSERT((bez.fpp(t[0])-fpp1).norm()<33*eps);
+        TEST_ASSERT((bez.fpp(t[0])-fpp1).norm()<38*eps);
         TEST_ASSERT(pts[pts.size()-1]!=bez.f(t[t.size()-1]));
 
 //         octave_print(11, pts, bez);
@@ -1566,7 +1603,7 @@ class bezier_curve_test_suite : public Test::Suite
         TEST_ASSERT(err < 0.393);
 
         // check if went through points
-        TEST_ASSERT((bez.f(1)-bez.f(0)).norm()<397*eps);
+        TEST_ASSERT(bez.f(0)==bez.f(1));
         TEST_ASSERT(bez.fp(0)!=bez.fp(1));
         TEST_ASSERT(bez.fpp(0)!=bez.fpp(1));
 
@@ -1596,7 +1633,7 @@ class bezier_curve_test_suite : public Test::Suite
         TEST_ASSERT(err < 0.0312);
 
         // check if went through points
-        TEST_ASSERT((bez.f(1)-bez.f(0)).norm()<531*eps);
+        TEST_ASSERT(bez.f(0)==bez.f(1));
         TEST_ASSERT((bez.fp(1)-bez.fp(0)).norm()<2.61e3*eps);
         TEST_ASSERT(bez.fpp(0)!=bez.fpp(1));
 //         if (typeid(data__)==typeid(double))
@@ -1630,7 +1667,7 @@ class bezier_curve_test_suite : public Test::Suite
         TEST_ASSERT(err < 0.0343);
 
         // check if went through points
-        TEST_ASSERT((bez.f(1)-bez.f(0)).norm()<460*eps);
+        TEST_ASSERT(bez.f(0)==bez.f(1));
         TEST_ASSERT((bez.fp(1)-bez.fp(0)).norm()<2.40e3*eps);
         TEST_ASSERT((bez.fpp(1)-bez.fpp(0)).norm()<1.06e4*eps);
 
@@ -1662,7 +1699,7 @@ class bezier_curve_test_suite : public Test::Suite
 
         // check if went through points
         TEST_ASSERT(bez.f(0)==pts[0]);
-        TEST_ASSERT((bez.f(1)-bez.f(0)).norm()<431*eps);
+        TEST_ASSERT(bez.f(0)==bez.f(1));
         TEST_ASSERT(bez.fp(0)!=bez.fp(1));
         TEST_ASSERT(bez.fpp(0)!=bez.fpp(1));
 
@@ -1698,8 +1735,7 @@ class bezier_curve_test_suite : public Test::Suite
 
         // check if went through points
         TEST_ASSERT((bez.f(0)-pts[0]).norm()<2*eps);
-        TEST_ASSERT(bez.fp(0)==fp0);
-        TEST_ASSERT((bez.f(1)-bez.f(0)).norm()<483*eps);
+        TEST_ASSERT(bez.f(1)==bez.f(0));
         TEST_ASSERT((bez.fp(1)-bez.fp(0)).norm()<2.77e3*eps);
         TEST_ASSERT(bez.fpp(0)!=bez.fpp(1));
 
@@ -1739,12 +1775,11 @@ class bezier_curve_test_suite : public Test::Suite
         // check if went through points
         TEST_ASSERT((bez.f(0)-pts[0]).norm()<2*eps);
         TEST_ASSERT((bez.fp(0)-fp0).norm()<9*eps);
-        TEST_ASSERT(bez.fpp(0)==fpp0);
+        TEST_ASSERT((bez.fpp(0)-fpp0).norm()<38*eps);
         TEST_ASSERT((bez.f(1)-bez.f(0)).norm()<470*eps);
+        TEST_ASSERT(bez.f(1)==bez.f(0));
         TEST_ASSERT((bez.fp(1)-bez.fp(0)).norm()<4.70e3*eps);
         TEST_ASSERT((bez.fpp(1)-bez.fpp(0)).norm()<1.00e4*eps);
-//           std::cout << "1669 rat=" << (bez.f(1)-bez.f(0)).norm()/eps << std::endl;
-//           std::cout << "1670 rat=" << (bez.fpp(1)-bez.fpp(0)).norm()/eps << std::endl;
 
 //         octave_print(17, pts, bez);
       }
@@ -1779,7 +1814,7 @@ class bezier_curve_test_suite : public Test::Suite
         // check if went through points
         t5=t[ci];
         TEST_ASSERT((bez.f(t5)-f5).norm()<6*eps);
-        TEST_ASSERT((bez.f(1)-bez.f(0)).norm()<594*eps);
+        TEST_ASSERT(bez.f(0)==bez.f(1));
         TEST_ASSERT(bez.fp(0)!=bez.fp(1));
         TEST_ASSERT(bez.fpp(0)!=bez.fpp(1));
 
@@ -1817,7 +1852,7 @@ class bezier_curve_test_suite : public Test::Suite
         t5=t[ci];
         TEST_ASSERT((bez.f(t5)-f5).norm()<4*eps);
         TEST_ASSERT((bez.f(1)-bez.f(0)).norm()<391*eps);
-        TEST_ASSERT((bez.fp(1)-bez.fp(0)).norm()<2.48e3*eps);
+        TEST_ASSERT(bez.f(0)==bez.f(1));
         TEST_ASSERT(bez.fpp(0)!=bez.fpp(1));
 //         if (typeid(data__)==typeid(float))
 //         {
@@ -1857,7 +1892,7 @@ class bezier_curve_test_suite : public Test::Suite
         // check if went through points
         t5=t[ci];
         TEST_ASSERT((bez.f(t5)-f5).norm()<4*eps);
-        TEST_ASSERT((bez.f(1)-bez.f(0)).norm()<531*eps);
+        TEST_ASSERT(bez.f(0)==bez.f(1));
         TEST_ASSERT((bez.fp(1)-bez.fp(0)).norm()<2.72e3*eps);
         TEST_ASSERT((bez.fpp(1)-bez.fpp(0)).norm()<1.19e4*eps);
 //         if (typeid(data__)==typeid(long double))
@@ -1937,7 +1972,7 @@ class bezier_curve_test_suite : public Test::Suite
         TEST_ASSERT((bez.f(t[1])-pts[1]).norm()<3*eps);
         TEST_ASSERT((bez.f(t[2])-pts[2]).norm()<13*eps);
         TEST_ASSERT((bez.f(t[3])-pts[3]).norm()<37*eps);
-        TEST_ASSERT((bez.f(0)-bez.f(1)).norm()<49*eps);
+        TEST_ASSERT(bez.f(0)==bez.f(1));
 
 //         octave_print(19, pts, bez);
       }
@@ -2018,7 +2053,7 @@ class bezier_curve_test_suite : public Test::Suite
         TEST_ASSERT((bez.f(t[3])-pts[3]).norm()<89*eps);
         TEST_ASSERT((bez.fp(t[1])-fp1).norm()<22*eps);
         TEST_ASSERT((bez.f(0)-bez.f(1)).norm()<202*eps);
-        TEST_ASSERT((bez.fp(0)-bez.fp(1)).norm()<995*eps);
+        TEST_ASSERT(bez.f(0)==bez.f(1));
 
 //         octave_print(21, pts, bez);
       }
@@ -2054,8 +2089,8 @@ class bezier_curve_test_suite : public Test::Suite
         TEST_ASSERT((bez.f(t[0])-pts[0]).norm()<9*eps);
         TEST_ASSERT((bez.f(t[1])-pts[1]).norm()<9*eps);
         TEST_ASSERT((bez.f(t[2])-pts[2]).norm()<84*eps);
-        TEST_ASSERT((bez.f(t[3])-pts[3]).norm()<162*eps);
-        TEST_ASSERT((bez.fp(t[1])-fp1).norm()<68*eps);
+        TEST_ASSERT((bez.f(t[3])-pts[3]).norm()<2*eps);
+        TEST_ASSERT((bez.fp(t[1])-fp1).norm()<77*eps);
         TEST_ASSERT((bez.fpp(t[1])-fpp1).norm()<353*eps);
 //           std::cout << "1969 rat=" << (bez.fpp(t[1])-fpp1).norm()/eps << std::endl;
 
@@ -2094,10 +2129,10 @@ class bezier_curve_test_suite : public Test::Suite
         TEST_ASSERT((bez.f(t[0])-pts[0]).norm()<4*eps);
         TEST_ASSERT((bez.f(t[1])-pts[1]).norm()<4*eps);
         TEST_ASSERT((bez.f(t[2])-pts[2]).norm()<32*eps);
-        TEST_ASSERT((bez.f(t[3])-pts[3]).norm()<143*eps);
-        TEST_ASSERT((bez.fp(t[1])-fp1).norm()<39*eps);
+        TEST_ASSERT((bez.f(t[3])-pts[3]).norm()<2*eps);
+        TEST_ASSERT((bez.fp(t[1])-fp1).norm()<45*eps);
         TEST_ASSERT((bez.fpp(t[1])-fpp1).norm()<398*eps);
-        TEST_ASSERT((bez.f(0)-bez.f(1)).norm()<829*eps);
+        TEST_ASSERT(bez.f(0)==bez.f(1));
         TEST_ASSERT((bez.fp(0)-bez.fp(1)).norm()<5.30e3*eps);
         TEST_ASSERT((bez.fpp(0)-bez.fpp(1)).norm()<24.1e3*eps);
 
