@@ -25,9 +25,6 @@ namespace eli
         // check to make sure have valid curve
         assert(c.degree()>0);
 
-        // check to make sure given valid parametric value
-        assert((t>=0) && (t<=1));
-
         typename curve__::point_type xp(c.fp(t)), xpp(c.fpp(t));
 
         if (xp.innerSize()==2)
