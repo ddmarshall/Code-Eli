@@ -14,5 +14,6 @@
 #define eli_geom_surface_hpp
 
 #include "eli/geom/surface/bezier.hpp"
+#include "eli/geom/surface/curvature.hpp"
 
 #endif
