@@ -46,6 +46,7 @@ class bezier_surface_test_suite : public Test::Suite
       // add the tests
       TEST_ADD(bezier_surface_test_suite<float>::assignment_test);
       TEST_ADD(bezier_surface_test_suite<float>::reverse_test);
+      TEST_ADD(bezier_surface_test_suite<float>::swap_test);
       TEST_ADD(bezier_surface_test_suite<float>::evaluation_test);
       TEST_ADD(bezier_surface_test_suite<float>::derivative_1_test);
       TEST_ADD(bezier_surface_test_suite<float>::derivative_2_test);
@@ -67,6 +68,7 @@ class bezier_surface_test_suite : public Test::Suite
       // add the tests
       TEST_ADD(bezier_surface_test_suite<double>::assignment_test);
       TEST_ADD(bezier_surface_test_suite<double>::reverse_test);
+      TEST_ADD(bezier_surface_test_suite<double>::swap_test);
       TEST_ADD(bezier_surface_test_suite<double>::evaluation_test);
       TEST_ADD(bezier_surface_test_suite<double>::derivative_1_test);
       TEST_ADD(bezier_surface_test_suite<double>::derivative_2_test);
@@ -88,6 +90,7 @@ class bezier_surface_test_suite : public Test::Suite
       // add the tests
       TEST_ADD(bezier_surface_test_suite<long double>::assignment_test);
       TEST_ADD(bezier_surface_test_suite<long double>::reverse_test);
+      TEST_ADD(bezier_surface_test_suite<long double>::swap_test);
       TEST_ADD(bezier_surface_test_suite<long double>::evaluation_test);
       TEST_ADD(bezier_surface_test_suite<long double>::derivative_1_test);
       TEST_ADD(bezier_surface_test_suite<long double>::derivative_2_test);
@@ -110,6 +113,7 @@ class bezier_surface_test_suite : public Test::Suite
       // add the tests
       TEST_ADD(bezier_surface_test_suite<dd_real>::assignment_test);
       TEST_ADD(bezier_surface_test_suite<dd_real>::reverse_test);
+      TEST_ADD(bezier_surface_test_suite<dd_real>::swap_test);
       TEST_ADD(bezier_surface_test_suite<dd_real>::evaluation_test);
       TEST_ADD(bezier_surface_test_suite<dd_real>::derivative_1_test);
       TEST_ADD(bezier_surface_test_suite<dd_real>::derivative_2_test);
@@ -132,6 +136,7 @@ class bezier_surface_test_suite : public Test::Suite
       // add the tests
       TEST_ADD(bezier_surface_test_suite<qd_real>::assignment_test);
       TEST_ADD(bezier_surface_test_suite<qd_real>::reverse_test);
+      TEST_ADD(bezier_surface_test_suite<qd_real>::swap_test);
       TEST_ADD(bezier_surface_test_suite<qd_real>::evaluation_test);
       TEST_ADD(bezier_surface_test_suite<qd_real>::derivative_1_test);
       TEST_ADD(bezier_surface_test_suite<qd_real>::derivative_2_test);
@@ -432,6 +437,54 @@ class bezier_surface_test_suite : public Test::Suite
         for (j=0; j<=m; ++j)
         {
           TEST_ASSERT(bez2.get_control_point(i, j) == bez1.get_control_point(i, m-j));
+        }
+      }
+    }
+
+    void swap_test()
+    {
+      index_type i, j, n(3), m(3);
+      point_type pt[3+1][3+1], pt_out;
+
+      // create surface with specified control points
+      pt[0][0] << -15, 0,  15;
+      pt[1][0] <<  -5, 5,  15;
+      pt[2][0] <<   5, 5,  15;
+      pt[3][0] <<  15, 0,  15;
+      pt[0][1] << -15, 5,   5;
+      pt[1][1] <<  -5, 5,   5;
+      pt[2][1] <<   5, 5,   5;
+      pt[3][1] <<  15, 5,   5;
+      pt[0][2] << -15, 5,  -5;
+      pt[1][2] <<  -5, 5,  -5;
+      pt[2][2] <<   5, 5,  -5;
+      pt[3][2] <<  15, 5,  -5;
+      pt[0][3] << -15, 0, -15;
+      pt[1][3] <<  -5, 5, -15;
+      pt[2][3] <<   5, 5, -15;
+      pt[3][3] <<  15, 0, -15;
+
+      // create surface with specified dimensions and set control points
+      bezier_type bez1(n, m), bez2;
+
+      for (i=0; i<=n; ++i)
+      {
+        for (j=0; j<=m; ++j)
+        {
+          bez1.set_control_point(pt[i][j], i, j);
+        }
+      }
+
+      // reverse swap u- & v-directions
+      bez2=bez1;
+      bez2.swap_uv();
+      TEST_ASSERT(bez1.degree_u()==bez2.degree_v());
+      TEST_ASSERT(bez1.degree_v()==bez2.degree_u());
+      for (i=0; i<=n; ++i)
+      {
+        for (j=0; j<=m; ++j)
+        {
+          TEST_ASSERT(bez1.get_control_point(i, j) == bez2.get_control_point(j, i));
         }
       }
     }

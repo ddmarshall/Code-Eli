@@ -183,6 +183,31 @@ namespace eli
             }
           }
 
+          void swap_uv()
+          {
+            typedef Eigen::Matrix<data_type, Eigen::Dynamic, dim__> control_row_type;
+            typedef std::vector<control_row_type, Eigen::aligned_allocator<control_row_type> > control_row_collection_type;
+
+            index_type i, j, n(degree_u()), m(degree_v());
+            control_row_collection_type current_row(m+1, control_row_type(n+1, dim__));
+
+            // copy the control rows
+            for (i=0; i<=m; ++i)
+              current_row[i]=B_u[i];
+
+            // resize current surface
+            resize(m, n);
+
+            // set the new control points
+            for (i=0; i<=m; ++i)
+            {
+              for (j=0; j<=n; ++j)
+              {
+                set_control_point(current_row[i].row(j), i, j);
+              }
+            }
+          }
+
 // NOTE: These would need to be done for u-direction and v-direction
 //           bool open() const {return open_flag;}
 //           bool closed() const {return !open_flag;}
