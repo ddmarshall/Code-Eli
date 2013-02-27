@@ -737,9 +737,9 @@ class bezier_curve_test_suite : public Test::Suite
 
             if (k<2)
             {
-              TEST_ASSERT_DELTA(d[0], 0.00435372, 5e-6);
-              TEST_ASSERT_DELTA(d[1], 0.70530, 5e-5);
-              TEST_ASSERT_DELTA(d[2], 37.6161, 5e-3);
+              TEST_ASSERT_DELTA(d[0], 0.00435372, 5e-4);
+              TEST_ASSERT_DELTA(d[1], 0.70530, 5e-3);
+              TEST_ASSERT_DELTA(d[2], 37.6161, 5e-2);
             }
             else
             {

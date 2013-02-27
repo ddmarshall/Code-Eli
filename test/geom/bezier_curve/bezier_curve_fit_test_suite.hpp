@@ -415,7 +415,6 @@ class bezier_curve_fit_test_suite : public Test::Suite
         {
           TEST_ASSERT((pts[0]-bez.f(t[0])).norm()<2.0*eps);
           TEST_ASSERT((fp1-bez.fp(t[0])).norm()<2.0*eps);
-//         std::cout << "1132 rat=" << (pts[0]-bez.f(t[0])).norm()/eps << std::endl;
         }
         else
 #endif
@@ -426,11 +425,6 @@ class bezier_curve_fit_test_suite : public Test::Suite
         TEST_ASSERT((pts[pts.size()-1]-bez.f(t[t.size()-1])).norm()<88*eps);
         TEST_ASSERT((fp2-bez.fp(t[t.size()-1])).norm()<351*eps);
         TEST_ASSERT(bez.f(0)!=bez.f(1));
-//         if (typeid(data__)==typeid(float))
-//         {
-//           std::cout << "1071 rat=" << (pts[pts.size()-1]-bez.f(t[t.size()-1])).norm()/eps << std::endl;
-//           std::cout << "1072 rat=" << (fp2-bez.fp(t[t.size()-1])).norm()/eps << std::endl;
-//         }
 
 //         octave_print(6, pts, bez);
       }
@@ -476,8 +470,6 @@ class bezier_curve_fit_test_suite : public Test::Suite
         {
           TEST_ASSERT((pts[0]-bez.f(t[0])).norm()<2.0*eps);
           TEST_ASSERT((fp1-bez.fp(t[0])).norm()<2.0*eps);
-//         std::cout << "1182 rat=" << (pts[0]-bez.f(t[0])).norm()/eps << std::endl;
-//       std::cout << "fp1=" << fp1 << "\tbez.fp(t[0])=" << bez.fp(t[0]) << "\trat=" << (fp1-bez.fp(t[0])).norm()/eps << std::endl;
         }
         else
 #endif
@@ -536,12 +528,18 @@ class bezier_curve_fit_test_suite : public Test::Suite
         if (typeid(data__)==typeid(qd_real))
         {
           TEST_ASSERT((fp1-bez.fp(t[0])).norm()<2.0*eps);
-//       std::cout << "fp1=" << fp1 << "\tbez.fp(t[0])=" << bez.fp(t[0]) << "\trat=" << (fp1-bez.fp(t[0])).norm()/eps << std::endl;
         }
         else
 #endif
         {
-          TEST_ASSERT(fp1==bez.fp(t[0]));
+          if (typeid(data__)==typeid(float))
+          {
+            TEST_ASSERT((fp1-bez.fp(t[0])).norm()<3*eps);
+          }
+          else
+          {
+            TEST_ASSERT(fp1==bez.fp(t[0]));
+          }
         }
         TEST_ASSERT(pts[pts.size()-1]!=bez.f(t[t.size()-1]));
         TEST_ASSERT(bez.f(0)==bez.f(1));
@@ -717,7 +715,7 @@ class bezier_curve_fit_test_suite : public Test::Suite
         TEST_ASSERT((bez.fpp(t[10])-fpp2).norm()<1.44e3*eps);
         TEST_ASSERT((bez.f(t[0])-pts[0]).norm()<8*eps);
         TEST_ASSERT((bez.fp(t[0])-fp1).norm()<17*eps);
-        TEST_ASSERT((bez.fpp(t[0])-fpp1).norm()<38*eps);
+        TEST_ASSERT((bez.fpp(t[0])-fpp1).norm()<68*eps);
         TEST_ASSERT(pts[pts.size()-1]!=bez.f(t[t.size()-1]));
 
 //         octave_print(11, pts, bez);
@@ -1094,7 +1092,6 @@ class bezier_curve_fit_test_suite : public Test::Suite
         TEST_ASSERT((bez.f(t[1])-pts[1]).norm()<4*eps);
         TEST_ASSERT((bez.f(t[2])-pts[2]).norm()<7*eps);
         TEST_ASSERT((bez.f(t[3])-pts[3]).norm()<13*eps);
-//           std::cout << "1823 rat=" << (bez.f(t[1])-pts[1]).norm()/eps << std::endl;
 
 //         octave_print(18, pts, bez);
       }
@@ -1159,16 +1156,6 @@ class bezier_curve_fit_test_suite : public Test::Suite
         TEST_ASSERT((bez.f(t[2])-pts[2]).norm()<28*eps);
         TEST_ASSERT((bez.f(t[3])-pts[3]).norm()<63*eps);
         TEST_ASSERT((bez.fp(t[1])-fp1).norm()<17*eps);
-//         if (typeid(data__)==typeid(float))
-//         {
-//           std::cout << "1890 rat=" << (bez.f(t[0])-pts[0]).norm()/eps << std::endl;
-//           std::cout << "1891 rat=" << (bez.f(t[1])-pts[1]).norm()/eps << std::endl;
-//           std::cout << "1892 rat=" << (bez.f(t[2])-pts[2]).norm()/eps << std::endl;
-//         }
-//         if (typeid(data__)==typeid(long double))
-//         {
-//           std::cout << "1896 rat=" << (bez.f(t[0])-pts[0]).norm()/eps << std::endl;
-//         }
 
 //         octave_print(20, pts, bez);
       }
@@ -1244,7 +1231,6 @@ class bezier_curve_fit_test_suite : public Test::Suite
         TEST_ASSERT((bez.f(t[3])-pts[3]).norm()<2*eps);
         TEST_ASSERT((bez.fp(t[1])-fp1).norm()<77*eps);
         TEST_ASSERT((bez.fpp(t[1])-fpp1).norm()<353*eps);
-//           std::cout << "1969 rat=" << (bez.fpp(t[1])-fpp1).norm()/eps << std::endl;
 
 //         octave_print(22, pts, bez);
       }
@@ -1281,7 +1267,7 @@ class bezier_curve_fit_test_suite : public Test::Suite
         TEST_ASSERT((bez.f(t[0])-pts[0]).norm()<4*eps);
         TEST_ASSERT((bez.f(t[1])-pts[1]).norm()<4*eps);
         TEST_ASSERT((bez.f(t[2])-pts[2]).norm()<32*eps);
-        TEST_ASSERT((bez.f(t[3])-pts[3]).norm()<2*eps);
+        TEST_ASSERT((bez.f(t[3])-pts[3]).norm()<93*eps);
         TEST_ASSERT((bez.fp(t[1])-fp1).norm()<45*eps);
         TEST_ASSERT((bez.fpp(t[1])-fpp1).norm()<398*eps);
         TEST_ASSERT(bez.f(0)==bez.f(1));

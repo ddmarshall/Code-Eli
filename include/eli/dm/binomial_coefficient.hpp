@@ -43,8 +43,17 @@ namespace eli
       v=1;
       for (i=1; i<=k; ++i)
       {
-        v*=n-k+i;
-        v/=i;
+        // try and keep from overflowing integral data types
+        if (static_cast<data__>(i)>v)
+        {
+          v*=n-k+i;
+          v/=i;
+        }
+        else
+        {
+          v/=i;
+          v*=n-k+i;
+        }
       }
     }
 
