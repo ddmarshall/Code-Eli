@@ -254,7 +254,7 @@ class piecewise_curve_test_suite : public Test::Suite
       }
 
       // initialize by passing iterators to curve collection
-      err=c1.set(bc, bc+3);
+      err=c1.set(bc, bc+3, dt);
       TEST_ASSERT(err==piecewise_curve_type::NO_ERROR);
 
       c1=c2;
