@@ -299,6 +299,23 @@ namespace eli
             return rtn;
           }
 
+          point_type tangent(const data_type &t) const
+          {
+            point_type tgt(fp(t));
+
+            tgt.normalize();
+            return tgt;
+          }
+
+          void frenet_serret_frame(point_type &t, point_type &n, point_type &b, const data_type &t0)
+          {
+            t=tangent(t0);
+            b=fp(t0).cross(fpp(t0));
+            n=-t.cross(b)/b.norm();
+            b.normalize();
+            n.normalize();
+          }
+
           void degree_promote()
           {
             // create vector of new control points

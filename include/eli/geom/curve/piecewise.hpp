@@ -539,6 +539,38 @@ namespace eli
             return it->c.fppp(tt)/(it->delta_t*it->delta_t*it->delta_t);
           }
 
+          point_type tanget(const data_type &t) const
+          {
+            // find segment that corresponds to given t
+            typename segment_collection_type::const_iterator it;
+            data_type tt(0);
+            find_segment(it, tt, t);
+
+            if (it==segments.end())
+            {
+              assert(false);
+              --it;
+            }
+
+            return it->c.tangent(tt);
+          }
+
+          void frenet_serret_frame(point_type &t, point_type &n, point_type &b, const data_type &t0)
+          {
+            // find segment that corresponds to given t
+            typename segment_collection_type::const_iterator it;
+            data_type tt(0);
+            find_segment(it, tt, t0);
+
+            if (it==segments.end())
+            {
+              assert(false);
+              --it;
+            }
+
+            it->c.frenet_serret_frame(t, n, b, tt);
+          }
+
           // TODO: NEED TO IMPLEMENT
           //       * fit
           //       * interpolate

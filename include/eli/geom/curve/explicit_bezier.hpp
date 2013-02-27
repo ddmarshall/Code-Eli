@@ -123,6 +123,22 @@ namespace eli
             return rtn;
           }
 
+          point_type tangent(const data_type &t) const
+          {
+            point_type tgt(fp(t));
+
+            tgt.normalize();
+            return tgt;
+          }
+
+          void frenet_serret_frame(point_type &t, point_type &n, point_type &b, const data_type &t0)
+          {
+            t=tangent(t0);
+            n(0)=-t(1);
+            n(1)=t(0);
+            b.setZero();
+          }
+
           void degree_promote()
           {
             y_curve.degree_promote();
