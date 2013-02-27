@@ -22,6 +22,11 @@ add_executable(BezierCurveTest ${PROJECT_SOURCE_DIR}/bezier_curve/bezier_curve_t
 target_link_libraries(BezierCurveTest ${_ELI_TEST_LIBRARIES_LIST})
 add_test(NAME BezierCurveTest COMMAND $<TARGET_FILE:BezierCurveTest> --text)
 
+# add the bezier_curve_fit test
+add_executable(BezierCurveFitTest ${PROJECT_SOURCE_DIR}/bezier_curve/bezier_curve_fit_test.cpp)
+target_link_libraries(BezierCurveFitTest ${_ELI_TEST_LIBRARIES_LIST})
+add_test(NAME BezierCurveFitTest COMMAND $<TARGET_FILE:BezierCurveFitTest> --text)
+
 # add the piecewise_curve test
 add_executable(PiecewiseCurveTest ${PROJECT_SOURCE_DIR}/piecewise_curve/piecewise_curve_test.cpp)
 target_link_libraries(PiecewiseCurveTest ${_ELI_TEST_LIBRARIES_LIST})
@@ -31,6 +36,11 @@ add_test(NAME PiecewiseCurveTest COMMAND $<TARGET_FILE:PiecewiseCurveTest> --tex
 add_executable(ExplicitBezierCurveTest ${PROJECT_SOURCE_DIR}/explicit_bezier_curve/explicit_bezier_curve_test.cpp)
 target_link_libraries(ExplicitBezierCurveTest ${_ELI_TEST_LIBRARIES_LIST})
 add_test(NAME ExplicitBezierCurveTest COMMAND $<TARGET_FILE:ExplicitBezierCurveTest> --text)
+
+# add the explicit_bezier_curve_fit test
+add_executable(ExplicitBezierCurveFitTest ${PROJECT_SOURCE_DIR}/explicit_bezier_curve/explicit_bezier_curve_fit_test.cpp)
+target_link_libraries(ExplicitBezierCurveFitTest ${_ELI_TEST_LIBRARIES_LIST})
+add_test(NAME ExplicitBezierCurveFitTest COMMAND $<TARGET_FILE:ExplicitBezierCurveFitTest> --text)
 
 #### add the cst_airfoil_curve test
 ###add_executable(CSTAirfoilCurveTest ${PROJECT_SOURCE_DIR}/cst_airfoil_curve/cst_airfoil_curve_test.cpp)

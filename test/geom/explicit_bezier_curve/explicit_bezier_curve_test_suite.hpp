@@ -39,7 +39,6 @@ class explicit_bezier_curve_test_suite : public Test::Suite
     typedef typename curve_type::point_type point_type;
     typedef typename curve_type::data_type data_type;
     typedef typename curve_type::index_type index_type;
-    typedef typename curve_type::fit_container_type fit_container_type;
 
   protected:
     void AddTests(const float &)
@@ -52,11 +51,6 @@ class explicit_bezier_curve_test_suite : public Test::Suite
       TEST_ADD(explicit_bezier_curve_test_suite<float>::promotion_test);
       TEST_ADD(explicit_bezier_curve_test_suite<float>::demotion_test);
       TEST_ADD(explicit_bezier_curve_test_suite<float>::length_test);
-      TEST_ADD(explicit_bezier_curve_test_suite<float>::fit_free_ends_test);
-      TEST_ADD(explicit_bezier_curve_test_suite<float>::fit_C0_ends_test);
-      TEST_ADD(explicit_bezier_curve_test_suite<float>::fit_C1_ends_test);
-      TEST_ADD(explicit_bezier_curve_test_suite<float>::fit_C2_ends_test);
-      TEST_ADD(explicit_bezier_curve_test_suite<float>::interpolate_test);
     }
     void AddTests(const double &)
     {
@@ -68,11 +62,6 @@ class explicit_bezier_curve_test_suite : public Test::Suite
       TEST_ADD(explicit_bezier_curve_test_suite<double>::promotion_test);
       TEST_ADD(explicit_bezier_curve_test_suite<double>::demotion_test);
       TEST_ADD(explicit_bezier_curve_test_suite<double>::length_test);
-      TEST_ADD(explicit_bezier_curve_test_suite<double>::fit_free_ends_test);
-      TEST_ADD(explicit_bezier_curve_test_suite<double>::fit_C0_ends_test);
-      TEST_ADD(explicit_bezier_curve_test_suite<double>::fit_C1_ends_test);
-      TEST_ADD(explicit_bezier_curve_test_suite<double>::fit_C2_ends_test);
-      TEST_ADD(explicit_bezier_curve_test_suite<double>::interpolate_test);
     }
     void AddTests(const long double &)
     {
@@ -84,11 +73,6 @@ class explicit_bezier_curve_test_suite : public Test::Suite
       TEST_ADD(explicit_bezier_curve_test_suite<long double>::promotion_test);
       TEST_ADD(explicit_bezier_curve_test_suite<long double>::demotion_test);
       TEST_ADD(explicit_bezier_curve_test_suite<long double>::length_test);
-      TEST_ADD(explicit_bezier_curve_test_suite<long double>::fit_free_ends_test);
-      TEST_ADD(explicit_bezier_curve_test_suite<long double>::fit_C0_ends_test);
-      TEST_ADD(explicit_bezier_curve_test_suite<long double>::fit_C1_ends_test);
-      TEST_ADD(explicit_bezier_curve_test_suite<long double>::fit_C2_ends_test);
-      TEST_ADD(explicit_bezier_curve_test_suite<long double>::interpolate_test);
     }
 #ifdef ELI_QD_FOUND
     void AddTests(const dd_real &)
@@ -101,11 +85,6 @@ class explicit_bezier_curve_test_suite : public Test::Suite
       TEST_ADD(explicit_bezier_curve_test_suite<dd_real>::promotion_test);
       TEST_ADD(explicit_bezier_curve_test_suite<dd_real>::demotion_test);
       TEST_ADD(explicit_bezier_curve_test_suite<dd_real>::length_test);
-      TEST_ADD(explicit_bezier_curve_test_suite<dd_real>::fit_free_ends_test);
-      TEST_ADD(explicit_bezier_curve_test_suite<dd_real>::fit_C0_ends_test);
-      TEST_ADD(explicit_bezier_curve_test_suite<dd_real>::fit_C1_ends_test);
-      TEST_ADD(explicit_bezier_curve_test_suite<dd_real>::fit_C2_ends_test);
-      TEST_ADD(explicit_bezier_curve_test_suite<dd_real>::interpolate_test);
     }
 
     void AddTests(const qd_real &)
@@ -118,11 +97,6 @@ class explicit_bezier_curve_test_suite : public Test::Suite
       TEST_ADD(explicit_bezier_curve_test_suite<qd_real>::promotion_test);
       TEST_ADD(explicit_bezier_curve_test_suite<qd_real>::demotion_test);
       TEST_ADD(explicit_bezier_curve_test_suite<qd_real>::length_test);
-      TEST_ADD(explicit_bezier_curve_test_suite<qd_real>::fit_free_ends_test);
-      TEST_ADD(explicit_bezier_curve_test_suite<qd_real>::fit_C0_ends_test);
-      TEST_ADD(explicit_bezier_curve_test_suite<qd_real>::fit_C1_ends_test);
-      TEST_ADD(explicit_bezier_curve_test_suite<qd_real>::fit_C2_ends_test);
-      TEST_ADD(explicit_bezier_curve_test_suite<qd_real>::interpolate_test);
     }
 #endif
 
@@ -780,290 +754,6 @@ class explicit_bezier_curve_test_suite : public Test::Suite
       length(length_cal, ebc, t0, t1, tol);
       length(length_ref, bc, t0, t1, tol);
       TEST_ASSERT(length_cal==length_ref);
-    }
-
-    void fit_free_ends_test()
-    {
-      fit_container_type fcon;
-      size_t i, deg(5);
-      std::vector<point_type, Eigen::aligned_allocator<point_type> > pts(10);
-      curve_type ebez;
-      std::vector<data_type> t;
-      data_type err_out, err_ref;
-
-      // get points
-      create_circle(pts);
-
-      // configure fit container
-      fcon.set_points(pts.begin(), pts.end());
-
-      // fit points
-      err_out=ebez.fit(t, fcon, deg);
-
-      // calculate the error at the point
-      for (err_ref=0, i=0; i<pts.size(); ++i)
-      {
-        data_type d;
-        eli::geom::point::distance(d, pts[i], ebez.f(t[i]));
-        err_ref+=d;
-      }
-
-      TEST_ASSERT(err_ref==err_out);
-      TEST_ASSERT(err_out < 0.430);
-
-      // check if went through points
-      TEST_ASSERT(pts[0]!=ebez.f(t[0]));
-      TEST_ASSERT(pts[pts.size()-1]!=ebez.f(t[t.size()-1]));
-
-//       octave_print(1, pts, ebez);
-    }
-
-    void fit_C0_ends_test()
-    {
-      data_type eps(std::numeric_limits<data__>::epsilon());
-#ifdef ELI_QD_FOUND
-      if ( (typeid(data_type)==typeid(dd_real)) || (typeid(data_type)==typeid(qd_real)) )
-        eps=std::numeric_limits<double>::epsilon();
-#endif
-      fit_container_type fcon;
-      size_t i, deg(5);
-      std::vector<point_type, Eigen::aligned_allocator<point_type> > pts(10);
-      curve_type ebez;
-      std::vector<data_type> t;
-      data_type err_out, err_ref;
-
-      // get points
-      create_circle(pts);
-
-      // configure fit container
-      fcon.set_points(pts.begin(), pts.end());
-      fcon.add_start_C0_constraint();
-      fcon.add_end_C0_constraint();
-
-      // fit points
-      err_out=ebez.fit(t, fcon, deg);
-
-      // calculate the error at the point
-      for (err_ref=0, i=0; i<pts.size(); ++i)
-      {
-        data_type d;
-        eli::geom::point::distance(d, pts[i], ebez.f(t[i]));
-        err_ref+=d;
-      }
-
-      TEST_ASSERT(err_out==err_ref);
-      TEST_ASSERT(err_out < 0.431);
-
-      // check if went through points
-      TEST_ASSERT(pts[0]==ebez.f(t[0]));
-      TEST_ASSERT((pts[pts.size()-1]-ebez.f(t[t.size()-1])).norm()<65*eps);
-
-//       octave_print(2, pts, ebez);
-    }
-
-    void fit_C1_ends_test()
-    {
-      data_type eps(std::numeric_limits<data__>::epsilon());
-#ifdef ELI_QD_FOUND
-      if ( (typeid(data_type)==typeid(dd_real)) || (typeid(data_type)==typeid(qd_real)) )
-        eps=std::numeric_limits<double>::epsilon();
-#endif
-      fit_container_type fcon;
-      size_t i, deg(5);
-      std::vector<point_type, Eigen::aligned_allocator<point_type> > pts(10);
-      curve_type ebez;
-      std::vector<data_type> t;
-      data_type err_out, err_ref;
-
-      // get points
-      create_circle(pts);
-
-      // configure fit container
-      point_type fp;
-      typename fit_container_type::constraint_info ci;
-      fcon.set_points(pts.begin(), pts.end());
-      fcon.add_start_C0_constraint();
-      fcon.add_end_C0_constraint();
-      fcon.add_C1_constraint(4);
-      fcon.get_constraint(4, ci);
-      fp << 1, ci.get_fp()(0);
-
-      // fit points
-      err_out=ebez.fit(t, fcon, deg);
-
-      // calculate the error at the point
-      for (err_ref=0, i=0; i<pts.size(); ++i)
-      {
-        data_type d;
-        eli::geom::point::distance(d, pts[i], ebez.f(t[i]));
-        err_ref+=d;
-      }
-
-      TEST_ASSERT(err_out==err_ref);
-      TEST_ASSERT(err_out < 0.682);
-
-      // check if went through points
-      TEST_ASSERT(pts[0]==ebez.f(t[0]));
-      TEST_ASSERT((pts[pts.size()-1]-ebez.f(t[t.size()-1])).norm()<40*eps);
-      TEST_ASSERT((pts[4]-ebez.f(t[4])).norm()<35*eps);
-      TEST_ASSERT((fp-ebez.fp(t[4])).norm()<48*eps);
-
-//       octave_print(3, pts, ebez);
-    }
-
-    void fit_C2_ends_test()
-    {
-      data_type eps(std::numeric_limits<data__>::epsilon());
-#ifdef ELI_QD_FOUND
-      if ( (typeid(data_type)==typeid(dd_real)) || (typeid(data_type)==typeid(qd_real)) )
-        eps=std::numeric_limits<double>::epsilon();
-#endif
-      fit_container_type fcon;
-      size_t i, deg(7);
-      std::vector<point_type, Eigen::aligned_allocator<point_type> > pts(10);
-      curve_type ebez;
-      std::vector<data_type> t;
-      data_type err_out, err_ref;
-
-      // get points
-      create_circle(pts);
-
-      // configure fit container
-      point_type fp, fpp;
-      typename fit_container_type::constraint_info ci;
-      fcon.set_points(pts.begin(), pts.end());
-      fcon.add_start_C0_constraint();
-      fcon.add_end_C0_constraint();
-      fcon.add_C2_constraint(4);
-      fcon.get_constraint(4, ci);
-      fp << 1, ci.get_fp()(0);
-      fpp << 0, ci.get_fpp()(0);
-
-      // fit points
-      err_out=ebez.fit(t, fcon, deg);
-
-      // calculate the error at the point
-      for (err_ref=0, i=0; i<pts.size(); ++i)
-      {
-        data_type d;
-        eli::geom::point::distance(d, pts[i], ebez.f(t[i]));
-        err_ref+=d;
-      }
-
-      TEST_ASSERT(err_out==err_ref);
-      TEST_ASSERT(err_out < 0.310);
-
-      // check if went through points
-      TEST_ASSERT((pts[0]-ebez.f(t[0])).norm()<6*eps);
-      TEST_ASSERT((pts[pts.size()-1]-ebez.f(t[t.size()-1])).norm()<512*eps);
-      TEST_ASSERT((pts[4]-ebez.f(t[4])).norm()<35*eps);
-      TEST_ASSERT((fp-ebez.fp(t[4])).norm()<240*eps);
-      TEST_ASSERT((fpp-ebez.fpp(t[4])).norm()<1.54e3*eps);
-
-//       octave_print(4, pts, ebez);
-    }
-
-    void interpolate_test()
-    {
-      data_type eps(std::numeric_limits<data__>::epsilon());
-#ifdef ELI_QD_FOUND
-      if ( (typeid(data_type)==typeid(dd_real)) || (typeid(data_type)==typeid(qd_real)) )
-        eps=std::numeric_limits<double>::epsilon();
-#endif
-      // interpolate through all points
-      {
-        fit_container_type fcon;
-        std::vector<point_type, Eigen::aligned_allocator<point_type> > pts(5);
-        curve_type ebez;
-        std::vector<data_type> t;
-
-        // get points
-        create_circle(pts);
-
-        // configure fit container
-        fcon.set_points(pts.begin(), pts.end());
-
-        // fit points
-        ebez.interpolate(t, fcon);
-
-        TEST_ASSERT(static_cast<size_t>(ebez.degree()+1)==pts.size());
-
-        // check if went through points
-        TEST_ASSERT(ebez.f(t[0])==pts[0]);
-        TEST_ASSERT((ebez.f(t[1])-pts[1]).norm()<3*eps);
-        TEST_ASSERT((ebez.f(t[2])-pts[2]).norm()<7*eps);
-        TEST_ASSERT((ebez.f(t[3])-pts[3]).norm()<23*eps);
-
-//         octave_print(5, pts, ebez);
-      }
-
-      // interpolate through all points and specify C1
-      {
-        fit_container_type fcon;
-        std::vector<point_type, Eigen::aligned_allocator<point_type> > pts(5);
-        curve_type ebez;
-        std::vector<data_type> t;
-
-        // get points
-        create_circle(pts);
-
-        // configure fit container
-        point_type fp;
-        typename fit_container_type::constraint_info ci;
-        fcon.set_points(pts.begin(), pts.end());
-        fcon.add_C1_constraint(1);
-        fcon.get_constraint(1, ci);
-        fp << 1, ci.get_fp()(0);
-
-        // fit points
-        ebez.interpolate(t, fcon);
-
-        TEST_ASSERT(static_cast<size_t>(ebez.degree()+1)==(pts.size()+1));
-
-        // check if went through points
-        TEST_ASSERT((ebez.f(t[0])-pts[0]).norm()<2*eps);
-        TEST_ASSERT((ebez.f(t[1])-pts[1]).norm()<3*eps);
-        TEST_ASSERT((ebez.f(t[2])-pts[2]).norm()<9*eps);
-        TEST_ASSERT((ebez.f(t[3])-pts[3]).norm()<44*eps);
-        TEST_ASSERT((fp-ebez.fp(t[1])).norm()<48*eps);
-
-//         octave_print(6, pts, ebez);
-      }
-
-      // interpolate through all points and specify C2
-      {
-        fit_container_type fcon;
-        std::vector<point_type, Eigen::aligned_allocator<point_type> > pts(5);
-        curve_type ebez;
-        std::vector<data_type> t;
-
-        // get points
-        create_circle(pts);
-
-        // configure fit container
-        point_type fp, fpp;
-        typename fit_container_type::constraint_info ci;
-        fcon.set_points(pts.begin(), pts.end());
-        fcon.add_C2_constraint(1);
-        fcon.get_constraint(1, ci);
-        fp << 1, ci.get_fp()(0);
-        fpp << 0, ci.get_fpp()(0);
-
-        // fit points
-        ebez.interpolate(t, fcon);
-
-        TEST_ASSERT(static_cast<size_t>(ebez.degree()+1)==(pts.size()+2));
-
-        // check if went through points
-        TEST_ASSERT((ebez.f(t[0])-pts[0]).norm()<3*eps);
-        TEST_ASSERT((ebez.f(t[1])-pts[1]).norm()<3*eps);
-        TEST_ASSERT((ebez.f(t[2])-pts[2]).norm()<9*eps);
-        TEST_ASSERT((ebez.f(t[3])-pts[3]).norm()<70*eps);
-        TEST_ASSERT((fp-ebez.fp(t[1])).norm()<48*eps);
-        TEST_ASSERT((fpp-ebez.fpp(t[1])).norm()<81*eps);
-
-//         octave_print(7, pts, ebez);
-      }
     }
 };
 #endif
