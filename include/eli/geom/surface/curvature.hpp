@@ -22,7 +22,7 @@ namespace eli
   {
     namespace surface
     {
-      namespace
+      namespace internal
       {
         template<typename surface__>
         void calculate_surface_terms(typename surface__::data_type &e, typename surface__::data_type &f, typename surface__::data_type &g,
@@ -55,8 +55,7 @@ namespace eli
           Suu=s.f_uu(u, v);
           Suv=s.f_uv(u, v);
           Svv=s.f_vv(u, v);
-          n=Su.cross(Sv);
-          n.normalize();
+          n=s.normal(u, v);
 
           // calculate terms
           e=n.dot(Suu);
@@ -87,7 +86,7 @@ namespace eli
           // calculate the surface parameters
           typename surface__::data_type e, f, g, ee, ff, gg;
 
-          calculate_surface_terms(e, f, g, ee, ff, gg, s, u, v);
+          internal::calculate_surface_terms(e, f, g, ee, ff, gg, s, u, v);
 
           // calculate the mean and gaussian curvatures
           tmp=ee*gg-ff*ff;
@@ -197,7 +196,7 @@ namespace eli
         // calculate the surface parameters
         typename surface__::data_type e, f, g, ee, ff, gg;
 
-        calculate_surface_terms(e, f, g, ee, ff, gg, s, u, v);
+        internal::calculate_surface_terms(e, f, g, ee, ff, gg, s, u, v);
 
         // calculate the curvature
         typename surface__::data_type tmp;
@@ -225,7 +224,7 @@ namespace eli
         // calculate the surface parameters
         typename surface__::data_type e, f, g, ee, ff, gg;
 
-        calculate_surface_terms(e, f, g, ee, ff, gg, s, u, v);
+        internal::calculate_surface_terms(e, f, g, ee, ff, gg, s, u, v);
 
         // calculate the curvature
         typename surface__::data_type tmp;
@@ -243,7 +242,7 @@ namespace eli
       void principal_curvature(typename surface__::data_type &kmax, typename surface__::data_type &kmin, const surface__ &s, const typename surface__::data_type &u, const typename surface__::data_type &v)
       {
         typename surface__::point_type kmax_dir, kmin_dir, n;
-        principal_curvature_calc(kmax, kmin, kmax_dir, kmin_dir, n, s, u, v, false);
+        internal::principal_curvature_calc(kmax, kmin, kmax_dir, kmin_dir, n, s, u, v, false);
       }
 
       template<typename surface__>
@@ -251,7 +250,7 @@ namespace eli
                                typename surface__::point_type &kmax_dir, typename surface__::point_type &kmin_dir, typename surface__::point_type &n,
                                const surface__ &s, const typename surface__::data_type &u, const typename surface__::data_type &v)
       {
-        principal_curvature_calc(kmax, kmin, kmax_dir, kmin_dir, n, s, u, v, true);
+        internal::principal_curvature_calc(kmax, kmin, kmax_dir, kmin_dir, n, s, u, v, true);
       }
     }
   }

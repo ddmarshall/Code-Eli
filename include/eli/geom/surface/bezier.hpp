@@ -717,6 +717,13 @@ namespace eli
             return ans;
           }
 
+          point_type normal(const data_type &u, const data_type &v) const
+          {
+            point_type n=f_u(u, v).cross(f_v(u, v));
+            n.normalize();
+            return n;
+          }
+
           void promote_u()
           {
             typedef Eigen::Matrix<data_type, Eigen::Dynamic, dim__> control_row_type;
