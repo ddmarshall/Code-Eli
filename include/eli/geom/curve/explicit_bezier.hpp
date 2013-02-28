@@ -15,10 +15,11 @@
 
 #include <Eigen/Eigen>
 
+#include "eli/mutil/tolerance/simple.hpp"
+
 #include "eli/geom/curve/bezier.hpp"
 #include "eli/geom/general/continuity.hpp"
 #include "eli/geom/curve/fit_container.hpp"
-#include "eli/geom/tolerance/simple.hpp"
 
 namespace eli
 {
@@ -26,7 +27,7 @@ namespace eli
   {
     namespace curve
     {
-      template<typename data__, typename tol__=geom::tolerance::simple<data__> >
+      template<typename data__, typename tol__=eli::mutil::tolerance::simple<data__> >
       class explicit_bezier
       {
         private:
@@ -191,7 +192,7 @@ namespace eli
             if (fcon.number_constraints()==0)
             {
               // determine the coefficients
-              eli::opt::least_squares_uncon(x, A, b);
+              eli::mutil::opt::least_squares_uncon(x, A, b);
             }
             else
             {
@@ -259,7 +260,7 @@ namespace eli
               }
 
               // determine the coefficients
-              eli::opt::least_squares_eqcon(x, A, b, B, d);
+              eli::mutil::opt::least_squares_eqcon(x, A, b, B, d);
             }
 
             // extract the control points and set them

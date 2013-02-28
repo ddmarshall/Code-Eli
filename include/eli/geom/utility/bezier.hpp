@@ -15,7 +15,7 @@
 
 #include "Eigen/Eigen"
 
-#include "eli/dm/binomial_coefficient.hpp"
+#include "eli/mutil/dm/binomial_coefficient.hpp"
 
 namespace eli
 {
@@ -139,7 +139,7 @@ namespace eli
           lambda(0)=coef*sum;
           for (i=1; i<n; ++i)
           {
-            eli::dm::n_choose_k(tmp, 2*n, 2*i);
+            eli::mutil::dm::n_choose_k(tmp, 2*n, 2*i);
             sum+=tmp;
             lambda(i)=coef*sum;
           }
@@ -149,7 +149,7 @@ namespace eli
           // interpolating end points up-to alpha order derivative
           data_type tmp, coef, sum(0);
           index_type alpha(ncon/2);
-          eli::dm::n_choose_k(tmp, 2*n, n+2*alpha);
+          eli::mutil::dm::n_choose_k(tmp, 2*n, n+2*alpha);
           coef=1/tmp;
           lambda(0)=coef*sum;
           for (i=1; i<n; ++i)
@@ -159,8 +159,8 @@ namespace eli
             else
             {
               data_type tmp1, tmp2;
-              eli::dm::n_choose_k(tmp1, n, i-alpha);
-              eli::dm::n_choose_k(tmp2, n, i+alpha);
+              eli::mutil::dm::n_choose_k(tmp1, n, i-alpha);
+              eli::mutil::dm::n_choose_k(tmp2, n, i+alpha);
               sum+=tmp1*tmp2;
             }
             lambda(i)=coef*sum;
@@ -214,8 +214,8 @@ namespace eli
           {
             if (i+j<=n)
             {
-              eli::dm::n_choose_k(bc1, n, j);
-              eli::dm::n_choose_k(bc2, n-j, n-i-j);
+              eli::mutil::dm::n_choose_k(bc1, n, j);
+              eli::mutil::dm::n_choose_k(bc2, n-j, n-i-j);
               N(i,j)=bc1*bc2;
               if ((n-i-j)%2==1)
                 N(i,j)*=-1;

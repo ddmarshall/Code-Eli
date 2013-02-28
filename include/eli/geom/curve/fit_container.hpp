@@ -16,8 +16,8 @@
 #include <cassert>
 #include <map>
 
-#include "eli/fd/d1o2.hpp"
-#include "eli/fd/d2o2.hpp"
+#include "eli/mutil/fd/d1o2.hpp"
+#include "eli/mutil/fd/d2o2.hpp"
 
 #include "eli/geom/point/distance.hpp"
 #include "eli/geom/general/continuity.hpp"
@@ -134,7 +134,7 @@ namespace eli
           void evaluate_fp(constraint_point_type &fp, const index_type &i) const
           {
             // need to do finite difference to calculate 1st derivative vector
-            typedef  eli::fd::d1o2<data_type> fd1_type;
+            typedef  eli::mutil::fd::d1o2<data_type> fd1_type;
             fd1_type d;
             point_type vec[3];
             data_type t[3];
@@ -143,7 +143,7 @@ namespace eli
             {
               if (open())
               {
-                d.set_stencil(fd1_type::right);
+                d.set_stencil(fd1_type::RIGHT);
 
                 // set points
                 vec[0]=points[0];
@@ -152,7 +152,7 @@ namespace eli
               }
               else
               {
-                d.set_stencil(fd1_type::center);
+                d.set_stencil(fd1_type::CENTER);
 
                 // set points
                 vec[0]=points[number_points()-1];
@@ -164,7 +164,7 @@ namespace eli
             {
               if (open())
               {
-                d.set_stencil(fd1_type::left);
+                d.set_stencil(fd1_type::LEFT);
 
                 // set points
                 vec[0]=points[number_points()-3];
@@ -173,7 +173,7 @@ namespace eli
               }
               else
               {
-                d.set_stencil(fd1_type::center);
+                d.set_stencil(fd1_type::CENTER);
 
                 // set points
                 vec[0]=points[number_points()-2];
@@ -183,7 +183,7 @@ namespace eli
             }
             else
             {
-              d.set_stencil(fd1_type::center);
+              d.set_stencil(fd1_type::CENTER);
 
               // set points
               vec[0]=points[i-1];
@@ -224,7 +224,7 @@ namespace eli
           void evaluate_fpp(constraint_point_type &fpp, const index_type &i) const
           {
             // need to do finite difference to calculate 1st derivative vector
-            typedef  eli::fd::d2o2<data_type> fd2_type;
+            typedef  eli::mutil::fd::d2o2<data_type> fd2_type;
             fd2_type d;
             point_type vec[4];
             data_type t[4];
@@ -233,7 +233,7 @@ namespace eli
             {
               if (open())
               {
-                d.set_stencil(fd2_type::right);
+                d.set_stencil(fd2_type::RIGHT);
 
                 // set points
                 vec[0]=points[0];
@@ -243,7 +243,7 @@ namespace eli
               }
               else
               {
-                d.set_stencil(fd2_type::left_biased);
+                d.set_stencil(fd2_type::LEFT_BIASED);
 
                 // set points
                 vec[0]=points[number_points()-2];
@@ -256,7 +256,7 @@ namespace eli
             {
               if (open())
               {
-                d.set_stencil(fd2_type::right_biased);
+                d.set_stencil(fd2_type::RIGHT_BIASED);
 
                 // set points
                 vec[0]=points[0];
@@ -266,7 +266,7 @@ namespace eli
               }
               else
               {
-                d.set_stencil(fd2_type::left_biased);
+                d.set_stencil(fd2_type::LEFT_BIASED);
 
                 // set points
                 vec[0]=points[number_points()-1];
@@ -279,7 +279,7 @@ namespace eli
             {
               if (open())
               {
-                d.set_stencil(fd2_type::left_biased);
+                d.set_stencil(fd2_type::LEFT_BIASED);
 
                 // set points
                 vec[0]=points[number_points()-4];
@@ -289,7 +289,7 @@ namespace eli
               }
               else
               {
-                d.set_stencil(fd2_type::right_biased);
+                d.set_stencil(fd2_type::RIGHT_BIASED);
 
                 // set points
                 vec[0]=points[number_points()-3];
@@ -302,7 +302,7 @@ namespace eli
             {
               if (open())
               {
-                d.set_stencil(fd2_type::left);
+                d.set_stencil(fd2_type::LEFT);
 
                 // set points
                 vec[0]=points[number_points()-4];
@@ -312,7 +312,7 @@ namespace eli
               }
               else
               {
-                d.set_stencil(fd2_type::right_biased);
+                d.set_stencil(fd2_type::RIGHT_BIASED);
 
                 // set points
                 vec[0]=points[number_points()-2];
@@ -323,7 +323,7 @@ namespace eli
             }
             else
             {
-              d.set_stencil(fd2_type::right_biased);
+              d.set_stencil(fd2_type::RIGHT_BIASED);
 
               // set points
               vec[0]=points[i-1];

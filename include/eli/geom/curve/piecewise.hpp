@@ -15,7 +15,8 @@
 
 #include <list>
 
-#include "eli/geom/tolerance/simple.hpp"
+#include "eli/mutil/tolerance/simple.hpp"
+
 #include "eli/geom/general/continuity.hpp"
 
 namespace eli
@@ -24,7 +25,7 @@ namespace eli
   {
     namespace curve
     {
-      template<template<typename, unsigned short, typename> class curve__, typename data__, unsigned short dim__, typename tol__=geom::tolerance::simple<data__> >
+      template<template<typename, unsigned short, typename> class curve__, typename data__, unsigned short dim__, typename tol__=eli::mutil::tolerance::simple<data__> >
       class piecewise
       {
         public:

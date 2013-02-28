@@ -10,14 +10,17 @@
 #    David D. Marshall - initial code and implementation
 ################################################################################
 
-project(ELI_TEST)
+project(MUTIL)
 
-# set what libraries need to be used
-set(_ELI_TEST_LIBRARIES_LIST ${CPPTEST_LIBRARIES})
-if (QD_FOUND)
-  SET (_ELI_TEST_LIBRARIES_LIST ${_ELI_TEST_LIBRARIES_LIST} ${QD_LIBRARIES})
+if ( (CMAKE_CXX_COMPILER_ID STREQUAL "Intel") AND (CMAKE_CXX_COMPILER_VERSION VERSION_LESS "13.0") )
+    message(WARNING "Version ${CMAKE_CXX_COMPILER_VERSION} of Intel compiler does not support the AD component.")
+else()
+  add_subdirectory(ad)
 endif()
-
-add_subdirectory(constants)
-add_subdirectory(mutil)
-add_subdirectory(geom)
+add_subdirectory(dm)
+add_subdirectory(fd)
+add_subdirectory(nls)
+add_subdirectory(opt)
+add_subdirectory(poly)
+add_subdirectory(quad)
+add_subdirectory(tolerance)

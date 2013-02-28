@@ -10,14 +10,9 @@
 #    David D. Marshall - initial code and implementation
 ################################################################################
 
-project(ELI_TEST)
+project(TOLERANCE)
 
-# set what libraries need to be used
-set(_ELI_TEST_LIBRARIES_LIST ${CPPTEST_LIBRARIES})
-if (QD_FOUND)
-  SET (_ELI_TEST_LIBRARIES_LIST ${_ELI_TEST_LIBRARIES_LIST} ${QD_LIBRARIES})
-endif()
-
-add_subdirectory(constants)
-add_subdirectory(mutil)
-add_subdirectory(geom)
+# add the tolerance test
+add_executable(ToleranceTest ${PROJECT_SOURCE_DIR}/tolerance_test.cpp)
+target_link_libraries(ToleranceTest ${_ELI_TEST_LIBRARIES_LIST})
+add_test(NAME ToleranceTest COMMAND $<TARGET_FILE:ToleranceTest> --text)

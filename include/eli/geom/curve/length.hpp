@@ -13,7 +13,7 @@
 #ifndef eli_geom_curve_length_hpp
 #define eli_geom_curve_length_hpp
 
-#include "eli/quad.hpp"
+#include "eli/mutil/quad.hpp"
 
 #include "eli/geom/curve/piecewise.hpp"
 
@@ -103,8 +103,8 @@ namespace eli
       template<typename curve__>
       void length(typename curve__::data_type &len, const curve__ &c, const typename curve__::data_type &t0, const typename curve__::data_type &t1, const typename curve__::data_type &tol)
       {
-        eli::quad::simpson<typename curve__::data_type> quad;
-        typename eli::quad::simpson<typename curve__::data_type>::adaptive_params ap;
+        eli::mutil::quad::simpson<typename curve__::data_type> quad;
+        typename eli::mutil::quad::simpson<typename curve__::data_type>::adaptive_params ap;
         internal::length_functor<curve__> f;
 
         // short circuit for invalid parameters

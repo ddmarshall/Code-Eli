@@ -17,14 +17,14 @@
 
 #include <Eigen/Eigen>
 
-#include "eli/geom/utility/bezier.hpp"
+#include "eli/mutil/opt/least_squares.hpp"
+#include "eli/mutil/dm/binomial_coefficient.hpp"
+#include "eli/mutil/tolerance/simple.hpp"
 
-#include "eli/opt/least_squares.hpp"
-#include "eli/dm/binomial_coefficient.hpp"
+#include "eli/geom/utility/bezier.hpp"
 #include "eli/geom/point/distance.hpp"
 #include "eli/geom/general/continuity.hpp"
 #include "eli/geom/curve/fit_container.hpp"
-#include "eli/geom/tolerance/simple.hpp"
 
 // TODO: MOVE THESE TO utility namespace
 namespace eli
@@ -101,7 +101,7 @@ namespace eli
     {
       // TODO: Integrate the tol__ class into this class to replace open_flag and any other place
       //       where numerical error might affect an equivalence comparison
-      template<typename data__, unsigned short dim__, typename tol__=geom::tolerance::simple<data__> >
+      template<typename data__, unsigned short dim__, typename tol__=eli::mutil::tolerance::simple<data__> >
       class bezier
       {
         public:
@@ -441,7 +441,7 @@ namespace eli
             if ((fcon.number_constraints()==0) && (fcon.open()))
             {
               // determine the coefficients
-              eli::opt::least_squares_uncon(x, A, b);
+              eli::mutil::opt::least_squares_uncon(x, A, b);
             }
             else
             {
@@ -543,7 +543,7 @@ namespace eli
               }
 
               // determine the coefficients
-              eli::opt::least_squares_eqcon(x, A, b, B, d);
+              eli::mutil::opt::least_squares_eqcon(x, A, b, B, d);
             }
 
             // extract the control points and set them

@@ -16,7 +16,8 @@
 #include <list>
 #include <iterator>
 
-#include "eli/fd/d1o2.hpp"
+#include "eli/mutil/tolerance/simple.hpp"
+#include "eli/mutil/fd/d1o2.hpp"
 
 #include "eli/geom/curve/piecewise.hpp"
 #include "eli/geom/curve/bezier.hpp"
@@ -26,7 +27,7 @@ namespace eli
   {
     namespace curve
     {
-      template<typename point_it__, typename dt_it__, typename data__, unsigned short dim__, typename tol__=geom::tolerance::simple<data__> >
+      template<typename point_it__, typename dt_it__, typename data__, unsigned short dim__, typename tol__=eli::mutil::tolerance::simple<data__> >
       bool create_piecewise_cubic(piecewise<bezier, data__, dim__, tol__> &pc, point_it__ itb, point_it__ ite, dt_it__ ditb)
       {
         typedef typename piecewise<bezier, data__, dim__, tol__>::curve_type curve_type;
@@ -44,7 +45,7 @@ namespace eli
         curve_type c(3);
         data_type dt, tmp[3];
         typename curve_type::control_point_type cp[4], m[2];
-        eli::fd::d1o2<data_type> d1approx;
+        eli::mutil::fd::d1o2<data_type> d1approx;
 
         // set the starting time
         pc.set_t0(*dit);
@@ -58,7 +59,7 @@ namespace eli
           pc.set_t0(0);
           return false;
         }
-        d1approx.set_stencil(eli::fd::d1o2<data_type>::right);
+        d1approx.set_stencil(eli::mutil::fd::d1o2<data_type>::RIGHT);
         for (j=0; j<dim__; ++j)
         {
           tmp[0]=(*itm1)(j);
@@ -66,7 +67,7 @@ namespace eli
           tmp[2]=(*itp1)(j);
           d1approx.evaluate(m[0](j), tmp, ditm1);
         }
-        d1approx.set_stencil(eli::fd::d1o2<data_type>::center);
+        d1approx.set_stencil(eli::mutil::fd::d1o2<data_type>::CENTER);
         for (j=0; j<dim__; ++j)
         {
           tmp[0]=(*itm1)(j);
@@ -122,7 +123,7 @@ namespace eli
           pc.set_t0(0);
           return false;
         }
-        d1approx.set_stencil(eli::fd::d1o2<data_type>::left);
+        d1approx.set_stencil(eli::mutil::fd::d1o2<data_type>::LEFT);
         for (j=0; j<dim__; ++j)
         {
           tmp[0]=(*itm1)(j);
