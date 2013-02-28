@@ -59,6 +59,8 @@ namespace eli
             data__ denom(std::max(std::abs(t1), std::abs(t2)));
             if (diff/denom<rel_tol)
               return true;
+
+            return false;
           }
 
           template<typename type1__>
@@ -71,6 +73,8 @@ namespace eli
             data__ denom(std::max(std::abs(t1), std::abs(t2)));
             if (diff/denom<rel_tol)
               return true;
+
+            return false;
           }
 
           bool operator()(const data__ &t1, const data__ &t2)
@@ -82,6 +86,8 @@ namespace eli
             data__ denom(std::max(std::abs(t1), std::abs(t2)));
             if (diff/denom<rel_tol)
               return true;
+
+            return false;
           }
       };
     }
