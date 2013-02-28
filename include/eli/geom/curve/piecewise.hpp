@@ -16,6 +16,7 @@
 #include <list>
 
 #include "eli/geom/tolerance/simple.hpp"
+#include "eli/geom/general/continuity.hpp"
 
 namespace eli
 {
