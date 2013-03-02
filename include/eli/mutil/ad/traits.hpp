@@ -41,7 +41,7 @@ namespace eli
         typedef promoted_type_undefined promote_t;
       };
 
-#define ELI_AD_PROMOTE_TRAITS_INT_HELPER(x_type)        \
+#define ELI_MUTIL_AD_PROMOTE_TRAITS_INT_HELPER(x_type)    \
       template <>                                         \
       struct promote_traits<x_type, x_type>               \
       {                                                   \
@@ -128,8 +128,8 @@ namespace eli
         typedef x_type promote_t;                         \
       };
 
-#define ELI_AD_PROMOTE_TRAITS_HELPER(x_type)            \
-      ELI_AD_PROMOTE_TRAITS_INT_HELPER(x_type)            \
+#define ELI_MUTIL_AD_PROMOTE_TRAITS_HELPER(x_type)        \
+      ELI_MUTIL_AD_PROMOTE_TRAITS_INT_HELPER(x_type)      \
       template <>                                         \
       struct promote_traits<x_type, float>                \
       {                                                   \
@@ -164,12 +164,12 @@ namespace eli
       //
       // traits promotion definitions for float
       //
-      ELI_AD_PROMOTE_TRAITS_INT_HELPER(float)
+      ELI_MUTIL_AD_PROMOTE_TRAITS_INT_HELPER(float)
 
       //
       // traits promotion definitions for double
       //
-      ELI_AD_PROMOTE_TRAITS_INT_HELPER(double)
+      ELI_MUTIL_AD_PROMOTE_TRAITS_INT_HELPER(double)
       // double-float promotions
       template <>
       struct promote_traits<double, float>
@@ -185,7 +185,7 @@ namespace eli
       //
       // traits promotion definitions for long double
       //
-      ELI_AD_PROMOTE_TRAITS_INT_HELPER(long double)
+      ELI_MUTIL_AD_PROMOTE_TRAITS_INT_HELPER(long double)
       // long double-float promotions
       template <>
       struct promote_traits<long double, float>
@@ -213,8 +213,8 @@ namespace eli
       //
       // traits promotion definitions for QD types
       //
-      ELI_AD_PROMOTE_TRAITS_HELPER(dd_real)
-      ELI_AD_PROMOTE_TRAITS_HELPER(qd_real)
+      ELI_MUTIL_AD_PROMOTE_TRAITS_HELPER(dd_real)
+      ELI_MUTIL_AD_PROMOTE_TRAITS_HELPER(qd_real)
 #endif
     }
   }
