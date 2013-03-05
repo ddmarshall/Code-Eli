@@ -50,24 +50,24 @@ class piecewise_curve_creator_test_suite : public Test::Suite
     void AddTests(const double &)
     {
       // add the tests
-//       TEST_ADD(piecewise_curve_creator_test_suite<double>::create_cubic_spline_fd_test);
+      TEST_ADD(piecewise_curve_creator_test_suite<double>::create_cubic_spline_fd_test);
     }
     void AddTests(const long double &)
     {
       // add the tests
-//       TEST_ADD(piecewise_curve_creator_test_suite<long double>::create_cubic_spline_fd_test);
+      TEST_ADD(piecewise_curve_creator_test_suite<long double>::create_cubic_spline_fd_test);
     }
 #ifdef ELI_QD_FOUND
     void AddTests(const dd_real &)
     {
       // add the tests
-//       TEST_ADD(piecewise_curve_creator_test_suite<dd_real>::create_cubic_spline_fd_test);
+      TEST_ADD(piecewise_curve_creator_test_suite<dd_real>::create_cubic_spline_fd_test);
     }
 
     void AddTests(const qd_real &)
     {
       // add the tests
-//       TEST_ADD(piecewise_curve_creator_test_suite<qd_real>::create_cubic_spline_fd_test);
+      TEST_ADD(piecewise_curve_creator_test_suite<qd_real>::create_cubic_spline_fd_test);
     }
 #endif
   public:
