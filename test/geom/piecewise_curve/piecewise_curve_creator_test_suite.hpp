@@ -71,7 +71,7 @@ class piecewise_curve_creator_test_suite : public Test::Suite
     }
 #endif
   public:
-    piecewise_curve_creator_test_suite()
+    piecewise_curve_creator_test_suite() : tol()
     {
       AddTests(data__());
     }
@@ -109,19 +109,19 @@ class piecewise_curve_creator_test_suite : public Test::Suite
         TEST_ASSERT(nseg==static_cast<index_type>(pts.size()-1));
 
         // check the starting time
-        TEST_ASSERT(tol(t[0], c1.get_t0()));
+        TEST_ASSERT(tol.approximately_equal(t[0], c1.get_t0()));
 
         // check the continuity at each point
         curve_type seg1, seg2;
         data_type t_out;
         c1.get(seg1, t_out, 0);
-        TEST_ASSERT(tol(t_out, t[1]-t[0]));
+        TEST_ASSERT(tol.approximately_equal(t_out, t[1]-t[0]));
         for (i=1; i<nseg; ++i)
         {
           c1.get(seg2, t_out, i);
-          TEST_ASSERT(tol(t_out, t[i+1]-t[i]));
-          TEST_ASSERT(tol(seg1.fp(1), seg2.fp(0)));
-          TEST_ASSERT(!tol(seg1.fpp(1), seg2.fpp(0)));
+          TEST_ASSERT(tol.approximately_equal(t_out, t[i+1]-t[i]));
+          TEST_ASSERT(tol.approximately_equal(seg1.fp(1), seg2.fp(0)));
+          TEST_ASSERT(!tol.approximately_equal(seg1.fpp(1), seg2.fpp(0)));
           seg1=seg2;
         }
       }

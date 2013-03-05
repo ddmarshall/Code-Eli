@@ -15,7 +15,7 @@
 
 #include <list>
 
-#include "eli/mutil/tolerance/simple.hpp"
+#include "eli/util/tolerance.hpp"
 
 #include "eli/geom/general/continuity.hpp"
 
@@ -25,7 +25,7 @@ namespace eli
   {
     namespace curve
     {
-      template<template<typename, unsigned short, typename> class curve__, typename data__, unsigned short dim__, typename tol__=eli::mutil::tolerance::simple<data__> >
+      template<template<typename, unsigned short, typename> class curve__, typename data__, unsigned short dim__, typename tol__=eli::util::tolerance<data__> >
       class piecewise
       {
         public:
@@ -646,22 +646,22 @@ namespace eli
             {
               case(geom::general::C2):
               {
-                if (!tol(curve1.fpp(1), curve2.fpp(0)))
+                if (!tol.approximately_equal(curve1.fpp(1), curve2.fpp(0)))
                   return false;
               }
               case(geom::general::C1):
               {
-                if (!tol(curve1.fp(1), curve2.fp(0)))
+                if (!tol.approximately_equal(curve1.fp(1), curve2.fp(0)))
                   return false;
               }
               case(geom::general::C0):
               {
-                return tol(curve1.f(1), curve2.f(0));
+                return tol.approximately_equal(curve1.f(1), curve2.f(0));
                 break;
               }
               case(geom::general::NOT_CONNECTED):
               {
-                return !tol(curve1.f(1), curve2.f(0));
+                return !tol.approximately_equal(curve1.f(1), curve2.f(0));
                 break;
               }
               default:

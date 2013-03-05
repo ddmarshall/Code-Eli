@@ -17,9 +17,10 @@
 
 #include <Eigen/Eigen>
 
+#include "eli/util/tolerance.hpp"
+
 #include "eli/mutil/opt/least_squares.hpp"
 #include "eli/mutil/dm/binomial_coefficient.hpp"
-#include "eli/mutil/tolerance/simple.hpp"
 
 #include "eli/geom/utility/bezier.hpp"
 #include "eli/geom/point/distance.hpp"
@@ -101,7 +102,7 @@ namespace eli
     {
       // TODO: Integrate the tol__ class into this class to replace open_flag and any other place
       //       where numerical error might affect an equivalence comparison
-      template<typename data__, unsigned short dim__, typename tol__=eli::mutil::tolerance::simple<data__> >
+      template<typename data__, unsigned short dim__, typename tol__=eli::util::tolerance<data__> >
       class bezier
       {
         public:
@@ -201,7 +202,12 @@ namespace eli
           {
             tolerance_type tol;
 
-            return tol(B.row(0), B.row(degree()));
+            for (index_type i=0; i<dim__; ++i)
+            {
+              if (!tol.approximately_equal(B(0, i), B(degree(), i)))
+                return false;
+            }
+            return true;
           }
 
           point_type f(const data_type &t) const

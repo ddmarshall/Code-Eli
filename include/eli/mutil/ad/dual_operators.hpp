@@ -13,7 +13,8 @@
 #ifndef eli_mutil_ad_dual_operators_hpp
 #define eli_mutil_ad_dual_operators_hpp
 
-#include "eli/mutil/ad/traits.hpp"
+#include "eli/util/traits.hpp"
+
 #include "eli/mutil/ad/dual_number.hpp"
 
 //
@@ -33,11 +34,11 @@ namespace eli
           public:
             typedef typename left__::data_type left_data_type;
             typedef typename right__::data_type right_data_type;
-            typedef typename eli::mutil::ad::promote_traits<left_data_type, right_data_type>::promote_t data_type;
+            typedef typename eli::util::promote_traits<left_data_type, right_data_type>::promote_t data_type;
 
           private:
-            typename traits<left__>::const_expr_ref l_val;
-            typename traits<right__>::const_expr_ref r_val;
+            typename eli::util::traits<left__>::const_expr_ref l_val;
+            typename eli::util::traits<right__>::const_expr_ref r_val;
 
           public:
             add(const left__ &l, const right__ &r) : l_val(l), r_val(r) {}
@@ -173,11 +174,11 @@ namespace eli
           public:
             typedef typename left__::data_type left_data_type;
             typedef typename right__::data_type right_data_type;
-            typedef typename eli::mutil::ad::promote_traits<left_data_type, right_data_type>::promote_t data_type;
+            typedef typename eli::util::promote_traits<left_data_type, right_data_type>::promote_t data_type;
 
           private:
-            typename traits<left__>::const_expr_ref l_val;
-            typename traits<right__>::const_expr_ref r_val;
+            typename eli::util::traits<left__>::const_expr_ref l_val;
+            typename eli::util::traits<right__>::const_expr_ref r_val;
 
           public:
             subtract(const left__ &l, const right__ &r) : l_val(l), r_val(r) {}
@@ -313,11 +314,11 @@ namespace eli
           public:
             typedef typename left__::data_type left_data_type;
             typedef typename right__::data_type right_data_type;
-            typedef typename eli::mutil::ad::promote_traits<left_data_type, right_data_type>::promote_t data_type;
+            typedef typename eli::util::promote_traits<left_data_type, right_data_type>::promote_t data_type;
 
           private:
-            typename traits<left__>::const_expr_ref l_val;
-            typename traits<right__>::const_expr_ref r_val;
+            typename eli::util::traits<left__>::const_expr_ref l_val;
+            typename eli::util::traits<right__>::const_expr_ref r_val;
 
           public:
             multiply(const left__ &l, const right__ &r) : l_val(l), r_val(r) {}
@@ -453,11 +454,11 @@ namespace eli
           public:
             typedef typename left__::data_type left_data_type;
             typedef typename right__::data_type right_data_type;
-            typedef typename eli::mutil::ad::promote_traits<left_data_type, right_data_type>::promote_t data_type;
+            typedef typename eli::util::promote_traits<left_data_type, right_data_type>::promote_t data_type;
 
           private:
-            typename traits<left__>::const_expr_ref l_val;
-            typename traits<right__>::const_expr_ref r_val;
+            typename eli::util::traits<left__>::const_expr_ref l_val;
+            typename eli::util::traits<right__>::const_expr_ref r_val;
 
           public:
             divide(const left__ &l, const right__ &r) : l_val(l), r_val(r) {}

@@ -16,7 +16,8 @@
 #include <list>
 #include <iterator>
 
-#include "eli/mutil/tolerance/simple.hpp"
+#include "eli/util/tolerance.hpp"
+
 #include "eli/mutil/fd/d1o2.hpp"
 
 #include "eli/geom/curve/piecewise.hpp"
@@ -27,7 +28,7 @@ namespace eli
   {
     namespace curve
     {
-      template<typename point_it__, typename dt_it__, typename data__, unsigned short dim__, typename tol__=eli::mutil::tolerance::simple<data__> >
+      template<typename point_it__, typename dt_it__, typename data__, unsigned short dim__, typename tol__>
       bool create_piecewise_cubic(piecewise<bezier, data__, dim__, tol__> &pc, point_it__ itb, point_it__ ite, dt_it__ ditb)
       {
         typedef typename piecewise<bezier, data__, dim__, tol__>::curve_type curve_type;

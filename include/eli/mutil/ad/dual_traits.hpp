@@ -13,7 +13,7 @@
 #ifndef eli_mutil_ad_dual_traits_hpp
 #define eli_mutil_ad_dual_traits_hpp
 
-#include "eli/mutil/ad/traits.hpp"
+#include "eli/util/traits.hpp"
 
 namespace eli
 {
@@ -26,18 +26,24 @@ namespace eli
       {
         template <typename data__> class constant;
       }
-
-      template <typename data__>
-      class traits<dual_number::constant<data__> >
-      {
-        public:
-          // how to refer to a constant reference
-          typedef dual_number::constant<data__> const_expr_ref;
-
-          // how to refer to a reference
-          typedef dual_number::constant<data__> expr_ref;
-      };
     }
+  }
+}
+
+namespace eli
+{
+  namespace util
+  {
+    template <typename data__>
+    class traits<eli::mutil::ad::dual_number::constant<data__> >
+    {
+      public:
+        // how to refer to a constant reference
+        typedef eli::mutil::ad::dual_number::constant<data__> const_expr_ref;
+
+        // how to refer to a reference
+        typedef eli::mutil::ad::dual_number::constant<data__> expr_ref;
+    };
   }
 }
 

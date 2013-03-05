@@ -15,7 +15,7 @@
 
 #include <Eigen/Eigen>
 
-#include "eli/mutil/tolerance/simple.hpp"
+#include "eli/util/tolerance.hpp"
 
 #include "eli/geom/curve/bezier.hpp"
 #include "eli/geom/general/continuity.hpp"
@@ -27,7 +27,7 @@ namespace eli
   {
     namespace curve
     {
-      template<typename data__, typename tol__=eli::mutil::tolerance::simple<data__> >
+      template<typename data__, typename tol__=eli::util::tolerance<data__> >
       class explicit_bezier
       {
         private:

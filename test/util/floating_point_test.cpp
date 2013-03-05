@@ -20,7 +20,7 @@
 
 #include <cpptest.h> // CppTest Framework
 
-#include "simple_tolerance_test_suite.hpp"  // simple_tolerance_test_suite
+#include "floating_point_test_suite.hpp"  // floating_point_test_suite
 
 enum TestType {testTypeText, testTypeCompiler, testTypeHTML};
 
@@ -148,16 +148,12 @@ int main(int argc, char *argv[])
     // NOTE: This is where changes should be needed
     //
     Test::Suite ts;
-    std::string ostr_filename("tolerance_test_results.html");
+    std::string ostr_filename("floating_point_test_results.html");
 
     // add the cppack test suites
-    ts.add(std::auto_ptr<Test::Suite>(new simple_tolerance_test_suite<float>()));
-    ts.add(std::auto_ptr<Test::Suite>(new simple_tolerance_test_suite<double>()));
-    ts.add(std::auto_ptr<Test::Suite>(new simple_tolerance_test_suite<long double>()));
-#ifdef ELI_QD_FOUND
-    ts.add(std::auto_ptr<Test::Suite>(new simple_tolerance_test_suite<dd_real>()));
-    ts.add(std::auto_ptr<Test::Suite>(new simple_tolerance_test_suite<qd_real>()));
-#endif
+    ts.add(std::auto_ptr<Test::Suite>(new floating_point_test_suite<float>()));
+    ts.add(std::auto_ptr<Test::Suite>(new floating_point_test_suite<double>()));
+    ts.add(std::auto_ptr<Test::Suite>(new floating_point_test_suite<long double>()));
 
     //
     // NOTE: End of section that should be changed

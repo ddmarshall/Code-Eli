@@ -13,6 +13,8 @@
 #ifndef eli_mutil_ad_dual_functions_hpp
 #define eli_mutil_ad_dual_functions_hpp
 
+#include "eli/util/traits.hpp"
+
 #include "eli/mutil/ad/dual_number.hpp"
 #include "eli/mutil/ad/dual_operators.hpp"
 
@@ -31,7 +33,7 @@ namespace eli
             typedef typename data__::data_type data_type;
 
           private:
-            typename traits<data__>::const_expr_ref val;
+            typename eli::util::traits<data__>::const_expr_ref val;
 
           public:
             unary_fun(const data__ &v) : val(v) {}

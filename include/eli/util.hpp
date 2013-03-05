@@ -10,9 +10,11 @@
 *    David D. Marshall - initial code and implementation
 ********************************************************************************/
 
-#ifndef eli_mutil_tolerance_hpp
-#define eli_mutil_tolerance_hpp
+#ifndef eli_util_hpp
+#define eli_util_hpp
 
-#include "eli/mutil/tolerance/simple.hpp"
+#include "eli/util/tolerance.hpp"
+#include "eli/util/floating_point.hpp"
+#include "eil/util/traits.hpp"
 
 #endif

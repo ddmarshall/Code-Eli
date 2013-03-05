@@ -19,7 +19,7 @@
 
 #include "Eigen/Eigen"
 
-#include "eli/mutil/tolerance/simple.hpp"
+#include "eli/util/tolerance.hpp"
 
 #include "eli/geom/utility/bezier.hpp"
 #include "eli/geom/general/continuity.hpp"
@@ -30,7 +30,7 @@ namespace eli
   {
     namespace surface
     {
-      template<typename data__, unsigned short dim__, typename tol__=eli::mutil::tolerance::simple<data__> >
+      template<typename data__, unsigned short dim__, typename tol__=eli::util::tolerance<data__> >
       class bezier
       {
         public:
