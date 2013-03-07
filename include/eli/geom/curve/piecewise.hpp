@@ -80,6 +80,23 @@ namespace eli
           const data_type & get_t0() const {return t0;}
           void set_t0(const data_type &t0_in) {t0=t0_in;}
 
+          void get_parameter_min(data_type &tmin) const
+          {
+            tmin=t0;
+          }
+
+          void get_parameter_max(data_type &tmax) const
+          {
+            typename segment_collection_type::const_iterator psit;
+
+            tmax=t0;
+
+            for (psit=segments.begin(); psit!=segments.end(); ++psit)
+            {
+              tmax+=psit->delta_t;
+            }
+          }
+
           index_type number_segments() const {return static_cast<index_type>(segments.size());}
 
           bool open() const
@@ -206,6 +223,12 @@ namespace eli
             assert(check_continuity(eli::geom::general::C0));
 
             return NO_ERROR;
+          }
+
+          error_code get(curve_type &curve, const index_type &index) const
+          {
+            data_type dt;
+            return get(curve, dt, index);
           }
 
           error_code get(curve_type &curve, data_type &dt, const index_type &index) const
