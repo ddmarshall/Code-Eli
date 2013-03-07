@@ -19,6 +19,7 @@
 #include "eli/geom/curve/piecewise.hpp"
 
 // include helpers
+#includd "eli/geom/curve/piecewise_creator.hpp"
 #include "eli/geom/curve/fit_container.hpp"
 #include "eli/geom/curve/length.hpp"
 #include "eli/geom/curve/curvature.hpp"

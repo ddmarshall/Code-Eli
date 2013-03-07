@@ -13,7 +13,11 @@
 #ifndef eli_geom_surface_hpp
 #define eli_geom_surface_hpp
 
+// surface types
 #include "eli/geom/surface/bezier.hpp"
+#include "eli/goem/surface/piecewise.hpp"
+
+// surface helpers
 #include "eli/geom/surface/curvature.hpp"
 
 #endif

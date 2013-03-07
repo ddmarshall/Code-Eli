@@ -57,3 +57,8 @@ add_executable(BezierSurfaceTest ${PROJECT_SOURCE_DIR}/bezier_surface/bezier_sur
 target_link_libraries(BezierSurfaceTest ${_ELI_TEST_LIBRARIES_LIST})
 add_test(NAME BezierSurfaceTest COMMAND $<TARGET_FILE:BezierSurfaceTest> --text)
 
+# add the piecewise_surface test
+add_executable(PiecewiseSurfaceTest ${PROJECT_SOURCE_DIR}/piecewise_surface/piecewise_surface_test.cpp)
+target_link_libraries(PiecewiseSurfaceTest ${_ELI_TEST_LIBRARIES_LIST})
+add_test(NAME PiecewiseSurfaceTest COMMAND $<TARGET_FILE:PiecewiseSurfaceTest> --text)
+
