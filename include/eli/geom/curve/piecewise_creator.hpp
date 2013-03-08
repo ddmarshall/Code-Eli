@@ -167,29 +167,40 @@ namespace eli
         index_type i;
 
         // create local x and y vectors
-        x=start-origin;
-        x.normalize();
-        y=normal.cross(x);
-        y.normalize();
+        eli::geom::point::distance(r, start, origin);
+        k=4*(eli::constants::math<data_type>::sqrt_two()-1)/3;
+
+        pc.clear();
+
+        tol__ tol;
+        if (tol.approximately_equal(r, 0))
+        {
+          r=0;
+          x << 1, 0, 0;
+          y << 0, 1, 0;
+        }
+        else
+        {
+          x=start-origin;
+          x.normalize();
+          y=normal.cross(x);
+          y.normalize();
 
 #ifdef DEBUG
-        tol__ tol;
-        point_type n(normal);
-        n.normalize();
-        assert(tol.approximately_equal(x.dot(n), 0));
+          point_type n(normal);
+          n.normalize();
+          assert(tol.approximately_equal(x.dot(n), 0));
 #endif
+        }
 
         curve_type c(3);
         control_point_type cp[4];
 
-        eli::geom::point::distance(r, start, origin);
-        k=4*(eli::constants::math<data_type>::sqrt_two()-1)/3;
-
         // set 1st quadrant curve
-        cp[0]=r*x;
-        cp[1]=r*(x+k*y);
-        cp[2]=r*(k*x+y);
-        cp[3]=r*y;
+        cp[0]=r*x+origin;
+        cp[1]=r*(x+k*y)+origin;
+        cp[2]=r*(k*x+y)+origin;
+        cp[3]=r*y+origin;
         for (i=0; i<4; ++i)
         {
           c.set_control_point(cp[i], i);
@@ -199,10 +210,10 @@ namespace eli
           return false;
 
         // set 2nd quadrant curve
-        cp[0]=r*y;
-        cp[1]=r*(y-k*x);
-        cp[2]=r*(k*y-x);
-        cp[3]=-r*x;
+        cp[0]=r*y+origin;
+        cp[1]=r*(y-k*x)+origin;
+        cp[2]=r*(k*y-x)+origin;
+        cp[3]=-r*x+origin;
         for (i=0; i<4; ++i)
         {
           c.set_control_point(cp[i], i);
@@ -212,10 +223,10 @@ namespace eli
           return false;
 
         // set 3rd quadrant curve
-        cp[0]=-r*x;
-        cp[1]=-r*(x+k*y);
-        cp[2]=-r*(k*x+y);
-        cp[3]=-r*y;
+        cp[0]=-r*x+origin;
+        cp[1]=-r*(x+k*y)+origin;
+        cp[2]=-r*(k*x+y)+origin;
+        cp[3]=-r*y+origin;
         for (i=0; i<4; ++i)
         {
           c.set_control_point(cp[i], i);
@@ -225,10 +236,10 @@ namespace eli
           return false;
 
         // set 4th quadrant curve
-        cp[0]=-r*y;
-        cp[1]=-r*(y-k*x);
-        cp[2]=-r*(k*y-x);
-        cp[3]=r*x;
+        cp[0]=-r*y+origin;
+        cp[1]=-r*(y-k*x)+origin;
+        cp[2]=-r*(k*y-x)+origin;
+        cp[3]=r*x+origin;
         for (i=0; i<4; ++i)
         {
           c.set_control_point(cp[i], i);

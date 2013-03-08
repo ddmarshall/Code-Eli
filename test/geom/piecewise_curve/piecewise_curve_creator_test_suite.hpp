@@ -270,6 +270,22 @@ class piecewise_curve_creator_test_suite : public Test::Suite
         // create the circle
         TEST_ASSERT(create_circle_3(pc1, start, origin, normal));
       }
+
+      // create circle with zero radius
+      {
+        piecewise_curve_type pc1;
+        point_type start, origin, normal;
+
+        // set the parameters for circle
+        start << 1, 0, 0;
+        origin << 1, 0, 0;
+        normal << 0, 0, 1;
+
+        // create the circle
+        TEST_ASSERT(create_circle_3(pc1, start, origin, normal));
+
+        TEST_ASSERT(pc1.f(0.5)==pc1.f(0.75));
+      }
     }
 
     void create_circular_arc_test()

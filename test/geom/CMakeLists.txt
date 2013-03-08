@@ -62,3 +62,8 @@ add_executable(PiecewiseSurfaceTest ${PROJECT_SOURCE_DIR}/piecewise_surface/piec
 target_link_libraries(PiecewiseSurfaceTest ${_ELI_TEST_LIBRARIES_LIST})
 add_test(NAME PiecewiseSurfaceTest COMMAND $<TARGET_FILE:PiecewiseSurfaceTest> --text)
 
+# add the piecewise_surface_creator test
+add_executable(PiecewiseSurfaceCreatorTest ${PROJECT_SOURCE_DIR}/piecewise_surface/piecewise_surface_creator_test.cpp)
+target_link_libraries(PiecewiseSurfaceCreatorTest ${_ELI_TEST_LIBRARIES_LIST})
+add_test(NAME PiecewiseSurfaceCreatorTest COMMAND $<TARGET_FILE:PiecewiseSurfaceCreatorTest> --text)
+

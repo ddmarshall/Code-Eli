@@ -18,6 +18,7 @@
 #include "eli/goem/surface/piecewise.hpp"
 
 // surface helpers
+#include "eli/geom/surface/piecewise_creator.hpp"
 #include "eli/geom/surface/curvature.hpp"
 
 #endif

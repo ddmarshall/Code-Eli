@@ -11,7 +11,7 @@
 ********************************************************************************/
 
 #ifndef eli_geom_surface_bezier_hpp
-#define eli_gome_surface_bezier_hpp
+#define eli_geom_surface_bezier_hpp
 
 #include <cstddef>  // nullptr
 
