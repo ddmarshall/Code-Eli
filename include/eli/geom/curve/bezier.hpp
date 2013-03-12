@@ -114,6 +114,7 @@ namespace eli
           typedef typename point_type::Index index_type;
           typedef geom::curve::fit_container<data_type, index_type, dim__, dim__> fit_container_type;
           typedef tol__ tolerance_type;
+          typedef Eigen::Matrix<data_type, dim__, dim__> rotation_matrix_type;
 
         public:
           bezier() : B(1, dim__) {}
@@ -219,6 +220,27 @@ namespace eli
                   pmax(k)=tmp(k);
                 }
               }
+            }
+          }
+
+          void rotate(const rotation_matrix_type &rmat)
+          {
+            B*=rmat.transpose();
+          }
+
+          void rotate(const rotation_matrix_type &rmat, const point_type &rorig)
+          {
+            translate(-rorig);
+            rotate(rmat);
+            translate(rorig);
+          }
+
+          void translate(const point_type &trans)
+          {
+            index_type i, deg(degree());
+            for (i=0; i<=deg; ++i)
+            {
+              B.row(i)+=trans;
             }
           }
 

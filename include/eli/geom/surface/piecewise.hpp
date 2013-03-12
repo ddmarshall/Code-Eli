@@ -33,6 +33,7 @@ namespace eli
           typedef typename surface_type::index_type index_type;
           typedef typename surface_type::point_type point_type;
           typedef typename surface_type::control_point_type control_point_type;
+          typedef typename surface_type::rotation_matrix_type rotation_matrix_type;
           typedef data__ data_type;
           typedef unsigned short dimension_type;
           typedef tol__ tolerance_type;
@@ -165,6 +166,36 @@ namespace eli
                   pmax(i)=pmaxtmp(i);
                 }
               }
+            }
+          }
+
+          void rotate(const rotation_matrix_type &rmat)
+          {
+            typename patch_collection_type::iterator it;
+
+            for (it=patches.begin(); it!=patches.end(); ++it)
+            {
+              it->s.rotate(rmat);
+            }
+          }
+
+          void rotate(const rotation_matrix_type &rmat, const point_type &rorig)
+          {
+            typename patch_collection_type::iterator it;
+
+            for (it=patches.begin(); it!=patches.end(); ++it)
+            {
+              it->s.rotate(rmat, rorig);
+            }
+          }
+
+          void translate(const point_type &trans)
+          {
+            typename patch_collection_type::iterator it;
+
+            for (it=patches.begin(); it!=patches.end(); ++it)
+            {
+              it->s.translate(trans);
             }
           }
 

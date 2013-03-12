@@ -40,6 +40,7 @@ namespace eli
           typedef point_type control_point_type;
           typedef typename control_point_type::Index index_type;
           typedef tol__ tolerance_type;
+          typedef Eigen::Matrix<data_type, dim__, dim__> rotation_matrix_type;
 
         private:
           typedef Eigen::Map<Eigen::Matrix<data_type, Eigen::Dynamic, dim__>,
@@ -160,6 +161,34 @@ namespace eli
                     pmax(k)=tmp(k);
                   }
                 }
+              }
+            }
+          }
+
+          void rotate(const rotation_matrix_type &rmat)
+          {
+            index_type j, degv(degree_v());
+            for (j=0; j<=degv; ++j)
+            {
+              B_u[j]*=rmat.transpose();
+            }
+          }
+
+          void rotate(const rotation_matrix_type &rmat, const point_type &rorig)
+          {
+            translate(-rorig);
+            rotate(rmat);
+            translate(rorig);
+          }
+
+          void translate(const point_type &trans)
+          {
+            index_type i, j, degu(degree_u()), degv(degree_v());
+            for (j=0; j<=degv; ++j)
+            {
+              for (i=0; i<=degu; ++i)
+              {
+                B_u[j].row(i)+=trans;
               }
             }
           }

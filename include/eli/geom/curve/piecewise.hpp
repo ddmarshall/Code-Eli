@@ -33,6 +33,7 @@ namespace eli
           typedef typename curve_type::index_type index_type;
           typedef typename curve_type::point_type point_type;
           typedef typename curve_type::control_point_type control_point_type;
+          typedef typename curve_type::rotation_matrix_type rotation_matrix_type;
           typedef data__ data_type;
           typedef unsigned short dimension_type;
           typedef tol__ tolerance_type;
@@ -120,6 +121,36 @@ namespace eli
                   pmax(i)=pmaxtmp(i);
                 }
               }
+            }
+          }
+
+          void rotate(const rotation_matrix_type &rmat)
+          {
+            typename segment_collection_type::iterator it;
+
+            for (it=segments.begin(); it!=segments.end(); ++it)
+            {
+              it->c.rotate(rmat);
+            }
+          }
+
+          void rotate(const rotation_matrix_type &rmat, const point_type &rorig)
+          {
+            typename segment_collection_type::iterator it;
+
+            for (it=segments.begin(); it!=segments.end(); ++it)
+            {
+              it->c.rotate(rmat, rorig);
+            }
+          }
+
+          void translate(const point_type &trans)
+          {
+            typename segment_collection_type::iterator it;
+
+            for (it=segments.begin(); it!=segments.end(); ++it)
+            {
+              it->c.translate(trans);
             }
           }
 

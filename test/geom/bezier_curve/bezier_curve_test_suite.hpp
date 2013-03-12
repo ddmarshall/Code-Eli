@@ -47,6 +47,7 @@ class bezier_curve_test_suite : public Test::Suite
       // add the tests
       TEST_ADD(bezier_curve_test_suite<float>::assignment_test);
       TEST_ADD(bezier_curve_test_suite<float>::bounding_box_test);
+      TEST_ADD(bezier_curve_test_suite<float>::transformation_test);
       TEST_ADD(bezier_curve_test_suite<float>::evaluation_test);
       TEST_ADD(bezier_curve_test_suite<float>::derivative_1_test);
       TEST_ADD(bezier_curve_test_suite<float>::derivative_2_test);
@@ -63,6 +64,7 @@ class bezier_curve_test_suite : public Test::Suite
       // add the tests
       TEST_ADD(bezier_curve_test_suite<double>::assignment_test);
       TEST_ADD(bezier_curve_test_suite<double>::bounding_box_test);
+      TEST_ADD(bezier_curve_test_suite<double>::transformation_test);
       TEST_ADD(bezier_curve_test_suite<double>::evaluation_test);
       TEST_ADD(bezier_curve_test_suite<double>::derivative_1_test);
       TEST_ADD(bezier_curve_test_suite<double>::derivative_2_test);
@@ -79,6 +81,7 @@ class bezier_curve_test_suite : public Test::Suite
       // add the tests
       TEST_ADD(bezier_curve_test_suite<long double>::assignment_test);
       TEST_ADD(bezier_curve_test_suite<long double>::bounding_box_test);
+      TEST_ADD(bezier_curve_test_suite<long double>::transformation_test);
       TEST_ADD(bezier_curve_test_suite<long double>::evaluation_test);
       TEST_ADD(bezier_curve_test_suite<long double>::derivative_1_test);
       TEST_ADD(bezier_curve_test_suite<long double>::derivative_2_test);
@@ -96,6 +99,7 @@ class bezier_curve_test_suite : public Test::Suite
       // add the tests
       TEST_ADD(bezier_curve_test_suite<dd_real>::assignment_test);
       TEST_ADD(bezier_curve_test_suite<dd_real>::bounding_box_test);
+      TEST_ADD(bezier_curve_test_suite<dd_real>::transformation_test);
       TEST_ADD(bezier_curve_test_suite<dd_real>::evaluation_test);
       TEST_ADD(bezier_curve_test_suite<dd_real>::derivative_1_test);
       TEST_ADD(bezier_curve_test_suite<dd_real>::derivative_2_test);
@@ -113,6 +117,7 @@ class bezier_curve_test_suite : public Test::Suite
       // add the tests
       TEST_ADD(bezier_curve_test_suite<qd_real>::assignment_test);
       TEST_ADD(bezier_curve_test_suite<qd_real>::bounding_box_test);
+      TEST_ADD(bezier_curve_test_suite<qd_real>::transformation_test);
       TEST_ADD(bezier_curve_test_suite<qd_real>::evaluation_test);
       TEST_ADD(bezier_curve_test_suite<qd_real>::derivative_1_test);
       TEST_ADD(bezier_curve_test_suite<qd_real>::derivative_2_test);
@@ -244,6 +249,119 @@ class bezier_curve_test_suite : public Test::Suite
       pmax_ref << 4, 2, 0;
       TEST_ASSERT(pmin==pmin_ref);
       TEST_ASSERT(pmax==pmax_ref);
+    }
+
+    void transformation_test()
+    {
+      point_type cntrl_in[4];
+      data_type eps(std::numeric_limits<data__>::epsilon());
+#ifdef ELI_QD_FOUND
+      if ( (typeid(data_type)==typeid(dd_real)) || (typeid(data_type)==typeid(qd_real)) )
+        eps=std::numeric_limits<double>::epsilon();
+#endif
+
+      // set control points
+      cntrl_in[0] << 2.0, 2.0, 0.0;
+      cntrl_in[1] << 1.0, 1.5, 0.0;
+      cntrl_in[2] << 3.5, 0.0, 0.0;
+      cntrl_in[3] << 4.0, 1.0, 0.0;
+
+      bezier_type bc1(3), bc2;
+      point_type  eval_out, eval_ref;
+      data_type  t;
+
+      // set control points
+      for (index_type i=0; i<4; ++i)
+      {
+        bc1.set_control_point(cntrl_in[i], i);
+      }
+
+      // test translation
+      {
+        point_type trans;
+
+        // set up translation vector and apply
+        bc2=bc1;
+        trans << 2, 1, 3;
+        bc2.translate(trans);
+
+        // test evaluations
+        t=0;
+        eval_out=bc2.f(t);
+        eval_ref=trans+cntrl_in[0];
+        TEST_ASSERT(eval_out==eval_ref);
+        t=1;
+        eval_out=bc2.f(t);
+        eval_ref=trans+cntrl_in[3];
+        TEST_ASSERT(eval_out==eval_ref);
+
+        // test evaluation at interior point
+        t=static_cast<data__>(0.45);
+        eval_out=bc2.f(t);
+        eval_ref << static_cast<data__>(2.2750625), static_cast<data__>(1.0364375), static_cast<data__>(0);
+        eval_ref+=trans;
+        TEST_ASSERT((eval_out-eval_ref).norm()<5e3*eps);
+      }
+
+      // test rotation about origin
+      {
+        typename bezier_type::rotation_matrix_type rmat;
+
+        // set up rotation and apply
+        bc2=bc1;
+        rmat << cos(1), 0, -sin(1),
+                     0, 1,       0,
+                sin(1), 0,  cos(1);
+        bc2.rotate(rmat);
+
+        // test evaluations
+        t=0;
+        eval_out=bc2.f(t);
+        eval_ref=(cntrl_in[0]*rmat.transpose());
+        TEST_ASSERT(eval_out==eval_ref);
+        t=1;
+        eval_out=bc2.f(t);
+        eval_ref=(cntrl_in[3]*rmat.transpose());
+        TEST_ASSERT(eval_out==eval_ref);
+
+        // test evaluation at interior point
+        t=static_cast<data__>(0.45);
+        eval_out=bc2.f(t);
+        eval_ref << static_cast<data__>(2.2750625), static_cast<data__>(1.0364375), static_cast<data__>(0);
+        eval_ref*=rmat.transpose();
+        TEST_ASSERT((eval_out-eval_ref).norm()<5e3*eps);
+      }
+
+      // test rotation about point
+      {
+        point_type rorig;
+        typename bezier_type::rotation_matrix_type rmat;
+
+        // set up rotation and apply
+        bc2=bc1;
+        rorig << 2, 1, 3;
+        rmat << cos(1), 0, -sin(1),
+                     0, 1,       0,
+                sin(1), 0,  cos(1);
+        bc2.rotate(rmat, rorig);
+
+        // test evaluations
+        t=0;
+        eval_out=bc2.f(t);
+        eval_ref=rorig+(cntrl_in[0]-rorig)*rmat.transpose();
+        TEST_ASSERT(eval_out==eval_ref);
+        t=1;
+        eval_out=bc2.f(t);
+        eval_ref=rorig+(cntrl_in[3]-rorig)*rmat.transpose();
+        TEST_ASSERT(eval_out==eval_ref);
+
+        // test evaluation at interior point
+        t=static_cast<data__>(0.45);
+        eval_out=bc2.f(t);
+        eval_ref << static_cast<data__>(2.2750625), static_cast<data__>(1.0364375), static_cast<data__>(0);
+        eval_ref=rorig+(eval_ref-rorig)*rmat.transpose();
+        TEST_ASSERT((eval_out-eval_ref).norm()<5e3*eps);
+      }
     }
 
     void evaluation_test()

@@ -54,6 +54,7 @@ class piecewise_surface_test_suite : public Test::Suite
       TEST_ADD(piecewise_surface_test_suite<float>::bounding_box_test);
       TEST_ADD(piecewise_surface_test_suite<float>::reverse_test);
       TEST_ADD(piecewise_surface_test_suite<float>::replace_test);
+      TEST_ADD(piecewise_surface_test_suite<float>::transformation_test);
       TEST_ADD(piecewise_surface_test_suite<float>::evaluation_test);
       TEST_ADD(piecewise_surface_test_suite<float>::split_test);
       TEST_ADD(piecewise_surface_test_suite<float>::area_test);
@@ -65,6 +66,7 @@ class piecewise_surface_test_suite : public Test::Suite
       TEST_ADD(piecewise_surface_test_suite<double>::bounding_box_test);
       TEST_ADD(piecewise_surface_test_suite<double>::reverse_test);
       TEST_ADD(piecewise_surface_test_suite<double>::replace_test);
+      TEST_ADD(piecewise_surface_test_suite<double>::transformation_test);
       TEST_ADD(piecewise_surface_test_suite<double>::evaluation_test);
       TEST_ADD(piecewise_surface_test_suite<double>::split_test);
       TEST_ADD(piecewise_surface_test_suite<double>::area_test);
@@ -76,6 +78,7 @@ class piecewise_surface_test_suite : public Test::Suite
       TEST_ADD(piecewise_surface_test_suite<long double>::bounding_box_test);
       TEST_ADD(piecewise_surface_test_suite<long double>::reverse_test);
       TEST_ADD(piecewise_surface_test_suite<long double>::replace_test);
+      TEST_ADD(piecewise_surface_test_suite<long double>::transformation_test);
       TEST_ADD(piecewise_surface_test_suite<long double>::evaluation_test);
       TEST_ADD(piecewise_surface_test_suite<long double>::split_test);
       TEST_ADD(piecewise_surface_test_suite<long double>::area_test);
@@ -89,6 +92,7 @@ class piecewise_surface_test_suite : public Test::Suite
       TEST_ADD(piecewise_surface_test_suite<dd_real>::bounding_box_test);
       TEST_ADD(piecewise_surface_test_suite<dd_real>::reverse_test);
       TEST_ADD(piecewise_surface_test_suite<dd_real>::replace_test);
+      TEST_ADD(piecewise_surface_test_suite<dd_real>::transformation_test);
       TEST_ADD(piecewise_surface_test_suite<dd_real>::evaluation_test);
       TEST_ADD(piecewise_surface_test_suite<dd_real>::split_test);
       TEST_ADD(piecewise_surface_test_suite<dd_real>::area_test);
@@ -101,6 +105,7 @@ class piecewise_surface_test_suite : public Test::Suite
       TEST_ADD(piecewise_surface_test_suite<qd_real>::bounding_box_test);
       TEST_ADD(piecewise_surface_test_suite<qd_real>::reverse_test);
       TEST_ADD(piecewise_surface_test_suite<qd_real>::replace_test);
+      TEST_ADD(piecewise_surface_test_suite<qd_real>::transformation_test);
       TEST_ADD(piecewise_surface_test_suite<qd_real>::evaluation_test);
       TEST_ADD(piecewise_surface_test_suite<qd_real>::split_test);
       TEST_ADD(piecewise_surface_test_suite<qd_real>::area_test);
@@ -856,6 +861,133 @@ class piecewise_surface_test_suite : public Test::Suite
       TEST_ASSERT(err==piecewise_surface_type::NO_ERROR);
       err=c1.replace(c2, 1, 3);
       TEST_ASSERT(err==piecewise_surface_type::SEGMENT_NOT_CONNECTED);
+#endif
+    }
+
+    void transformation_test()
+    {
+#if 0
+      data_type eps(std::numeric_limits<data__>::epsilon());
+#ifdef ELI_QD_FOUND
+      if ( (typeid(data_type)==typeid(dd_real)) || (typeid(data_type)==typeid(qd_real)) )
+        eps=std::numeric_limits<double>::epsilon();
+#endif
+
+      // test two curves with delta t=1
+      {
+        piecewise_surface_type pwc;
+        typename curve_type::control_point_type cntrl_in[4];
+        curve_type bc1, bc1l, bc1r;
+        point_type eval_out, eval_ref;
+        data_type t, tl, tr, ts;
+        tl = static_cast<data__>(0.3);
+        tr = static_cast<data__>(0.87);
+        ts = static_cast<data__>(0.586);
+
+        // set control points
+        cntrl_in[0] << 0, 0, 0;
+        cntrl_in[1] << 0, 2, 0;
+        cntrl_in[2] << 8, 2, 0;
+        cntrl_in[3] << 4, 0, 0;
+        bc1.resize(3);
+        for (index_type i=0; i<4; ++i)
+        {
+          bc1.set_control_point(cntrl_in[i], i);
+        }
+
+        // split curve and create piecewise
+        bc1.split(bc1l, bc1r, ts);
+        pwc.push_back(bc1l);
+        pwc.push_back(bc1r);
+        TEST_ASSERT(pwc.number_segments()==2);
+
+        // check the left curve
+        t=tl*ts;
+        eval_out=pwc.f(tl);
+        eval_ref=bc1.f(t);
+        TEST_ASSERT((eval_out-eval_ref).norm()<1e2*eps);
+        eval_out=pwc.fp(tl);
+        eval_ref=bc1.fp(t)*ts;
+        TEST_ASSERT((eval_out-eval_ref).norm()<1e2*eps);
+        eval_out=pwc.fpp(tl);
+        eval_ref=bc1.fpp(t)*ts*ts;
+        TEST_ASSERT((eval_out-eval_ref).norm()<1e2*eps);
+        eval_out=pwc.fppp(tl);
+        eval_ref=bc1.fppp(t)*ts*ts*ts;
+        TEST_ASSERT((eval_out-eval_ref).norm()<1e2*eps);
+
+        // check the right curve
+        t=ts+tr*(1-ts);
+        eval_out=pwc.f(1+tr);
+        eval_ref=bc1.f(t);
+        TEST_ASSERT((eval_out-eval_ref).norm()<1e2*eps);
+        eval_out=pwc.fp(1+tr);
+        eval_ref=bc1.fp(t)*(1-ts);
+        TEST_ASSERT((eval_out-eval_ref).norm()<1e2*eps);
+        eval_out=pwc.fpp(1+tr);
+        eval_ref=bc1.fpp(t)*(1-ts)*(1-ts);
+        TEST_ASSERT((eval_out-eval_ref).norm()<1e2*eps);
+        eval_out=pwc.fppp(1+tr);
+        eval_ref=bc1.fppp(t)*(1-ts)*(1-ts)*(1-ts);
+        TEST_ASSERT((eval_out-eval_ref).norm()<1.21e2*eps);
+      }
+
+      // test two curves with delta t!=1
+      {
+        piecewise_surface_type pwc;
+        typename curve_type::control_point_type cntrl_in[4];
+        curve_type bc1, bc1l, bc1r;
+        point_type eval_out, eval_ref;
+        data_type tl, tr, ts;
+        tl = static_cast<data__>(0.3);
+        tr = static_cast<data__>(0.87);
+        ts = static_cast<data__>(0.586);
+
+        // set control points
+        cntrl_in[0] << 0, 0, 0;
+        cntrl_in[1] << 0, 2, 0;
+        cntrl_in[2] << 8, 2, 0;
+        cntrl_in[3] << 4, 0, 0;
+        bc1.resize(3);
+        for (index_type i=0; i<4; ++i)
+        {
+          bc1.set_control_point(cntrl_in[i], i);
+        }
+
+        // split curve and create piecewise
+        bc1.split(bc1l, bc1r, ts);
+        pwc.push_back(bc1l, ts);
+        pwc.push_back(bc1r, 1-ts);
+        TEST_ASSERT(pwc.number_segments()==2);
+
+        // check the left curve
+        eval_out=pwc.f(tl);
+        eval_ref=bc1.f(tl);
+        TEST_ASSERT((eval_out-eval_ref).norm()<1e2*eps);
+        eval_out=pwc.fp(tl);
+        eval_ref=bc1.fp(tl);
+        TEST_ASSERT((eval_out-eval_ref).norm()<1e2*eps);
+        eval_out=pwc.fpp(tl);
+        eval_ref=bc1.fpp(tl);
+        TEST_ASSERT((eval_out-eval_ref).norm()<1e2*eps);
+        eval_out=pwc.fppp(tl);
+        eval_ref=bc1.fppp(tl);
+        TEST_ASSERT((eval_out-eval_ref).norm()<1e2*eps);
+
+        // check the right curve
+        eval_out=pwc.f(tr);
+        eval_ref=bc1.f(tr);
+        TEST_ASSERT((eval_out-eval_ref).norm()<1e2*eps);
+        eval_out=pwc.fp(tr);
+        eval_ref=bc1.fp(tr);
+        TEST_ASSERT((eval_out-eval_ref).norm()<1e2*eps);
+        eval_out=pwc.fpp(tr);
+        eval_ref=bc1.fpp(tr);
+        TEST_ASSERT((eval_out-eval_ref).norm()<2.6e2*eps);
+        eval_out=pwc.fppp(tr);
+        eval_ref=bc1.fppp(tr);
+        TEST_ASSERT((eval_out-eval_ref).norm()<1.8e3*eps);
+      }
 #endif
     }
 

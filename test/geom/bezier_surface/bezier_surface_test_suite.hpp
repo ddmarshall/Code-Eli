@@ -37,6 +37,9 @@ class bezier_surface_test_suite : public Test::Suite
     typedef typename bezier_type::point_type point_type;
     typedef typename bezier_type::data_type data_type;
     typedef typename bezier_type::index_type index_type;
+    typedef typename bezier_type::tolerance_type tolerance_type;
+
+    tolerance_type tol;
 
   protected:
     void AddTests(const float &)
@@ -46,6 +49,7 @@ class bezier_surface_test_suite : public Test::Suite
       TEST_ADD(bezier_surface_test_suite<float>::bounding_box_test);
       TEST_ADD(bezier_surface_test_suite<float>::reverse_test);
       TEST_ADD(bezier_surface_test_suite<float>::swap_test);
+      TEST_ADD(bezier_surface_test_suite<float>::transformation_test);
       TEST_ADD(bezier_surface_test_suite<float>::evaluation_test);
       TEST_ADD(bezier_surface_test_suite<float>::derivative_1_test);
       TEST_ADD(bezier_surface_test_suite<float>::derivative_2_test);
@@ -62,6 +66,7 @@ class bezier_surface_test_suite : public Test::Suite
       TEST_ADD(bezier_surface_test_suite<double>::bounding_box_test);
       TEST_ADD(bezier_surface_test_suite<double>::reverse_test);
       TEST_ADD(bezier_surface_test_suite<double>::swap_test);
+      TEST_ADD(bezier_surface_test_suite<double>::transformation_test);
       TEST_ADD(bezier_surface_test_suite<double>::evaluation_test);
       TEST_ADD(bezier_surface_test_suite<double>::derivative_1_test);
       TEST_ADD(bezier_surface_test_suite<double>::derivative_2_test);
@@ -78,6 +83,7 @@ class bezier_surface_test_suite : public Test::Suite
       TEST_ADD(bezier_surface_test_suite<long double>::bounding_box_test);
       TEST_ADD(bezier_surface_test_suite<long double>::reverse_test);
       TEST_ADD(bezier_surface_test_suite<long double>::swap_test);
+      TEST_ADD(bezier_surface_test_suite<long double>::transformation_test);
       TEST_ADD(bezier_surface_test_suite<long double>::evaluation_test);
       TEST_ADD(bezier_surface_test_suite<long double>::derivative_1_test);
       TEST_ADD(bezier_surface_test_suite<long double>::derivative_2_test);
@@ -95,6 +101,7 @@ class bezier_surface_test_suite : public Test::Suite
       TEST_ADD(bezier_surface_test_suite<dd_real>::bounding_box_test);
       TEST_ADD(bezier_surface_test_suite<dd_real>::reverse_test);
       TEST_ADD(bezier_surface_test_suite<dd_real>::swap_test);
+      TEST_ADD(bezier_surface_test_suite<dd_real>::transformation_test);
       TEST_ADD(bezier_surface_test_suite<dd_real>::evaluation_test);
       TEST_ADD(bezier_surface_test_suite<dd_real>::derivative_1_test);
       TEST_ADD(bezier_surface_test_suite<dd_real>::derivative_2_test);
@@ -112,6 +119,7 @@ class bezier_surface_test_suite : public Test::Suite
       TEST_ADD(bezier_surface_test_suite<qd_real>::bounding_box_test);
       TEST_ADD(bezier_surface_test_suite<qd_real>::reverse_test);
       TEST_ADD(bezier_surface_test_suite<qd_real>::swap_test);
+      TEST_ADD(bezier_surface_test_suite<qd_real>::transformation_test);
       TEST_ADD(bezier_surface_test_suite<qd_real>::evaluation_test);
       TEST_ADD(bezier_surface_test_suite<qd_real>::derivative_1_test);
       TEST_ADD(bezier_surface_test_suite<qd_real>::derivative_2_test);
@@ -124,7 +132,7 @@ class bezier_surface_test_suite : public Test::Suite
 #endif
 
   public:
-    bezier_surface_test_suite()
+    bezier_surface_test_suite() : tol(1000*std::numeric_limits<data_type>::epsilon(), std::sqrt(std::numeric_limits<data_type>::epsilon()))
     {
       AddTests(data__());
     }
@@ -505,6 +513,174 @@ class bezier_surface_test_suite : public Test::Suite
         {
           TEST_ASSERT(bez1.get_control_point(i, j) == bez2.get_control_point(j, i));
         }
+      }
+    }
+
+    void transformation_test()
+    {
+      index_type n(3), m(3);
+      point_type pt[3+1][3+1], pt_out, pt_ref;
+      data_type u, v;
+
+      // create surface with specified control points
+      pt[0][0] << -15, 0,  15;
+      pt[1][0] <<  -5, 5,  15;
+      pt[2][0] <<   5, 5,  15;
+      pt[3][0] <<  15, 0,  15;
+      pt[0][1] << -15, 5,   5;
+      pt[1][1] <<  -5, 5,   5;
+      pt[2][1] <<   5, 5,   5;
+      pt[3][1] <<  15, 5,   5;
+      pt[0][2] << -15, 5,  -5;
+      pt[1][2] <<  -5, 5,  -5;
+      pt[2][2] <<   5, 5,  -5;
+      pt[3][2] <<  15, 5,  -5;
+      pt[0][3] << -15, 0, -15;
+      pt[1][3] <<  -5, 5, -15;
+      pt[2][3] <<   5, 5, -15;
+      pt[3][3] <<  15, 0, -15;
+
+      // create surface with specified dimensions and set control points
+      bezier_type bez(n, m), bez2;
+
+      for (index_type i=0; i<=n; ++i)
+      {
+        for (index_type j=0; j<=m; ++j)
+        {
+          bez.set_control_point(pt[i][j], i, j);
+        }
+      }
+
+      // test translation
+      {
+        point_type trans;
+
+        // set up translation vector and apply
+        bez2=bez;
+        trans << 2, 1, 3;
+        bez2.translate(trans);
+
+        // test evaluation at corners
+        u=0; v=0;
+        pt_out=bez2.f(u, v);
+        pt_ref=trans+pt[0][0];
+        TEST_ASSERT(pt_out==pt_ref);
+        u=1; v=0;
+        pt_out=bez2.f(u, v);
+        pt_ref=trans+pt[n][0];
+        TEST_ASSERT(pt_out==pt_ref);
+        u=0; v=1;
+        pt_out=bez2.f(u, v);
+        pt_ref=trans+pt[0][m];
+        TEST_ASSERT(pt_out==pt_ref);
+        u=1; v=1;
+        pt_out=bez2.f(u, v);
+        pt_ref=trans+pt[n][m];
+        TEST_ASSERT(pt_out==pt_ref);
+
+        // test evaluation at interior point u=v=1/2
+        u=0.5; v=0.5;
+        pt_ref << 0, 4.6875 , 0;
+        pt_out=bez2.f(u, v);
+        pt_ref=trans+pt_ref;
+        TEST_ASSERT(pt_out==pt_ref);
+
+        // test evaluation at interior point u=1/4, v=3/4
+        u=0.25; v=0.75;
+        pt_ref << -7.5, 4.04296875, -7.5;
+        pt_out=bez2.f(u, v);
+        pt_ref=trans+pt_ref;
+        TEST_ASSERT(pt_out==pt_ref);
+      }
+
+      // test rotation about origin
+      {
+        typename bezier_type::rotation_matrix_type rmat;
+
+        // set up rotation and apply
+        bez2=bez;
+        rmat << cos(1), 0, -sin(1),
+                     0, 1,       0,
+                sin(1), 0,  cos(1);
+        bez2.rotate(rmat);
+
+        // test evaluation at corners
+        u=0; v=0;
+        pt_out=bez2.f(u, v);
+        pt_ref=pt[0][0]*rmat.transpose();
+        TEST_ASSERT(pt_out==pt_ref);
+        u=1; v=0;
+        pt_out=bez2.f(u, v);
+        pt_ref=pt[n][0]*rmat.transpose();
+        TEST_ASSERT(pt_out==pt_ref);
+        u=0; v=1;
+        pt_out=bez2.f(u, v);
+        pt_ref=pt[0][m]*rmat.transpose();
+        TEST_ASSERT(pt_out==pt_ref);
+        u=1; v=1;
+        pt_out=bez2.f(u, v);
+        pt_ref=pt[n][m]*rmat.transpose();
+        TEST_ASSERT(pt_out==pt_ref);
+
+        // test evaluation at interior point u=v=1/2
+        u=0.5; v=0.5;
+        pt_ref << 0, 4.6875 , 0;
+        pt_out=bez2.f(u, v);
+        pt_ref=pt_ref*rmat.transpose();
+        TEST_ASSERT(pt_out==pt_ref);
+
+        // test evaluation at interior point u=1/4, v=3/4
+        u=0.25; v=0.75;
+        pt_ref << -7.5, 4.04296875, -7.5;
+        pt_out=bez2.f(u, v);
+        pt_ref=pt_ref*rmat.transpose();
+        TEST_ASSERT(tol.approximately_equal((pt_out-pt_ref).norm(), 0));
+      }
+
+      // test rotation about point
+      {
+        point_type rorig;
+        typename bezier_type::rotation_matrix_type rmat;
+
+        // set up rotation and apply
+        bez2=bez;
+        rorig << 2, 1, 3;
+        rmat << cos(1), 0, -sin(1),
+                     0, 1,       0,
+                sin(1), 0,  cos(1);
+        bez2.rotate(rmat, rorig);
+
+        // test evaluation at corners
+        u=0; v=0;
+        pt_out=bez2.f(u, v);
+        pt_ref=rorig+(pt[0][0]-rorig)*rmat.transpose();
+        TEST_ASSERT(pt_out==pt_ref);
+        u=1; v=0;
+        pt_out=bez2.f(u, v);
+        pt_ref=rorig+(pt[n][0]-rorig)*rmat.transpose();
+        TEST_ASSERT(pt_out==pt_ref);
+        u=0; v=1;
+        pt_out=bez2.f(u, v);
+        pt_ref=rorig+(pt[0][m]-rorig)*rmat.transpose();
+        TEST_ASSERT(pt_out==pt_ref);
+        u=1; v=1;
+        pt_out=bez2.f(u, v);
+        pt_ref=rorig+(pt[n][m]-rorig)*rmat.transpose();
+        TEST_ASSERT(pt_out==pt_ref);
+
+        // test evaluation at interior point u=v=1/2
+        u=0.5; v=0.5;
+        pt_ref << 0, 4.6875 , 0;
+        pt_out=bez2.f(u, v);
+        pt_ref=rorig+(pt_ref-rorig)*rmat.transpose();
+        TEST_ASSERT(tol.approximately_equal((pt_out-pt_ref).norm(), 0));
+
+        // test evaluation at interior point u=1/4, v=3/4
+        u=0.25; v=0.75;
+        pt_ref << -7.5, 4.04296875, -7.5;
+        pt_out=bez2.f(u, v);
+        pt_ref=rorig+(pt_ref-rorig)*rmat.transpose();
+        TEST_ASSERT(tol.approximately_equal((pt_out-pt_ref).norm(), 0));
       }
     }
 

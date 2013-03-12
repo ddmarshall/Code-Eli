@@ -49,6 +49,7 @@ class piecewise_curve_test_suite : public Test::Suite
       TEST_ADD(piecewise_curve_test_suite<float>::bounding_box_test);
       TEST_ADD(piecewise_curve_test_suite<float>::reverse_test);
       TEST_ADD(piecewise_curve_test_suite<float>::replace_test);
+      TEST_ADD(piecewise_curve_test_suite<float>::transformation_test);
       TEST_ADD(piecewise_curve_test_suite<float>::evaluation_test);
       TEST_ADD(piecewise_curve_test_suite<float>::split_test);
       TEST_ADD(piecewise_curve_test_suite<float>::length_test);
@@ -60,6 +61,7 @@ class piecewise_curve_test_suite : public Test::Suite
       TEST_ADD(piecewise_curve_test_suite<double>::bounding_box_test);
       TEST_ADD(piecewise_curve_test_suite<double>::reverse_test);
       TEST_ADD(piecewise_curve_test_suite<double>::replace_test);
+      TEST_ADD(piecewise_curve_test_suite<double>::transformation_test);
       TEST_ADD(piecewise_curve_test_suite<double>::evaluation_test);
       TEST_ADD(piecewise_curve_test_suite<double>::split_test);
       TEST_ADD(piecewise_curve_test_suite<double>::length_test);
@@ -71,6 +73,7 @@ class piecewise_curve_test_suite : public Test::Suite
       TEST_ADD(piecewise_curve_test_suite<long double>::bounding_box_test);
       TEST_ADD(piecewise_curve_test_suite<long double>::reverse_test);
       TEST_ADD(piecewise_curve_test_suite<long double>::replace_test);
+      TEST_ADD(piecewise_curve_test_suite<long double>::transformation_test);
       TEST_ADD(piecewise_curve_test_suite<long double>::evaluation_test);
       TEST_ADD(piecewise_curve_test_suite<long double>::split_test);
       TEST_ADD(piecewise_curve_test_suite<long double>::length_test);
@@ -83,6 +86,7 @@ class piecewise_curve_test_suite : public Test::Suite
       TEST_ADD(piecewise_curve_test_suite<dd_real>::bounding_box_test);
       TEST_ADD(piecewise_curve_test_suite<dd_real>::reverse_test);
       TEST_ADD(piecewise_curve_test_suite<dd_real>::replace_test);
+      TEST_ADD(piecewise_curve_test_suite<dd_real>::transformation_test);
       TEST_ADD(piecewise_curve_test_suite<dd_real>::evaluation_test);
       TEST_ADD(piecewise_curve_test_suite<dd_real>::split_test);
       TEST_ADD(piecewise_curve_test_suite<dd_real>::length_test);
@@ -95,6 +99,7 @@ class piecewise_curve_test_suite : public Test::Suite
       TEST_ADD(piecewise_curve_test_suite<qd_real>::bounding_box_test);
       TEST_ADD(piecewise_curve_test_suite<qd_real>::reverse_test);
       TEST_ADD(piecewise_curve_test_suite<qd_real>::replace_test);
+      TEST_ADD(piecewise_curve_test_suite<qd_real>::transformation_test);
       TEST_ADD(piecewise_curve_test_suite<qd_real>::evaluation_test);
       TEST_ADD(piecewise_curve_test_suite<qd_real>::split_test);
       TEST_ADD(piecewise_curve_test_suite<qd_real>::length_test);
@@ -696,6 +701,91 @@ class piecewise_curve_test_suite : public Test::Suite
       TEST_ASSERT(err==piecewise_curve_type::NO_ERROR);
       err=c1.replace(c2, 1, 3);
       TEST_ASSERT(err==piecewise_curve_type::SEGMENT_NOT_CONNECTED);
+    }
+
+    void transformation_test()
+    {
+      data_type eps(std::numeric_limits<data__>::epsilon());
+#ifdef ELI_QD_FOUND
+      if ( (typeid(data_type)==typeid(dd_real)) || (typeid(data_type)==typeid(qd_real)) )
+        eps=std::numeric_limits<double>::epsilon();
+#endif
+
+      piecewise_curve_type pwc, pwc2;
+      typename curve_type::control_point_type cntrl_in[4];
+      curve_type bc1, bc1l, bc1r;
+      point_type eval_out, eval_ref;
+      data_type tl, ts;
+      tl = static_cast<data__>(0.3);
+      ts = static_cast<data__>(0.586);
+
+      // set control points
+      cntrl_in[0] << 0, 0, 0;
+      cntrl_in[1] << 0, 2, 0;
+      cntrl_in[2] << 8, 2, 0;
+      cntrl_in[3] << 4, 0, 0;
+      bc1.resize(3);
+      for (index_type i=0; i<4; ++i)
+      {
+        bc1.set_control_point(cntrl_in[i], i);
+      }
+
+      // split curve and create piecewise
+      bc1.split(bc1l, bc1r, ts);
+      pwc.push_back(bc1l);
+      pwc.push_back(bc1r);
+      TEST_ASSERT(pwc.number_segments()==2);
+
+      // test translation
+      {
+        point_type trans;
+
+        // set up translation vector and apply
+        pwc2=pwc;
+        trans << 2, 1, 3;
+        pwc2.translate(trans);
+
+        // check the left curve
+        eval_out=pwc2.f(tl);
+        eval_ref=pwc.f(tl)+trans;
+        TEST_ASSERT((eval_out-eval_ref).norm()<1e2*eps);
+      }
+
+      // test rotation about origin
+      {
+        typename piecewise_curve_type::rotation_matrix_type rmat;
+
+        // set up rotation and apply
+        pwc2=pwc;
+        rmat << cos(1), 0, -sin(1),
+                     0, 1,       0,
+                sin(1), 0,  cos(1);
+        pwc2.rotate(rmat);
+
+        // check the left curve
+        eval_out=pwc2.f(tl);
+        eval_ref=pwc.f(tl)*rmat.transpose();
+        TEST_ASSERT((eval_out-eval_ref).norm()<1e2*eps);
+      }
+
+      // test rotation about point
+      {
+        typename piecewise_curve_type::rotation_matrix_type rmat;
+        point_type rorig;
+
+        // set up rotation and apply
+        pwc2=pwc;
+        rorig << 2, 1, 3;
+        rmat << cos(1), 0, -sin(1),
+                     0, 1,       0,
+                sin(1), 0,  cos(1);
+        pwc2.rotate(rmat, rorig);
+
+        // check the left curve
+        eval_out=pwc2.f(tl);
+        eval_ref=rorig+(pwc.f(tl)-rorig)*rmat.transpose();
+        TEST_ASSERT((eval_out-eval_ref).norm()<1e2*eps);
+      }
     }
 
     void evaluation_test()
