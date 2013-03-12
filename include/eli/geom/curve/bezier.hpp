@@ -198,6 +198,30 @@ namespace eli
             B=B_new;
           }
 
+          void get_bounding_box(point_type &pmin, point_type &pmax) const
+          {
+            index_type i, k, deg(degree());
+            point_type tmp;
+
+            pmin=B.row(0);
+            pmax=pmin;
+            for (i=0; i<=deg; ++i)
+            {
+              tmp=B.row(i);
+              for (k=0; k<dim__; ++k)
+              {
+                if (tmp(k)<pmin(k))
+                {
+                  pmin(k)=tmp(k);
+                }
+                if (tmp(k)>pmax(k))
+                {
+                  pmax(k)=tmp(k);
+                }
+              }
+            }
+          }
+
           bool open() const {return !closed();}
           bool closed() const
           {

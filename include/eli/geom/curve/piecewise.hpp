@@ -99,6 +99,30 @@ namespace eli
 
           index_type number_segments() const {return static_cast<index_type>(segments.size());}
 
+          void get_bounding_box(point_type &pmin, point_type &pmax) const
+          {
+            typename segment_collection_type::const_iterator it=segments.begin();
+            point_type pmintmp, pmaxtmp;
+
+            // cycle through all segments to get each bounding box to compare
+            it->c.get_bounding_box(pmin, pmax);
+            for (++it; it!=segments.end(); ++it)
+            {
+              it->c.get_bounding_box(pmintmp, pmaxtmp);
+              for (index_type i=0; i<dim__; ++i)
+              {
+                if (pmintmp(i)<pmin(i))
+                {
+                  pmin(i)=pmintmp(i);
+                }
+                if (pmaxtmp(i)>pmax(i))
+                {
+                  pmax(i)=pmaxtmp(i);
+                }
+              }
+            }
+          }
+
           bool open() const
           {
             return check_continuity(segments.rbegin()->c, segments.begin()->c, eli::geom::general::C0);
