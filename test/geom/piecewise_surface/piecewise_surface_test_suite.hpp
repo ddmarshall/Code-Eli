@@ -51,6 +51,7 @@ class piecewise_surface_test_suite : public Test::Suite
     {
       // add the tests
       TEST_ADD(piecewise_surface_test_suite<float>::creation_test);
+      TEST_ADD(piecewise_surface_test_suite<float>::bounding_box_test);
       TEST_ADD(piecewise_surface_test_suite<float>::reverse_test);
       TEST_ADD(piecewise_surface_test_suite<float>::replace_test);
       TEST_ADD(piecewise_surface_test_suite<float>::evaluation_test);
@@ -61,6 +62,7 @@ class piecewise_surface_test_suite : public Test::Suite
     {
       // add the tests
       TEST_ADD(piecewise_surface_test_suite<double>::creation_test);
+      TEST_ADD(piecewise_surface_test_suite<double>::bounding_box_test);
       TEST_ADD(piecewise_surface_test_suite<double>::reverse_test);
       TEST_ADD(piecewise_surface_test_suite<double>::replace_test);
       TEST_ADD(piecewise_surface_test_suite<double>::evaluation_test);
@@ -71,17 +73,20 @@ class piecewise_surface_test_suite : public Test::Suite
     {
       // add the tests
       TEST_ADD(piecewise_surface_test_suite<long double>::creation_test);
+      TEST_ADD(piecewise_surface_test_suite<long double>::bounding_box_test);
       TEST_ADD(piecewise_surface_test_suite<long double>::reverse_test);
       TEST_ADD(piecewise_surface_test_suite<long double>::replace_test);
       TEST_ADD(piecewise_surface_test_suite<long double>::evaluation_test);
       TEST_ADD(piecewise_surface_test_suite<long double>::split_test);
       TEST_ADD(piecewise_surface_test_suite<long double>::area_test);
     }
+
 #ifdef ELI_QD_FOUND
     void AddTests(const dd_real &)
     {
       // add the tests
       TEST_ADD(piecewise_surface_test_suite<dd_real>::creation_test);
+      TEST_ADD(piecewise_surface_test_suite<dd_real>::bounding_box_test);
       TEST_ADD(piecewise_surface_test_suite<dd_real>::reverse_test);
       TEST_ADD(piecewise_surface_test_suite<dd_real>::replace_test);
       TEST_ADD(piecewise_surface_test_suite<dd_real>::evaluation_test);
@@ -93,6 +98,7 @@ class piecewise_surface_test_suite : public Test::Suite
     {
       // add the tests
       TEST_ADD(piecewise_surface_test_suite<qd_real>::creation_test);
+      TEST_ADD(piecewise_surface_test_suite<qd_real>::bounding_box_test);
       TEST_ADD(piecewise_surface_test_suite<qd_real>::reverse_test);
       TEST_ADD(piecewise_surface_test_suite<qd_real>::replace_test);
       TEST_ADD(piecewise_surface_test_suite<qd_real>::evaluation_test);
@@ -100,6 +106,7 @@ class piecewise_surface_test_suite : public Test::Suite
       TEST_ADD(piecewise_surface_test_suite<qd_real>::area_test);
     }
 #endif
+
   public:
     piecewise_surface_test_suite()
     {
@@ -329,8 +336,8 @@ class piecewise_surface_test_suite : public Test::Suite
       TEST_ASSERT(err==piecewise_surface_type::NO_ERROR);
 
       // print out
-      if (typeid(data_type)==typeid(double))
-        octave_print(2, ps1);
+//       if (typeid(data_type)==typeid(double))
+//         octave_print(2, ps1);
 
       // test getting parameter max
       data_type umax, vmax;
@@ -351,6 +358,75 @@ class piecewise_surface_test_suite : public Test::Suite
       // test assignment operator
       ps2=ps1;
       TEST_ASSERT(ps2==ps1);
+    }
+
+    void bounding_box_test()
+    {
+      surface_type s, s1, s2, s3, s4, s5, s6, s_patches[6];
+      piecewise_surface_type ps1, ps2;
+      typename piecewise_surface_type::error_code err;
+
+      // create 3x2 patches with unit spacing
+      ps1.resize(3, 2);
+      TEST_ASSERT(ps1.number_u_patches()==3);
+      TEST_ASSERT(ps1.number_v_patches()==2);
+
+      // create and set each surface
+      index_type i, j, n(3), m(3);
+      point_type pt[3+1][3+1], pt_out;
+
+      // create surface with specified control points
+      pt[0][0] << -15, 0,  15;
+      pt[1][0] <<  -5, 5,  15;
+      pt[2][0] <<   5, 5,  15;
+      pt[3][0] <<  15, 0,  15;
+      pt[0][1] << -15, 5,   5;
+      pt[1][1] <<  -5, 5,   5;
+      pt[2][1] <<   5, 5,   5;
+      pt[3][1] <<  15, 5,   5;
+      pt[0][2] << -15, 5,  -5;
+      pt[1][2] <<  -5, 5,  -5;
+      pt[2][2] <<   5, 5,  -5;
+      pt[3][2] <<  15, 5,  -5;
+      pt[0][3] << -15, 0, -15;
+      pt[1][3] <<  -5, 5, -15;
+      pt[2][3] <<   5, 5, -15;
+      pt[3][3] <<  15, 0, -15;
+      s.resize(n, m);
+      for (i=0; i<=n; ++i)
+      {
+        for (j=0; j<=m; ++j)
+        {
+          s.set_control_point(pt[i][j], i, j);
+        }
+      }
+
+      s.split_v(s1, s2, 0.5);  // this splits surface into lower and upper
+      s1.split_u(s3, s4, 0.5); // this splits lower into first segment and last two
+      err=ps1.replace(s3, 0, 0); s_patches[0]=s3;
+      TEST_ASSERT(err==piecewise_surface_type::NO_ERROR);
+      s2.split_u(s5, s6, 0.5); // this splits upper into first segment and last two
+      err=ps1.replace(s5, 0, 1); s_patches[3]=s5;
+      TEST_ASSERT(err==piecewise_surface_type::NO_ERROR);
+      s4.split_u(s1, s2, 0.5); // this splits lower end into final two pieces
+      err=ps1.replace(s1, 1, 0); s_patches[1]=s1;
+      TEST_ASSERT(err==piecewise_surface_type::NO_ERROR);
+      err=ps1.replace(s2, 2, 0); s_patches[2]=s2;
+      TEST_ASSERT(err==piecewise_surface_type::NO_ERROR);
+      s6.split_u(s1, s2, 0.5); // this splits the upper end into final two pieces
+      err=ps1.replace(s1, 1, 1); s_patches[4]=s1;
+      TEST_ASSERT(err==piecewise_surface_type::NO_ERROR);
+      err=ps1.replace(s2, 2, 1); s_patches[5]=s2;
+      TEST_ASSERT(err==piecewise_surface_type::NO_ERROR);
+
+      // test the bounding box
+      point_type pmin, pmax, pmin_ref, pmax_ref;
+
+      ps1.get_bounding_box(pmin, pmax);
+      pmin_ref << -15, 0, -15;
+      pmax_ref << 15, 4.6875, 15;
+      TEST_ASSERT(pmin==pmin_ref);
+      TEST_ASSERT(pmax==pmax_ref);
     }
 
     void reverse_test()

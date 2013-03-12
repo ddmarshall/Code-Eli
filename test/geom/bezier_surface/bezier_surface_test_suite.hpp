@@ -33,8 +33,6 @@ class bezier_surface_test_suite : public Test::Suite
 {
   private:
     typedef eli::geom::surface::bezier<data__, 3> bezier_type;
-//     typedef typename bezier_type::fit_container_type fit_container_type;
-//     typedef typename fit_container_type::constraint_point_type constraint_point_type;
     typedef typename bezier_type::control_point_type control_point_type;
     typedef typename bezier_type::point_type point_type;
     typedef typename bezier_type::data_type data_type;
@@ -45,6 +43,7 @@ class bezier_surface_test_suite : public Test::Suite
     {
       // add the tests
       TEST_ADD(bezier_surface_test_suite<float>::assignment_test);
+      TEST_ADD(bezier_surface_test_suite<float>::bounding_box_test);
       TEST_ADD(bezier_surface_test_suite<float>::reverse_test);
       TEST_ADD(bezier_surface_test_suite<float>::swap_test);
       TEST_ADD(bezier_surface_test_suite<float>::evaluation_test);
@@ -55,18 +54,12 @@ class bezier_surface_test_suite : public Test::Suite
       TEST_ADD(bezier_surface_test_suite<float>::promotion_test);
       TEST_ADD(bezier_surface_test_suite<float>::demotion_test);
       TEST_ADD(bezier_surface_test_suite<float>::split_test);
-//       TEST_ADD(bezier_surface_test_suite<float>::length_test);
-//       TEST_ADD(bezier_surface_test_suite<float>::fit_free_ends_test);
-//       TEST_ADD(bezier_surface_test_suite<float>::fit_C0_ends_test);
-//       TEST_ADD(bezier_surface_test_suite<float>::fit_C1_ends_test);
-//       TEST_ADD(bezier_surface_test_suite<float>::fit_C2_ends_test);
-//       TEST_ADD(bezier_surface_test_suite<float>::fit_closed_test);
-//       TEST_ADD(bezier_surface_test_suite<float>::interpolate_test);
     }
     void AddTests(const double &)
     {
       // add the tests
       TEST_ADD(bezier_surface_test_suite<double>::assignment_test);
+      TEST_ADD(bezier_surface_test_suite<double>::bounding_box_test);
       TEST_ADD(bezier_surface_test_suite<double>::reverse_test);
       TEST_ADD(bezier_surface_test_suite<double>::swap_test);
       TEST_ADD(bezier_surface_test_suite<double>::evaluation_test);
@@ -77,18 +70,12 @@ class bezier_surface_test_suite : public Test::Suite
       TEST_ADD(bezier_surface_test_suite<double>::promotion_test);
       TEST_ADD(bezier_surface_test_suite<double>::demotion_test);
       TEST_ADD(bezier_surface_test_suite<double>::split_test);
-//       TEST_ADD(bezier_surface_test_suite<double>::length_test);
-//       TEST_ADD(bezier_surface_test_suite<double>::fit_free_ends_test);
-//       TEST_ADD(bezier_surface_test_suite<double>::fit_C0_ends_test);
-//       TEST_ADD(bezier_surface_test_suite<double>::fit_C1_ends_test);
-//       TEST_ADD(bezier_surface_test_suite<double>::fit_C2_ends_test);
-//       TEST_ADD(bezier_surface_test_suite<double>::fit_closed_test);
-//       TEST_ADD(bezier_surface_test_suite<double>::interpolate_test);
     }
     void AddTests(const long double &)
     {
       // add the tests
       TEST_ADD(bezier_surface_test_suite<long double>::assignment_test);
+      TEST_ADD(bezier_surface_test_suite<long double>::bounding_box_test);
       TEST_ADD(bezier_surface_test_suite<long double>::reverse_test);
       TEST_ADD(bezier_surface_test_suite<long double>::swap_test);
       TEST_ADD(bezier_surface_test_suite<long double>::evaluation_test);
@@ -99,19 +86,13 @@ class bezier_surface_test_suite : public Test::Suite
       TEST_ADD(bezier_surface_test_suite<long double>::promotion_test);
       TEST_ADD(bezier_surface_test_suite<long double>::demotion_test);
       TEST_ADD(bezier_surface_test_suite<long double>::split_test);
-//       TEST_ADD(bezier_surface_test_suite<long double>::length_test);
-//       TEST_ADD(bezier_surface_test_suite<long double>::fit_free_ends_test);
-//       TEST_ADD(bezier_surface_test_suite<long double>::fit_C0_ends_test);
-//       TEST_ADD(bezier_surface_test_suite<long double>::fit_C1_ends_test);
-//       TEST_ADD(bezier_surface_test_suite<long double>::fit_C2_ends_test);
-//       TEST_ADD(bezier_surface_test_suite<long double>::fit_closed_test);
-//       TEST_ADD(bezier_surface_test_suite<long double>::interpolate_test);
     }
 #ifdef ELI_QD_FOUND
     void AddTests(const dd_real &)
     {
       // add the tests
       TEST_ADD(bezier_surface_test_suite<dd_real>::assignment_test);
+      TEST_ADD(bezier_surface_test_suite<dd_real>::bounding_box_test);
       TEST_ADD(bezier_surface_test_suite<dd_real>::reverse_test);
       TEST_ADD(bezier_surface_test_suite<dd_real>::swap_test);
       TEST_ADD(bezier_surface_test_suite<dd_real>::evaluation_test);
@@ -122,19 +103,13 @@ class bezier_surface_test_suite : public Test::Suite
       TEST_ADD(bezier_surface_test_suite<dd_real>::promotion_test);
       TEST_ADD(bezier_surface_test_suite<dd_real>::demotion_test);
       TEST_ADD(bezier_surface_test_suite<dd_real>::split_test);
-//       TEST_ADD(bezier_surface_test_suite<dd_real>::length_test);
-//       TEST_ADD(bezier_surface_test_suite<dd_real>::fit_free_ends_test);
-//       TEST_ADD(bezier_surface_test_suite<dd_real>::fit_C0_ends_test);
-//       TEST_ADD(bezier_surface_test_suite<dd_real>::fit_C1_ends_test);
-//       TEST_ADD(bezier_surface_test_suite<dd_real>::fit_C2_ends_test);
-//       TEST_ADD(bezier_surface_test_suite<dd_real>::fit_closed_test);
-//       TEST_ADD(bezier_surface_test_suite<dd_real>::interpolate_test);
     }
 
     void AddTests(const qd_real &)
     {
       // add the tests
       TEST_ADD(bezier_surface_test_suite<qd_real>::assignment_test);
+      TEST_ADD(bezier_surface_test_suite<qd_real>::bounding_box_test);
       TEST_ADD(bezier_surface_test_suite<qd_real>::reverse_test);
       TEST_ADD(bezier_surface_test_suite<qd_real>::swap_test);
       TEST_ADD(bezier_surface_test_suite<qd_real>::evaluation_test);
@@ -145,13 +120,6 @@ class bezier_surface_test_suite : public Test::Suite
       TEST_ADD(bezier_surface_test_suite<qd_real>::promotion_test);
       TEST_ADD(bezier_surface_test_suite<qd_real>::demotion_test);
       TEST_ADD(bezier_surface_test_suite<qd_real>::split_test);
-//       TEST_ADD(bezier_surface_test_suite<qd_real>::length_test);
-//       TEST_ADD(bezier_surface_test_suite<qd_real>::fit_free_ends_test);
-//       TEST_ADD(bezier_surface_test_suite<qd_real>::fit_C0_ends_test);
-//       TEST_ADD(bezier_surface_test_suite<qd_real>::fit_C1_ends_test);
-//       TEST_ADD(bezier_surface_test_suite<qd_real>::fit_C2_ends_test);
-//       TEST_ADD(bezier_surface_test_suite<qd_real>::fit_closed_test);
-//       TEST_ADD(bezier_surface_test_suite<qd_real>::interpolate_test);
     }
 #endif
 
@@ -382,6 +350,57 @@ class bezier_surface_test_suite : public Test::Suite
           TEST_ASSERT(bez4.get_control_point(i, j) == pt[i][j]);
         }
       }
+    }
+
+    void bounding_box_test()
+    {
+      index_type i, j, n(3), m(3);
+      point_type pt[3+1][3+1], pt_out;
+
+      // create surface with specified control points
+      pt[0][0] << -15, 0,  15;
+      pt[1][0] <<  -5, 5,  15;
+      pt[2][0] <<   5, 5,  15;
+      pt[3][0] <<  15, 0,  15;
+      pt[0][1] << -15, 5,   5;
+      pt[1][1] <<  -5, 5,   5;
+      pt[2][1] <<   5, 5,   5;
+      pt[3][1] <<  15, 5,   5;
+      pt[0][2] << -15, 5,  -5;
+      pt[1][2] <<  -5, 5,  -5;
+      pt[2][2] <<   5, 5,  -5;
+      pt[3][2] <<  15, 5,  -5;
+      pt[0][3] << -15, 0, -15;
+      pt[1][3] <<  -5, 5, -15;
+      pt[2][3] <<   5, 5, -15;
+      pt[3][3] <<  15, 0, -15;
+
+      // create surface with specified dimensions and set control points
+      bezier_type bez1(n, m);
+
+      for (i=0; i<=n; ++i)
+      {
+        for (j=0; j<=m; ++j)
+        {
+          bez1.set_control_point(pt[i][j], i, j);
+        }
+      }
+      for (i=0; i<=n; ++i)
+      {
+        for (j=0; j<=m; ++j)
+        {
+          TEST_ASSERT(bez1.get_control_point(i, j) == pt[i][j]);
+        }
+      }
+
+      // test bounding box
+      point_type pmin, pmax, pmin_ref, pmax_ref;
+
+      bez1.get_bounding_box(pmin, pmax);
+      pmin_ref << -15, 0, -15;
+      pmax_ref <<  15, 5,  15;
+      TEST_ASSERT(pmin==pmin_ref);
+      TEST_ASSERT(pmax==pmax_ref);
     }
 
     void reverse_test()
@@ -2046,1205 +2065,6 @@ class bezier_surface_test_suite : public Test::Suite
         TEST_ASSERT((pt_ref - pt_out).norm()<2*std::numeric_limits<data_type>::epsilon());
       }
     }
-
-#if 0
-    void length_test()
-    {
-      control_point_type  cntrl_in(4,3);
-      data_type eps(std::numeric_limits<data__>::epsilon());
-#ifdef ELI_QD_FOUND
-      if ( (typeid(data_type)==typeid(dd_real)) || (typeid(data_type)==typeid(qd_real)) )
-        eps=std::numeric_limits<double>::epsilon();
-#endif
-
-      // set control points
-      cntrl_in << 0.0, 0.0, 0.0,
-                  0.0, 2.0, 0.0,
-                  8.0, 2.0, 0.0,
-                  4.0, 0.0, 0.0;
-
-      bezier_type bc1(cntrl_in);
-      data_type length_cal, length_ref;
-
-      // calculate the reference length using simpson's rule
-      size_t i, npts(1001), n(npts-1);
-      std::vector<data__> speed(npts);
-      for (i=0; i<npts; ++i)
-      {
-        data_type t(i/static_cast<data__>(n));
-        speed[i]=bc1.fp(t).norm();
-      }
-      length_ref=speed[0];
-      for (i=1; i<=n-1; i+=2)
-      {
-        length_ref+=4*speed[i];
-        length_ref+=2*speed[i+1];
-      }
-      length_ref-=speed[n];
-      length_ref*=(1.0-0.0)/n/3;
-
-      // compute length and compare
-      data_type tol(std::sqrt(eps));
-      length(length_cal, bc1, tol);
-      TEST_ASSERT_DELTA(1, length_cal/length_ref, tol);
-
-      // test computing some segment length
-      data_type length01_cal, length12_cal, t0(0), t1(0.3), t2(1.0);
-
-      length(length01_cal, bc1, t0, t1, tol);
-      length(length12_cal, bc1, t1, t2, tol);
-      TEST_ASSERT_DELTA(1, (length01_cal+length12_cal)/length_cal, tol);
-    }
-
-    void fit_free_ends_test()
-    {
-      // open curve
-      {
-        fit_container_type fcon;
-        size_t i, deg(5);
-        std::vector<point_type> pts(10);
-        bezier_type bez;
-        std::vector<data_type> t;
-
-        // get points
-        create_circle(pts);
-
-        // configure fit container
-        fcon.set_points(pts.begin(), pts.end());
-        fcon.set_end_flag(eli::geom::general::NOT_CONNECTED);
-
-        // fit points
-        bez.fit(t, fcon, deg);
-
-        // calculate the error at the point
-        data_type err(0);
-        for (i=0; i<pts.size(); ++i)
-        {
-          data_type d;
-          eli::geom::point::distance(d, pts[i], bez.f(t[i]));
-          err+=d;
-        }
-
-        TEST_ASSERT(bez.open());
-        TEST_ASSERT(err < 0.110);
-
-        // check if went through points
-        TEST_ASSERT(pts[0]!=bez.f(t[0]));
-        TEST_ASSERT(pts[pts.size()-1]!=bez.f(t[t.size()-1]));
-        TEST_ASSERT(bez.f(0)!=bez.f(1));
-
-//         octave_print(1, pts, bez);
-      }
-
-      // closed curve
-      {
-        fit_container_type fcon;
-        size_t i, deg(5);
-        std::vector<point_type> pts(10);
-        bezier_type bez;
-        std::vector<data_type> t;
-
-        // get points
-        create_circle(pts);
-
-        // configure fit container
-        fcon.set_points(pts.begin(), pts.end());
-        fcon.set_end_flag(eli::geom::general::C0);
-
-        // fit points
-        bez.fit(t, fcon, deg);
-
-        // calculate the error at the point
-        data_type err(0);
-        for (i=0; i<pts.size(); ++i)
-        {
-          data_type d;
-          eli::geom::point::distance(d, pts[i], bez.f(t[i]));
-          err+=d;
-        }
-
-        TEST_ASSERT(bez.closed());
-        TEST_ASSERT(err < 0.765);
-
-        // check if went through points
-        TEST_ASSERT(pts[0]!=bez.f(t[0]));
-        TEST_ASSERT(pts[pts.size()-1]!=bez.f(t[t.size()-1]));
-        TEST_ASSERT(bez.f(0)!=bez.f(1));
-
-//         octave_print(2, pts, bez);
-      }
-    }
-
-    void fit_C0_ends_test()
-    {
-      data_type eps(std::numeric_limits<data__>::epsilon());
-#ifdef ELI_QD_FOUND
-      if ( (typeid(data_type)==typeid(dd_real)) || (typeid(data_type)==typeid(qd_real)) )
-        eps=std::numeric_limits<double>::epsilon();
-#endif
-
-      // open curve
-      {
-        fit_container_type fcon;
-        size_t i, deg(5);
-        std::vector<point_type> pts(10);
-        bezier_type bez;
-        std::vector<data_type> t;
-
-        // get points
-        create_circle(pts);
-
-        // configure fit container
-        fcon.set_points(pts.begin(), pts.end());
-        fcon.set_end_flag(eli::geom::general::NOT_CONNECTED);
-        fcon.add_start_C0_constraint();
-        fcon.add_end_C0_constraint();
-
-        // fit points
-        bez.fit(t, fcon, deg);
-
-        // calculate the error at the point
-        data_type err(0);
-        for (i=0; i<pts.size(); ++i)
-        {
-          data_type d;
-          eli::geom::point::distance(d, pts[i], bez.f(t[i]));
-          err+=d;
-        }
-
-        TEST_ASSERT(bez.open());
-        TEST_ASSERT(err < 0.105);
-
-        // check if went through points
-        TEST_ASSERT(pts[0]==bez.f(t[0]));
-        TEST_ASSERT((pts[pts.size()-1]-bez.f(t[t.size()-1])).norm()<70*eps);
-        TEST_ASSERT(bez.f(0)!=bez.f(1));
-//         if ( (typeid(data__)==typeid(float)) || (typeid(data__)==typeid(long double)) )
-//         {
-//           std::cout << "934 rat=" << (pts[pts.size()-1]-bez.f(t[t.size()-1])).norm()/eps << std::endl;
-//         }
-
-//         octave_print(3, pts, bez);
-      }
-
-      // closed curve
-      {
-        fit_container_type fcon;
-        size_t i, deg(5);
-        std::vector<point_type> pts(10);
-        bezier_type bez;
-        std::vector<data_type> t;
-
-        // get points
-        create_circle(pts);
-
-        // configure fit container
-        fcon.set_points(pts.begin(), pts.end());
-        fcon.set_end_flag(eli::geom::general::C0);
-        fcon.add_start_C0_constraint();
-
-        // fit points
-        bez.fit(t, fcon, deg);
-
-        // calculate the error at the point
-        data_type err(0);
-        for (i=0; i<pts.size(); ++i)
-        {
-          data_type d;
-          eli::geom::point::distance(d, pts[i], bez.f(t[i]));
-          err+=d;
-        }
-
-        TEST_ASSERT(bez.closed());
-        TEST_ASSERT(err < 0.207);
-
-        // check if went through points
-        TEST_ASSERT(pts[0]==bez.f(t[0]));
-        TEST_ASSERT(pts[pts.size()-1]!=bez.f(t[t.size()-1]));
-        TEST_ASSERT((bez.f(0)-bez.f(1)).norm()<172*eps);
-
-//         octave_print(4, pts, bez);
-      }
-
-      // closed curve with additional point constraint
-      {
-        fit_container_type fcon;
-        size_t i, deg(5);
-        std::vector<point_type> pts(10);
-        bezier_type bez;
-        std::vector<data_type> t;
-
-        // get points
-        create_circle(pts);
-
-        // configure fit container
-        fcon.set_points(pts.begin(), pts.end());
-        fcon.set_end_flag(eli::geom::general::C0);
-        fcon.add_start_C0_constraint();
-        fcon.add_C0_constraint(5);
-
-        // fit points
-        bez.fit(t, fcon, deg);
-
-        // calculate the error at the point
-        data_type err(0);
-        for (i=0; i<pts.size(); ++i)
-        {
-          data_type d;
-          eli::geom::point::distance(d, pts[i], bez.f(t[i]));
-          err+=d;
-        }
-
-        TEST_ASSERT(bez.closed());
-        TEST_ASSERT(err < 0.233);
-
-        // check if went through points
-        TEST_ASSERT(pts[0]==bez.f(t[0]));
-        TEST_ASSERT(pts[pts.size()-1]!=bez.f(t[t.size()-1]));
-        TEST_ASSERT((bez.f(0)-bez.f(1)).norm()<197*eps);
-        TEST_ASSERT((bez.f(t[5])-pts[5]).norm()<14*eps);
-
-//         octave_print(5, pts, bez);
-      }
-    }
-
-    void fit_C1_ends_test()
-    {
-      data_type eps(std::numeric_limits<data__>::epsilon());
-#ifdef ELI_QD_FOUND
-      if ( (typeid(data_type)==typeid(dd_real)) || (typeid(data_type)==typeid(qd_real)) )
-        eps=std::numeric_limits<double>::epsilon();
-#endif
-
-      // open curve
-      {
-        fit_container_type fcon;
-        size_t i, deg(5);
-        std::vector<point_type> pts(10);
-        bezier_type bez;
-        std::vector<data_type> t;
-
-        // get points
-        create_circle(pts);
-
-        // configure fit container
-        constraint_point_type fp1, fp2;
-        fp1(0)=-eli::constants::math<data_type>::two_pi()*pts[0](1);
-        fp1(1)=eli::constants::math<data_type>::two_pi()*pts[0](0);
-        fp1(2)=0;
-        fp2(0)=-eli::constants::math<data_type>::two_pi()*pts[pts.size()-1](1);
-        fp2(1)=eli::constants::math<data_type>::two_pi()*pts[pts.size()-1](0);
-        fp2(2)=0;
-        fcon.set_points(pts.begin(), pts.end());
-        fcon.set_end_flag(eli::geom::general::NOT_CONNECTED);
-        fcon.add_start_C1_constraint(fp1);
-        fcon.add_end_C1_constraint(fp2);
-
-        // fit points
-        bez.fit(t, fcon, deg);
-
-        // calculate the error at the point
-        data_type err(0);
-        for (i=0; i<pts.size(); ++i)
-        {
-          data_type d;
-          eli::geom::point::distance(d, pts[i], bez.f(t[i]));
-          err+=d;
-        }
-
-        TEST_ASSERT(bez.open());
-        TEST_ASSERT(err < 0.366);
-
-        // check if went through points
-#ifdef ELI_QD_FOUND
-        if (typeid(data__)==typeid(qd_real))
-        {
-          TEST_ASSERT((pts[0]-bez.f(t[0])).norm()<2.0*eps);
-//         std::cout << "1132 rat=" << (pts[0]-bez.f(t[0])).norm()/eps << std::endl;
-        }
-        else
-        {
-#endif
-          TEST_ASSERT(pts[0]==bez.f(t[0]));
-        }
-        TEST_ASSERT(fp1==bez.fp(t[0]));
-        TEST_ASSERT((pts[pts.size()-1]-bez.f(t[t.size()-1])).norm()<88*eps);
-        TEST_ASSERT((fp2-bez.fp(t[t.size()-1])).norm()<351*eps);
-        TEST_ASSERT(bez.f(0)!=bez.f(1));
-//         if (typeid(data__)==typeid(float))
-//         {
-//           std::cout << "1071 rat=" << (pts[pts.size()-1]-bez.f(t[t.size()-1])).norm()/eps << std::endl;
-//           std::cout << "1072 rat=" << (fp2-bez.fp(t[t.size()-1])).norm()/eps << std::endl;
-//         }
-
-//         octave_print(6, pts, bez);
-      }
-
-      // closed curve
-      {
-        fit_container_type fcon;
-        size_t i, deg(5);
-        std::vector<point_type> pts(10);
-        bezier_type bez;
-        std::vector<data_type> t;
-
-        // get points
-        create_circle(pts);
-
-        // configure fit container
-        constraint_point_type fp1;
-        fp1(0)=-eli::constants::math<data_type>::two_pi()*pts[0](1);
-        fp1(1)=eli::constants::math<data_type>::two_pi()*pts[0](0);
-        fp1(2)=0;
-        fcon.set_points(pts.begin(), pts.end());
-        fcon.set_end_flag(eli::geom::general::C0);
-        fcon.add_start_C1_constraint(fp1);
-
-        // fit points
-        bez.fit(t, fcon, deg);
-
-        // calculate the error at the point
-        data_type err(0);
-        for (i=0; i<pts.size(); ++i)
-        {
-          data_type d;
-          eli::geom::point::distance(d, pts[i], bez.f(t[i]));
-          err+=d;
-        }
-
-        TEST_ASSERT(bez.closed());
-        TEST_ASSERT(err < 0.331);
-
-        // check if went through points
-#ifdef ELI_QD_FOUND
-        if (typeid(data__)==typeid(qd_real))
-        {
-          TEST_ASSERT((pts[0]-bez.f(t[0])).norm()<2.0*eps);
-//         std::cout << "1182 rat=" << (pts[0]-bez.f(t[0])).norm()/eps << std::endl;
-        }
-        else
-        {
-#endif
-          TEST_ASSERT(pts[0]==bez.f(t[0]));
-        }
-        TEST_ASSERT(fp1==bez.fp(t[0]));
-        TEST_ASSERT(pts[pts.size()-1]!=bez.f(t[t.size()-1]));
-        TEST_ASSERT((bez.f(0)-bez.f(1)).norm()<66*eps);
-
-//         octave_print(7, pts, bez);
-      }
-
-      // closed curve with additional point constraint
-      {
-        fit_container_type fcon;
-        size_t i, deg(5);
-        std::vector<point_type> pts(10);
-        bezier_type bez;
-        std::vector<data_type> t;
-
-        // get points
-        create_circle(pts);
-
-        // configure fit container
-        constraint_point_type fp1, fp2;
-        fp1(0)=-eli::constants::math<data_type>::two_pi()*pts[0](1);
-        fp1(1)=eli::constants::math<data_type>::two_pi()*pts[0](0);
-        fp1(2)=0;
-        fp2(0)=-eli::constants::math<data_type>::two_pi()*pts[5](1);
-        fp2(1)=eli::constants::math<data_type>::two_pi()*pts[5](0);
-        fp2(2)=0;
-        fcon.set_points(pts.begin(), pts.end());
-        fcon.set_end_flag(eli::geom::general::C0);
-        fcon.add_start_C1_constraint(fp1);
-        fcon.add_C1_constraint(5, fp2);
-
-        // fit points
-        bez.fit(t, fcon, deg);
-
-        // calculate the error at the point
-        data_type err(0);
-        for (i=0; i<pts.size(); ++i)
-        {
-          data_type d;
-          eli::geom::point::distance(d, pts[i], bez.f(t[i]));
-          err+=d;
-        }
-
-        TEST_ASSERT(bez.closed());
-        TEST_ASSERT(err < 0.418);
-
-        // check if went through points
-        TEST_ASSERT((bez.f(t[0])-pts[0]).norm()<5*eps);
-        TEST_ASSERT(fp1==bez.fp(t[0]));
-        TEST_ASSERT(pts[pts.size()-1]!=bez.f(t[t.size()-1]));
-        TEST_ASSERT((bez.f(0)-bez.f(1)).norm()<118*eps);
-        TEST_ASSERT((bez.f(t[5])-pts[5]).norm()<17*eps);
-        TEST_ASSERT((bez.fp(t[5])-fp2).norm()<73*eps);
-//         if (typeid(data__)==typeid(long double))
-//         {
-//           std::cout << "1170 rat=" << (bez.f(t[5])-pts[5]).norm()/eps << std::endl;
-//         }
-
-//         octave_print(8, pts, bez);
-      }
-    }
-
-    void fit_C2_ends_test()
-    {
-      data_type eps(std::numeric_limits<data__>::epsilon());
-#ifdef ELI_QD_FOUND
-      if ( (typeid(data_type)==typeid(dd_real)) || (typeid(data_type)==typeid(qd_real)) )
-        eps=std::numeric_limits<double>::epsilon();
-#endif
-
-      // open curve
-      {
-        fit_container_type fcon;
-        size_t i, deg(7);
-        std::vector<point_type> pts(20);
-        bezier_type bez;
-        std::vector<data_type> t;
-
-        // get points
-        create_circle(pts);
-
-        // configure fit container
-        constraint_point_type fp1, fpp1, fp2, fpp2;
-        fp1(0)=-eli::constants::math<data_type>::two_pi()*pts[0](1);
-        fp1(1)=eli::constants::math<data_type>::two_pi()*pts[0](0);
-        fp1(2)=0;
-        fpp1(0)=-4*eli::constants::math<data_type>::pi_squared()*pts[0](0);
-        fpp1(1)=-4*eli::constants::math<data_type>::pi_squared()*pts[0](1);
-        fpp1(2)=0;
-        fp2(0)=-eli::constants::math<data_type>::two_pi()*pts[pts.size()-1](1);
-        fp2(1)=eli::constants::math<data_type>::two_pi()*pts[pts.size()-1](0);
-        fp2(2)=0;
-        fpp2(0)=-4*eli::constants::math<data_type>::pi_squared()*pts[pts.size()-1](0);
-        fpp2(1)=-4*eli::constants::math<data_type>::pi_squared()*pts[pts.size()-1](1);
-        fpp2(2)=0;
-        fcon.set_points(pts.begin(), pts.end());
-        fcon.set_end_flag(eli::geom::general::NOT_CONNECTED);
-        fcon.add_start_C2_constraint(fp1, fpp1);
-        fcon.add_end_C2_constraint(fp2, fpp2);
-
-        // fit points
-        bez.fit(t, fcon, deg);
-
-        // calculate the error at the point
-        data_type err(0);
-        for (i=0; i<pts.size(); ++i)
-        {
-          data_type d;
-          eli::geom::point::distance(d, pts[i], bez.f(t[i]));
-          err+=d;
-        }
-
-        TEST_ASSERT(bez.open());
-        TEST_ASSERT(err < 0.372);
-
-        // check if went through points
-        TEST_ASSERT((pts[pts.size()-1]-bez.f(t[t.size()-1])).norm()<422*eps);
-        TEST_ASSERT((fp2-bez.fp(t[t.size()-1])).norm()<1.88e3*eps);
-        TEST_ASSERT((fpp2-bez.fpp(t[t.size()-1])).norm()<7.31e3*eps);
-        TEST_ASSERT(bez.f(0)!=bez.f(1));
-        TEST_ASSERT((pts[0]-bez.f(t[0])).norm()<4*eps);
-        TEST_ASSERT((fp1-bez.fp(t[0])).norm()<9*eps);
-        TEST_ASSERT(fpp1==bez.fpp(t[0]));
-//         if (typeid(data__)==typeid(long double))
-//         {
-//           std::cout << "1223 rat=" << (pts[pts.size()-1]-bez.f(t[t.size()-1])).norm()/eps << std::endl;
-//           std::cout << "1224 rat=" << (fp2-bez.fp(t[t.size()-1])).norm()/eps << std::endl;
-//           std::cout << "1225 rat=" << (fpp2-bez.fpp(t[t.size()-1])).norm()/eps << std::endl;
-//         }
-
-//         octave_print(9, pts, bez);
-      }
-
-      // closed curve
-      {
-        fit_container_type fcon;
-        size_t i, deg(7);
-        std::vector<point_type> pts(20);
-        bezier_type bez;
-        std::vector<data_type> t;
-
-        // get points
-        create_circle(pts);
-
-        // configure fit container
-        constraint_point_type fp1, fpp1;
-        fp1(0)=-eli::constants::math<data_type>::two_pi()*pts[0](1);
-        fp1(1)=eli::constants::math<data_type>::two_pi()*pts[0](0);
-        fp1(2)=0;
-        fpp1(0)=-4*eli::constants::math<data_type>::pi_squared()*pts[0](0);
-        fpp1(1)=-4*eli::constants::math<data_type>::pi_squared()*pts[0](1);
-        fpp1(2)=0;
-        fcon.set_points(pts.begin(), pts.end());
-        fcon.set_end_flag(eli::geom::general::C0);
-        fcon.add_start_C2_constraint(fp1, fpp1);
-
-        // fit points
-        bez.fit(t, fcon, deg);
-
-        // calculate the error at the point
-        data_type err(0);
-        for (i=0; i<pts.size(); ++i)
-        {
-          data_type d;
-          eli::geom::point::distance(d, pts[i], bez.f(t[i]));
-          err+=d;
-        }
-
-        TEST_ASSERT(bez.closed());
-        TEST_ASSERT(err < 0.0479);
-
-        // check if went through points
-        TEST_ASSERT((bez.f(0)-bez.f(1)).norm()<387*eps);
-        TEST_ASSERT((pts[0]-bez.f(t[0])).norm()<3*eps);
-        TEST_ASSERT((fp1-bez.fp(t[0])).norm()<17*eps);
-        TEST_ASSERT((fpp1-bez.fpp(t[0])).norm()<65*eps);
-        TEST_ASSERT(pts[pts.size()-1]!=bez.f(t[t.size()-1]));
-
-//         octave_print(10, pts, bez);
-      }
-
-      // closed curve with additional point constraint
-      {
-        fit_container_type fcon;
-        size_t i, deg(7);
-        std::vector<point_type> pts(20);
-        bezier_type bez;
-        std::vector<data_type> t;
-
-        // get points
-        create_circle(pts);
-
-        // configure fit container
-        constraint_point_type fp1, fpp1, fp2, fpp2;
-        fp1(0)=-eli::constants::math<data_type>::two_pi()*pts[0](1);
-        fp1(1)=eli::constants::math<data_type>::two_pi()*pts[0](0);
-        fp1(2)=0;
-        fpp1(0)=-4*eli::constants::math<data_type>::pi_squared()*pts[0](0);
-        fpp1(1)=-4*eli::constants::math<data_type>::pi_squared()*pts[0](1);
-        fpp1(2)=0;
-        fp2(0)=-eli::constants::math<data_type>::two_pi()*pts[10](1);
-        fp2(1)=eli::constants::math<data_type>::two_pi()*pts[10](0);
-        fp2(2)=0;
-        fpp2(0)=-4*eli::constants::math<data_type>::pi_squared()*pts[10](0);
-        fpp2(1)=-4*eli::constants::math<data_type>::pi_squared()*pts[10](1);
-        fpp2(2)=0;
-        fcon.set_points(pts.begin(), pts.end());
-        fcon.set_end_flag(eli::geom::general::C0);
-        fcon.add_start_C2_constraint(fp1, fpp1);
-        fcon.add_C2_constraint(10, fp2, fpp2);
-
-        // fit points
-        bez.fit(t, fcon, deg);
-
-        // calculate the error at the point
-        data_type err(0);
-        for (i=0; i<pts.size(); ++i)
-        {
-          data_type d;
-          eli::geom::point::distance(d, pts[i], bez.f(t[i]));
-          err+=d;
-        }
-
-        TEST_ASSERT(bez.closed());
-        TEST_ASSERT(err < 0.0785);
-
-        // check if went through points
-        TEST_ASSERT((bez.f(0)-bez.f(1)).norm()<420*eps);
-        TEST_ASSERT((bez.f(t[10])-pts[10]).norm()<39*eps);
-        TEST_ASSERT((bez.fp(t[10])-fp2).norm()<142*eps);
-        TEST_ASSERT((bez.fpp(t[10])-fpp2).norm()<1.26e3*eps);
-        TEST_ASSERT((bez.f(t[0])-pts[0]).norm()<5*eps);
-        TEST_ASSERT((bez.fp(t[0])-fp1).norm()<9*eps);
-        TEST_ASSERT((bez.fpp(t[0])-fpp1).norm()<33*eps);
-        TEST_ASSERT(pts[pts.size()-1]!=bez.f(t[t.size()-1]));
-//         if (typeid(data__)==typeid(long double))
-//         {
-//           std::cout << "1346 rat=" << (bez.fp(t[0])-fp1).norm()/eps << std::endl;
-//         }
-
-//         octave_print(11, pts, bez);
-      }
-    }
-
-    void fit_closed_test()
-    {
-      data_type eps(std::numeric_limits<data__>::epsilon());
-#ifdef ELI_QD_FOUND
-      if ( (typeid(data_type)==typeid(dd_real)) || (typeid(data_type)==typeid(qd_real)) )
-        eps=std::numeric_limits<double>::epsilon();
-#endif
-
-      // fit no constraints C0 closed
-      {
-        fit_container_type fcon;
-        size_t deg(7);
-        std::vector<point_type> pts(20);
-        bezier_type bez;
-        std::vector<data_type> t;
-
-        // get points
-        create_circle(pts);
-
-        // configure fit container
-        fcon.set_points(pts.begin(), pts.end());
-        fcon.set_end_flag(eli::geom::general::C0);
-
-        // fit points
-        data_type err;
-        err=bez.fit(t, fcon, deg);
-
-        TEST_ASSERT(bez.closed());
-        TEST_ASSERT(err < 0.393);
-
-        // check if went through points
-        TEST_ASSERT((bez.f(1)-bez.f(0)).norm()<353*eps);
-        TEST_ASSERT(bez.fp(0)!=bez.fp(1));
-        TEST_ASSERT(bez.fpp(0)!=bez.fpp(1));
-//         if ( (typeid(data__)==typeid(float)) || (typeid(data__)==typeid(long double)) )
-//         {
-//           std::cout << "1383 rat=" << (bez.f(1)-bez.f(0)).norm()/eps << std::endl;
-//         }
-
-//         octave_print(12, pts, bez);
-      }
-
-      // fit no constraints C1 closed
-      {
-        fit_container_type fcon;
-        size_t deg(7);
-        std::vector<point_type> pts(20);
-        bezier_type bez;
-        std::vector<data_type> t;
-
-        // get points
-        create_circle(pts);
-
-        // configure fit container
-        fcon.set_points(pts.begin(), pts.end());
-        fcon.set_end_flag(eli::geom::general::C1);
-
-        // fit points
-        data_type err;
-        err=bez.fit(t, fcon, deg);
-
-        TEST_ASSERT(bez.closed());
-        TEST_ASSERT(err < 0.0312);
-
-        // check if went through points
-        TEST_ASSERT((bez.f(1)-bez.f(0)).norm()<492*eps);
-        TEST_ASSERT((bez.fp(1)-bez.fp(0)).norm()<2.61e3*eps);
-        TEST_ASSERT(bez.fpp(0)!=bez.fpp(1));
-//         if (typeid(data__)==typeid(float))
-//         {
-//           std::cout << "1417 rat=" << (bez.fp(1)-bez.fp(0)).norm()/eps << std::endl;
-//         }
-
-//         octave_print(13, pts, bez);
-      }
-
-      // fit no constraints C2 closed
-      {
-        fit_container_type fcon;
-        size_t deg(7);
-        std::vector<point_type> pts(20);
-        bezier_type bez;
-        std::vector<data_type> t;
-
-        // get points
-        create_circle(pts);
-
-        // configure fit container
-        fcon.set_points(pts.begin(), pts.end());
-        fcon.set_end_flag(eli::geom::general::C2);
-
-        // fit points
-        data_type err;
-        err=bez.fit(t, fcon, deg);
-
-        TEST_ASSERT(bez.closed());
-        TEST_ASSERT(err < 0.0343);
-
-        // check if went through points
-        TEST_ASSERT((bez.f(1)-bez.f(0)).norm()<398*eps);
-        TEST_ASSERT((bez.fp(1)-bez.fp(0)).norm()<1.87e3*eps);
-        TEST_ASSERT((bez.fpp(1)-bez.fpp(0)).norm()<1.06e4*eps);
-//         if (typeid(data__)==typeid(long double))
-//         {
-//           std::cout << "1443 rat=" << (bez.fp(1)-bez.fp(0)).norm()/eps << std::endl;
-//         }
-//         if (typeid(data__)==typeid(float))
-//         {
-//           std::cout << "err=" << err << std::endl;
-//           std::cout << "1451 rat=" << (bez.fpp(1)-bez.fpp(0)).norm()/eps << std::endl;
-//         }
-
-//         octave_print(14, pts, bez);
-      }
-
-      // fit start constraints C0 closed
-      {
-        fit_container_type fcon;
-        size_t deg(7);
-        std::vector<point_type> pts(20);
-        bezier_type bez;
-        std::vector<data_type> t;
-
-        // get points
-        create_circle(pts);
-
-        // configure fit container
-        fcon.set_points(pts.begin(), pts.end());
-        fcon.set_end_flag(eli::geom::general::C0);
-        fcon.add_start_C0_constraint();
-
-        // fit points
-        data_type err;
-        err=bez.fit(t, fcon, deg);
-
-        TEST_ASSERT(bez.closed());
-        TEST_ASSERT(err < 0.0185);
-
-        // check if went through points
-        TEST_ASSERT(bez.f(0)==pts[0]);
-        TEST_ASSERT((bez.f(1)-bez.f(0)).norm()<431*eps);
-        TEST_ASSERT(bez.fp(0)!=bez.fp(1));
-        TEST_ASSERT(bez.fpp(0)!=bez.fpp(1));
-
-//         octave_print(15, pts, bez);
-      }
-
-      // fit start constraints C1 closed
-      {
-        fit_container_type fcon;
-        size_t deg(7);
-        std::vector<point_type> pts(20);
-        bezier_type bez;
-        std::vector<data_type> t;
-
-        // get points
-        create_circle(pts);
-
-        // configure fit container
-        constraint_point_type fp0;
-        fp0(0)=-eli::constants::math<data_type>::two_pi()*pts[0](1);
-        fp0(1)=eli::constants::math<data_type>::two_pi()*pts[0](0);
-        fp0(2)=eli::constants::math<data_type>::two_pi()*pts[0](2);
-        fcon.set_points(pts.begin(), pts.end());
-        fcon.set_end_flag(eli::geom::general::C1);
-        fcon.add_start_C1_constraint(fp0);
-
-        // fit points
-        data_type err;
-        err=bez.fit(t, fcon, deg);
-
-        TEST_ASSERT(bez.closed());
-        TEST_ASSERT(err < 0.0395);
-
-        // check if went through points
-        TEST_ASSERT((bez.f(0)-pts[0]).norm()<2*eps);
-        TEST_ASSERT(bez.fp(0)==fp0);
-        TEST_ASSERT((bez.f(1)-bez.f(0)).norm()<483*eps);
-        TEST_ASSERT((bez.fp(1)-bez.fp(0)).norm()<2.77e3*eps);
-        TEST_ASSERT(bez.fpp(0)!=bez.fpp(1));
-
-//         octave_print(16, pts, bez);
-      }
-
-      // fit start constraints C2 closed
-      {
-        fit_container_type fcon;
-        size_t deg(7);
-        std::vector<point_type> pts(20);
-        bezier_type bez;
-        std::vector<data_type> t;
-
-        // get points
-        create_circle(pts);
-
-        // configure fit container
-        constraint_point_type fp0, fpp0;
-        fp0(0)=-eli::constants::math<data_type>::two_pi()*pts[0](1);
-        fp0(1)=eli::constants::math<data_type>::two_pi()*pts[0](0);
-        fp0(2)=eli::constants::math<data_type>::two_pi()*pts[0](2);
-        fpp0(0)=-4*eli::constants::math<data_type>::pi_squared()*pts[0](0);
-        fpp0(1)=-4*eli::constants::math<data_type>::pi_squared()*pts[0](1);
-        fpp0(2)=4*eli::constants::math<data_type>::pi_squared()*pts[0](2);
-        fcon.set_points(pts.begin(), pts.end());
-        fcon.set_end_flag(eli::geom::general::C2);
-        fcon.add_start_C2_constraint(fp0, fpp0);
-
-        // fit points
-        data_type err;
-        err=bez.fit(t, fcon, deg);
-
-        TEST_ASSERT(bez.closed());
-        TEST_ASSERT(err < 0.141);
-
-        // check if went through points
-        TEST_ASSERT((bez.f(0)-pts[0]).norm()<2*eps);
-        TEST_ASSERT((bez.fp(0)-fp0).norm()<9*eps);
-        TEST_ASSERT(bez.fpp(0)==fpp0);
-        TEST_ASSERT((bez.f(1)-bez.f(0)).norm()<409*eps);
-        TEST_ASSERT((bez.fp(1)-bez.fp(0)).norm()<2.36e3*eps);
-        TEST_ASSERT((bez.fpp(1)-bez.fpp(0)).norm()<6.80e3*eps);
-
-//         octave_print(17, pts, bez);
-      }
-
-      // fit middle constraints C0 closed
-      {
-        fit_container_type fcon;
-        size_t deg(7);
-        std::vector<point_type> pts(20);
-        bezier_type bez;
-        std::vector<data_type> t;
-
-        // get points
-        create_circle(pts);
-
-        // configure fit container
-        int ci=5;
-        data_type t5;
-        point_type f5;
-        f5=pts[ci];
-        fcon.set_points(pts.begin(), pts.end());
-        fcon.set_end_flag(eli::geom::general::C0);
-        fcon.add_C0_constraint(ci);
-
-        // fit points
-        data_type err;
-        err=bez.fit(t, fcon, deg);
-
-        TEST_ASSERT(bez.closed());
-        TEST_ASSERT(err < 0.0180);
-
-        // check if went through points
-        t5=t[ci];
-        TEST_ASSERT((bez.f(t5)-f5).norm()<6*eps);
-        TEST_ASSERT((bez.f(1)-bez.f(0)).norm()<594*eps);
-        TEST_ASSERT(bez.fp(0)!=bez.fp(1));
-        TEST_ASSERT(bez.fpp(0)!=bez.fpp(1));
-
-//         octave_print(18, pts, bez);
-      }
-
-      // fit middle constraints C1 closed
-      {
-        fit_container_type fcon;
-        size_t deg(7);
-        std::vector<point_type> pts(20);
-        bezier_type bez;
-        std::vector<data_type> t;
-
-        // get points
-        create_circle(pts);
-
-        // configure fit container
-        int ci=5;
-        data_type t5;
-        point_type f5;
-        f5=pts[ci];
-        fcon.set_points(pts.begin(), pts.end());
-        fcon.set_end_flag(eli::geom::general::C1);
-        fcon.add_C0_constraint(ci);
-
-        // fit points
-        data_type err;
-        err=bez.fit(t, fcon, deg);
-
-        TEST_ASSERT(bez.closed());
-        TEST_ASSERT(err < 0.0316);
-
-        // check if went through points
-        t5=t[ci];
-        TEST_ASSERT((bez.f(t5)-f5).norm()<4*eps);
-        TEST_ASSERT((bez.f(1)-bez.f(0)).norm()<357*eps);
-        TEST_ASSERT((bez.fp(1)-bez.fp(0)).norm()<2.48e3*eps);
-        TEST_ASSERT(bez.fpp(0)!=bez.fpp(1));
-//         if (typeid(data__)==typeid(float))
-//         {
-//           std::cout << "1635 rat=" << (bez.fp(1)-bez.fp(0)).norm()/eps << std::endl;
-//         }
-
-//         octave_print(19, pts, bez);
-      }
-
-      // fit middle constraints C2 closed
-      {
-        fit_container_type fcon;
-        size_t deg(7);
-        std::vector<point_type> pts(20);
-        bezier_type bez;
-        std::vector<data_type> t;
-
-        // get points
-        data_type err;
-        create_circle(pts);
-
-        // configure fit container
-        int ci=5;
-        data_type t5;
-        point_type f5;
-        f5=pts[ci];
-        fcon.set_points(pts.begin(), pts.end());
-        fcon.set_end_flag(eli::geom::general::C2);
-        fcon.add_C0_constraint(ci);
-
-        // fit points
-        err=bez.fit(t, fcon, deg);
-
-        TEST_ASSERT(bez.closed());
-        TEST_ASSERT(err < 0.0353);
-
-        // check if went through points
-        t5=t[ci];
-        TEST_ASSERT((bez.f(t5)-f5).norm()<4*eps);
-        TEST_ASSERT((bez.f(1)-bez.f(0)).norm()<322*eps);
-        TEST_ASSERT((bez.fp(1)-bez.fp(0)).norm()<1.40e3*eps);
-        TEST_ASSERT((bez.fpp(1)-bez.fpp(0)).norm()<9.10e3*eps);
-
-//         octave_print(20, pts, bez);
-      }
-    }
-
-    void interpolate_test()
-    {
-      data_type eps(std::numeric_limits<data__>::epsilon());
-#ifdef ELI_QD_FOUND
-      if ( (typeid(data_type)==typeid(dd_real)) || (typeid(data_type)==typeid(qd_real)) )
-        eps=std::numeric_limits<double>::epsilon();
-#endif
-
-      // interpolate through all points open
-      {
-        fit_container_type fcon;
-        std::vector<point_type> pts(4);
-        bezier_type bez;
-        std::vector<data_type> t;
-
-        // get points
-        create_circle(pts);
-
-        // configure fit container
-        fcon.set_points(pts.begin(), pts.end());
-
-        // fit points
-        bez.interpolate(t, fcon);
-
-        TEST_ASSERT(static_cast<size_t>(bez.degree()+1)==pts.size());
-        TEST_ASSERT(bez.open());
-
-        // check if went through points
-        TEST_ASSERT(bez.f(t[0])==pts[0]);
-        TEST_ASSERT((bez.f(t[1])-pts[1]).norm()<3*eps);
-        TEST_ASSERT((bez.f(t[2])-pts[2]).norm()<7*eps);
-        TEST_ASSERT((bez.f(t[3])-pts[3]).norm()<13*eps);
-
-//         octave_print(18, pts, bez);
-      }
-
-      // interpolate through all points closed
-      {
-        fit_container_type fcon;
-        std::vector<point_type> pts(4);
-        bezier_type bez;
-        std::vector<data_type> t;
-
-        // get points
-        create_circle(pts);
-
-        // configure fit container
-        fcon.set_points(pts.begin(), pts.end());
-        fcon.set_end_flag(eli::geom::general::C0);
-
-        // fit points
-        bez.interpolate(t, fcon);
-
-        TEST_ASSERT(static_cast<size_t>(bez.degree()+1)==pts.size()+1);
-        TEST_ASSERT(bez.closed());
-
-        // check if went through points
-        TEST_ASSERT(bez.f(t[0])==pts[0]);
-        TEST_ASSERT((bez.f(t[1])-pts[1]).norm()<3*eps);
-        TEST_ASSERT((bez.f(t[2])-pts[2]).norm()<9*eps);
-        TEST_ASSERT((bez.f(t[3])-pts[3]).norm()<37*eps);
-        TEST_ASSERT((bez.f(0)-bez.f(1)).norm()<49*eps);
-
-//         octave_print(19, pts, bez);
-      }
-
-      // interpolate through all points and specify C1 open
-      {
-        fit_container_type fcon;
-        std::vector<point_type> pts(4);
-        bezier_type bez;
-        std::vector<data_type> t;
-
-        // get points
-        create_circle(pts);
-
-        // configure fit container
-        point_type fp1;
-        fp1(0)=-eli::constants::math<data_type>::two_pi()*pts[1](1);
-        fp1(1)=eli::constants::math<data_type>::two_pi()*pts[1](0);
-        fp1(2)=0;
-        fcon.set_points(pts.begin(), pts.end());
-        fcon.add_C1_constraint(1, fp1);
-
-        // fit points
-        bez.interpolate(t, fcon);
-
-        TEST_ASSERT(static_cast<size_t>(bez.degree()+1)==pts.size()+1);
-        TEST_ASSERT(bez.open());
-
-        // check if went through points
-        TEST_ASSERT((bez.f(t[0])-pts[0]).norm()<2*eps);
-        TEST_ASSERT((bez.f(t[1])-pts[1]).norm()<5*eps);
-        TEST_ASSERT((bez.f(t[2])-pts[2]).norm()<21*eps);
-        TEST_ASSERT((bez.f(t[3])-pts[3]).norm()<63*eps);
-        TEST_ASSERT((bez.fp(t[1])-fp1).norm()<17*eps);
-
-//         octave_print(20, pts, bez);
-      }
-
-      // interpolate through all points and specify C1 closed
-      {
-        fit_container_type fcon;
-        std::vector<point_type> pts(4);
-        bezier_type bez;
-        std::vector<data_type> t;
-
-        // get points
-        create_circle(pts);
-
-        // configure fit container
-        point_type fp1;
-        fp1(0)=-eli::constants::math<data_type>::two_pi()*pts[1](1);
-        fp1(1)=eli::constants::math<data_type>::two_pi()*pts[1](0);
-        fp1(2)=0;
-        fcon.set_points(pts.begin(), pts.end());
-        fcon.add_C1_constraint(1, fp1);
-        fcon.set_end_flag(eli::geom::general::C1);
-
-        // fit points
-        bez.interpolate(t, fcon);
-
-        TEST_ASSERT(static_cast<size_t>(bez.degree()+1)==pts.size()+3);
-        TEST_ASSERT(bez.closed());
-
-        // check if went through points
-        TEST_ASSERT((bez.f(t[0])-pts[0]).norm()<5*eps);
-        TEST_ASSERT((bez.f(t[1])-pts[1]).norm()<3*eps);
-        TEST_ASSERT((bez.f(t[2])-pts[2]).norm()<12*eps);
-        TEST_ASSERT((bez.f(t[3])-pts[3]).norm()<50*eps);
-        TEST_ASSERT((bez.fp(t[1])-fp1).norm()<22*eps);
-        TEST_ASSERT((bez.f(0)-bez.f(1)).norm()<202*eps);
-        TEST_ASSERT((bez.fp(0)-bez.fp(1)).norm()<779*eps);
-
-//         if (typeid(data__)==typeid(long double))
-//         {
-//           std::cout << "1797 rat=" << (bez.fp(0)-bez.fp(1)).norm()/eps << std::endl;
-//         }
-
-//         octave_print(21, pts, bez);
-      }
-
-      // interpolate through all points and specify C2 open
-      {
-        fit_container_type fcon;
-        std::vector<point_type> pts(4);
-        bezier_type bez;
-        std::vector<data_type> t;
-
-        // get points
-        create_circle(pts);
-
-        // configure fit container
-        point_type fp1, fpp1;
-        fp1(0)=-eli::constants::math<data_type>::two_pi()*pts[1](1);
-        fp1(1)=eli::constants::math<data_type>::two_pi()*pts[1](0);
-        fp1(2)=0;
-        fpp1(0)=-4*eli::constants::math<data_type>::pi_squared()*pts[1](0);
-        fpp1(1)=-4*eli::constants::math<data_type>::pi_squared()*pts[1](1);
-        fpp1(2)=0;
-        fcon.set_points(pts.begin(), pts.end());
-        fcon.add_C2_constraint(1, fp1, fpp1);
-
-        // fit points
-        bez.interpolate(t, fcon);
-
-        TEST_ASSERT(static_cast<size_t>(bez.degree()+1)==pts.size()+2);
-        TEST_ASSERT(bez.open());
-
-        // check if went through points
-        TEST_ASSERT((bez.f(t[0])-pts[0]).norm()<9*eps);
-        TEST_ASSERT((bez.f(t[1])-pts[1]).norm()<9*eps);
-        TEST_ASSERT((bez.f(t[2])-pts[2]).norm()<84*eps);
-        TEST_ASSERT((bez.f(t[3])-pts[3]).norm()<162*eps);
-        TEST_ASSERT((bez.fp(t[1])-fp1).norm()<68*eps);
-        TEST_ASSERT((bez.fpp(t[1])-fpp1).norm()<255*eps);
-
-//         octave_print(22, pts, bez);
-      }
-
-      // interpolate through all points and specify C2 closed
-      {
-        fit_container_type fcon;
-        std::vector<point_type> pts(4);
-        bezier_type bez;
-        std::vector<data_type> t;
-
-        // get points
-        create_circle(pts);
-
-        // configure fit container
-        point_type fp1, fpp1;
-        fp1(0)=-eli::constants::math<data_type>::two_pi()*pts[1](1);
-        fp1(1)=eli::constants::math<data_type>::two_pi()*pts[1](0);
-        fp1(2)=0;
-        fpp1(0)=-4*eli::constants::math<data_type>::pi_squared()*pts[1](0);
-        fpp1(1)=-4*eli::constants::math<data_type>::pi_squared()*pts[1](1);
-        fpp1(2)=0;
-        fcon.set_points(pts.begin(), pts.end());
-        fcon.add_C2_constraint(1, fp1, fpp1);
-        fcon.set_end_flag(eli::geom::general::C2);
-
-        // fit points
-        bez.interpolate(t, fcon);
-
-        TEST_ASSERT(static_cast<size_t>(bez.degree()+1)==pts.size()+5);
-        TEST_ASSERT(bez.closed());
-
-        // check if went through points
-        TEST_ASSERT((bez.f(t[0])-pts[0]).norm()<4*eps);
-        TEST_ASSERT((bez.f(t[1])-pts[1]).norm()<4*eps);
-        TEST_ASSERT((bez.f(t[2])-pts[2]).norm()<32*eps);
-        TEST_ASSERT((bez.f(t[3])-pts[3]).norm()<132*eps);
-        TEST_ASSERT((bez.fp(t[1])-fp1).norm()<39*eps);
-        TEST_ASSERT((bez.fpp(t[1])-fpp1).norm()<391*eps);
-        TEST_ASSERT((bez.f(0)-bez.f(1)).norm()<600*eps);
-        TEST_ASSERT((bez.fp(0)-bez.fp(1)).norm()<3.76e3*eps);
-        TEST_ASSERT((bez.fpp(0)-bez.fpp(1)).norm()<15.5e3*eps);
-
-//         if (typeid(data__)==typeid(long double))
-//         {
-//           std::cout << "1877 rat=" << (bez.f(t[2])-pts[2]).norm()/eps << std::endl;
-//           std::cout << "1878 rat=" << (bez.f(t[3])-pts[3]).norm()/eps << std::endl;
-//           std::cout << "1879 rat=" << (bez.fpp(t[1])-fpp1).norm()/eps << std::endl;
-//           std::cout << "1880 rat=" << (bez.f(0)-bez.f(1)).norm()/eps << std::endl;
-//           std::cout << "1881 rat=" << (bez.fp(0)-bez.fp(1)).norm()/eps << std::endl;
-//           std::cout << "1882 rat=" << (bez.fpp(0)-bez.fpp(1)).norm()/eps << std::endl;
-//         }
-
-//         octave_print(23, pts, bez);
-      }
-    }
-#endif
 };
 
 #endif

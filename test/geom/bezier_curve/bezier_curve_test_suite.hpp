@@ -46,6 +46,7 @@ class bezier_curve_test_suite : public Test::Suite
     {
       // add the tests
       TEST_ADD(bezier_curve_test_suite<float>::assignment_test);
+      TEST_ADD(bezier_curve_test_suite<float>::bounding_box_test);
       TEST_ADD(bezier_curve_test_suite<float>::evaluation_test);
       TEST_ADD(bezier_curve_test_suite<float>::derivative_1_test);
       TEST_ADD(bezier_curve_test_suite<float>::derivative_2_test);
@@ -61,6 +62,7 @@ class bezier_curve_test_suite : public Test::Suite
     {
       // add the tests
       TEST_ADD(bezier_curve_test_suite<double>::assignment_test);
+      TEST_ADD(bezier_curve_test_suite<double>::bounding_box_test);
       TEST_ADD(bezier_curve_test_suite<double>::evaluation_test);
       TEST_ADD(bezier_curve_test_suite<double>::derivative_1_test);
       TEST_ADD(bezier_curve_test_suite<double>::derivative_2_test);
@@ -76,6 +78,7 @@ class bezier_curve_test_suite : public Test::Suite
     {
       // add the tests
       TEST_ADD(bezier_curve_test_suite<long double>::assignment_test);
+      TEST_ADD(bezier_curve_test_suite<long double>::bounding_box_test);
       TEST_ADD(bezier_curve_test_suite<long double>::evaluation_test);
       TEST_ADD(bezier_curve_test_suite<long double>::derivative_1_test);
       TEST_ADD(bezier_curve_test_suite<long double>::derivative_2_test);
@@ -92,6 +95,7 @@ class bezier_curve_test_suite : public Test::Suite
     {
       // add the tests
       TEST_ADD(bezier_curve_test_suite<dd_real>::assignment_test);
+      TEST_ADD(bezier_curve_test_suite<dd_real>::bounding_box_test);
       TEST_ADD(bezier_curve_test_suite<dd_real>::evaluation_test);
       TEST_ADD(bezier_curve_test_suite<dd_real>::derivative_1_test);
       TEST_ADD(bezier_curve_test_suite<dd_real>::derivative_2_test);
@@ -108,6 +112,7 @@ class bezier_curve_test_suite : public Test::Suite
     {
       // add the tests
       TEST_ADD(bezier_curve_test_suite<qd_real>::assignment_test);
+      TEST_ADD(bezier_curve_test_suite<qd_real>::bounding_box_test);
       TEST_ADD(bezier_curve_test_suite<qd_real>::evaluation_test);
       TEST_ADD(bezier_curve_test_suite<qd_real>::derivative_1_test);
       TEST_ADD(bezier_curve_test_suite<qd_real>::derivative_2_test);
@@ -212,6 +217,33 @@ class bezier_curve_test_suite : public Test::Suite
 
       // test order
       TEST_ASSERT(bc2.degree()==4-1);
+    }
+
+    void bounding_box_test()
+    {
+      bezier_type bc;
+      point_type cntrl_in[4];
+      index_type i;
+
+      // test default constructor then set control points
+      cntrl_in[0] << 2, 2, 0;
+      cntrl_in[1] << 1, 1, 0;
+      cntrl_in[2] << 3, 0, 0;
+      cntrl_in[3] << 4, 1, 0;
+      bc.resize(3);
+      for (i=0; i<4; ++i)
+      {
+        bc.set_control_point(cntrl_in[i], i);
+      }
+
+      // test bounding box
+      point_type pmin, pmax, pmin_ref, pmax_ref;
+
+      bc.get_bounding_box(pmin, pmax);
+      pmin_ref << 1, 0, 0;
+      pmax_ref << 4, 2, 0;
+      TEST_ASSERT(pmin==pmin_ref);
+      TEST_ASSERT(pmax==pmax_ref);
     }
 
     void evaluation_test()

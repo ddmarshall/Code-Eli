@@ -48,11 +48,14 @@ namespace eli
           typedef Eigen::Map<Eigen::Matrix<data_type, Eigen::Dynamic, dim__>,
                              Eigen::Unaligned,
                              Eigen::Stride<1, Eigen::Dynamic> > v_dir_control_point_matrix_type;
+          typedef std::vector<data_type> control_point_container;
+          typedef std::vector<control_point_matrix_type> u_control_point_matrix_container;
+          typedef std::vector<v_dir_control_point_matrix_type> v_control_point_matrix_container;
 
         private:
-          std::vector<data_type> point_data; /** raw control points stored in vector. The order is {x,y...}_(0,0) {x,y...}_(1,0) ... {x,y...}_(n,0) {x,y...}_(0,1) {x,y...}_(1,1) ... {x,y...}_(n,1) ... {x,y...}_(n,m) */
-          std::vector<control_point_matrix_type> B_u; /** vector of u-direction, i.e. direction where v is constant, curve control points in point_data */
-          std::vector<v_dir_control_point_matrix_type> B_v; /** vector of v-direction, i.e. direction where u is constant, curve control points in point_data */
+          control_point_container point_data; /** raw control points stored in vector. The order is {x,y...}_(0,0) {x,y...}_(1,0) ... {x,y...}_(n,0) {x,y...}_(0,1) {x,y...}_(1,1) ... {x,y...}_(n,1) ... {x,y...}_(n,m) */
+          u_control_point_matrix_container B_u; /** vector of u-direction, i.e. direction where v is constant, curve control points in point_data */
+          v_control_point_matrix_container B_v; /** vector of v-direction, i.e. direction where u is constant, curve control points in point_data */
 
         public:
           bezier() : point_data(3, 0)
@@ -132,6 +135,33 @@ namespace eli
             assert(B_u[j].row(i)==B_v[i].row(j));
 
             return B_u[j].row(i);
+          }
+
+          void get_bounding_box(point_type &pmin, point_type &pmax) const
+          {
+            index_type i, j, k, degu(degree_u()), degv(degree_v());
+            point_type tmp;
+
+            pmin=B_u[0].row(0);
+            pmax=pmin;
+            for (i=0; i<=degu; ++i)
+            {
+              for (j=0; j<=degv; ++j)
+              {
+                tmp=B_u[j].row(i);
+                for (k=0; k<dim__; ++k)
+                {
+                  if (tmp(k)<pmin(k))
+                  {
+                    pmin(k)=tmp(k);
+                  }
+                  if (tmp(k)>pmax(k))
+                  {
+                    pmax(k)=tmp(k);
+                  }
+                }
+              }
+            }
           }
 
           void set_control_point(const point_type &cp, const index_type &i, const index_type &j)

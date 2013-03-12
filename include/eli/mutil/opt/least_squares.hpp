@@ -65,8 +65,12 @@ namespace eli
         temp_A=A*Q;
         A1=temp_A.leftCols(p);
         A2=temp_A.rightCols(n-p);
+#ifdef DEBUG
         assert((A1.rows()==m) && (A1.cols()==p));
         assert((A2.rows()==m) && (A2.cols()==n-p));
+#endif
+        assert(A1.cols()==p);
+        assert(A2.cols()==n-p);
 
         // solve for y
         y=R.transpose().lu().solve(d);

@@ -13,6 +13,8 @@
 #ifndef eli_mutil_fd_d1o2_hpp
 #define eli_mutil_fd_d1o2_hpp
 
+#include <vector>
+
 namespace eli
 {
   namespace mutil

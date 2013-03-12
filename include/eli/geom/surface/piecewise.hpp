@@ -144,6 +144,30 @@ namespace eli
             return !open();
           }
 
+          void get_bounding_box(point_type &pmin, point_type &pmax) const
+          {
+            typename patch_collection_type::const_iterator it=patches.begin();
+            point_type pmintmp, pmaxtmp;
+
+            // cycle through all patches to get each bounding box to compare
+            it->s.get_bounding_box(pmin, pmax);
+            for (++it; it!=patches.end(); ++it)
+            {
+              it->s.get_bounding_box(pmintmp, pmaxtmp);
+              for (index_type i=0; i<dim__; ++i)
+              {
+                if (pmintmp(i)<pmin(i))
+                {
+                  pmin(i)=pmintmp(i);
+                }
+                if (pmaxtmp(i)>pmax(i))
+                {
+                  pmax(i)=pmaxtmp(i);
+                }
+              }
+            }
+          }
+
           void reverse()
           {
 #if 0
@@ -319,7 +343,7 @@ namespace eli
               --it;
             }
 
-            return it->s.f_u(uu, vv)/it->s.delta_u;
+            return it->s.f_u(uu, vv)/it->delta_u;
           }
 
           point_type f_v(const data_type &u, const data_type &v) const
@@ -335,7 +359,7 @@ namespace eli
               --it;
             }
 
-            return it->s.f_v(uu, vv)/it->s.delta_v;
+            return it->s.f_v(uu, vv)/it->delta_v;
           }
 
           point_type f_uu(const data_type &u, const data_type &v) const
@@ -351,7 +375,7 @@ namespace eli
               --it;
             }
 
-            return it->s.f_uu(uu, vv)/(it->s.delta_u*it->s.delta_u);
+            return it->s.f_uu(uu, vv)/(it->delta_u*it->delta_u);
           }
 
           point_type f_uv(const data_type &u, const data_type &v) const
@@ -367,7 +391,7 @@ namespace eli
               --it;
             }
 
-            return it->s.f_uv(uu, vv)/(it->s.delta_u*it->s.delta_v);
+            return it->s.f_uv(uu, vv)/(it->delta_u*it->delta_v);
           }
 
           point_type f_vv(const data_type &u, const data_type &v) const
@@ -383,7 +407,7 @@ namespace eli
               --it;
             }
 
-            return it->s.f_vv(uu, vv)/(it->s.delta_v*it->s.delta_v);
+            return it->s.f_vv(uu, vv)/(it->delta_v*it->delta_v);
           }
 
           point_type f_uuu(const data_type &u, const data_type &v) const
@@ -399,7 +423,7 @@ namespace eli
               --it;
             }
 
-            return it->s.f_uuu(uu, vv)/(it->s.delta_u*it->s.delta_u*it->s.delta_u);
+            return it->s.f_uuu(uu, vv)/(it->delta_u*it->delta_u*it->delta_u);
           }
 
           point_type f_uuv(const data_type &u, const data_type &v) const
@@ -415,7 +439,7 @@ namespace eli
               --it;
             }
 
-            return it->s.f_uuv(uu, vv)/(it->s.delta_u*it->s.delta_u*it->s.delta_v);
+            return it->s.f_uuv(uu, vv)/(it->delta_u*it->delta_u*it->delta_v);
           }
 
           point_type f_uvv(const data_type &u, const data_type &v) const
@@ -431,7 +455,7 @@ namespace eli
               --it;
             }
 
-            return it->s.f_uvv(uu, vv)/(it->s.delta_u*it->s.delta_v*it->s.delta_v);
+            return it->s.f_uvv(uu, vv)/(it->delta_u*it->delta_v*it->delta_v);
           }
 
           point_type f_vvv(const data_type &u, const data_type &v) const
@@ -447,7 +471,14 @@ namespace eli
               --it;
             }
 
-            return it->s.f_vvv(uu, vv)/(it->s.delta_v*it->s.delta_v*it->s.delta_v);
+            return it->s.f_vvv(uu, vv)/(it->delta_v*it->delta_v*it->delta_v);
+          }
+
+          point_type normal(const data_type &u, const data_type &v) const
+          {
+            point_type n=f_u(u, v).cross(f_v(u, v));
+            n.normalize();
+            return n;
           }
 
           // TODO: NEED TO IMPLEMENT

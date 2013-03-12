@@ -14,6 +14,7 @@
 #define geom_curve_bezier_h
 
 #include <cassert>
+#include <iostream>
 
 #include <Eigen/Eigen>
 

@@ -46,6 +46,7 @@ class piecewise_curve_test_suite : public Test::Suite
     {
       // add the tests
       TEST_ADD(piecewise_curve_test_suite<float>::creation_test);
+      TEST_ADD(piecewise_curve_test_suite<float>::bounding_box_test);
       TEST_ADD(piecewise_curve_test_suite<float>::reverse_test);
       TEST_ADD(piecewise_curve_test_suite<float>::replace_test);
       TEST_ADD(piecewise_curve_test_suite<float>::evaluation_test);
@@ -56,6 +57,7 @@ class piecewise_curve_test_suite : public Test::Suite
     {
       // add the tests
       TEST_ADD(piecewise_curve_test_suite<double>::creation_test);
+      TEST_ADD(piecewise_curve_test_suite<double>::bounding_box_test);
       TEST_ADD(piecewise_curve_test_suite<double>::reverse_test);
       TEST_ADD(piecewise_curve_test_suite<double>::replace_test);
       TEST_ADD(piecewise_curve_test_suite<double>::evaluation_test);
@@ -66,6 +68,7 @@ class piecewise_curve_test_suite : public Test::Suite
     {
       // add the tests
       TEST_ADD(piecewise_curve_test_suite<long double>::creation_test);
+      TEST_ADD(piecewise_curve_test_suite<long double>::bounding_box_test);
       TEST_ADD(piecewise_curve_test_suite<long double>::reverse_test);
       TEST_ADD(piecewise_curve_test_suite<long double>::replace_test);
       TEST_ADD(piecewise_curve_test_suite<long double>::evaluation_test);
@@ -77,6 +80,7 @@ class piecewise_curve_test_suite : public Test::Suite
     {
       // add the tests
       TEST_ADD(piecewise_curve_test_suite<dd_real>::creation_test);
+      TEST_ADD(piecewise_curve_test_suite<dd_real>::bounding_box_test);
       TEST_ADD(piecewise_curve_test_suite<dd_real>::reverse_test);
       TEST_ADD(piecewise_curve_test_suite<dd_real>::replace_test);
       TEST_ADD(piecewise_curve_test_suite<dd_real>::evaluation_test);
@@ -88,6 +92,7 @@ class piecewise_curve_test_suite : public Test::Suite
     {
       // add the tests
       TEST_ADD(piecewise_curve_test_suite<qd_real>::creation_test);
+      TEST_ADD(piecewise_curve_test_suite<qd_real>::bounding_box_test);
       TEST_ADD(piecewise_curve_test_suite<qd_real>::reverse_test);
       TEST_ADD(piecewise_curve_test_suite<qd_real>::replace_test);
       TEST_ADD(piecewise_curve_test_suite<qd_real>::evaluation_test);
@@ -210,6 +215,61 @@ class piecewise_curve_test_suite : public Test::Suite
       // test assignment operator
       c2=c1;
       TEST_ASSERT(c2==c1);
+    }
+
+    void bounding_box_test()
+    {
+      piecewise_curve_type pc;
+      curve_type bc[3];
+      data_type dt[3];
+      index_type i;
+      typename curve_type::control_point_type cntrl1_in[4], cntrl2_in[5], cntrl3_in[3];
+      typename piecewise_curve_type::error_code err;
+
+      // create bezier curves
+      cntrl1_in[0] << 2.0, 2.0, 0.0;
+      cntrl1_in[1] << 1.0, 1.5, 0.0;
+      cntrl1_in[2] << 3.5, 0.0, 0.0;
+      cntrl1_in[3] << 4.0, 1.0, 0.0;
+      dt[0]=0.5;
+      bc[0].resize(3);
+      for (i=0; i<4; ++i)
+      {
+        bc[0].set_control_point(cntrl1_in[i], i);
+      }
+      cntrl2_in[0] << 4.0, 1.0, 0.0;
+      cntrl2_in[1] << 5.0, 2.5, 0.0;
+      cntrl2_in[2] << 5.5, 1.0, 0.0;
+      cntrl2_in[3] << 6.0, 0.0, 0.0;
+      cntrl2_in[4] << 6.5,-0.5, 0.0;
+      dt[1]=2.0;
+      bc[1].resize(4);
+      for (i=0; i<5; ++i)
+      {
+        bc[1].set_control_point(cntrl2_in[i], i);
+      }
+      cntrl3_in[0] << 6.5,-0.5, 0.0;
+      cntrl3_in[1] << 6.0,-1.0, 0.0;
+      cntrl3_in[2] << 5.5,-2.0, 0.0;
+      dt[2]=1.5;
+      bc[2].resize(2);
+      for (i=0; i<3; ++i)
+      {
+        bc[2].set_control_point(cntrl3_in[i], i);
+      }
+
+      // initialize by passing iterators to curve collection
+      err=pc.set(bc, bc+3, dt);
+      TEST_ASSERT(err==piecewise_curve_type::NO_ERROR);
+
+      // test the bounding box
+      point_type pmin, pmax, pmin_ref, pmax_ref;
+
+      pc.get_bounding_box(pmin, pmax);
+      pmin_ref << 1, -2, 0;
+      pmax_ref << 6.5, 2.5, 0;
+      TEST_ASSERT(pmin==pmin_ref);
+      TEST_ASSERT(pmax==pmax_ref);
     }
 
     void reverse_test()
