@@ -132,7 +132,7 @@ class bezier_surface_test_suite : public Test::Suite
 #endif
 
   public:
-    bezier_surface_test_suite() : tol(1000*std::numeric_limits<data_type>::epsilon(), std::sqrt(std::numeric_limits<data_type>::epsilon()))
+    bezier_surface_test_suite()
     {
       AddTests(data__());
     }
@@ -634,7 +634,7 @@ class bezier_surface_test_suite : public Test::Suite
         pt_ref << -7.5, 4.04296875, -7.5;
         pt_out=bez2.f(u, v);
         pt_ref=pt_ref*rmat.transpose();
-        TEST_ASSERT(tol.approximately_equal((pt_out-pt_ref).norm(), 0));
+        TEST_ASSERT(tol.approximately_equal(pt_out,pt_ref));
       }
 
       // test rotation about point
@@ -673,14 +673,14 @@ class bezier_surface_test_suite : public Test::Suite
         pt_ref << 0, 4.6875 , 0;
         pt_out=bez2.f(u, v);
         pt_ref=rorig+(pt_ref-rorig)*rmat.transpose();
-        TEST_ASSERT(tol.approximately_equal((pt_out-pt_ref).norm(), 0));
+        TEST_ASSERT(tol.approximately_equal(pt_out,pt_ref));
 
         // test evaluation at interior point u=1/4, v=3/4
         u=0.25; v=0.75;
         pt_ref << -7.5, 4.04296875, -7.5;
         pt_out=bez2.f(u, v);
         pt_ref=rorig+(pt_ref-rorig)*rmat.transpose();
-        TEST_ASSERT(tol.approximately_equal((pt_out-pt_ref).norm(), 0));
+        TEST_ASSERT(tol.approximately_equal(pt_out,pt_ref));
       }
     }
 
