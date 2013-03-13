@@ -20,7 +20,8 @@
 
 #include <cpptest.h> // CppTest Framework
 
-#include "piecewise_curve_creator_test_suite.hpp"  // piecewise_curve_creator_test_suite
+#include "piecewise_circle_creator_test_suite.hpp"  // piecewise_circle_creator_test_suite
+#include "piecewise_spline_creator_test_suite.hpp"  // piecewise_spline_creator_test_suite
 
 enum TestType {testTypeText, testTypeCompiler, testTypeHTML};
 
@@ -151,12 +152,19 @@ int main(int argc, char *argv[])
     std::string ostr_filename("piecewise_curve_test_results.html");
 
     // add the cppack test suites
-    ts.add(std::auto_ptr<Test::Suite>(new piecewise_curve_creator_test_suite<float>()));
-    ts.add(std::auto_ptr<Test::Suite>(new piecewise_curve_creator_test_suite<double>()));
-    ts.add(std::auto_ptr<Test::Suite>(new piecewise_curve_creator_test_suite<long double>()));
+    ts.add(std::auto_ptr<Test::Suite>(new piecewise_circle_creator_test_suite<float>()));
+    ts.add(std::auto_ptr<Test::Suite>(new piecewise_circle_creator_test_suite<double>()));
+    ts.add(std::auto_ptr<Test::Suite>(new piecewise_circle_creator_test_suite<long double>()));
 #ifdef ELI_QD_FOUND
-    ts.add(std::auto_ptr<Test::Suite>(new piecewise_curve_creator_test_suite<dd_real>()));
-    ts.add(std::auto_ptr<Test::Suite>(new piecewise_curve_creator_test_suite<qd_real>()));
+    ts.add(std::auto_ptr<Test::Suite>(new piecewise_circle_creator_test_suite<dd_real>()));
+    ts.add(std::auto_ptr<Test::Suite>(new piecewise_circle_creator_test_suite<qd_real>()));
+#endif
+    ts.add(std::auto_ptr<Test::Suite>(new piecewise_spline_creator_test_suite<float>()));
+    ts.add(std::auto_ptr<Test::Suite>(new piecewise_spline_creator_test_suite<double>()));
+    ts.add(std::auto_ptr<Test::Suite>(new piecewise_spline_creator_test_suite<long double>()));
+#ifdef ELI_QD_FOUND
+    ts.add(std::auto_ptr<Test::Suite>(new piecewise_spline_creator_test_suite<dd_real>()));
+    ts.add(std::auto_ptr<Test::Suite>(new piecewise_spline_creator_test_suite<qd_real>()));
 #endif
 
     //
