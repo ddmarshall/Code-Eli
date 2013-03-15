@@ -26,17 +26,53 @@ namespace eli
     class tolerance
     {
       public:
-        tolerance() : abs_tol(std::numeric_limits<data__>::epsilon()),
+        tolerance() : abs_tol(1000*std::numeric_limits<data__>::epsilon()),
                       rel_tol(std::sqrt(std::numeric_limits<data__>::epsilon())) {}
         tolerance(const data__ &abs, const data__ &rel) : abs_tol(abs), rel_tol(rel) {}
+        tolerance(const tolerance<data__> &tol) : abs_tol(tol.abs_tol), rel_tol(tol.rel_tol) {}
         ~tolerance() {}
+
+        tolerance & operator=(const tolerance<data__> &tol)
+        {
+          if (this == &tol)
+            return *this;
+
+          abs_tol=tol.abs_tol;
+          rel_tol=tol.rel_tol;
+
+          return *this;
+        }
+
+        bool operator==(const tolerance<data__> &tol) const
+        {
+          if (this == &tol)
+            return true;
+
+          if (abs_tol!=tol.abs_tol)
+            return false;
+
+          if (rel_tol!=tol.rel_tol)
+            return false;
+
+          return true;
+        }
+
+        bool operator!=(const tolerance<data__> &tol) const
+        {
+          return !operator==(tol);
+        }
 
         data__ get_relative_tolerance() const {return rel_tol;}
         data__ get_absolute_tolerance() const {return abs_tol;}
 
         template<typename Derived1, typename Derived2>
-        bool exactly_equal(const Eigen::MatrixBase<Derived1> &m1, const Eigen::MatrixBase<Derived2> &m2)
+        bool exactly_equal(const Eigen::MatrixBase<Derived1> &m1, const Eigen::MatrixBase<Derived2> &m2) const
         {
+          if (m1.rows()!=m2.rows())
+            return false;
+          if (m1.cols()!=m2.cols())
+            return false;
+
           return (m1==m2);
         }
 
@@ -58,7 +94,7 @@ namespace eli
         }
 
         template<typename Derived1, typename Derived2>
-        bool approximately_equal(const Eigen::MatrixBase<Derived1> &m1, const Eigen::MatrixBase<Derived2> &m2)
+        bool approximately_equal(const Eigen::MatrixBase<Derived1> &m1, const Eigen::MatrixBase<Derived2> &m2) const
         {
           typename Derived1::Index i, j;
 
