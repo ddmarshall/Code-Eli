@@ -27,7 +27,15 @@ namespace eli
     namespace curve
     {
       template<typename point__, typename data__, typename tol__>
-      bool create_circle_2(piecewise<bezier, data__, 2, tol__> &/*pc*/, const point__ &/*start*/, const point__ &/*origin*/, const point__ &/*normal*/)
+      bool create_circle_2(piecewise<bezier, data__, 2, tol__> &/*pc*/, const point__ &/*start*/, const point__ &/*origin*/)
+      {
+        // NOT IMPLEMENTED
+        assert(false);
+        return false;
+      }
+
+      template<typename point__, typename data__, typename tol__>
+      bool create_circle_2(piecewise<bezier, data__, 2, tol__> &/*pc*/, const point__ &/*start*/, const point__ &/*middle*/, const point__ &/*last*/)
       {
         // NOT IMPLEMENTED
         assert(false);
@@ -36,6 +44,14 @@ namespace eli
 
       template<typename point__, typename data__, typename tol__>
       bool create_circular_arc_2(piecewise<bezier, data__, 2, tol__> &/*pc*/, const point__ &/*start*/, const point__ &/*origin*/, const point__ &/*normal*/, const data__ &/*angle*/)
+      {
+        // NOT IMPLEMENTED
+        assert(false);
+        return false;
+      }
+
+      template<typename point__, typename data__, typename tol__>
+      bool create_circular_arc_2(piecewise<bezier, data__, 2, tol__> &/*pc*/, const point__ &/*start*/, const point__ &/*middle*/, const point__ &/*last*/)
       {
         // NOT IMPLEMENTED
         assert(false);
@@ -143,7 +159,23 @@ namespace eli
       }
 
       template<typename point__, typename data__, typename tol__>
+      bool create_circle_3(piecewise<bezier, data__, 2, tol__> &/*pc*/, const point__ &/*start*/, const point__ &/*middle*/, const point__ &/*last*/)
+      {
+        // NOT IMPLEMENTED
+        assert(false);
+        return false;
+      }
+
+      template<typename point__, typename data__, typename tol__>
       bool create_circular_arc_3(piecewise<bezier, data__, 3, tol__> &/*pc*/, const point__ &/*start*/, const point__ &/*origin*/, const point__ &/*normal*/, const data__ &/*angle*/)
+      {
+        // NOT IMPLEMENTED
+        assert(false);
+        return false;
+      }
+
+      template<typename point__, typename data__, typename tol__>
+      bool create_circular_arc_3(piecewise<bezier, data__, 3, tol__> &/*pc*/, const point__ &/*start*/, const point__ &/*middle*/, const point__ &/*last*/)
       {
         // NOT IMPLEMENTED
         assert(false);

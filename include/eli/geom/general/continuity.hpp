@@ -24,7 +24,9 @@ namespace eli
         NOT_CONNECTED = -1,
         C0            = 0,
         C1            = 1,
-        C2            = 2
+        C2            = 2,
+        G1            = 101,
+        G2            = 102
       };
     }
   }

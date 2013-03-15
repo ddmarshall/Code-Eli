@@ -23,6 +23,57 @@ namespace eli
 {
   namespace geom
   {
+    namespace utility
+    {
+      // NOTE: Create check_equivalence function that demotes higher order curve to see
+      //       if get (nearly) the same control points for the two curves. This could
+      //       work for all curve types that have control points and support demotion.
+
+      template<typename curve1__, typename curve2__, typename tol__>
+      static bool check_joint_continuity(const curve1__ &curve1, const curve2__ &curve2, const eli::geom::general::continuity &cont, const tol__ &tol)
+      {
+        switch(cont)
+        {
+          case(eli::geom::general::G2):
+          {
+          }
+          case(eli::geom::general::C2):
+          {
+            if (!tol.approximately_equal(curve1.fpp(1), curve2.fpp(0)))
+              return false;
+          }
+          case(eli::geom::general::C1):
+          {
+            if (!tol.approximately_equal(curve1.fp(1), curve2.fp(0)))
+              return false;
+          }
+          case(eli::geom::general::C0):
+          {
+            return tol.approximately_equal(curve1.f(1), curve2.f(0));
+            break;
+          }
+          case(eli::geom::general::NOT_CONNECTED):
+          {
+            return !tol.approximately_equal(curve1.f(1), curve2.f(0));
+            break;
+          }
+          default:
+          {
+            return false;
+            break;
+          }
+        }
+
+        return false;
+      }
+    }
+  }
+}
+
+namespace eli
+{
+  namespace geom
+  {
     namespace curve
     {
       template<template<typename, unsigned short, typename> class curve__, typename data__, unsigned short dim__, typename tol__=eli::util::tolerance<data__> >
@@ -50,7 +101,7 @@ namespace eli
 
         public:
           piecewise() : t0(0) {}
-          piecewise(const piecewise<curve__, data_type, dim__, tol__> &p) : segments(p.segments), t0(p.t0) {}
+          piecewise(const piecewise<curve__, data_type, dim__, tol__> &p) : segments(p.segments), t0(p.t0), tol(p.tol) {}
           ~piecewise() {}
 
           bool operator==(const piecewise<curve__, data_type, dim__> &p) const
@@ -58,6 +109,8 @@ namespace eli
             if (this==&p)
               return true;
             if (t0!=p.t0)
+              return false;
+            if (tol!=p.tol)
               return false;
             if (number_segments()!=p.number_segments())
               return false;
@@ -154,13 +207,31 @@ namespace eli
             }
           }
 
-          bool open() const
-          {
-            return check_continuity(segments.rbegin()->c, segments.begin()->c, eli::geom::general::C0);
-          }
           bool closed() const
           {
-            return !open();
+            return eli::geom::utility::check_joint_continuity(segments.rbegin()->c, segments.begin()->c, eli::geom::general::C0, tol);
+          }
+          bool open() const
+          {
+            return !closed();
+          }
+
+          bool continuous(const eli::geom::general::continuity &cont)
+          {
+            switch (cont)
+            {
+              case(eli::geom::general::NOT_CONNECTED):
+              {
+                return check_continuity(cont);
+              }
+              default:
+              {
+                assert(false);
+                return false;
+              }
+            }
+
+            return true;
           }
 
           void reverse()
@@ -237,7 +308,7 @@ namespace eli
             // check to make sure have valid segments
             if (!segments.empty())
             {
-              if (!check_continuity(curve, segments.begin()->c, eli::geom::general::C0))
+              if (!eli::geom::utility::check_joint_continuity(curve, segments.begin()->c, eli::geom::general::C0, tol))
               {
                 return SEGMENT_NOT_CONNECTED;
               }
@@ -266,7 +337,7 @@ namespace eli
             // check to make sure have valid segments
             if (!segments.empty())
             {
-              if (!check_continuity(segments.rbegin()->c, curve, eli::geom::general::C0))
+              if (!eli::geom::utility::check_joint_continuity(segments.rbegin()->c, curve, eli::geom::general::C0, tol))
               {
                 return SEGMENT_NOT_CONNECTED;
               }
@@ -316,7 +387,7 @@ namespace eli
             {
               scito=scit;
               --scito;
-              if (!check_continuity(scito->c, curve, eli::geom::general::C0))
+              if (!eli::geom::utility::check_joint_continuity(scito->c, curve, eli::geom::general::C0, tol))
               {
                 return SEGMENT_NOT_CONNECTED;
               }
@@ -325,7 +396,7 @@ namespace eli
             {
               scito=scit;
               ++scito;
-              if (!check_continuity(curve, scito->c, eli::geom::general::C0))
+              if (!eli::geom::utility::check_joint_continuity(curve, scito->c, eli::geom::general::C0, tol))
               {
                 return SEGMENT_NOT_CONNECTED;
               }
@@ -357,7 +428,7 @@ namespace eli
             {
               scito=scit;
               --scito;
-              if (!check_continuity(scito->c, curve, eli::geom::general::C0))
+              if (!eli::geom::utility::check_joint_continuity(scito->c, curve, eli::geom::general::C0, tol))
               {
                 return SEGMENT_NOT_CONNECTED;
               }
@@ -366,7 +437,7 @@ namespace eli
             {
               scito=scit;
               ++scito;
-              if (!check_continuity(curve, scito->c, eli::geom::general::C0))
+              if (!eli::geom::utility::check_joint_continuity(curve, scito->c, eli::geom::general::C0, tol))
               {
                 return SEGMENT_NOT_CONNECTED;
               }
@@ -404,7 +475,7 @@ namespace eli
             {
               scito=scit0;
               --scito;
-              if (!check_continuity(scito->c, curve, eli::geom::general::C0))
+              if (!eli::geom::utility::check_joint_continuity(scito->c, curve, eli::geom::general::C0, tol))
               {
                 return SEGMENT_NOT_CONNECTED;
               }
@@ -412,7 +483,7 @@ namespace eli
             if (index1<number_segments())
             {
               scito=scit1;
-              if (!check_continuity(curve, scito->c, eli::geom::general::C0))
+              if (!eli::geom::utility::check_joint_continuity(curve, scito->c, eli::geom::general::C0, tol))
               {
                 return SEGMENT_NOT_CONNECTED;
               }
@@ -450,7 +521,7 @@ namespace eli
             {
               scito=scit;
               --scito;
-              if (!check_continuity(scito->c, cs, eli::geom::general::C0))
+              if (!eli::geom::utility::check_joint_continuity(scito->c, cs, eli::geom::general::C0, tol))
               {
                 return SEGMENT_NOT_CONNECTED;
               }
@@ -459,7 +530,7 @@ namespace eli
             {
               scito=scit;
               ++scito;
-              if (!check_continuity(ce, scito->c, eli::geom::general::C0))
+              if (!eli::geom::utility::check_joint_continuity(ce, scito->c, eli::geom::general::C0, tol))
               {
                 return SEGMENT_NOT_CONNECTED;
               }
@@ -504,7 +575,7 @@ namespace eli
             {
               scito=scit0;
               --scito;
-              if (!check_continuity(scito->c, cs, eli::geom::general::C0))
+              if (!eli::geom::utility::check_joint_continuity(scito->c, cs, eli::geom::general::C0, tol))
               {
                 return SEGMENT_NOT_CONNECTED;
               }
@@ -512,7 +583,7 @@ namespace eli
             if (index1<number_segments())
             {
               scito=scit1;
-              if (!check_continuity(ce, scito->c, eli::geom::general::C0))
+              if (!eli::geom::utility::check_joint_continuity(ce, scito->c, eli::geom::general::C0, tol))
               {
                 return SEGMENT_NOT_CONNECTED;
               }
@@ -699,6 +770,7 @@ namespace eli
 
           segment_collection_type segments;
           data_type t0;
+          tolerance_type tol;
 
         private:
           bool check_continuity(const eli::geom::general::continuity &cont) const
@@ -707,49 +779,13 @@ namespace eli
 
             for (++it; it!=segments.end(); ++it, ++itp)
             {
-              if (!check_continuity(itp->c, it->c, cont))
+              if (!eli::geom::utility::check_joint_continuity(itp->c, it->c, cont, tol))
               {
                 return false;
               }
             }
 
             return true;
-          }
-
-          static bool check_continuity(const curve_type &curve1, const curve_type &curve2, const eli::geom::general::continuity &cont)
-          {
-            tolerance_type tol;
-
-            switch(cont)
-            {
-              case(geom::general::C2):
-              {
-                if (!tol.approximately_equal(curve1.fpp(1), curve2.fpp(0)))
-                  return false;
-              }
-              case(geom::general::C1):
-              {
-                if (!tol.approximately_equal(curve1.fp(1), curve2.fp(0)))
-                  return false;
-              }
-              case(geom::general::C0):
-              {
-                return tol.approximately_equal(curve1.f(1), curve2.f(0));
-                break;
-              }
-              case(geom::general::NOT_CONNECTED):
-              {
-                return !tol.approximately_equal(curve1.f(1), curve2.f(0));
-                break;
-              }
-              default:
-              {
-                return false;
-                break;
-              }
-            }
-
-            return false;
           }
 
           void find_segment(typename segment_collection_type::const_iterator &it, data_type &tt, const data_type &t_in) const
