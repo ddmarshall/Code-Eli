@@ -154,6 +154,13 @@ int main(int argc, char *argv[])
     std::string ostr_filename("piecewise_curve_test_results.html");
 
     // add the cppack test suites
+    ts.add(std::auto_ptr<Test::Suite>(new piecewise_point_creator_test_suite<float>()));
+    ts.add(std::auto_ptr<Test::Suite>(new piecewise_point_creator_test_suite<double>()));
+    ts.add(std::auto_ptr<Test::Suite>(new piecewise_point_creator_test_suite<long double>()));
+#ifdef ELI_QD_FOUND
+    ts.add(std::auto_ptr<Test::Suite>(new piecewise_point_creator_test_suite<dd_real>()));
+    ts.add(std::auto_ptr<Test::Suite>(new piecewise_point_creator_test_suite<qd_real>()));
+#endif
     ts.add(std::auto_ptr<Test::Suite>(new piecewise_polygon_creator_test_suite<float>()));
     ts.add(std::auto_ptr<Test::Suite>(new piecewise_polygon_creator_test_suite<double>()));
     ts.add(std::auto_ptr<Test::Suite>(new piecewise_polygon_creator_test_suite<long double>()));
