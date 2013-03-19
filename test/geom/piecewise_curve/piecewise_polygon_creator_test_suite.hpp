@@ -210,9 +210,9 @@ class piecewise_polygon_creator_test_suite : public Test::Suite
 
         // set the times
         poly_creator.set_t0(t0);
-        poly_creator.set_edge_dt(dt0, 0);
-        poly_creator.set_edge_dt(dt1, 1);
-        poly_creator.set_edge_dt(dt2, 2);
+        poly_creator.set_segment_dt(dt0, 0);
+        poly_creator.set_segment_dt(dt1, 1);
+        poly_creator.set_segment_dt(dt2, 2);
 
         // test corner settings
         ptemp=poly_creator.get_corner(0);
@@ -224,11 +224,11 @@ class piecewise_polygon_creator_test_suite : public Test::Suite
 
         // test time step settings
         TEST_ASSERT(poly_creator.get_t0()==t0);
-        dt=poly_creator.get_edge_dt(0);
+        dt=poly_creator.get_segment_dt(0);
         TEST_ASSERT(dt==dt0);
-        dt=poly_creator.get_edge_dt(1);
+        dt=poly_creator.get_segment_dt(1);
         TEST_ASSERT(dt==dt1);
-        dt=poly_creator.get_edge_dt(2);
+        dt=poly_creator.get_segment_dt(2);
         TEST_ASSERT(dt==dt2);
 
         // create the polygon
@@ -260,11 +260,11 @@ class piecewise_polygon_creator_test_suite : public Test::Suite
 
         // test time step settings
         TEST_ASSERT(poly_creator.get_t0()==0);
-        dt=poly_creator.get_edge_dt(0);
+        dt=poly_creator.get_segment_dt(0);
         TEST_ASSERT(dt==1);
-        dt=poly_creator.get_edge_dt(1);
+        dt=poly_creator.get_segment_dt(1);
         TEST_ASSERT(dt==1);
-        dt=poly_creator.get_edge_dt(2);
+        dt=poly_creator.get_segment_dt(2);
         TEST_ASSERT(dt==1);
 
         // create the polygon
@@ -293,10 +293,10 @@ class piecewise_polygon_creator_test_suite : public Test::Suite
 
         // set the times
         poly_creator.set_t0(t0);
-        poly_creator.set_edge_dt(dt0, 0);
-        poly_creator.set_edge_dt(dt1, 1);
-        poly_creator.set_edge_dt(dt2, 2);
-        poly_creator.set_edge_dt(dt3, 3);
+        poly_creator.set_segment_dt(dt0, 0);
+        poly_creator.set_segment_dt(dt1, 1);
+        poly_creator.set_segment_dt(dt2, 2);
+        poly_creator.set_segment_dt(dt3, 3);
 
         // test corner settings
         ptemp=poly_creator.get_corner(0);
@@ -310,13 +310,13 @@ class piecewise_polygon_creator_test_suite : public Test::Suite
 
         // test time step settings
         TEST_ASSERT(poly_creator.get_t0()==t0);
-        dt=poly_creator.get_edge_dt(0);
+        dt=poly_creator.get_segment_dt(0);
         TEST_ASSERT(dt==dt0);
-        dt=poly_creator.get_edge_dt(1);
+        dt=poly_creator.get_segment_dt(1);
         TEST_ASSERT(dt==dt1);
-        dt=poly_creator.get_edge_dt(2);
+        dt=poly_creator.get_segment_dt(2);
         TEST_ASSERT(dt==dt2);
-        dt=poly_creator.get_edge_dt(3);
+        dt=poly_creator.get_segment_dt(3);
         TEST_ASSERT(dt==dt3);
 
         // create the polygon
@@ -355,13 +355,13 @@ class piecewise_polygon_creator_test_suite : public Test::Suite
 
         // test time step settings
         TEST_ASSERT(poly_creator.get_t0()==0);
-        dt=poly_creator.get_edge_dt(0);
+        dt=poly_creator.get_segment_dt(0);
         TEST_ASSERT(dt==1);
-        dt=poly_creator.get_edge_dt(1);
+        dt=poly_creator.get_segment_dt(1);
         TEST_ASSERT(dt==1);
-        dt=poly_creator.get_edge_dt(2);
+        dt=poly_creator.get_segment_dt(2);
         TEST_ASSERT(dt==1);
-        dt=poly_creator.get_edge_dt(3);
+        dt=poly_creator.get_segment_dt(3);
         TEST_ASSERT(dt==1);
 
         // create the polygon
