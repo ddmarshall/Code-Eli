@@ -18,8 +18,6 @@
 
 #include "eli/mutil/fd/d1o2.hpp"
 
-// #include "eli/geom/point/distance.hpp"
-
 #include "eli/geom/curve/piecewise.hpp"
 #include "eli/geom/curve/bezier.hpp"
 

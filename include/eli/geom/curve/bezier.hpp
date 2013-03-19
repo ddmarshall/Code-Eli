@@ -10,8 +10,8 @@
 *    David D. Marshall - initial code and implementation
 ********************************************************************************/
 
-#ifndef geom_curve_bezier_h
-#define geom_curve_bezier_h
+#ifndef eli_geom_curve_bezier_h
+#define eli_geom_curve_bezier_h
 
 #include <cassert>
 #include <iostream>
