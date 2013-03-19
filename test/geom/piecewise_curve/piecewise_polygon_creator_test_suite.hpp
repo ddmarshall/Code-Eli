@@ -225,11 +225,11 @@ class piecewise_polygon_creator_test_suite : public Test::Suite
         // test time step settings
         TEST_ASSERT(poly_creator.get_t0()==t0);
         dt=poly_creator.get_edge_dt(0);
-        TEST_ASSERT(dt=dt0);
+        TEST_ASSERT(dt==dt0);
         dt=poly_creator.get_edge_dt(1);
-        TEST_ASSERT(dt=dt1);
+        TEST_ASSERT(dt==dt1);
         dt=poly_creator.get_edge_dt(2);
-        TEST_ASSERT(dt=dt2);
+        TEST_ASSERT(dt==dt2);
 
         // create the polygon
         TEST_ASSERT(poly_creator.create(pc));
@@ -261,11 +261,11 @@ class piecewise_polygon_creator_test_suite : public Test::Suite
         // test time step settings
         TEST_ASSERT(poly_creator.get_t0()==0);
         dt=poly_creator.get_edge_dt(0);
-        TEST_ASSERT(dt=1);
+        TEST_ASSERT(dt==1);
         dt=poly_creator.get_edge_dt(1);
-        TEST_ASSERT(dt=1);
+        TEST_ASSERT(dt==1);
         dt=poly_creator.get_edge_dt(2);
-        TEST_ASSERT(dt=1);
+        TEST_ASSERT(dt==1);
 
         // create the polygon
         TEST_ASSERT(poly_creator.create(pc));
@@ -311,13 +311,13 @@ class piecewise_polygon_creator_test_suite : public Test::Suite
         // test time step settings
         TEST_ASSERT(poly_creator.get_t0()==t0);
         dt=poly_creator.get_edge_dt(0);
-        TEST_ASSERT(dt=dt0);
+        TEST_ASSERT(dt==dt0);
         dt=poly_creator.get_edge_dt(1);
-        TEST_ASSERT(dt=dt1);
+        TEST_ASSERT(dt==dt1);
         dt=poly_creator.get_edge_dt(2);
-        TEST_ASSERT(dt=dt2);
+        TEST_ASSERT(dt==dt2);
         dt=poly_creator.get_edge_dt(3);
-        TEST_ASSERT(dt=dt3);
+        TEST_ASSERT(dt==dt3);
 
         // create the polygon
         TEST_ASSERT(poly_creator.create(pc));
@@ -356,13 +356,13 @@ class piecewise_polygon_creator_test_suite : public Test::Suite
         // test time step settings
         TEST_ASSERT(poly_creator.get_t0()==0);
         dt=poly_creator.get_edge_dt(0);
-        TEST_ASSERT(dt=1);
+        TEST_ASSERT(dt==1);
         dt=poly_creator.get_edge_dt(1);
-        TEST_ASSERT(dt=1);
+        TEST_ASSERT(dt==1);
         dt=poly_creator.get_edge_dt(2);
-        TEST_ASSERT(dt=1);
+        TEST_ASSERT(dt==1);
         dt=poly_creator.get_edge_dt(3);
-        TEST_ASSERT(dt=1);
+        TEST_ASSERT(dt==1);
 
         // create the polygon
         TEST_ASSERT(poly_creator.create(pc));

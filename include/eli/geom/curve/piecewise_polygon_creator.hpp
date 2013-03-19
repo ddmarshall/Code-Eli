@@ -80,7 +80,7 @@ namespace eli
               return static_cast<data_type>(-1);
             }
 
-            return dt[0];
+            return dt[i];
           }
 
           void set_corner(const point_type &c, const index_type &i)
@@ -101,7 +101,7 @@ namespace eli
           }
 
           template<typename tol__>
-          bool create(piecewise<bezier, data_type, dim__, tol__> &pc)
+          bool create(piecewise<bezier, data_type, dim__, tol__> &pc) const
           {
             typename piecewise<bezier, data_type, dim__, tol__>::curve_type c(1);
 
