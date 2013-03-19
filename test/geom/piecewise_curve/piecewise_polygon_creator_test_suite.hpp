@@ -322,8 +322,8 @@ class piecewise_polygon_creator_test_suite : public Test::Suite
         // create the polygon
         TEST_ASSERT(poly_creator.create(pc));
 
-        if (typeid(data_type)==typeid(double))
-          octave_print(0, pc);
+//         if (typeid(data_type)==typeid(double))
+//           octave_print(0, pc);
       }
 
       // create box with default parameterization
@@ -367,8 +367,8 @@ class piecewise_polygon_creator_test_suite : public Test::Suite
         // create the polygon
         TEST_ASSERT(poly_creator.create(pc));
 
-        if (typeid(data_type)==typeid(double))
-          octave_print(0, pc);
+//         if (typeid(data_type)==typeid(double))
+//           octave_print(0, pc);
 
       }
     }
