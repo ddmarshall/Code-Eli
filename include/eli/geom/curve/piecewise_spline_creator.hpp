@@ -18,6 +18,7 @@
 
 #include "eli/mutil/fd/d1o2.hpp"
 
+#include "eli/geom/curve/piecewise_creator_base.hpp"
 #include "eli/geom/curve/piecewise.hpp"
 #include "eli/geom/curve/bezier.hpp"
 
@@ -39,7 +40,7 @@ namespace eli
           piecewise_cubic_spline_creator() : piecewise_creator_base<data_type, dim__, tolerance_type>(0, 0), control_point(0) {}
           piecewise_cubic_spline_creator(const index_type &ns)
             : piecewise_creator_base<data_type, dim__, tolerance_type>(ns, 0), control_point(3*ns+1) {}
-          piecewise_cubic_spline_creator(const piecewise_circle_creator<data_type, dim__, tolerance_type> &pcc)
+          piecewise_cubic_spline_creator(const piecewise_cubic_spline_creator<data_type, dim__, tolerance_type> &pcc)
             : piecewise_creator_base<data_type, dim__, tolerance_type>(pcc), control_point(pcc.control_point) {}
 
           void get_segment_control_points(point_type &cp0, point_type &cp1,
