@@ -328,7 +328,6 @@ class piecewise_circle_creator_test_suite : public Test::Suite
       }
 
       // test 3D
-      if (typeid(data_type)==typeid(qd_real))
       {
         point_type origin(2, 4, 1), start, middle, end, x, y, xref, yref;
         data_type radius(2), alpha1(1), alpha2(3), alpha3(5);
