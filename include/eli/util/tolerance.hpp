@@ -27,7 +27,23 @@ namespace eli
     {
       public:
         tolerance() : abs_tol(1000*std::numeric_limits<data__>::epsilon()),
-                      rel_tol(std::sqrt(std::numeric_limits<data__>::epsilon())) {}
+                      rel_tol(std::sqrt(std::numeric_limits<data__>::epsilon()))
+        {
+#ifdef ELI_QD_FOUND
+          // QD Library does not always result in eps error in calculations. This is seen
+          // in sqrt() calculations
+          if (typeid(data__)==typeid(dd_real))
+          {
+            abs_tol=1e-4*static_cast<double>(std::numeric_limits<long double>::epsilon());
+            rel_tol=1e-4*static_cast<double>(std::sqrt(std::numeric_limits<long double>::epsilon()));
+          }
+          if (typeid(data__)==typeid(qd_real))
+          {
+            abs_tol=1000*std::numeric_limits<dd_real>::epsilon();
+            rel_tol=std::sqrt(std::numeric_limits<dd_real>::epsilon());
+          }
+#endif
+        }
         tolerance(const data__ &abs, const data__ &rel) : abs_tol(abs), rel_tol(rel) {}
         tolerance(const tolerance<data__> &tol) : abs_tol(tol.abs_tol), rel_tol(tol.rel_tol) {}
         ~tolerance() {}
