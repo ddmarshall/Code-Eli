@@ -27,18 +27,19 @@ namespace eli
   {
     namespace curve
     {
-      template<typename data__, unsigned short dim__>
-      class piecewise_polygon_creator : public piecewise_creator_base<data__>
+      template<typename data__, unsigned short dim__, typename tol__>
+      class piecewise_polygon_creator : public piecewise_creator_base<data__, dim__, tol__>
       {
         public:
           typedef data__  data_type;
           typedef int index_type;
           typedef Eigen::Matrix<data_type, 1, dim__> point_type;
+          typedef tol__ tolerance_type;
 
-          piecewise_polygon_creator() : piecewise_creator_base<data__>(4, 0), corner(4) {}
-          piecewise_polygon_creator(const index_type &ns) : piecewise_creator_base<data__>(ns, 0), corner(ns) {}
-          piecewise_polygon_creator(const piecewise_polygon_creator<data__, dim__> &ppc)
-            : piecewise_creator_base<data__>(ppc), corner(ppc.corner) {}
+          piecewise_polygon_creator() : piecewise_creator_base<data_type, dim__, tolerance_type>(4, 0), corner(4) {}
+          piecewise_polygon_creator(const index_type &ns) : piecewise_creator_base<data_type, dim__, tolerance_type>(ns, 0), corner(ns) {}
+          piecewise_polygon_creator(const piecewise_polygon_creator<data_type, dim__, tolerance_type> &ppc)
+            : piecewise_creator_base<data_type, dim__, tolerance_type>(ppc), corner(ppc.corner) {}
           ~piecewise_polygon_creator() {}
 
           void set_corner(const point_type &c, const index_type &i)
@@ -58,10 +59,14 @@ namespace eli
             return corner[i];
           }
 
-          template<typename tol__>
-          bool create(piecewise<bezier, data_type, dim__, tol__> &pc) const
+          virtual bool create(piecewise<bezier, data_type, dim__, tolerance_type> &pc) const
           {
-            typename piecewise<bezier, data_type, dim__, tol__>::curve_type c(1);
+            typedef piecewise<bezier, data_type, dim__, tolerance_type> piecewise_curve_type;
+            typedef typename piecewise_curve_type::curve_type curve_type;
+            typedef typename piecewise_curve_type::error_code error_code;
+
+            curve_type c(1);
+            error_code err;
             index_type nsegs(this->get_number_segments());
 
             // do sanity check
@@ -79,13 +84,25 @@ namespace eli
             {
               c.set_control_point(corner[i], 0);
               c.set_control_point(corner[i+1], 1);
-              pc.push_back(c, this->get_segment_dt(i));
+              err=pc.push_back(c, this->get_segment_dt(i));
+              if (err!=piecewise_curve_type::NO_ERROR)
+              {
+                pc.clear();
+                pc.set_t0(0);
+                return false;
+              }
             }
 
             // set the last edge
             c.set_control_point(corner[corner.size()-1], 0);
             c.set_control_point(corner[0], 1);
-            pc.push_back(c, this->get_segment_dt(nsegs-1));
+            err=pc.push_back(c, this->get_segment_dt(nsegs-1));
+            if (err!=piecewise_curve_type::NO_ERROR)
+            {
+              pc.clear();
+              pc.set_t0(0);
+              return false;
+            }
 
             assert(pc.closed());
             return true;

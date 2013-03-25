@@ -15,26 +15,30 @@
 
 #include <vector>
 
+#include "eli/geom/curve/piecewise.hpp"
+#include "eli/geom/curve/bezier.hpp"
+
 namespace eli
 {
   namespace geom
   {
     namespace curve
     {
-      template<typename data__>
+      template<typename data__, unsigned short dim__, typename tol__>
       class piecewise_creator_base
       {
-        private:
+        public:
           typedef data__  data_type;
           typedef int index_type;
+          typedef tol__ tolerance_type;
 
         public:
-          piecewise_creator_base(int n, const data__ &tt0) : dt(n), t0(tt0)
+          piecewise_creator_base(int n, const data_type &tt0) : dt(n), t0(tt0)
           {
             for (index_type i=0; i<static_cast<index_type>(dt.size()); ++i)
               dt[i]=1;
           }
-          piecewise_creator_base(const piecewise_creator_base<data__> &pcb) : dt(pcb.dt), t0(pcb.t0) {}
+          piecewise_creator_base(const piecewise_creator_base<data_type, dim__, tolerance_type> &pcb) : dt(pcb.dt), t0(pcb.t0) {}
 
           index_type get_number_segments() const
           {
@@ -70,6 +74,8 @@ namespace eli
 
             return dt[i];
           }
+
+          virtual bool create(piecewise<bezier, data_type, dim__, tolerance_type> &pc) const = 0;
 
         private:
           virtual void number_segments_changed() {};

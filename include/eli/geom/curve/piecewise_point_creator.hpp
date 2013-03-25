@@ -27,18 +27,19 @@ namespace eli
   {
     namespace curve
     {
-      template<typename data__, unsigned short dim__>
-      class piecewise_point_creator: public piecewise_creator_base<data__>
+      template<typename data__, unsigned short dim__, typename tol__>
+      class piecewise_point_creator: public piecewise_creator_base<data__, dim__, tol__>
       {
         public:
           typedef data__  data_type;
           typedef int index_type;
           typedef Eigen::Matrix<data_type, 1, dim__> point_type;
+          typedef tol__ tolerance_type;
 
-          piecewise_point_creator() : piecewise_creator_base<data__>(4, 0) {}
-          piecewise_point_creator(const index_type &ns) : piecewise_creator_base<data__>(ns, 0) {}
-          piecewise_point_creator(const piecewise_point_creator<data__, dim__> &ppc)
-            : piecewise_creator_base<data__>(ppc), point(ppc.point) {}
+          piecewise_point_creator() : piecewise_creator_base<data_type, dim__, tolerance_type>(4, 0) {}
+          piecewise_point_creator(const index_type &ns) : piecewise_creator_base<data_type, dim__, tolerance_type>(ns, 0) {}
+          piecewise_point_creator(const piecewise_point_creator<data_type, dim__, tolerance_type> &ppc)
+            : piecewise_creator_base<data_type, dim__, tolerance_type>(ppc), point(ppc.point) {}
           ~piecewise_point_creator() {}
 
           void set_point(const point_type &p)
@@ -50,10 +51,14 @@ namespace eli
             return point;
           }
 
-          template<typename tol__>
-          bool create(piecewise<bezier, data_type, dim__, tol__> &pc) const
+          virtual bool create(piecewise<bezier, data_type, dim__, tolerance_type> &pc) const
           {
-            typename piecewise<bezier, data_type, dim__, tol__>::curve_type c(1);
+            typedef piecewise<bezier, data_type, dim__, tolerance_type> piecewise_curve_type;
+            typedef typename piecewise_curve_type::curve_type curve_type;
+            typedef typename piecewise_curve_type::error_code error_code;
+
+            curve_type c(1);
+            error_code err;
 
             // set the start parameter
             pc.set_t0(this->get_t0());
@@ -63,7 +68,13 @@ namespace eli
             {
               c.set_control_point(point, 0);
               c.set_control_point(point, 1);
-              pc.push_back(c, this->get_segment_dt(i));
+              err=pc.push_back(c, this->get_segment_dt(i));
+              if (err!=piecewise_curve_type::NO_ERROR)
+              {
+                pc.clear();
+                pc.set_t0(0);
+                return false;
+              }
             }
 
             assert(pc.closed());

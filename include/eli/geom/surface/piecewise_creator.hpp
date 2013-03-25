@@ -36,6 +36,7 @@ namespace eli
       {
         typedef piecewise<bezier, data__, dim__, tol__> piecewise_surface_type;
         typedef eli::geom::curve::piecewise<eli::geom::curve::bezier, data__, dim__, tol__> piecewise_curve_type;
+        typedef eli::geom::curve::piecewise_circle_creator<data__, dim__, tol__> circle_creator_type;
         typedef typename piecewise_curve_type::curve_type curve_type;
         typedef typename piecewise_surface_type::surface_type surface_type;
         typedef typename curve_type::point_type point_type;
@@ -78,6 +79,7 @@ namespace eli
         }
 
         // cycle through each curve segment
+        circle_creator_type circle_creator;
         for (pp=0; pp<nu; ++pp)
         {
           // resize the surface patch
@@ -97,7 +99,12 @@ namespace eli
             origin=normal.dot(start)*normal;
 
             // get the circle
-            eli::geom::curve::create_circle_3(pc_circle, start, origin, normal);
+            circle_creator.set(start, origin, normal);
+            if (!circle_creator.create(pc_circle))
+            {
+              assert(false);
+              return false;
+            }
 
             // for each segment of circle set the control points
             for (qq=0; qq<4; ++qq)

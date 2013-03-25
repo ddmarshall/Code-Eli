@@ -32,13 +32,13 @@ template<typename data__>
 class piecewise_polygon_creator_test_suite : public Test::Suite
 {
   private:
-    typedef eli::geom::curve::piecewise_polygon_creator<data__, 3> polygon_creator_type;
     typedef eli::geom::curve::piecewise<eli::geom::curve::bezier, data__, 3> piecewise_curve_type;
     typedef typename piecewise_curve_type::curve_type curve_type;
     typedef typename piecewise_curve_type::point_type point_type;
     typedef typename piecewise_curve_type::data_type data_type;
     typedef typename piecewise_curve_type::index_type index_type;
     typedef typename piecewise_curve_type::tolerance_type tolerance_type;
+    typedef eli::geom::curve::piecewise_polygon_creator<data__, 3, tolerance_type> polygon_creator_type;
 
     tolerance_type tol;
 
