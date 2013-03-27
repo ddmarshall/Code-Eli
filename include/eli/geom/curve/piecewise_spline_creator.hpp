@@ -67,6 +67,22 @@ namespace eli
             }
           }
 
+          void set_segment_point_slope(const point_type &p0, const point_type &m0,
+                                       const point_type &p1, const point_type &m1, const index_type &i)
+          {
+            if ((3*i+1)<static_cast<index_type>(control_point.size()))
+            {
+              point_type cp[4];
+              data_type dt(this->get_segment_dt(i));
+
+              cp[0]=p0;
+              cp[1]=p0+(dt*m0/3);
+              cp[2]=p1-(dt*m1/3);
+              cp[3]=p1;
+              set_segment_control_points(cp[0], cp[1], cp[2], cp[3], i);
+            }
+          }
+
           virtual bool create(piecewise<bezier, data_type, dim__, tolerance_type> &pc) const
           {
             typedef piecewise<bezier, data_type, dim__, tolerance_type> piecewise_curve_type;
@@ -636,7 +652,7 @@ namespace eli
                 --item1;
 
                 // set the parameter values
-                m[0]=0.5*(1-tension)*(1+bias)*(1+continuity)*((*itm1)-(*item1))/(-this->get_segment_dt(nsegs-1))
+                m[0]=0.5*(1-tension)*(1+bias)*(1+continuity)*((*itm1)-(*item1))/this->get_segment_dt(nsegs-1)
                     +0.5*(1-tension)*(1-bias)*(1-continuity)*((*it)-(*itm1))/this->get_segment_dt(0);
 
                 break;
@@ -738,10 +754,55 @@ namespace eli
            * curves are C2 continuous.
            */
           template<typename point_it__>
-          void set_cubic_spline(point_it__ /*itb*/)
+          void set_cubic_spline(point_it__ itb)
           {
-            // TODO: NEED TO IMPLEMENT
-            assert(false);
+            index_type i, nseg(this->get_number_segments()), nunk(3*nseg+1);
+            Eigen::Matrix<data_type, Eigen::Dynamic, Eigen::Dynamic> M(nunk, nunk);
+            Eigen::Matrix<data_type, Eigen::Dynamic, dim__> b(nunk, dim__);
+
+            // cannot apply this condition for less than 3 segments
+            if (nseg<3)
+            {
+              assert(false);
+              return;
+            }
+
+            // create all of the common rows of system of equations
+            create_cubic_spline_base_matrix(M, b, itb);
+
+            // set the not-a-knot conditions (f''' is continuous between first two and last two segments)
+            data_type dt1_3, dt2_3;
+            dt1_3=this->get_segment_dt(0);
+            dt1_3*=dt1_3*dt1_3;
+            dt2_3=this->get_segment_dt(1);
+            dt2_3*=dt2_3*dt2_3;
+            M(1, 0)=-1/dt1_3;
+            M(1, 1)=3/dt1_3;
+            M(1, 2)=-3/dt1_3;
+            M(1, 3)=1/dt1_3+1/dt2_3;
+            M(1, 4)=-3/dt2_3;
+            M(1, 5)=3/dt2_3;
+            M(1, 6)=-1/dt2_3;
+            b.row(1).setZero();
+            dt1_3=this->get_segment_dt(nseg-2);
+            dt1_3*=dt1_3*dt1_3;
+            dt2_3=this->get_segment_dt(nseg-1);
+            dt2_3*=dt2_3*dt2_3;
+            M(nunk-2, nunk-7)=-1/dt1_3;
+            M(nunk-2, nunk-6)=3/dt1_3;
+            M(nunk-2, nunk-5)=-3/dt1_3;
+            M(nunk-2, nunk-4)=1/dt1_3+1/dt2_3;
+            M(nunk-2, nunk-3)=-3/dt2_3;
+            M(nunk-2, nunk-2)=3/dt2_3;
+            M(nunk-2, nunk-1)=-1/dt2_3;
+            b.row(nunk-2).setZero();
+
+            // find the control points and set them
+            b=M.lu().solve(b);
+            for (i=0; i<nunk; ++i)
+            {
+              control_point[i]=b.row(i);
+            }
           }
 
           /**
@@ -751,10 +812,32 @@ namespace eli
            * curves are C2 continuous.
            */
           template<typename point_it__>
-          void set_clamped_cubic_spline(point_it__ /*itb*/, const point_type &/*start_slope*/, const point_type &/*end_slope*/)
+          void set_clamped_cubic_spline(point_it__ itb, const point_type &start_slope, const point_type &end_slope)
           {
-            // TODO: NEED TO IMPLEMENT
-            assert(false);
+            index_type i, nseg(this->get_number_segments()), nunk(3*nseg+1);
+            Eigen::Matrix<data_type, Eigen::Dynamic, Eigen::Dynamic> M(nunk, nunk);
+            Eigen::Matrix<data_type, Eigen::Dynamic, dim__> b(nunk, dim__);
+
+            // create all of the common rows of system of equations
+            create_cubic_spline_base_matrix(M, b, itb);
+
+            // set the clamped conditions
+            data_type tmp;
+            tmp=this->get_segment_dt(0);
+            M(1, 0)=-3/tmp;
+            M(1, 1)=3/tmp;
+            b.row(1)=start_slope;
+            tmp=this->get_segment_dt(nseg-1);
+            M(nunk-2, nunk-2)=-3/tmp;
+            M(nunk-2, nunk-1)=3/tmp;
+            b.row(nunk-2)=end_slope;
+
+            // find the control points and set them
+            b=M.lu().solve(b);
+            for (i=0; i<nunk; ++i)
+            {
+              control_point[i]=b.row(i);
+            }
           }
 
           /**
@@ -764,10 +847,31 @@ namespace eli
            * curves are C2 continuous.
            */
           template<typename point_it__>
-          void set_natural_cubic_spline(point_it__ /*itb*/)
+          void set_natural_cubic_spline(point_it__ itb)
           {
-            // TODO: NEED TO IMPLEMENT
-            assert(false);
+            index_type i, nseg(this->get_number_segments()), nunk(3*nseg+1);
+            Eigen::Matrix<data_type, Eigen::Dynamic, Eigen::Dynamic> M(nunk, nunk);
+            Eigen::Matrix<data_type, Eigen::Dynamic, dim__> b(nunk, dim__);
+
+            // create all of the common rows of system of equations
+            create_cubic_spline_base_matrix(M, b, itb);
+
+            // set the natural conditions (f''=0 at both ends)
+            M(1, 0)=1;
+            M(1, 1)=-2;
+            M(1, 2)=1;
+            b.row(1).setZero();
+            M(nunk-2, nunk-3)=1;
+            M(nunk-2, nunk-2)=-2;
+            M(nunk-2, nunk-1)=1;
+            b.row(nunk-2).setZero();
+
+            // find the control points and set them
+            b=M.lu().solve(b);
+            for (i=0; i<nunk; ++i)
+            {
+              control_point[i]=b.row(i);
+            }
           }
 
           /**
@@ -777,10 +881,20 @@ namespace eli
            * curve. The resulting piecewise curves are C2 continuous.
            */
           template<typename point_it__>
-          void set_closed_cubic_spline(point_it__ /*itb*/, const eli::geom::general::continuity &/*end_cont*/)
+          void set_closed_cubic_spline(point_it__ itb)
           {
-            // TODO: NEED TO IMPLEMENT
-            assert(false);
+            index_type i, nseg(this->get_number_segments());
+            std::vector<point_type, Eigen::aligned_allocator<point_type>> pt(nseg+1);
+            point_it__ it;
+
+            // copy over points
+            for (i=0, it=itb; i<nseg; ++i, ++it)
+            {
+              pt[i]=(*it);
+            }
+            pt[nseg]=pt[0];
+
+            set_periodic_cubic_spline(pt.begin());
           }
 
           /**
@@ -790,16 +904,81 @@ namespace eli
            * curve. The resulting piecewise curves are C2 continuous.
            */
           template<typename point_it__>
-          void set_periodic_cubic_spline(point_it__ /*itb*/)
+          void set_periodic_cubic_spline(point_it__ itb)
           {
-            // TODO: NEED TO IMPLEMENT
-            assert(false);
+            index_type i, nseg(this->get_number_segments()), nunk(3*nseg+1);
+            Eigen::Matrix<data_type, Eigen::Dynamic, Eigen::Dynamic> M(nunk, nunk);
+            Eigen::Matrix<data_type, Eigen::Dynamic, dim__> b(nunk, dim__);
+
+            // create all of the common rows of system of equations
+            create_cubic_spline_base_matrix(M, b, itb);
+
+            // set the periodic conditions (f' and f'' are same at start and end)
+            data_type dt0(this->get_segment_dt(0)), dtn(this->get_segment_dt(nseg-1));
+            M(1, 0)=-1/dt0;
+            M(1, 1)=1/dt0;
+            M(1, nunk-2)=1/dtn;
+            M(1, nunk-1)=-1/dtn;
+            b.row(1).setZero();
+            M(nunk-2, 0)=1/dt0/dt0;
+            M(nunk-2, 1)=-2/dt0/dt0;
+            M(nunk-2, 2)=1/dt0/dt0;
+            M(nunk-2, nunk-3)=-1/dtn/dtn;
+            M(nunk-2, nunk-2)=2/dtn/dtn;
+            M(nunk-2, nunk-1)=-1/dtn/dtn;
+            b.row(nunk-2).setZero();
+
+            // find the control points and set them
+            b=M.lu().solve(b);
+            for (i=0; i<nunk; ++i)
+            {
+              control_point[i]=b.row(i);
+            }
           }
 
         private:
           typedef std::vector<point_type, Eigen::aligned_allocator<point_type>> point_collection_type;
 
           void number_segments_changed() {control_point.resize(3*this->get_number_segments()+1);}
+
+          template<typename Derived1__, typename Derived2__, typename point_it__>
+          void create_cubic_spline_base_matrix(Eigen::MatrixBase<Derived1__> &M, Eigen::MatrixBase<Derived2__> &b, point_it__ itb)
+          {
+            index_type i, nseg(this->get_number_segments());
+            point_it__ it;
+
+            // cycle through each segment and set conditions
+            it=itb;
+            M.setZero();
+            // set the C0 condition at start of segment 0
+            M(0, 0)=1;
+            b.row(0)=(*it);
+            for (++it, i=1; i<nseg; ++i, ++it)
+            {
+              data_type dt(this->get_segment_dt(i)), dtm1(this->get_segment_dt(i-1));
+
+              // set the C2 condition at start of segment i
+              M(3*i-1, 3*i-2)=1/dtm1/dtm1;
+              M(3*i-1, 3*i-1)=-2/dtm1/dtm1;
+              M(3*i-1, 3*i)=1/dtm1/dtm1-1/dt/dt;
+              M(3*i-1, 3*i+1)=2/dt/dt;
+              M(3*i-1, 3*i+2)=-1/dt/dt;
+              b.row(3*i-1).setZero();
+
+              // set the C0 condition at start of segment i
+              M(3*i, 3*i)=1;
+              b.row(3*i)=(*it);
+
+              // set the C1 condition at start of segment i
+              M(3*i+1, 3*i-1)=1/dtm1;
+              M(3*i+1, 3*i)=-(1/dtm1+1/dt);
+              M(3*i+1, 3*i+1)=1/dt;
+              b.row(3*i+1).setZero();
+            }
+            // set the c0 condition at end of last segement
+            M(3*i, 3*i)=1;
+            b.row(3*i)=(*it);
+          }
 
         private:
           point_collection_type control_point;

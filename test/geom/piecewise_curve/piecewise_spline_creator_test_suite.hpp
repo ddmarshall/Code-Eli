@@ -47,6 +47,7 @@ class piecewise_spline_creator_test_suite : public Test::Suite
     {
       // add the tests
       TEST_ADD(piecewise_spline_creator_test_suite<float>::create_control_points_test);
+      TEST_ADD(piecewise_spline_creator_test_suite<float>::create_points_slopes_test);
       TEST_ADD(piecewise_spline_creator_test_suite<float>::create_piecewise_chip_test);
       TEST_ADD(piecewise_spline_creator_test_suite<float>::create_closed_piecewise_chip_test);
       TEST_ADD(piecewise_spline_creator_test_suite<float>::create_piecewise_cardinal_spline_test);
@@ -55,11 +56,17 @@ class piecewise_spline_creator_test_suite : public Test::Suite
       TEST_ADD(piecewise_spline_creator_test_suite<float>::create_closed_piecewise_catmull_rom_spline_test);
       TEST_ADD(piecewise_spline_creator_test_suite<float>::create_piecewise_kochanek_bartels_spline_test);
       TEST_ADD(piecewise_spline_creator_test_suite<float>::create_closed_piecewise_kochanek_bartels_spline_test);
+      TEST_ADD(piecewise_spline_creator_test_suite<float>::create_cubic_spline_test);
+      TEST_ADD(piecewise_spline_creator_test_suite<float>::create_clamped_cubic_spline_test);
+      TEST_ADD(piecewise_spline_creator_test_suite<float>::create_natural_cubic_spline_test);
+      TEST_ADD(piecewise_spline_creator_test_suite<float>::create_periodic_cubic_spline_test);
+      TEST_ADD(piecewise_spline_creator_test_suite<float>::create_closed_cubic_spline_test);
     }
     void AddTests(const double &)
     {
       // add the tests
       TEST_ADD(piecewise_spline_creator_test_suite<double>::create_control_points_test);
+      TEST_ADD(piecewise_spline_creator_test_suite<double>::create_points_slopes_test);
       TEST_ADD(piecewise_spline_creator_test_suite<double>::create_piecewise_chip_test);
       TEST_ADD(piecewise_spline_creator_test_suite<double>::create_closed_piecewise_chip_test);
       TEST_ADD(piecewise_spline_creator_test_suite<double>::create_piecewise_cardinal_spline_test);
@@ -68,11 +75,17 @@ class piecewise_spline_creator_test_suite : public Test::Suite
       TEST_ADD(piecewise_spline_creator_test_suite<double>::create_closed_piecewise_catmull_rom_spline_test);
       TEST_ADD(piecewise_spline_creator_test_suite<double>::create_piecewise_kochanek_bartels_spline_test);
       TEST_ADD(piecewise_spline_creator_test_suite<double>::create_closed_piecewise_kochanek_bartels_spline_test);
+      TEST_ADD(piecewise_spline_creator_test_suite<double>::create_cubic_spline_test);
+      TEST_ADD(piecewise_spline_creator_test_suite<double>::create_clamped_cubic_spline_test);
+      TEST_ADD(piecewise_spline_creator_test_suite<double>::create_natural_cubic_spline_test);
+      TEST_ADD(piecewise_spline_creator_test_suite<double>::create_periodic_cubic_spline_test);
+      TEST_ADD(piecewise_spline_creator_test_suite<double>::create_closed_cubic_spline_test);
     }
     void AddTests(const long double &)
     {
       // add the tests
       TEST_ADD(piecewise_spline_creator_test_suite<long double>::create_control_points_test);
+      TEST_ADD(piecewise_spline_creator_test_suite<long double>::create_points_slopes_test);
       TEST_ADD(piecewise_spline_creator_test_suite<long double>::create_piecewise_chip_test);
       TEST_ADD(piecewise_spline_creator_test_suite<long double>::create_closed_piecewise_chip_test);
       TEST_ADD(piecewise_spline_creator_test_suite<long double>::create_piecewise_cardinal_spline_test);
@@ -81,12 +94,18 @@ class piecewise_spline_creator_test_suite : public Test::Suite
       TEST_ADD(piecewise_spline_creator_test_suite<long double>::create_closed_piecewise_catmull_rom_spline_test);
       TEST_ADD(piecewise_spline_creator_test_suite<long double>::create_piecewise_kochanek_bartels_spline_test);
       TEST_ADD(piecewise_spline_creator_test_suite<long double>::create_closed_piecewise_kochanek_bartels_spline_test);
+      TEST_ADD(piecewise_spline_creator_test_suite<long double>::create_cubic_spline_test);
+      TEST_ADD(piecewise_spline_creator_test_suite<long double>::create_clamped_cubic_spline_test);
+      TEST_ADD(piecewise_spline_creator_test_suite<long double>::create_natural_cubic_spline_test);
+      TEST_ADD(piecewise_spline_creator_test_suite<long double>::create_periodic_cubic_spline_test);
+      TEST_ADD(piecewise_spline_creator_test_suite<long double>::create_closed_cubic_spline_test);
     }
 #ifdef ELI_QD_FOUND
     void AddTests(const dd_real &)
     {
       // add the tests
       TEST_ADD(piecewise_spline_creator_test_suite<dd_real>::create_control_points_test);
+      TEST_ADD(piecewise_spline_creator_test_suite<dd_real>::create_points_slopes_test);
       TEST_ADD(piecewise_spline_creator_test_suite<dd_real>::create_piecewise_chip_test);
       TEST_ADD(piecewise_spline_creator_test_suite<dd_real>::create_closed_piecewise_chip_test);
       TEST_ADD(piecewise_spline_creator_test_suite<dd_real>::create_piecewise_cardinal_spline_test);
@@ -95,12 +114,18 @@ class piecewise_spline_creator_test_suite : public Test::Suite
       TEST_ADD(piecewise_spline_creator_test_suite<dd_real>::create_closed_piecewise_catmull_rom_spline_test);
       TEST_ADD(piecewise_spline_creator_test_suite<dd_real>::create_piecewise_kochanek_bartels_spline_test);
       TEST_ADD(piecewise_spline_creator_test_suite<dd_real>::create_closed_piecewise_kochanek_bartels_spline_test);
+      TEST_ADD(piecewise_spline_creator_test_suite<dd_real>::create_cubic_spline_test);
+      TEST_ADD(piecewise_spline_creator_test_suite<dd_real>::create_clamped_cubic_spline_test);
+      TEST_ADD(piecewise_spline_creator_test_suite<dd_real>::create_natural_cubic_spline_test);
+      TEST_ADD(piecewise_spline_creator_test_suite<dd_real>::create_periodic_cubic_spline_test);
+      TEST_ADD(piecewise_spline_creator_test_suite<dd_real>::create_closed_cubic_spline_test);
     }
 
     void AddTests(const qd_real &)
     {
       // add the tests
       TEST_ADD(piecewise_spline_creator_test_suite<qd_real>::create_control_points_test);
+      TEST_ADD(piecewise_spline_creator_test_suite<qd_real>::create_points_slopes_test);
       TEST_ADD(piecewise_spline_creator_test_suite<qd_real>::create_piecewise_chip_test);
       TEST_ADD(piecewise_spline_creator_test_suite<qd_real>::create_closed_piecewise_chip_test);
       TEST_ADD(piecewise_spline_creator_test_suite<qd_real>::create_piecewise_cardinal_spline_test);
@@ -109,6 +134,11 @@ class piecewise_spline_creator_test_suite : public Test::Suite
       TEST_ADD(piecewise_spline_creator_test_suite<qd_real>::create_closed_piecewise_catmull_rom_spline_test);
       TEST_ADD(piecewise_spline_creator_test_suite<qd_real>::create_piecewise_kochanek_bartels_spline_test);
       TEST_ADD(piecewise_spline_creator_test_suite<qd_real>::create_closed_piecewise_kochanek_bartels_spline_test);
+      TEST_ADD(piecewise_spline_creator_test_suite<qd_real>::create_cubic_spline_test);
+      TEST_ADD(piecewise_spline_creator_test_suite<qd_real>::create_clamped_cubic_spline_test);
+      TEST_ADD(piecewise_spline_creator_test_suite<qd_real>::create_natural_cubic_spline_test);
+      TEST_ADD(piecewise_spline_creator_test_suite<qd_real>::create_periodic_cubic_spline_test);
+      TEST_ADD(piecewise_spline_creator_test_suite<qd_real>::create_closed_cubic_spline_test);
     }
 #endif
   public:
@@ -379,6 +409,172 @@ class piecewise_spline_creator_test_suite : public Test::Suite
 
         // create the spline
         TEST_ASSERT(spline_creator.create(pc));
+      }
+    }
+
+    void create_points_slopes_test()
+    {
+      // create with specified times
+      {
+        piecewise_curve_type pc;
+        cubic_spline_creator_type spline_creator(4);
+        point_type pt_b, pt_a;
+        std::vector<point_type, Eigen::aligned_allocator<point_type> > pt(5), m0(4), m1(4);
+        std::vector<data_type> t(5);
+        data_type dt;
+        index_type i, nseg;
+
+        // set the points and times
+        pt[0] << 2, 0, 0;
+        pt[1] << 1, 1, 0;
+        pt[2] << 2, 1, 1;
+        pt[3] << 0, 2, 1;
+        pt[4] << 0, 1, 0;
+        m0[0] << 0, 1, 0;
+        m1[0] << 1, 1, 1;
+        m0[1] << 1, 1, 1;
+        m1[1] << 0, 1, 0;
+        m0[2] << 1, 0, 1;
+        m1[2] << 1, 1, 1;
+        m0[3] << 0, 1, 1;
+        m1[3] << 1, 1, 0;
+        t[0]=1;
+        t[1]=3;
+        t[2]=4;
+        t[3]=7;
+        t[4]=9;
+
+        // set the times
+        spline_creator.set_t0(t[0]);
+        spline_creator.set_segment_dt(t[1]-t[0], 0);
+        spline_creator.set_segment_dt(t[2]-t[1], 1);
+        spline_creator.set_segment_dt(t[3]-t[2], 2);
+        spline_creator.set_segment_dt(t[4]-t[3], 3);
+
+        // set the points and slopes
+        spline_creator.set_segment_point_slope(pt[0], m0[0], pt[1], m1[0], 0);
+        spline_creator.set_segment_point_slope(pt[1], m0[1], pt[2], m1[1], 1);
+        spline_creator.set_segment_point_slope(pt[2], m0[2], pt[3], m1[2], 2);
+        spline_creator.set_segment_point_slope(pt[3], m0[3], pt[4], m1[3], 3);
+
+        // test time step settings
+        TEST_ASSERT(spline_creator.get_t0()==t[0]);
+        dt=spline_creator.get_segment_dt(0);
+        TEST_ASSERT(dt==t[1]-t[0]);
+        dt=spline_creator.get_segment_dt(1);
+        TEST_ASSERT(dt==t[2]-t[1]);
+        dt=spline_creator.get_segment_dt(2);
+        TEST_ASSERT(dt==t[3]-t[2]);
+        dt=spline_creator.get_segment_dt(3);
+        TEST_ASSERT(dt==t[4]-t[3]);
+
+        // create the spline
+        TEST_ASSERT(spline_creator.create(pc));
+
+        // check the number segments
+        nseg=pc.number_segments();
+        TEST_ASSERT(nseg==static_cast<index_type>(pt.size()-1));
+
+        // check the starting time
+        TEST_ASSERT(tol.approximately_equal(t[0], pc.get_t0()));
+
+        // test the curve
+        data_type small(std::numeric_limits<data_type>::epsilon());
+        i=0;
+        pt_a=pc.f(t[i]);
+        TEST_ASSERT(tol.approximately_equal(pt_a, pt[i]));
+        pt_b=pc.fp(t[i]);
+        TEST_ASSERT(tol.approximately_equal(pt_b, m0[i]));
+        for (i=1; i<nseg-1; ++i)
+        {
+          pt_b=pc.f(t[i]*(1+small));
+          pt_a=pc.f(t[i]*(1-small));
+          TEST_ASSERT(tol.approximately_equal(pt_a, pt[i]));
+          TEST_ASSERT(tol.approximately_equal(pt_b, pt[i]));
+          pt_b=pc.fp(t[i]*(1+small));
+          pt_a=pc.fp(t[i]*(1-small));
+          TEST_ASSERT(tol.approximately_equal(pt_a, m1[i-1]));
+          TEST_ASSERT(tol.approximately_equal(pt_b, m0[i]));
+        }
+        pt_a=pc.f(t[i+1]);
+        TEST_ASSERT(tol.approximately_equal(pt_a, pt[i+1]));
+        pt_b=pc.fp(t[i+1]);
+        TEST_ASSERT(tol.approximately_equal(pt_b, m1[i]));
+      }
+
+      // create with default times
+      {
+        piecewise_curve_type pc;
+        cubic_spline_creator_type spline_creator(4);
+        point_type pt_b, pt_a;
+        std::vector<point_type, Eigen::aligned_allocator<point_type> > pt(5), m0(4), m1(4);
+        data_type dt;
+        index_type i, nseg;
+
+        // set the points and times
+        pt[0] << 2, 0, 0;
+        pt[1] << 1, 1, 0;
+        pt[2] << 2, 1, 1;
+        pt[3] << 0, 2, 1;
+        pt[4] << 0, 1, 0;
+        m0[0] << 0, 1, 0;
+        m1[0] << 1, 1, 1;
+        m0[1] << 1, 1, 1;
+        m1[1] << 0, 1, 0;
+        m0[2] << 1, 0, 1;
+        m1[2] << 1, 1, 1;
+        m0[3] << 0, 1, 1;
+        m1[3] << 1, 1, 0;
+
+        // set the points and slopes
+        spline_creator.set_segment_point_slope(pt[0], m0[0], pt[1], m1[0], 0);
+        spline_creator.set_segment_point_slope(pt[1], m0[1], pt[2], m1[1], 1);
+        spline_creator.set_segment_point_slope(pt[2], m0[2], pt[3], m1[2], 2);
+        spline_creator.set_segment_point_slope(pt[3], m0[3], pt[4], m1[3], 3);
+
+        // test time step settings
+        TEST_ASSERT(spline_creator.get_t0()==0);
+        dt=spline_creator.get_segment_dt(0);
+        TEST_ASSERT(dt==1);
+        dt=spline_creator.get_segment_dt(1);
+        TEST_ASSERT(dt==1);
+        dt=spline_creator.get_segment_dt(2);
+        TEST_ASSERT(dt==1);
+        dt=spline_creator.get_segment_dt(3);
+        TEST_ASSERT(dt==1);
+
+        // create the spline
+        TEST_ASSERT(spline_creator.create(pc));
+
+        // check the number segments
+        nseg=pc.number_segments();
+        TEST_ASSERT(nseg==static_cast<index_type>(pt.size()-1));
+
+        // check the starting time
+        TEST_ASSERT(tol.approximately_equal(0, pc.get_t0()));
+
+        // test the curve
+        data_type small(std::numeric_limits<data_type>::epsilon());
+        i=0;
+        pt_a=pc.f(i);
+        TEST_ASSERT(tol.approximately_equal(pt_a, pt[i]));
+        pt_b=pc.fp(i);
+        TEST_ASSERT(tol.approximately_equal(pt_b, m0[i]));
+        for (i=1; i<nseg-1; ++i)
+        {
+          pt_b=pc.f(i*(1+small));
+          pt_a=pc.f(i*(1-small));
+          TEST_ASSERT(tol.approximately_equal(pt_a, pt[i]));
+          TEST_ASSERT(tol.approximately_equal(pt_b, pt[i]));
+          pt_b=pc.fp(i*(1+small));
+          pt_a=pc.fp(i*(1-small));
+          TEST_ASSERT(tol.approximately_equal(pt_a, m1[i-1]));
+          TEST_ASSERT(tol.approximately_equal(pt_b, m0[i]));
+        }
+        pt_a=pc.f(i+1);
+        TEST_ASSERT(tol.approximately_equal(pt_a, pt[i+1]));
+        pt_b=pc.fp(i+1);
+        TEST_ASSERT(tol.approximately_equal(pt_b, m1[i]));
       }
     }
 
@@ -1708,7 +1904,7 @@ class piecewise_spline_creator_test_suite : public Test::Suite
         point_type pt_b, pt_a;
         std::vector<point_type, Eigen::aligned_allocator<point_type> > pts(5);
         std::vector<data_type> t(5);
-        data_type dt, ten(0), bia(0), con(0);
+        data_type dt, ten(0.75), bia(0.75), con(0);
         index_type i, nseg;
 
         // set the points and times
@@ -1774,7 +1970,7 @@ class piecewise_spline_creator_test_suite : public Test::Suite
         cubic_spline_creator_type spline_creator(4);
         point_type pt_b, pt_a;
         std::vector<point_type, Eigen::aligned_allocator<point_type> > pts(5);
-        data_type dt, ten(0), bia(0), con(0);
+        data_type dt, ten(0.75), bia(0.75), con(0);
         index_type i, nseg;
 
         // set the points and times
@@ -1820,106 +2016,17 @@ class piecewise_spline_creator_test_suite : public Test::Suite
         }
       }
     }
-#if 0
-    {
-      // create with specified times
-      {
-        piecewise_curve_type pc1;
-        point_type pt_b, pt_a;
-        std::vector<point_type, Eigen::aligned_allocator<point_type> > pts(5);
-        std::vector<data_type> t(5);
-        index_type i, nseg;
-
-        // set the points and times
-        pts[0] <<  1, 3,  2;
-        pts[1] <<  0, 2,  3;
-        pts[2] << -1, 4,  1;
-        pts[3] <<  0, 5,  0;
-        pts[4] <<  1, 6, -1;
-        t[0]=1;
-        t[1]=3;
-        t[2]=4;
-        t[3]=7;
-        t[4]=9;
-
-        // create the piecewise curve
-        TEST_ASSERT(create_piecewise_kochanek_bartels_spline(pc1, pts.begin(), pts.end(), t.begin(), static_cast<data_type>(0), static_cast<data_type>(0), static_cast<data_type>(0), eli::geom::general::NOT_CONNECTED));
-
-        // check the number segments
-        nseg=pc1.number_segments();
-        TEST_ASSERT(nseg==static_cast<index_type>(pts.size()-1));
-
-        // check the starting time
-        TEST_ASSERT(tol.approximately_equal(t[0], pc1.get_t0()));
-
-        // check the continuity at each point
-        for (i=1; i<nseg; ++i)
-        {
-          data_type small(std::numeric_limits<data_type>::epsilon());
-          pt_b=pc1.f(t[i]*(1+small));
-          pt_a=pc1.f(t[i]*(1-small));
-          TEST_ASSERT(tol.approximately_equal(pt_a, pt_b));
-          pt_b=pc1.fp(t[i]*(1+small));
-          pt_a=pc1.fp(t[i]*(1-small));
-          TEST_ASSERT(tol.approximately_equal(pt_a, pt_b));
-          pt_b=pc1.fpp(t[i]*(1+small));
-          pt_a=pc1.fpp(t[i]*(1-small));
-          TEST_ASSERT(!tol.approximately_equal(pt_a, pt_b));
-        }
-      }
-
-      // create with default times
-      {
-        piecewise_curve_type pc1;
-        point_type pt_b, pt_a;
-        std::vector<point_type, Eigen::aligned_allocator<point_type> > pts(5);
-        index_type i, nseg;
-
-        // set the points and times
-        pts[0] <<  1, 3,  2;
-        pts[1] <<  0, 2,  3;
-        pts[2] << -1, 4,  1;
-        pts[3] <<  0, 5,  0;
-        pts[4] <<  1, 6, -1;
-
-        // create the piecewise curve
-        TEST_ASSERT(create_piecewise_kochanek_bartels_spline(pc1, pts.begin(), pts.end(), static_cast<data_type>(0.75), static_cast<data_type>(0.75), static_cast<data_type>(0), eli::geom::general::NOT_CONNECTED));
-
-        // check the number segments
-        nseg=pc1.number_segments();
-        TEST_ASSERT(nseg==static_cast<index_type>(pts.size()-1));
-
-        // check the starting time
-        TEST_ASSERT(tol.approximately_equal(0, pc1.get_t0()));
-
-        // check the continuity at each point
-        for (i=1; i<nseg; ++i)
-        {
-          data_type small(std::numeric_limits<data_type>::epsilon());
-          pt_b=pc1.f(i*(1+small));
-          pt_a=pc1.f(i*(1-small));
-          TEST_ASSERT(tol.approximately_equal(pt_a, pt_b));
-          pt_b=pc1.fp(i*(1+small));
-          pt_a=pc1.fp(i*(1-small));
-          TEST_ASSERT(tol.approximately_equal(pt_a, pt_b));
-          pt_b=pc1.fpp(i*(1+small));
-          pt_a=pc1.fpp(i*(1-small));
-          TEST_ASSERT(!tol.approximately_equal(pt_a, pt_b));
-        }
-      }
-    }
-#endif
 
     void create_closed_piecewise_kochanek_bartels_spline_test()
     {
-#if 0
       // create non-smooth with specified times
       {
-        piecewise_curve_type pc1;
+        piecewise_curve_type pc;
+        cubic_spline_creator_type spline_creator(5);
         point_type pt_b, pt_a;
         std::vector<point_type, Eigen::aligned_allocator<point_type> > pts(5);
-        std::vector<data_type> t(5);
-        data_type tend;
+        std::vector<data_type> t(6);
+        data_type dt, ten(0.75), bia(0.75), con(0);
         index_type i, nseg;
 
         // set the points and times
@@ -1933,55 +2040,76 @@ class piecewise_spline_creator_test_suite : public Test::Suite
         t[2]=4;
         t[3]=7;
         t[4]=9;
-        tend=10;
+        t[5]=10;
+
+        spline_creator.set_t0(t[0]);
+        for (i=0; i<spline_creator.get_number_segments(); ++i)
+        {
+          spline_creator.set_segment_dt(t[i+1]-t[i], i);
+        }
+        spline_creator.set_kochanek_bartels(pts.begin(), ten, bia, con, eli::geom::general::C0);
+
+        // test time step settings
+        TEST_ASSERT(spline_creator.get_t0()==t[0]);
+        dt=spline_creator.get_segment_dt(0);
+        TEST_ASSERT(dt==t[1]-t[0]);
+        dt=spline_creator.get_segment_dt(1);
+        TEST_ASSERT(dt==t[2]-t[1]);
+        dt=spline_creator.get_segment_dt(2);
+        TEST_ASSERT(dt==t[3]-t[2]);
+        dt=spline_creator.get_segment_dt(3);
+        TEST_ASSERT(dt==t[4]-t[3]);
+        dt=spline_creator.get_segment_dt(4);
+        TEST_ASSERT(dt==t[5]-t[4]);
 
         // create the piecewise curve
-        TEST_ASSERT(create_piecewise_kochanek_bartels_spline(pc1, pts.begin(), pts.end(), t.begin(), static_cast<data_type>(0.75), static_cast<data_type>(0.75), static_cast<data_type>(0), eli::geom::general::C0, tend));
+        TEST_ASSERT(spline_creator.create(pc));
 
         // check the number segments
-        nseg=pc1.number_segments();
-        TEST_ASSERT(nseg==(1+static_cast<index_type>(pts.size()-1)));
+        nseg=pc.number_segments();
+        TEST_ASSERT(nseg==(static_cast<index_type>(pts.size())));
 
         // check the starting time
-        TEST_ASSERT(tol.approximately_equal(t[0], pc1.get_t0()));
+        TEST_ASSERT(tol.approximately_equal(t[0], pc.get_t0()));
 
         // check if closed
-        TEST_ASSERT(pc1.closed());
+        TEST_ASSERT(pc.closed());
 
         // check the continuity at each point
         for (i=1; i<(nseg-1); ++i)
         {
           data_type small(std::numeric_limits<data_type>::epsilon());
-          pt_b=pc1.f(t[i]*(1+small));
-          pt_a=pc1.f(t[i]*(1-small));
+          pt_b=pc.f(t[i]*(1+small));
+          pt_a=pc.f(t[i]*(1-small));
           TEST_ASSERT(tol.approximately_equal(pt_a, pt_b));
-          pt_b=pc1.fp(t[i]*(1+small));
-          pt_a=pc1.fp(t[i]*(1-small));
+          pt_b=pc.fp(t[i]*(1+small));
+          pt_a=pc.fp(t[i]*(1-small));
           TEST_ASSERT(tol.approximately_equal(pt_a, pt_b));
-          pt_b=pc1.fpp(t[i]*(1+small));
-          pt_a=pc1.fpp(t[i]*(1-small));
+          pt_b=pc.fpp(t[i]*(1+small));
+          pt_a=pc.fpp(t[i]*(1-small));
           TEST_ASSERT(!tol.approximately_equal(pt_a, pt_b));
         }
 
         // test the end conditions
-        pt_b=pc1.f(tend);
-        pt_a=pc1.f(t[0]);
+        pt_b=pc.f(t[5]);
+        pt_a=pc.f(t[0]);
         TEST_ASSERT(tol.approximately_equal(pt_a, pt_b));
-        pt_b=pc1.fp(tend);
-        pt_a=pc1.fp(t[0]);
+        pt_b=pc.fp(t[5]);
+        pt_a=pc.fp(t[0]);
         TEST_ASSERT(!tol.approximately_equal(pt_a, pt_b));
-        pt_b=pc1.fpp(tend);
-        pt_a=pc1.fpp(t[0]);
+        pt_b=pc.fpp(t[5]);
+        pt_a=pc.fpp(t[0]);
         TEST_ASSERT(!tol.approximately_equal(pt_a, pt_b));
       }
 
       // create smooth with specified times
       {
-        piecewise_curve_type pc1;
+        piecewise_curve_type pc;
+        cubic_spline_creator_type spline_creator(5);
         point_type pt_b, pt_a;
         std::vector<point_type, Eigen::aligned_allocator<point_type> > pts(5);
-        std::vector<data_type> t(5);
-        data_type tend;
+        std::vector<data_type> t(6);
+        data_type dt, ten(0.75), bia(0.75), con(0);
         index_type i, nseg;
 
         // set the points and times
@@ -1995,67 +2123,75 @@ class piecewise_spline_creator_test_suite : public Test::Suite
         t[2]=4;
         t[3]=7;
         t[4]=9;
-        tend=10;
+        t[5]=10;
+
+        spline_creator.set_t0(t[0]);
+        for (i=0; i<spline_creator.get_number_segments(); ++i)
+        {
+          spline_creator.set_segment_dt(t[i+1]-t[i], i);
+        }
+        spline_creator.set_kochanek_bartels(pts.begin(), ten, bia, con, eli::geom::general::C1);
+
+        // test time step settings
+        TEST_ASSERT(spline_creator.get_t0()==t[0]);
+        dt=spline_creator.get_segment_dt(0);
+        TEST_ASSERT(dt==t[1]-t[0]);
+        dt=spline_creator.get_segment_dt(1);
+        TEST_ASSERT(dt==t[2]-t[1]);
+        dt=spline_creator.get_segment_dt(2);
+        TEST_ASSERT(dt==t[3]-t[2]);
+        dt=spline_creator.get_segment_dt(3);
+        TEST_ASSERT(dt==t[4]-t[3]);
+        dt=spline_creator.get_segment_dt(4);
+        TEST_ASSERT(dt==t[5]-t[4]);
 
         // create the piecewise curve
-        TEST_ASSERT(create_piecewise_kochanek_bartels_spline(pc1, pts.begin(), pts.end(), t.begin(), static_cast<data_type>(0.75), static_cast<data_type>(0.75), static_cast<data_type>(0), eli::geom::general::C1, tend));
+        TEST_ASSERT(spline_creator.create(pc));
 
         // check the number segments
-        nseg=pc1.number_segments();
-        TEST_ASSERT(nseg==(1+static_cast<index_type>(pts.size()-1)));
+        nseg=pc.number_segments();
+        TEST_ASSERT(nseg==(static_cast<index_type>(pts.size())));
 
         // check the starting time
-        TEST_ASSERT(tol.approximately_equal(t[0], pc1.get_t0()));
+        TEST_ASSERT(tol.approximately_equal(t[0], pc.get_t0()));
 
         // check if closed
-        TEST_ASSERT(pc1.closed());
+        TEST_ASSERT(pc.closed());
 
         // check the continuity at each point
         for (i=1; i<(nseg-1); ++i)
         {
           data_type small(std::numeric_limits<data_type>::epsilon());
-          pt_b=pc1.f(t[i]*(1+small));
-          pt_a=pc1.f(t[i]*(1-small));
+          pt_b=pc.f(t[i]*(1+small));
+          pt_a=pc.f(t[i]*(1-small));
           TEST_ASSERT(tol.approximately_equal(pt_a, pt_b));
-          pt_b=pc1.fp(t[i]*(1+small));
-          pt_a=pc1.fp(t[i]*(1-small));
+          pt_b=pc.fp(t[i]*(1+small));
+          pt_a=pc.fp(t[i]*(1-small));
           TEST_ASSERT(tol.approximately_equal(pt_a, pt_b));
-          pt_b=pc1.fpp(t[i]*(1+small));
-          pt_a=pc1.fpp(t[i]*(1-small));
+          pt_b=pc.fpp(t[i]*(1+small));
+          pt_a=pc.fpp(t[i]*(1-small));
           TEST_ASSERT(!tol.approximately_equal(pt_a, pt_b));
-
-//           if (typeid(data_type)==typeid(double))
-//           {
-//             std::cout << "joint " << i << std::endl;
-//             std::cout << "    before=" << pc1.f(t[i]*(1-small)) << "\tafter=" << pc1.f(t[i]*(1+small)) << "\tdiff=" << pc1.f(t[i]*(1+small))-pc1.f(t[i]*(1-small)) << std::endl;
-//             std::cout << "    before=" << pc1.fp(t[i]*(1-small)) << "\tafter=" << pc1.fp(t[i]*(1+small)) << "\tdiff=" << pc1.fp(t[i]*(1+small))-pc1.fp(t[i]*(1-small)) << std::endl;
-//           }
         }
 
         // test the end conditions
-        pt_b=pc1.f(tend);
-        pt_a=pc1.f(t[0]);
+        pt_b=pc.f(t[5]);
+        pt_a=pc.f(t[0]);
         TEST_ASSERT(tol.approximately_equal(pt_a, pt_b));
-        pt_b=pc1.fp(tend);
-        pt_a=pc1.fp(t[0]);
+        pt_b=pc.fp(t[5]);
+        pt_a=pc.fp(t[0]);
         TEST_ASSERT(tol.approximately_equal(pt_a, pt_b));
-        pt_b=pc1.fpp(tend);
-        pt_a=pc1.fpp(t[0]);
+        pt_b=pc.fpp(t[5]);
+        pt_a=pc.fpp(t[0]);
         TEST_ASSERT(!tol.approximately_equal(pt_a, pt_b));
-
-//         if (typeid(data_type)==typeid(double))
-//         {
-//           std::cout << "end " << std::endl;
-//           std::cout << "    before=" << pc1.f(t[0]) << "\tafter=" << pc1.f(tend) << "\tdiff=" << pc1.f(tend)-pc1.f(t[0]) << std::endl;
-//           std::cout << "    before=" << pc1.fp(t[0]) << "\tafter=" << pc1.fp(tend) << "\tdiff=" << pc1.fp(tend)-pc1.fp(t[0]) << std::endl;
-//         }
       }
 
       // create non-smooth with default times
       {
-        piecewise_curve_type pc1;
+        piecewise_curve_type pc;
+        cubic_spline_creator_type spline_creator(5);
         point_type pt_b, pt_a;
         std::vector<point_type, Eigen::aligned_allocator<point_type> > pts(5);
+        data_type dt, ten(0.75), bia(0.75), con(0);
         index_type i, nseg;
 
         // set the points and times
@@ -2065,51 +2201,68 @@ class piecewise_spline_creator_test_suite : public Test::Suite
         pts[3] <<  0, 5, -1;
         pts[4] <<  1, 4,  1;
 
+        spline_creator.set_kochanek_bartels(pts.begin(), ten, bia, con, eli::geom::general::C0);
+
+        // test time step settings
+        TEST_ASSERT(spline_creator.get_t0()==0);
+        dt=spline_creator.get_segment_dt(0);
+        TEST_ASSERT(dt==1);
+        dt=spline_creator.get_segment_dt(1);
+        TEST_ASSERT(dt==1);
+        dt=spline_creator.get_segment_dt(2);
+        TEST_ASSERT(dt==1);
+        dt=spline_creator.get_segment_dt(3);
+        TEST_ASSERT(dt==1);
+        dt=spline_creator.get_segment_dt(4);
+        TEST_ASSERT(dt==1);
+
         // create the piecewise curve
-        TEST_ASSERT(create_piecewise_kochanek_bartels_spline(pc1, pts.begin(), pts.end(), static_cast<data_type>(0.75), static_cast<data_type>(0.75), static_cast<data_type>(0), eli::geom::general::C0));
+        TEST_ASSERT(spline_creator.create(pc));
 
         // check the number segments
-        nseg=pc1.number_segments();
-        TEST_ASSERT(nseg==(1+static_cast<index_type>(pts.size()-1)));
+        nseg=pc.number_segments();
+        TEST_ASSERT(nseg==(static_cast<index_type>(pts.size())));
 
         // check the starting time
-        TEST_ASSERT(tol.approximately_equal(0, pc1.get_t0()));
+        TEST_ASSERT(tol.approximately_equal(0, pc.get_t0()));
 
         // check if closed
-        TEST_ASSERT(pc1.closed());
+        TEST_ASSERT(pc.closed());
 
         // check the continuity at each point
         for (i=1; i<(nseg-1); ++i)
         {
           data_type small(std::numeric_limits<data_type>::epsilon());
-          pt_b=pc1.f(i*(1+small));
-          pt_a=pc1.f(i*(1-small));
+          pt_b=pc.f(i*(1+small));
+          pt_a=pc.f(i*(1-small));
           TEST_ASSERT(tol.approximately_equal(pt_a, pt_b));
-          pt_b=pc1.fp(i*(1+small));
-          pt_a=pc1.fp(i*(1-small));
+          pt_b=pc.fp(i*(1+small));
+          pt_a=pc.fp(i*(1-small));
           TEST_ASSERT(tol.approximately_equal(pt_a, pt_b));
-          pt_b=pc1.fpp(i*(1+small));
-          pt_a=pc1.fpp(i*(1-small));
+          pt_b=pc.fpp(i*(1+small));
+          pt_a=pc.fpp(i*(1-small));
           TEST_ASSERT(!tol.approximately_equal(pt_a, pt_b));
         }
 
         // test the end conditions
-        pt_b=pc1.f(nseg);
-        pt_a=pc1.f(0);
+        pt_b=pc.f(5);
+        pt_a=pc.f(0);
         TEST_ASSERT(tol.approximately_equal(pt_a, pt_b));
-        pt_b=pc1.fp(nseg);
-        pt_a=pc1.fp(0);
+        pt_b=pc.fp(5);
+        pt_a=pc.fp(0);
         TEST_ASSERT(!tol.approximately_equal(pt_a, pt_b));
-        pt_b=pc1.fpp(nseg);
-        pt_a=pc1.fpp(0);
+        pt_b=pc.fpp(5);
+        pt_a=pc.fpp(0);
         TEST_ASSERT(!tol.approximately_equal(pt_a, pt_b));
       }
 
       // create smooth with default times
       {
-        piecewise_curve_type pc1;
+        piecewise_curve_type pc;
+        cubic_spline_creator_type spline_creator(5);
         point_type pt_b, pt_a;
         std::vector<point_type, Eigen::aligned_allocator<point_type> > pts(5);
+        data_type dt, ten(0.75), bia(0.75), con(0);
         index_type i, nseg;
 
         // set the points and times
@@ -2119,70 +2272,772 @@ class piecewise_spline_creator_test_suite : public Test::Suite
         pts[3] <<  0, 5, -1;
         pts[4] <<  1, 4,  1;
 
+        spline_creator.set_kochanek_bartels(pts.begin(), ten, bia, con, eli::geom::general::C1);
+
+        // test time step settings
+        TEST_ASSERT(spline_creator.get_t0()==0);
+        dt=spline_creator.get_segment_dt(0);
+        TEST_ASSERT(dt==1);
+        dt=spline_creator.get_segment_dt(1);
+        TEST_ASSERT(dt==1);
+        dt=spline_creator.get_segment_dt(2);
+        TEST_ASSERT(dt==1);
+        dt=spline_creator.get_segment_dt(3);
+        TEST_ASSERT(dt==1);
+        dt=spline_creator.get_segment_dt(4);
+        TEST_ASSERT(dt==1);
+
         // create the piecewise curve
-        TEST_ASSERT(create_piecewise_kochanek_bartels_spline(pc1, pts.begin(), pts.end(), static_cast<data_type>(0.75), static_cast<data_type>(0.75), static_cast<data_type>(0), eli::geom::general::C1));
+        TEST_ASSERT(spline_creator.create(pc));
 
         // check the number segments
-        nseg=pc1.number_segments();
-        TEST_ASSERT(nseg==(1+static_cast<index_type>(pts.size()-1)));
+        nseg=pc.number_segments();
+        TEST_ASSERT(nseg==(static_cast<index_type>(pts.size())));
 
         // check the starting time
-        TEST_ASSERT(tol.approximately_equal(0, pc1.get_t0()));
+        TEST_ASSERT(tol.approximately_equal(0, pc.get_t0()));
 
         // check if closed
-        TEST_ASSERT(pc1.closed());
+        TEST_ASSERT(pc.closed());
 
         // check the continuity at each point
         for (i=1; i<(nseg-1); ++i)
         {
           data_type small(std::numeric_limits<data_type>::epsilon());
-          pt_b=pc1.f(i*(1+small));
-          pt_a=pc1.f(i*(1-small));
+          pt_b=pc.f(i*(1+small));
+          pt_a=pc.f(i*(1-small));
           TEST_ASSERT(tol.approximately_equal(pt_a, pt_b));
-          pt_b=pc1.fp(i*(1+small));
-          pt_a=pc1.fp(i*(1-small));
+          pt_b=pc.fp(i*(1+small));
+          pt_a=pc.fp(i*(1-small));
           TEST_ASSERT(tol.approximately_equal(pt_a, pt_b));
-          pt_b=pc1.fpp(i*(1+small));
-          pt_a=pc1.fpp(i*(1-small));
+          pt_b=pc.fpp(i*(1+small));
+          pt_a=pc.fpp(i*(1-small));
           TEST_ASSERT(!tol.approximately_equal(pt_a, pt_b));
-
-//           if (typeid(data_type)==typeid(double))
-//           {
-//             std::cout << "joint " << i << std::endl;
-//             std::cout << "    before=" << pc1.f(t[i]*(1-small)) << "\tafter=" << pc1.f(t[i]*(1+small)) << "\tdiff=" << pc1.f(t[i]*(1+small))-pc1.f(t[i]*(1-small)) << std::endl;
-//             std::cout << "    before=" << pc1.fp(t[i]*(1-small)) << "\tafter=" << pc1.fp(t[i]*(1+small)) << "\tdiff=" << pc1.fp(t[i]*(1+small))-pc1.fp(t[i]*(1-small)) << std::endl;
-//           }
         }
 
         // test the end conditions
-        pt_b=pc1.f(nseg);
-        pt_a=pc1.f(0);
+        pt_b=pc.f(5);
+        pt_a=pc.f(0);
         TEST_ASSERT(tol.approximately_equal(pt_a, pt_b));
-        pt_b=pc1.fp(nseg);
-        pt_a=pc1.fp(0);
+        pt_b=pc.fp(5);
+        pt_a=pc.fp(0);
         TEST_ASSERT(tol.approximately_equal(pt_a, pt_b));
-        pt_b=pc1.fpp(nseg);
-        pt_a=pc1.fpp(0);
+        pt_b=pc.fpp(5);
+        pt_a=pc.fpp(0);
         TEST_ASSERT(!tol.approximately_equal(pt_a, pt_b));
-
-//         if (typeid(data_type)==typeid(double))
-//         {
-//           std::cout << "end " << std::endl;
-//           std::cout << "    before=" << pc1.f(t[0]) << "\tafter=" << pc1.f(tend) << "\tdiff=" << pc1.f(tend)-pc1.f(t[0]) << std::endl;
-//           std::cout << "    before=" << pc1.fp(t[0]) << "\tafter=" << pc1.fp(tend) << "\tdiff=" << pc1.fp(tend)-pc1.fp(t[0]) << std::endl;
-//         }
       }
-#endif
     }
 
-#if 0
-          if (typeid(data_type)==typeid(double))
-          {
-            std::cout << "joint " << i << std::endl;
-            std::cout << "    before=" << pc1.f(t[i]*(1-small)) << "\tafter=" << pc1.f(t[i]*(1+small)) << "\tdiff=" << pc1.f(t[i]*(1+small))-pc1.f(t[i]*(1-small)) << std::endl;
-            std::cout << "    before=" << pc1.fp(t[i]*(1-small)) << "\tafter=" << pc1.fp(t[i]*(1+small)) << "\tdiff=" << pc1.fp(t[i]*(1+small))-pc1.fp(t[i]*(1-small)) << std::endl;
-          }
-#endif
+    void create_cubic_spline_test()
+    {
+      // create with specified times
+      {
+        piecewise_curve_type pc;
+        cubic_spline_creator_type spline_creator(4);
+        point_type pt_b, pt_a;
+        std::vector<point_type, Eigen::aligned_allocator<point_type> > pts(5);
+        std::vector<data_type> t(5);
+        data_type dt;
+        index_type i, nseg;
+
+        // set the points and times
+        pts[0] <<  1, 3,  2;
+        pts[1] <<  0, 2,  3;
+        pts[2] << -1, 4,  1;
+        pts[3] <<  0, 5,  0;
+        pts[4] <<  1, 6, -1;
+        t[0]=1;
+        t[1]=3;
+        t[2]=4;
+        t[3]=7;
+        t[4]=9;
+
+        // set up the creator
+        spline_creator.set_t0(t[0]);
+        for (i=0; i<spline_creator.get_number_segments(); ++i)
+        {
+          spline_creator.set_segment_dt(t[i+1]-t[i], i);
+        }
+        spline_creator.set_cubic_spline(pts.begin());
+
+        // test time step settings
+        TEST_ASSERT(spline_creator.get_t0()==t[0]);
+        dt=spline_creator.get_segment_dt(0);
+        TEST_ASSERT(dt==t[1]-t[0]);
+        dt=spline_creator.get_segment_dt(1);
+        TEST_ASSERT(dt==t[2]-t[1]);
+        dt=spline_creator.get_segment_dt(2);
+        TEST_ASSERT(dt==t[3]-t[2]);
+        dt=spline_creator.get_segment_dt(3);
+        TEST_ASSERT(dt==t[4]-t[3]);
+
+        // create the piecewise curve
+        TEST_ASSERT(spline_creator.create(pc));
+
+        // check the number segments
+        nseg=pc.number_segments();
+        TEST_ASSERT(nseg==static_cast<index_type>(pts.size()-1));
+
+        // check the starting time
+        TEST_ASSERT(tol.approximately_equal(t[0], pc.get_t0()));
+
+        // check the continuity at each point
+        for (i=1; i<nseg; ++i)
+        {
+          data_type small(std::numeric_limits<data_type>::epsilon());
+          pt_b=pc.f(t[i]*(1+small));
+          pt_a=pc.f(t[i]*(1-small));
+          TEST_ASSERT(tol.approximately_equal(pt_a, pt_b));
+          pt_b=pc.fp(t[i]*(1+small));
+          pt_a=pc.fp(t[i]*(1-small));
+          TEST_ASSERT(tol.approximately_equal(pt_a, pt_b));
+          pt_b=pc.fpp(t[i]*(1+small));
+          pt_a=pc.fpp(t[i]*(1-small));
+          TEST_ASSERT(tol.approximately_equal(pt_a, pt_b));
+        }
+
+        // check the end points
+        data_type small(std::numeric_limits<data_type>::epsilon());
+        TEST_ASSERT(tol.approximately_equal(pts[0], pc.f(t[0])));
+        pt_b=pc.fppp(t[1]*(1+small));
+        pt_a=pc.fppp(t[1]*(1-small));
+        TEST_ASSERT(tol.approximately_equal(pt_a, pt_b));
+        TEST_ASSERT(tol.approximately_equal(pts[4], pc.f(t[4])));
+        pt_b=pc.fppp(t[3]*(1+small));
+        pt_a=pc.fppp(t[3]*(1-small));
+        TEST_ASSERT(tol.approximately_equal(pt_a, pt_b));
+      }
+
+      // create with default times
+      {
+        piecewise_curve_type pc;
+        cubic_spline_creator_type spline_creator(4);
+        point_type pt_b, pt_a;
+        std::vector<point_type, Eigen::aligned_allocator<point_type> > pts(5);
+        data_type dt;
+        index_type i, nseg;
+
+        // set the points and times
+        pts[0] <<  1, 3,  2;
+        pts[1] <<  0, 2,  3;
+        pts[2] << -1, 4,  1;
+        pts[3] <<  0, 5,  0;
+        pts[4] <<  1, 6, -1;
+
+        // set up the creator
+        spline_creator.set_cubic_spline(pts.begin());
+
+        // test time step settings
+        TEST_ASSERT(spline_creator.get_t0()==0);
+        dt=spline_creator.get_segment_dt(0);
+        TEST_ASSERT(dt==1);
+        dt=spline_creator.get_segment_dt(1);
+        TEST_ASSERT(dt==1);
+        dt=spline_creator.get_segment_dt(2);
+        TEST_ASSERT(dt==1);
+        dt=spline_creator.get_segment_dt(3);
+        TEST_ASSERT(dt==1);
+
+        // create the piecewise curve
+        TEST_ASSERT(spline_creator.create(pc));
+
+        // check the number segments
+        nseg=pc.number_segments();
+        TEST_ASSERT(nseg==static_cast<index_type>(pts.size()-1));
+
+        // check the starting time
+        TEST_ASSERT(tol.approximately_equal(0, pc.get_t0()));
+
+        // check the continuity at each point
+        for (i=1; i<nseg; ++i)
+        {
+          data_type small(std::numeric_limits<data_type>::epsilon());
+          pt_b=pc.f(i*(1+small));
+          pt_a=pc.f(i*(1-small));
+          TEST_ASSERT(tol.approximately_equal(pt_a, pt_b));
+          pt_b=pc.fp(i*(1+small));
+          pt_a=pc.fp(i*(1-small));
+          TEST_ASSERT(tol.approximately_equal(pt_a, pt_b));
+          pt_b=pc.fpp(i*(1+small));
+          pt_a=pc.fpp(i*(1-small));
+          TEST_ASSERT(tol.approximately_equal(pt_a, pt_b));
+        }
+
+        // check the end points
+        data_type small(std::numeric_limits<data_type>::epsilon());
+        TEST_ASSERT(tol.approximately_equal(pts[0], pc.f(0)));
+        pt_b=pc.fppp(1*(1+small));
+        pt_a=pc.fppp(1*(1-small));
+        TEST_ASSERT(tol.approximately_equal(pt_a, pt_b));
+        TEST_ASSERT(tol.approximately_equal(pts[4], pc.f(4)));
+        pt_b=pc.fppp(3*(1+small));
+        pt_a=pc.fppp(3*(1-small));
+        TEST_ASSERT(tol.approximately_equal(pt_a, pt_b));
+      }
+    }
+
+    void create_clamped_cubic_spline_test()
+    {
+      // create with specified times
+      {
+        piecewise_curve_type pc;
+        cubic_spline_creator_type spline_creator(4);
+        point_type pt_b, pt_a;
+        std::vector<point_type, Eigen::aligned_allocator<point_type> > pts(5);
+        std::vector<data_type> t(5);
+        data_type dt;
+        index_type i, nseg;
+
+        // set the points and times
+        pts[0] <<  1, 3,  2;
+        pts[1] <<  0, 2,  3;
+        pts[2] << -1, 4,  1;
+        pts[3] <<  0, 5,  0;
+        pts[4] <<  1, 6, -1;
+        t[0]=1;
+        t[1]=3;
+        t[2]=4;
+        t[3]=7;
+        t[4]=9;
+
+        // set up the creator
+        spline_creator.set_t0(t[0]);
+        for (i=0; i<spline_creator.get_number_segments(); ++i)
+        {
+          spline_creator.set_segment_dt(t[i+1]-t[i], i);
+        }
+        point_type m0, m1;
+        m0 << -1, -1, 1;
+        m1 << 1, 1, -1;
+        spline_creator.set_clamped_cubic_spline(pts.begin(), m0, m1);
+
+        // test time step settings
+        TEST_ASSERT(spline_creator.get_t0()==t[0]);
+        dt=spline_creator.get_segment_dt(0);
+        TEST_ASSERT(dt==t[1]-t[0]);
+        dt=spline_creator.get_segment_dt(1);
+        TEST_ASSERT(dt==t[2]-t[1]);
+        dt=spline_creator.get_segment_dt(2);
+        TEST_ASSERT(dt==t[3]-t[2]);
+        dt=spline_creator.get_segment_dt(3);
+        TEST_ASSERT(dt==t[4]-t[3]);
+
+        // create the piecewise curve
+        TEST_ASSERT(spline_creator.create(pc));
+
+        // check the number segments
+        nseg=pc.number_segments();
+        TEST_ASSERT(nseg==static_cast<index_type>(pts.size()-1));
+
+        // check the starting time
+        TEST_ASSERT(tol.approximately_equal(t[0], pc.get_t0()));
+
+        // check the continuity at each point
+        for (i=1; i<nseg; ++i)
+        {
+          data_type small(std::numeric_limits<data_type>::epsilon());
+          pt_b=pc.f(t[i]*(1+small));
+          pt_a=pc.f(t[i]*(1-small));
+          TEST_ASSERT(tol.approximately_equal(pt_a, pt_b));
+          pt_b=pc.fp(t[i]*(1+small));
+          pt_a=pc.fp(t[i]*(1-small));
+          TEST_ASSERT(tol.approximately_equal(pt_a, pt_b));
+          pt_b=pc.fpp(t[i]*(1+small));
+          pt_a=pc.fpp(t[i]*(1-small));
+          TEST_ASSERT(tol.approximately_equal(pt_a, pt_b));
+        }
+
+        // check the end points
+        TEST_ASSERT(tol.approximately_equal(pts[0], pc.f(t[0])));
+        TEST_ASSERT(tol.approximately_equal(m0, pc.fp(t[0])));
+        TEST_ASSERT(tol.approximately_equal(pts[4], pc.f(t[4])));
+        TEST_ASSERT(tol.approximately_equal(m1, pc.fp(t[4])));
+      }
+
+      // create with default times
+      {
+        piecewise_curve_type pc;
+        cubic_spline_creator_type spline_creator(4);
+        point_type pt_b, pt_a;
+        std::vector<point_type, Eigen::aligned_allocator<point_type> > pts(5);
+        data_type dt;
+        index_type i, nseg;
+
+        // set the points and times
+        pts[0] <<  1, 3,  2;
+        pts[1] <<  0, 2,  3;
+        pts[2] << -1, 4,  1;
+        pts[3] <<  0, 5,  0;
+        pts[4] <<  1, 6, -1;
+
+        // set up the creator
+        point_type m0, m1;
+        m0 << -1, -1, 1;
+        m1 << 1, 1, -1;
+        spline_creator.set_clamped_cubic_spline(pts.begin(), m0, m1);
+
+        // test time step settings
+        TEST_ASSERT(spline_creator.get_t0()==0);
+        dt=spline_creator.get_segment_dt(0);
+        TEST_ASSERT(dt==1);
+        dt=spline_creator.get_segment_dt(1);
+        TEST_ASSERT(dt==1);
+        dt=spline_creator.get_segment_dt(2);
+        TEST_ASSERT(dt==1);
+        dt=spline_creator.get_segment_dt(3);
+        TEST_ASSERT(dt==1);
+
+        // create the piecewise curve
+        TEST_ASSERT(spline_creator.create(pc));
+
+        // check the number segments
+        nseg=pc.number_segments();
+        TEST_ASSERT(nseg==static_cast<index_type>(pts.size()-1));
+
+        // check the starting time
+        TEST_ASSERT(tol.approximately_equal(0, pc.get_t0()));
+
+        // check the continuity at each point
+        for (i=1; i<nseg; ++i)
+        {
+          data_type small(std::numeric_limits<data_type>::epsilon());
+          pt_b=pc.f(i*(1+small));
+          pt_a=pc.f(i*(1-small));
+          TEST_ASSERT(tol.approximately_equal(pt_a, pt_b));
+          pt_b=pc.fp(i*(1+small));
+          pt_a=pc.fp(i*(1-small));
+          TEST_ASSERT(tol.approximately_equal(pt_a, pt_b));
+          pt_b=pc.fpp(i*(1+small));
+          pt_a=pc.fpp(i*(1-small));
+          TEST_ASSERT(tol.approximately_equal(pt_a, pt_b));
+        }
+
+        // check the end points
+        TEST_ASSERT(tol.approximately_equal(pts[0], pc.f(0)));
+        TEST_ASSERT(tol.approximately_equal(m0, pc.fp(0)));
+        TEST_ASSERT(tol.approximately_equal(pts[4], pc.f(4)));
+        TEST_ASSERT(tol.approximately_equal(m1, pc.fp(4)));
+      }
+    }
+
+    void create_natural_cubic_spline_test()
+    {
+      // create with specified times
+      {
+        piecewise_curve_type pc;
+        cubic_spline_creator_type spline_creator(4);
+        point_type pt_b, pt_a;
+        std::vector<point_type, Eigen::aligned_allocator<point_type> > pts(5);
+        std::vector<data_type> t(5);
+        data_type dt;
+        index_type i, nseg;
+
+        // set the points and times
+        pts[0] <<  1, 3,  2;
+        pts[1] <<  0, 2,  3;
+        pts[2] << -1, 4,  1;
+        pts[3] <<  0, 5,  0;
+        pts[4] <<  1, 6, -1;
+        t[0]=1;
+        t[1]=3;
+        t[2]=4;
+        t[3]=7;
+        t[4]=9;
+
+        // set up the creator
+        spline_creator.set_t0(t[0]);
+        for (i=0; i<spline_creator.get_number_segments(); ++i)
+        {
+          spline_creator.set_segment_dt(t[i+1]-t[i], i);
+        }
+        spline_creator.set_natural_cubic_spline(pts.begin());
+
+        // test time step settings
+        TEST_ASSERT(spline_creator.get_t0()==t[0]);
+        dt=spline_creator.get_segment_dt(0);
+        TEST_ASSERT(dt==t[1]-t[0]);
+        dt=spline_creator.get_segment_dt(1);
+        TEST_ASSERT(dt==t[2]-t[1]);
+        dt=spline_creator.get_segment_dt(2);
+        TEST_ASSERT(dt==t[3]-t[2]);
+        dt=spline_creator.get_segment_dt(3);
+        TEST_ASSERT(dt==t[4]-t[3]);
+
+        // create the piecewise curve
+        TEST_ASSERT(spline_creator.create(pc));
+
+        // check the number segments
+        nseg=pc.number_segments();
+        TEST_ASSERT(nseg==static_cast<index_type>(pts.size()-1));
+
+        // check the starting time
+        TEST_ASSERT(tol.approximately_equal(t[0], pc.get_t0()));
+
+        // check the continuity at each point
+        for (i=1; i<nseg; ++i)
+        {
+          data_type small(std::numeric_limits<data_type>::epsilon());
+          pt_b=pc.f(t[i]*(1+small));
+          pt_a=pc.f(t[i]*(1-small));
+          TEST_ASSERT(tol.approximately_equal(pt_a, pt_b));
+          pt_b=pc.fp(t[i]*(1+small));
+          pt_a=pc.fp(t[i]*(1-small));
+          TEST_ASSERT(tol.approximately_equal(pt_a, pt_b));
+          pt_b=pc.fpp(t[i]*(1+small));
+          pt_a=pc.fpp(t[i]*(1-small));
+          TEST_ASSERT(tol.approximately_equal(pt_a, pt_b));
+        }
+
+        // check the end points
+        pt_a.setZero();
+        TEST_ASSERT(tol.approximately_equal(pts[0], pc.f(t[0])));
+        TEST_ASSERT(tol.approximately_equal(pt_a, pc.fpp(t[0])));
+        TEST_ASSERT(tol.approximately_equal(pts[4], pc.f(t[4])));
+        TEST_ASSERT(tol.approximately_equal(pt_a, pc.fpp(t[4])));
+      }
+
+      // create with default times
+      {
+        piecewise_curve_type pc;
+        cubic_spline_creator_type spline_creator(4);
+        point_type pt_b, pt_a;
+        std::vector<point_type, Eigen::aligned_allocator<point_type> > pts(5);
+        data_type dt;
+        index_type i, nseg;
+
+        // set the points and times
+        pts[0] <<  1, 3,  2;
+        pts[1] <<  0, 2,  3;
+        pts[2] << -1, 4,  1;
+        pts[3] <<  0, 5,  0;
+        pts[4] <<  1, 6, -1;
+
+        // set up the creator
+        spline_creator.set_natural_cubic_spline(pts.begin());
+
+        // test time step settings
+        TEST_ASSERT(spline_creator.get_t0()==0);
+        dt=spline_creator.get_segment_dt(0);
+        TEST_ASSERT(dt==1);
+        dt=spline_creator.get_segment_dt(1);
+        TEST_ASSERT(dt==1);
+        dt=spline_creator.get_segment_dt(2);
+        TEST_ASSERT(dt==1);
+        dt=spline_creator.get_segment_dt(3);
+        TEST_ASSERT(dt==1);
+
+        // create the piecewise curve
+        TEST_ASSERT(spline_creator.create(pc));
+
+        // check the number segments
+        nseg=pc.number_segments();
+        TEST_ASSERT(nseg==static_cast<index_type>(pts.size()-1));
+
+        // check the starting time
+        TEST_ASSERT(tol.approximately_equal(0, pc.get_t0()));
+
+        // check the continuity at each point
+        for (i=1; i<nseg; ++i)
+        {
+          data_type small(std::numeric_limits<data_type>::epsilon());
+          pt_b=pc.f(i*(1+small));
+          pt_a=pc.f(i*(1-small));
+          TEST_ASSERT(tol.approximately_equal(pt_a, pt_b));
+          pt_b=pc.fp(i*(1+small));
+          pt_a=pc.fp(i*(1-small));
+          TEST_ASSERT(tol.approximately_equal(pt_a, pt_b));
+          pt_b=pc.fpp(i*(1+small));
+          pt_a=pc.fpp(i*(1-small));
+          TEST_ASSERT(tol.approximately_equal(pt_a, pt_b));
+        }
+
+        // check the end points
+        TEST_ASSERT(tol.approximately_equal(pts[0], pc.f(0)));
+        pt_a.setZero();
+        TEST_ASSERT(tol.approximately_equal(pt_a, pc.fpp(0)));
+        TEST_ASSERT(tol.approximately_equal(pts[4], pc.f(4)));
+        TEST_ASSERT(tol.approximately_equal(pt_a, pc.fpp(4)));
+      }
+    }
+
+    void create_periodic_cubic_spline_test()
+    {
+      // create with specified times
+      {
+        piecewise_curve_type pc;
+        cubic_spline_creator_type spline_creator(4);
+        point_type pt_b, pt_a;
+        std::vector<point_type, Eigen::aligned_allocator<point_type> > pts(5);
+        std::vector<data_type> t(5);
+        data_type dt;
+        index_type i, nseg;
+
+        // set the points and times
+        pts[0] <<  1, 3,  2;
+        pts[1] <<  0, 2,  3;
+        pts[2] << -1, 4,  1;
+        pts[3] <<  0, 5,  0;
+        pts[4] <<  1, 6, -1;
+        t[0]=1;
+        t[1]=3;
+        t[2]=4;
+        t[3]=7;
+        t[4]=9;
+
+        // set up the creator
+        spline_creator.set_t0(t[0]);
+        for (i=0; i<spline_creator.get_number_segments(); ++i)
+        {
+          spline_creator.set_segment_dt(t[i+1]-t[i], i);
+        }
+        spline_creator.set_periodic_cubic_spline(pts.begin());
+
+        // test time step settings
+        TEST_ASSERT(spline_creator.get_t0()==t[0]);
+        dt=spline_creator.get_segment_dt(0);
+        TEST_ASSERT(dt==t[1]-t[0]);
+        dt=spline_creator.get_segment_dt(1);
+        TEST_ASSERT(dt==t[2]-t[1]);
+        dt=spline_creator.get_segment_dt(2);
+        TEST_ASSERT(dt==t[3]-t[2]);
+        dt=spline_creator.get_segment_dt(3);
+        TEST_ASSERT(dt==t[4]-t[3]);
+
+        // create the piecewise curve
+        TEST_ASSERT(spline_creator.create(pc));
+
+        // check the number segments
+        nseg=pc.number_segments();
+        TEST_ASSERT(nseg==static_cast<index_type>(pts.size()-1));
+
+        // check the starting time
+        TEST_ASSERT(tol.approximately_equal(t[0], pc.get_t0()));
+
+        // check the continuity at each point
+        for (i=1; i<nseg; ++i)
+        {
+          data_type small(std::numeric_limits<data_type>::epsilon());
+          pt_b=pc.f(t[i]*(1+small));
+          pt_a=pc.f(t[i]*(1-small));
+          TEST_ASSERT(tol.approximately_equal(pt_a, pt_b));
+          pt_b=pc.fp(t[i]*(1+small));
+          pt_a=pc.fp(t[i]*(1-small));
+          TEST_ASSERT(tol.approximately_equal(pt_a, pt_b));
+          pt_b=pc.fpp(t[i]*(1+small));
+          pt_a=pc.fpp(t[i]*(1-small));
+          TEST_ASSERT(tol.approximately_equal(pt_a, pt_b));
+        }
+
+        // check the end points
+        TEST_ASSERT(tol.approximately_equal(pts[0], pc.f(t[0])));
+        TEST_ASSERT(tol.approximately_equal(pc.fp(t[4]), pc.fp(t[0])));
+        TEST_ASSERT(tol.approximately_equal(pts[4], pc.f(t[4])));
+        TEST_ASSERT(tol.approximately_equal(pc.fpp(t[4]), pc.fpp(t[0])));
+      }
+
+      // create with default times
+      {
+        piecewise_curve_type pc;
+        cubic_spline_creator_type spline_creator(4);
+        point_type pt_b, pt_a;
+        std::vector<point_type, Eigen::aligned_allocator<point_type> > pts(5);
+        data_type dt;
+        index_type i, nseg;
+
+        // set the points and times
+        pts[0] <<  1, 3,  2;
+        pts[1] <<  0, 2,  3;
+        pts[2] << -1, 4,  1;
+        pts[3] <<  0, 5,  0;
+        pts[4] <<  1, 6, -1;
+
+        // set up the creator
+        spline_creator.set_periodic_cubic_spline(pts.begin());
+
+        // test time step settings
+        TEST_ASSERT(spline_creator.get_t0()==0);
+        dt=spline_creator.get_segment_dt(0);
+        TEST_ASSERT(dt==1);
+        dt=spline_creator.get_segment_dt(1);
+        TEST_ASSERT(dt==1);
+        dt=spline_creator.get_segment_dt(2);
+        TEST_ASSERT(dt==1);
+        dt=spline_creator.get_segment_dt(3);
+        TEST_ASSERT(dt==1);
+
+        // create the piecewise curve
+        TEST_ASSERT(spline_creator.create(pc));
+
+        // check the number segments
+        nseg=pc.number_segments();
+        TEST_ASSERT(nseg==static_cast<index_type>(pts.size()-1));
+
+        // check the starting time
+        TEST_ASSERT(tol.approximately_equal(0, pc.get_t0()));
+
+        // check the continuity at each point
+        for (i=1; i<nseg; ++i)
+        {
+          data_type small(std::numeric_limits<data_type>::epsilon());
+          pt_b=pc.f(i*(1+small));
+          pt_a=pc.f(i*(1-small));
+          TEST_ASSERT(tol.approximately_equal(pt_a, pt_b));
+          pt_b=pc.fp(i*(1+small));
+          pt_a=pc.fp(i*(1-small));
+          TEST_ASSERT(tol.approximately_equal(pt_a, pt_b));
+          pt_b=pc.fpp(i*(1+small));
+          pt_a=pc.fpp(i*(1-small));
+          TEST_ASSERT(tol.approximately_equal(pt_a, pt_b));
+        }
+
+        // check the end points
+        TEST_ASSERT(tol.approximately_equal(pts[0], pc.f(0)));
+        TEST_ASSERT(tol.approximately_equal(pc.fp(0), pc.fp(4)));
+        TEST_ASSERT(tol.approximately_equal(pts[4], pc.f(4)));
+        TEST_ASSERT(tol.approximately_equal(pc.fpp(0), pc.fpp(4)));
+      }
+    }
+
+    void create_closed_cubic_spline_test()
+    {
+      // create with specified times
+      {
+        piecewise_curve_type pc;
+        cubic_spline_creator_type spline_creator(5);
+        point_type pt_b, pt_a;
+        std::vector<point_type, Eigen::aligned_allocator<point_type> > pts(5);
+        std::vector<data_type> t(6);
+        data_type dt;
+        index_type i, nseg;
+
+        // set the points and times
+        pts[0] <<  1, 3,  2;
+        pts[1] <<  0, 2,  3;
+        pts[2] << -1, 4,  1;
+        pts[3] <<  0, 5,  0;
+        pts[4] <<  1, 6, -1;
+        t[0]=1;
+        t[1]=3;
+        t[2]=4;
+        t[3]=7;
+        t[4]=9;
+        t[5]=10;
+
+        // set up the creator
+        spline_creator.set_t0(t[0]);
+        for (i=0; i<spline_creator.get_number_segments(); ++i)
+        {
+          spline_creator.set_segment_dt(t[i+1]-t[i], i);
+        }
+        spline_creator.set_closed_cubic_spline(pts.begin());
+
+        // test time step settings
+        TEST_ASSERT(spline_creator.get_t0()==t[0]);
+        dt=spline_creator.get_segment_dt(0);
+        TEST_ASSERT(dt==t[1]-t[0]);
+        dt=spline_creator.get_segment_dt(1);
+        TEST_ASSERT(dt==t[2]-t[1]);
+        dt=spline_creator.get_segment_dt(2);
+        TEST_ASSERT(dt==t[3]-t[2]);
+        dt=spline_creator.get_segment_dt(3);
+        TEST_ASSERT(dt==t[4]-t[3]);
+        dt=spline_creator.get_segment_dt(4);
+        TEST_ASSERT(dt==t[5]-t[4]);
+
+        // create the piecewise curve
+        TEST_ASSERT(spline_creator.create(pc));
+
+        // check the number segments
+        nseg=pc.number_segments();
+        TEST_ASSERT(nseg==static_cast<index_type>(pts.size()));
+
+        // check the starting time
+        TEST_ASSERT(tol.approximately_equal(t[0], pc.get_t0()));
+
+        // check the continuity at each point
+        for (i=1; i<nseg; ++i)
+        {
+          data_type small(std::numeric_limits<data_type>::epsilon());
+          pt_b=pc.f(t[i]*(1+small));
+          pt_a=pc.f(t[i]*(1-small));
+          TEST_ASSERT(tol.approximately_equal(pt_a, pt_b));
+          pt_b=pc.fp(t[i]*(1+small));
+          pt_a=pc.fp(t[i]*(1-small));
+          TEST_ASSERT(tol.approximately_equal(pt_a, pt_b));
+          pt_b=pc.fpp(t[i]*(1+small));
+          pt_a=pc.fpp(t[i]*(1-small));
+          TEST_ASSERT(tol.approximately_equal(pt_a, pt_b));
+        }
+
+        // check the end points
+        TEST_ASSERT(tol.approximately_equal(pc.f(t[5]), pc.f(t[0])));
+        TEST_ASSERT(tol.approximately_equal(pc.fp(t[5]), pc.fp(t[0])));
+        TEST_ASSERT(tol.approximately_equal(pc.fpp(t[5]), pc.fpp(t[0])));
+      }
+
+      // create with default times
+      {
+        piecewise_curve_type pc;
+        cubic_spline_creator_type spline_creator(5);
+        point_type pt_b, pt_a;
+        std::vector<point_type, Eigen::aligned_allocator<point_type> > pts(5);
+        data_type dt;
+        index_type i, nseg;
+
+        // set the points and times
+        pts[0] <<  1, 3,  2;
+        pts[1] <<  0, 2,  3;
+        pts[2] << -1, 4,  1;
+        pts[3] <<  0, 5,  0;
+        pts[4] <<  1, 6, -1;
+
+        // set up the creator
+        spline_creator.set_closed_cubic_spline(pts.begin());
+
+        // test time step settings
+        TEST_ASSERT(spline_creator.get_t0()==0);
+        dt=spline_creator.get_segment_dt(0);
+        TEST_ASSERT(dt==1);
+        dt=spline_creator.get_segment_dt(1);
+        TEST_ASSERT(dt==1);
+        dt=spline_creator.get_segment_dt(2);
+        TEST_ASSERT(dt==1);
+        dt=spline_creator.get_segment_dt(3);
+        TEST_ASSERT(dt==1);
+        dt=spline_creator.get_segment_dt(4);
+        TEST_ASSERT(dt==1);
+
+        // create the piecewise curve
+        TEST_ASSERT(spline_creator.create(pc));
+
+        // check the number segments
+        nseg=pc.number_segments();
+        TEST_ASSERT(nseg==static_cast<index_type>(pts.size()));
+
+        // check the starting time
+        TEST_ASSERT(tol.approximately_equal(0, pc.get_t0()));
+
+        // check the continuity at each point
+        for (i=1; i<nseg; ++i)
+        {
+          data_type small(std::numeric_limits<data_type>::epsilon());
+          pt_b=pc.f(i*(1+small));
+          pt_a=pc.f(i*(1-small));
+          TEST_ASSERT(tol.approximately_equal(pt_a, pt_b));
+          pt_b=pc.fp(i*(1+small));
+          pt_a=pc.fp(i*(1-small));
+          TEST_ASSERT(tol.approximately_equal(pt_a, pt_b));
+          pt_b=pc.fpp(i*(1+small));
+          pt_a=pc.fpp(i*(1-small));
+          TEST_ASSERT(tol.approximately_equal(pt_a, pt_b));
+        }
+
+        // check the end points
+        TEST_ASSERT(tol.approximately_equal(pc.f(5), pc.f(0)));
+        TEST_ASSERT(tol.approximately_equal(pc.fp(5), pc.fp(0)));
+        TEST_ASSERT(tol.approximately_equal(pc.fpp(5), pc.fpp(0)));
+      }
+    }
 };
 
 #endif
