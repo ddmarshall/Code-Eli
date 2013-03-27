@@ -39,6 +39,7 @@ class piecewise_circle_creator_test_suite : public Test::Suite
     typedef typename piecewise_curve_type::index_type index_type;
     typedef typename piecewise_curve_type::tolerance_type tolerance_type;
     typedef eli::geom::curve::piecewise_circle_creator<data__, 3, tolerance_type> circle_creator_type;
+    typedef eli::geom::curve::piecewise_ellipse_creator<data__, 3, tolerance_type> ellipse_creator_type;
 
     tolerance_type tol;
 
@@ -46,39 +47,49 @@ class piecewise_circle_creator_test_suite : public Test::Suite
     void AddTests(const float &)
     {
       // add the tests
+      TEST_ADD(piecewise_circle_creator_test_suite<float>::create_circle_primative_test);
       TEST_ADD(piecewise_circle_creator_test_suite<float>::create_circle_start_origin_test);
       TEST_ADD(piecewise_circle_creator_test_suite<float>::create_circle_start_origin_normal_test);
       TEST_ADD(piecewise_circle_creator_test_suite<float>::create_circle_3_point_test);
+      TEST_ADD(piecewise_circle_creator_test_suite<float>::create_ellipse_primative_test);
     }
     void AddTests(const double &)
     {
       // add the tests
+      TEST_ADD(piecewise_circle_creator_test_suite<double>::create_circle_primative_test);
       TEST_ADD(piecewise_circle_creator_test_suite<double>::create_circle_start_origin_test);
       TEST_ADD(piecewise_circle_creator_test_suite<double>::create_circle_start_origin_normal_test);
       TEST_ADD(piecewise_circle_creator_test_suite<double>::create_circle_3_point_test);
+      TEST_ADD(piecewise_circle_creator_test_suite<double>::create_ellipse_primative_test);
     }
     void AddTests(const long double &)
     {
       // add the tests
+      TEST_ADD(piecewise_circle_creator_test_suite<long double>::create_circle_primative_test);
       TEST_ADD(piecewise_circle_creator_test_suite<long double>::create_circle_start_origin_test);
       TEST_ADD(piecewise_circle_creator_test_suite<long double>::create_circle_start_origin_normal_test);
       TEST_ADD(piecewise_circle_creator_test_suite<long double>::create_circle_3_point_test);
+      TEST_ADD(piecewise_circle_creator_test_suite<long double>::create_ellipse_primative_test);
     }
 #ifdef ELI_QD_FOUND
     void AddTests(const dd_real &)
     {
       // add the tests
+      TEST_ADD(piecewise_circle_creator_test_suite<dd_real>::create_circle_primative_test);
       TEST_ADD(piecewise_circle_creator_test_suite<dd_real>::create_circle_start_origin_test);
       TEST_ADD(piecewise_circle_creator_test_suite<dd_real>::create_circle_start_origin_normal_test);
       TEST_ADD(piecewise_circle_creator_test_suite<dd_real>::create_circle_3_point_test);
+      TEST_ADD(piecewise_circle_creator_test_suite<dd_real>::create_ellipse_primative_test);
     }
 
     void AddTests(const qd_real &)
     {
       // add the tests
+      TEST_ADD(piecewise_circle_creator_test_suite<qd_real>::create_circle_primative_test);
       TEST_ADD(piecewise_circle_creator_test_suite<qd_real>::create_circle_start_origin_test);
       TEST_ADD(piecewise_circle_creator_test_suite<qd_real>::create_circle_start_origin_normal_test);
       TEST_ADD(piecewise_circle_creator_test_suite<qd_real>::create_circle_3_point_test);
+      TEST_ADD(piecewise_circle_creator_test_suite<qd_real>::create_ellipse_primative_test);
     }
 #endif
   public:
@@ -194,6 +205,27 @@ class piecewise_circle_creator_test_suite : public Test::Suite
       std::cout << "hold on;" << std::endl;
       std::cout << "plot3(cp_x', cp_y', cp_z', '-ok', 'MarkerFaceColor', [0 0 0]);" << std::endl;
       std::cout << "hold off;" << std::endl;
+    }
+
+    void create_circle_primative_test()
+    {
+      {
+        circle_creator_type circle_creator;
+        piecewise_curve_type pc;
+        point_type origin, x, y;
+        data_type radius;
+
+        // set the parameters for circle
+        origin << 1, 1, 1;
+        x << 1, -1, 2;
+        y << 1,  1, 0;
+        radius=3;
+
+        circle_creator.set(origin, x, y, radius);
+
+        // create the circle
+        TEST_ASSERT(circle_creator.create(pc));
+      }
     }
 
     void create_circle_start_origin_test()
@@ -365,6 +397,92 @@ class piecewise_circle_creator_test_suite : public Test::Suite
 
         // create the circle
         TEST_ASSERT(circle_creator.create(pc));
+      }
+    }
+
+    void create_ellipse_primative_test()
+    {
+      // create ellipse in 2D
+      {
+        ellipse_creator_type ellipse_creator;
+        piecewise_curve_type pc;
+        point_type origin, x, y;
+        data_type xr, yr;
+
+        // set the parameters for ellipse
+        origin << 1, 1, 0;
+        x << 1, -1, 0;
+        y << 1,  1, 0;
+        xr=3;
+        yr=6;
+
+        ellipse_creator.set(origin, x, y, xr, yr);
+
+        // create the circle
+        TEST_ASSERT(ellipse_creator.create(pc));
+      }
+
+      // create ellipse in 3D
+      {
+        ellipse_creator_type ellipse_creator;
+        piecewise_curve_type pc;
+        point_type origin, x, y;
+        data_type xr, yr;
+
+        // set the parameters for ellipse
+        origin << 1, 1, 1;
+        x << 1, -1, 2;
+        y << 1,  1, 0;
+        xr=3;
+        yr=6;
+
+        ellipse_creator.set(origin, x, y, xr, yr);
+
+        // create the circle
+        TEST_ASSERT(ellipse_creator.create(pc));
+      }
+
+      // create ellipse with one radius zero
+      {
+        ellipse_creator_type ellipse_creator;
+        piecewise_curve_type pc;
+        point_type origin, x, y;
+        data_type xr, yr;
+
+        // set the parameters for ellipse
+        origin << 1, 1, 1;
+        x << 1, -1, 2;
+        y << 1,  1, 0;
+        xr=0;
+        yr=6;
+
+        ellipse_creator.set(origin, x, y, xr, yr);
+
+        // create the circle
+        TEST_ASSERT(ellipse_creator.create(pc));
+      }
+
+      // create ellipse with both radii zero
+      {
+        ellipse_creator_type ellipse_creator;
+        piecewise_curve_type pc;
+        point_type origin, x, y;
+        data_type xr, yr;
+
+        // set the parameters for ellipse
+        origin << 1, 1, 1;
+        x << 1, -1, 2;
+        y << 1,  1, 0;
+        xr=0;
+        yr=0;
+
+        ellipse_creator.set(origin, x, y, xr, yr);
+
+        // create the circle
+        TEST_ASSERT(ellipse_creator.create(pc));
+
+        if (typeid(data_type)==typeid(double))
+          octave_print(1, pc);
       }
     }
 };
