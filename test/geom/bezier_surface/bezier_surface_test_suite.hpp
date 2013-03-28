@@ -15,6 +15,7 @@
 
 #include "eli/code_eli.hpp"
 
+#include "eli/constants/math.hpp"
 #include "eli/geom/point/distance.hpp"
 #include "eli/geom/surface/bezier.hpp"
 #include "eli/geom/surface/curvature.hpp"
@@ -58,6 +59,7 @@ class bezier_surface_test_suite : public Test::Suite
       TEST_ADD(bezier_surface_test_suite<float>::promotion_test);
       TEST_ADD(bezier_surface_test_suite<float>::demotion_test);
       TEST_ADD(bezier_surface_test_suite<float>::split_test);
+      TEST_ADD(bezier_surface_test_suite<float>::normal_test);
     }
     void AddTests(const double &)
     {
@@ -75,6 +77,7 @@ class bezier_surface_test_suite : public Test::Suite
       TEST_ADD(bezier_surface_test_suite<double>::promotion_test);
       TEST_ADD(bezier_surface_test_suite<double>::demotion_test);
       TEST_ADD(bezier_surface_test_suite<double>::split_test);
+      TEST_ADD(bezier_surface_test_suite<double>::normal_test);
     }
     void AddTests(const long double &)
     {
@@ -92,6 +95,7 @@ class bezier_surface_test_suite : public Test::Suite
       TEST_ADD(bezier_surface_test_suite<long double>::promotion_test);
       TEST_ADD(bezier_surface_test_suite<long double>::demotion_test);
       TEST_ADD(bezier_surface_test_suite<long double>::split_test);
+      TEST_ADD(bezier_surface_test_suite<long double>::normal_test);
     }
 #ifdef ELI_QD_FOUND
     void AddTests(const dd_real &)
@@ -110,6 +114,7 @@ class bezier_surface_test_suite : public Test::Suite
       TEST_ADD(bezier_surface_test_suite<dd_real>::promotion_test);
       TEST_ADD(bezier_surface_test_suite<dd_real>::demotion_test);
       TEST_ADD(bezier_surface_test_suite<dd_real>::split_test);
+      TEST_ADD(bezier_surface_test_suite<dd_real>::normal_test);
     }
 
     void AddTests(const qd_real &)
@@ -128,6 +133,7 @@ class bezier_surface_test_suite : public Test::Suite
       TEST_ADD(bezier_surface_test_suite<qd_real>::promotion_test);
       TEST_ADD(bezier_surface_test_suite<qd_real>::demotion_test);
       TEST_ADD(bezier_surface_test_suite<qd_real>::split_test);
+      TEST_ADD(bezier_surface_test_suite<qd_real>::normal_test);
     }
 #endif
 
@@ -2239,6 +2245,229 @@ class bezier_surface_test_suite : public Test::Suite
         pt_ref=bez.f_vvv(uh, vh);
         pt_out=bez_hi.f_vvv(uh, (vh-v0)/(1-v0))/(1-v0)/(1-v0)/(1-v0);
         TEST_ASSERT((pt_ref - pt_out).norm()<2*std::numeric_limits<data_type>::epsilon());
+      }
+    }
+
+    void normal_test()
+    {
+      // simple surface test
+      {
+        index_type n(3), m(3);
+        point_type pt[3+1][3+1], pt_out, pt_ref;
+        data_type u, v;
+
+        // create surface with specified control points
+        pt[0][0] << -15, 0,  15;
+        pt[1][0] <<  -5, 5,  15;
+        pt[2][0] <<   5, 5,  15;
+        pt[3][0] <<  15, 0,  15;
+        pt[0][1] << -15, 5,   5;
+        pt[1][1] <<  -5, 5,   5;
+        pt[2][1] <<   5, 5,   5;
+        pt[3][1] <<  15, 5,   5;
+        pt[0][2] << -15, 5,  -5;
+        pt[1][2] <<  -5, 5,  -5;
+        pt[2][2] <<   5, 5,  -5;
+        pt[3][2] <<  15, 5,  -5;
+        pt[0][3] << -15, 0, -15;
+        pt[1][3] <<  -5, 5, -15;
+        pt[2][3] <<   5, 5, -15;
+        pt[3][3] <<  15, 0, -15;
+
+        // create surface with specified dimensions and set control points
+        bezier_type bez(n, m);
+
+        for (index_type i=0; i<=n; ++i)
+        {
+          for (index_type j=0; j<=m; ++j)
+          {
+            bez.set_control_point(pt[i][j], i, j);
+          }
+        }
+
+        // get the normal and the tangent vectors
+        point_type normal, S_u, S_v, tmp;
+
+        u=0.5;
+        v=0.5;
+        normal=bez.normal(u, v);
+        S_u=bez.f_u(u, v);
+        S_v=bez.f_v(u, v);
+
+        // test the normal vector
+        TEST_ASSERT(tol.approximately_equal(normal.norm(), 1));
+        tmp=S_u.cross(S_v);
+        tmp.normalize();
+        TEST_ASSERT(tol.approximately_equal(tmp, normal));
+      }
+
+      // flat degenerate surface test
+      {
+        bezier_type bez(3, 3);
+        point_type cp[4], x, y, origin;
+        data_type k, xr, yr;
+        index_type i;
+
+        k=4*(eli::constants::math<data_type>::sqrt_two()-1)/3;
+        x << 1, 0, 0;
+        y << 0, 1, 0;
+        origin << 0, 0, 0;
+
+        // set the first section
+        xr=0;
+        yr=0;
+        cp[0]=xr*x+origin;
+        cp[1]=xr*x+yr*k*y+origin;
+        cp[2]=xr*k*x+yr*y+origin;
+        cp[3]=yr*y+origin;
+        for (i=0; i<4; ++i)
+        {
+          bez.set_control_point(cp[i], i, 0);
+        }
+
+        // set the second section
+        xr=0.5;
+        yr=0.5;
+        cp[0]=xr*x+origin;
+        cp[1]=xr*x+yr*k*y+origin;
+        cp[2]=xr*k*x+yr*y+origin;
+        cp[3]=yr*y+origin;
+        for (i=0; i<4; ++i)
+        {
+          bez.set_control_point(cp[i], i, 1);
+        }
+
+        // set the third section
+        xr=1;
+        yr=1;
+        cp[0]=xr*x+origin;
+        cp[1]=xr*x+yr*k*y+origin;
+        cp[2]=xr*k*x+yr*y+origin;
+        cp[3]=yr*y+origin;
+        for (i=0; i<4; ++i)
+        {
+          bez.set_control_point(cp[i], i, 2);
+        }
+
+        // set the last section
+        xr=1.5;
+        yr=1.5;
+        cp[0]=xr*x+origin;
+        cp[1]=xr*x+yr*k*y+origin;
+        cp[2]=xr*k*x+yr*y+origin;
+        cp[3]=yr*y+origin;
+        for (i=0; i<4; ++i)
+        {
+          bez.set_control_point(cp[i], i, 3);
+        }
+
+        // get the normal and the tangent vectors
+        point_type normal, ref_normal, S_u, S_v;
+        data_type u, v;
+
+        u=0.5;
+        v=0.5;
+        normal=bez.normal(u, v);
+        S_u=bez.f_u(u, v);
+        S_v=bez.f_v(u, v);
+
+        // test the normal vector
+        TEST_ASSERT(tol.approximately_equal(normal.norm(), 1));
+        ref_normal=S_u.cross(S_v);
+        ref_normal.normalize();
+        TEST_ASSERT(tol.approximately_equal(ref_normal, normal));
+
+        u=0.5;
+        v=0;
+        normal=bez.normal(u, v);
+        ref_normal=bez.normal(u, v+std::numeric_limits<data_type>::epsilon());
+        TEST_ASSERT(tol.approximately_equal(ref_normal, normal));
+      }
+
+      // 3D degenerate surface test
+      {
+        bezier_type bez(3, 3);
+        point_type cp[4], x, y, origin;
+        data_type k, xr, yr;
+        index_type i;
+
+        k=4*(eli::constants::math<data_type>::sqrt_two()-1)/3;
+        x << 1, 0, 0;
+        y << 0, 1, 0;
+
+        // set the first section
+        xr=0;
+        yr=0;
+        origin << 0, 0, 0;
+        cp[0]=xr*x+origin;
+        cp[1]=xr*x+yr*k*y+origin;
+        cp[2]=xr*k*x+yr*y+origin;
+        cp[3]=yr*y+origin;
+        for (i=0; i<4; ++i)
+        {
+          bez.set_control_point(cp[i], i, 0);
+        }
+
+        // set the second section
+        xr=0.5;
+        yr=0.5;
+        origin << 0, 0, 1;
+        cp[0]=xr*x+origin;
+        cp[1]=xr*x+yr*k*y+origin;
+        cp[2]=xr*k*x+yr*y+origin;
+        cp[3]=yr*y+origin;
+        for (i=0; i<4; ++i)
+        {
+          bez.set_control_point(cp[i], i, 1);
+        }
+
+        // set the third section
+        xr=1;
+        yr=1;
+        origin << 0, 0, 2;
+        cp[0]=xr*x+origin;
+        cp[1]=xr*x+yr*k*y+origin;
+        cp[2]=xr*k*x+yr*y+origin;
+        cp[3]=yr*y+origin;
+        for (i=0; i<4; ++i)
+        {
+          bez.set_control_point(cp[i], i, 2);
+        }
+
+        // set the last section
+        xr=1.5;
+        yr=1.5;
+        origin << 0, 0, 3;
+        cp[0]=xr*x+origin;
+        cp[1]=xr*x+yr*k*y+origin;
+        cp[2]=xr*k*x+yr*y+origin;
+        cp[3]=yr*y+origin;
+        for (i=0; i<4; ++i)
+        {
+          bez.set_control_point(cp[i], i, 3);
+        }
+
+        // get the normal and the tangent vectors
+        point_type normal, ref_normal, S_u, S_v;
+        data_type u, v;
+
+        u=0.5;
+        v=0.5;
+        normal=bez.normal(u, v);
+        S_u=bez.f_u(u, v);
+        S_v=bez.f_v(u, v);
+
+        // test the normal vector
+        TEST_ASSERT(tol.approximately_equal(normal.norm(), 1));
+        ref_normal=S_u.cross(S_v);
+        ref_normal.normalize();
+        TEST_ASSERT(tol.approximately_equal(ref_normal, normal));
+
+        u=0.5;
+        v=0;
+        normal=bez.normal(u, v);
+        ref_normal=bez.normal(u, v+std::numeric_limits<data_type>::epsilon());
+        TEST_ASSERT(tol.approximately_equal(ref_normal, normal));
       }
     }
 };

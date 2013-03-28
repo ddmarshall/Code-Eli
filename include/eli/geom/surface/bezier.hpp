@@ -780,7 +780,55 @@ namespace eli
           point_type normal(const data_type &u, const data_type &v) const
           {
             point_type n=f_u(u, v).cross(f_v(u, v));
-            n.normalize();
+            data_type nlen(n.norm());
+            tolerance_type tol;
+
+            // If have degenerate surface try higher order terms.
+            // Since want direction and don't care about magnitude,
+            // can use du=dv=1  in Taylor serier expansion:
+            // N(du, dv)=N+N_u*du+N_v*dv+1/2*(N_uu*du^2+2*N_uv*du*dv+N_vv*dv^2)+H.O.T.
+            // see "Bezier Normal Vector Surface and Its Applications" by Yamaguchi
+            if (tol.approximately_equal(nlen, 0))
+            {
+              point_type S_u, S_v, S_uu, S_uv, S_vv, N_u, N_v;
+              data_type du(1), dv(1);
+
+              // calculate Taylor series second term
+              S_u=f_u(u, v);
+              S_v=f_v(u, v);
+              S_uu=f_uu(u, v);
+              S_uv=f_uv(u, v);
+              S_vv=f_vv(u, v);
+              N_u=S_uu.cross(S_v)+S_u.cross(S_uv);
+              N_v=S_uv.cross(S_v)+S_u.cross(S_vv);
+              n=N_u*du+N_v*dv;
+              nlen=n.norm();
+
+              // if still have zero normal then calculate Taylor series third term
+              if (tol.approximately_equal(nlen, 0))
+              {
+                point_type S_uuu, S_uuv, S_uvv, S_vvv, N_uu, N_uv, N_vv;
+
+                S_uuu=f_uuu(u, v);
+                S_uuv=f_uuv(u, v);
+                S_uvv=f_uvv(u, v);
+                S_vvv=f_vvv(u, v);
+                N_uu=S_uuu.cross(S_v)+2*S_uu.cross(S_uv)+S_u.cross(S_uuv);
+                N_uv=S_uuv.cross(S_v)+S_uu.cross(S_vv)+S_uv.cross(S_uv)+S_u.cross(S_uvv);
+                N_vv=S_uvv.cross(S_v)+2*S_uv.cross(S_vv)+S_u.cross(S_vvv);
+                n=0.5*(N_uu*du*du+2*N_uv*du*dv+N_vv*dv*dv);
+                nlen=n.norm();
+
+                // if still get zero normal then give up
+                if (tol.approximately_equal(nlen, 0))
+                {
+                  n.setZero();
+                  nlen=1;
+                }
+              }
+            }
+
+            n/=nlen;
             return n;
           }
 
