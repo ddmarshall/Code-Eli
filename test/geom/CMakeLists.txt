@@ -12,6 +12,11 @@
 
 project(GEOM)
 
+#add the bounding box test
+add_executable(BoundingBoxTest ${PROJECT_SOURCE_DIR}/bounding_box/bounding_box_test.cpp)
+target_link_libraries(BoundingBoxTest ${_ELI_TEST_LIBRARIES_LIST})
+add_test(NAME BoundingBoxTest COMMAND $<TARGET_FILE:BoundingBoxTest> --text)
+
 # add the fit_container test
 add_executable(FitContainerTest ${PROJECT_SOURCE_DIR}/fit_container/fit_container_test.cpp)
 target_link_libraries(FitContainerTest ${_ELI_TEST_LIBRARIES_LIST})
