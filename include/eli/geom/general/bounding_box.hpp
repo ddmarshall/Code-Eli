@@ -102,6 +102,13 @@ namespace eli
           }
           point_type get_max() const {return pmax;}
 
+          void clear()
+          {
+            empty=true;
+            pmin.setZero();
+            pmax.setZero();
+          }
+
           bool add(const point_type &p)
           {
             index_type i;

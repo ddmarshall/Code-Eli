@@ -85,6 +85,7 @@ namespace eli
           typedef typename curve_type::point_type point_type;
           typedef typename curve_type::control_point_type control_point_type;
           typedef typename curve_type::rotation_matrix_type rotation_matrix_type;
+          typedef typename curve_type::bounding_box_type bounding_box_type;
           typedef data__ data_type;
           typedef unsigned short dimension_type;
           typedef tol__ tolerance_type;
@@ -153,27 +154,18 @@ namespace eli
 
           index_type number_segments() const {return static_cast<index_type>(segments.size());}
 
-          void get_bounding_box(point_type &pmin, point_type &pmax) const
+          void get_bounding_box(bounding_box_type &bb) const
           {
-            typename segment_collection_type::const_iterator it=segments.begin();
-            point_type pmintmp, pmaxtmp;
+            typename segment_collection_type::const_iterator it;
+            bounding_box_type bb_local;
 
-            // cycle through all segments to get each bounding box to compare
-            it->c.get_bounding_box(pmin, pmax);
-            for (++it; it!=segments.end(); ++it)
+            bb.clear();
+
+            // cycle through all segments to get each bounding box to add
+            for (it=segments.begin(); it!=segments.end(); ++it)
             {
-              it->c.get_bounding_box(pmintmp, pmaxtmp);
-              for (index_type i=0; i<dim__; ++i)
-              {
-                if (pmintmp(i)<pmin(i))
-                {
-                  pmin(i)=pmintmp(i);
-                }
-                if (pmaxtmp(i)>pmax(i))
-                {
-                  pmax(i)=pmaxtmp(i);
-                }
-              }
+              it->c.get_bounding_box(bb_local);
+              bb.add(bb_local);
             }
           }
 

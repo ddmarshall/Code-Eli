@@ -26,6 +26,7 @@
 #include "eli/geom/utility/bezier.hpp"
 #include "eli/geom/point/distance.hpp"
 #include "eli/geom/general/continuity.hpp"
+#include "eli/geom/general/bounding_box.hpp"
 #include "eli/geom/curve/fit_container.hpp"
 
 // TODO: MOVE THESE TO utility namespace
@@ -115,12 +116,11 @@ namespace eli
           typedef geom::curve::fit_container<data_type, index_type, dim__, dim__> fit_container_type;
           typedef tol__ tolerance_type;
           typedef Eigen::Matrix<data_type, dim__, dim__> rotation_matrix_type;
+          typedef eli::geom::general::bounding_box<data_type, dim__, tolerance_type> bounding_box_type;
 
         public:
           bezier() : B(1, dim__) {}
-          bezier(const index_type &n) : B((n<=0)?(1):(n+1), dim__)
-          {
-          }
+          bezier(const index_type &n) : B((n<=0)?(1):(n+1), dim__) {}
           bezier(const bezier<data_type, dim__> &bc) : B(bc.B) {}
           ~bezier() {}
 
@@ -199,27 +199,14 @@ namespace eli
             B=B_new;
           }
 
-          void get_bounding_box(point_type &pmin, point_type &pmax) const
+          void get_bounding_box(bounding_box_type &bb) const
           {
-            index_type i, k, deg(degree());
-            point_type tmp;
+            index_type i, deg(degree());
 
-            pmin=B.row(0);
-            pmax=pmin;
+            bb.clear();
             for (i=0; i<=deg; ++i)
             {
-              tmp=B.row(i);
-              for (k=0; k<dim__; ++k)
-              {
-                if (tmp(k)<pmin(k))
-                {
-                  pmin(k)=tmp(k);
-                }
-                if (tmp(k)>pmax(k))
-                {
-                  pmax(k)=tmp(k);
-                }
-              }
+              bb.add(B.row(i));
             }
           }
 

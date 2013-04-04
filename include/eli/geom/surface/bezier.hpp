@@ -23,6 +23,7 @@
 
 #include "eli/geom/utility/bezier.hpp"
 #include "eli/geom/general/continuity.hpp"
+#include "eli/geom/general/bounding_box.hpp"
 
 namespace eli
 {
@@ -41,6 +42,7 @@ namespace eli
           typedef typename control_point_type::Index index_type;
           typedef tol__ tolerance_type;
           typedef Eigen::Matrix<data_type, dim__, dim__> rotation_matrix_type;
+          typedef eli::geom::general::bounding_box<data_type, dim__, tolerance_type> bounding_box_type;
 
         private:
           typedef Eigen::Map<Eigen::Matrix<data_type, Eigen::Dynamic, dim__>,
@@ -138,29 +140,16 @@ namespace eli
             return B_u[j].row(i);
           }
 
-          void get_bounding_box(point_type &pmin, point_type &pmax) const
+          void get_bounding_box(bounding_box_type &bb) const
           {
-            index_type i, j, k, degu(degree_u()), degv(degree_v());
-            point_type tmp;
+            index_type i, j, degu(degree_u()), degv(degree_v());
 
-            pmin=B_u[0].row(0);
-            pmax=pmin;
+            bb.clear();
             for (i=0; i<=degu; ++i)
             {
               for (j=0; j<=degv; ++j)
               {
-                tmp=B_u[j].row(i);
-                for (k=0; k<dim__; ++k)
-                {
-                  if (tmp(k)<pmin(k))
-                  {
-                    pmin(k)=tmp(k);
-                  }
-                  if (tmp(k)>pmax(k))
-                  {
-                    pmax(k)=tmp(k);
-                  }
-                }
+                bb.add(B_u[j].row(i));
               }
             }
           }

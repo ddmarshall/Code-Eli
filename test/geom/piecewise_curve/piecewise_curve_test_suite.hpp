@@ -268,13 +268,14 @@ class piecewise_curve_test_suite : public Test::Suite
       TEST_ASSERT(err==piecewise_curve_type::NO_ERROR);
 
       // test the bounding box
-      point_type pmin, pmax, pmin_ref, pmax_ref;
+      typename piecewise_curve_type::bounding_box_type bb;
+      point_type pmin_ref, pmax_ref;
 
-      pc.get_bounding_box(pmin, pmax);
+      pc.get_bounding_box(bb);
       pmin_ref << 1, -2, 0;
       pmax_ref << 6.5, 2.5, 0;
-      TEST_ASSERT(pmin==pmin_ref);
-      TEST_ASSERT(pmax==pmax_ref);
+      TEST_ASSERT(bb.get_min()==pmin_ref);
+      TEST_ASSERT(bb.get_max()==pmax_ref);
     }
 
     void reverse_test()

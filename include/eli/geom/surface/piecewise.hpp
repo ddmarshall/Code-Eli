@@ -34,6 +34,7 @@ namespace eli
           typedef typename surface_type::point_type point_type;
           typedef typename surface_type::control_point_type control_point_type;
           typedef typename surface_type::rotation_matrix_type rotation_matrix_type;
+          typedef typename surface_type::bounding_box_type bounding_box_type;
           typedef data__ data_type;
           typedef unsigned short dimension_type;
           typedef tol__ tolerance_type;
@@ -145,27 +146,18 @@ namespace eli
             return !open();
           }
 
-          void get_bounding_box(point_type &pmin, point_type &pmax) const
+          void get_bounding_box(bounding_box_type &bb) const
           {
-            typename patch_collection_type::const_iterator it=patches.begin();
-            point_type pmintmp, pmaxtmp;
+            typename patch_collection_type::const_iterator it;
+            bounding_box_type bb_local;
+
+            bb.clear();
 
             // cycle through all patches to get each bounding box to compare
-            it->s.get_bounding_box(pmin, pmax);
-            for (++it; it!=patches.end(); ++it)
+            for (it=patches.begin(); it!=patches.end(); ++it)
             {
-              it->s.get_bounding_box(pmintmp, pmaxtmp);
-              for (index_type i=0; i<dim__; ++i)
-              {
-                if (pmintmp(i)<pmin(i))
-                {
-                  pmin(i)=pmintmp(i);
-                }
-                if (pmaxtmp(i)>pmax(i))
-                {
-                  pmax(i)=pmaxtmp(i);
-                }
-              }
+              it->s.get_bounding_box(bb_local);
+              bb.add(bb_local);
             }
           }
 

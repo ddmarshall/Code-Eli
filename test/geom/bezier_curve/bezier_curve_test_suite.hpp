@@ -242,13 +242,14 @@ class bezier_curve_test_suite : public Test::Suite
       }
 
       // test bounding box
-      point_type pmin, pmax, pmin_ref, pmax_ref;
+      typename bezier_type::bounding_box_type bb;
+      point_type pmin_ref, pmax_ref;
 
-      bc.get_bounding_box(pmin, pmax);
+      bc.get_bounding_box(bb);
       pmin_ref << 1, 0, 0;
       pmax_ref << 4, 2, 0;
-      TEST_ASSERT(pmin==pmin_ref);
-      TEST_ASSERT(pmax==pmax_ref);
+      TEST_ASSERT(bb.get_min()==pmin_ref);
+      TEST_ASSERT(bb.get_max()==pmax_ref);
     }
 
     void transformation_test()

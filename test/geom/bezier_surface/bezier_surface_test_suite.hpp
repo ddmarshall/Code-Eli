@@ -408,13 +408,14 @@ class bezier_surface_test_suite : public Test::Suite
       }
 
       // test bounding box
-      point_type pmin, pmax, pmin_ref, pmax_ref;
+      typename bezier_type::bounding_box_type bb;
+      point_type pmin_ref, pmax_ref;
 
-      bez1.get_bounding_box(pmin, pmax);
+      bez1.get_bounding_box(bb);
       pmin_ref << -15, 0, -15;
       pmax_ref <<  15, 5,  15;
-      TEST_ASSERT(pmin==pmin_ref);
-      TEST_ASSERT(pmax==pmax_ref);
+      TEST_ASSERT(bb.get_min()==pmin_ref);
+      TEST_ASSERT(bb.get_max()==pmax_ref);
     }
 
     void reverse_test()

@@ -340,10 +340,6 @@ class piecewise_surface_test_suite : public Test::Suite
       err=ps1.replace(s2, 2, 1); s_patches[5]=s2;
       TEST_ASSERT(err==piecewise_surface_type::NO_ERROR);
 
-      // print out
-//       if (typeid(data_type)==typeid(double))
-//         octave_print(2, ps1);
-
       // test getting parameter max
       data_type umax, vmax;
       ps1.get_parameter_max(umax, vmax);
@@ -425,13 +421,14 @@ class piecewise_surface_test_suite : public Test::Suite
       TEST_ASSERT(err==piecewise_surface_type::NO_ERROR);
 
       // test the bounding box
-      point_type pmin, pmax, pmin_ref, pmax_ref;
+      typename piecewise_surface_type::bounding_box_type bb;
+      point_type pmin_ref, pmax_ref;
 
-      ps1.get_bounding_box(pmin, pmax);
+      ps1.get_bounding_box(bb);
       pmin_ref << -15, 0, -15;
       pmax_ref << 15, 4.6875, 15;
-      TEST_ASSERT(pmin==pmin_ref);
-      TEST_ASSERT(pmax==pmax_ref);
+      TEST_ASSERT(bb.get_min()==pmin_ref);
+      TEST_ASSERT(bb.get_max()==pmax_ref);
     }
 
     void reverse_test()
