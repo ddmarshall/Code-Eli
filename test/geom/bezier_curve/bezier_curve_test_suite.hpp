@@ -882,9 +882,9 @@ class bezier_curve_test_suite : public Test::Suite
             eval_ref[0]=bc1.f(t);
             eval_ref[1]=bc1.fp(t);
             eval_ref[2]=bc1.fpp(t);
-            eli::geom::point::distance(d[0], eval_out[0], eval_ref[0]);
-            eli::geom::point::distance(d[1], eval_out[1], eval_ref[1]);
-            eli::geom::point::distance(d[2], eval_out[2], eval_ref[2]);
+            d[0]=eli::geom::point::distance(eval_out[0], eval_ref[0]);
+            d[1]=eli::geom::point::distance(eval_out[1], eval_ref[1]);
+            d[2]=eli::geom::point::distance(eval_out[2], eval_ref[2]);
 
             if (k<2)
             {
@@ -920,9 +920,9 @@ class bezier_curve_test_suite : public Test::Suite
             eval_ref[0]=bc1.f(t);
             eval_ref[1]=bc1.fp(t);
             eval_ref[2]=bc1.fpp(t);
-            eli::geom::point::distance(d[0], eval_out[0], eval_ref[0]);
-            eli::geom::point::distance(d[1], eval_out[1], eval_ref[1]);
-            eli::geom::point::distance(d[2], eval_out[2], eval_ref[2]);
+            d[0]=eli::geom::point::distance(eval_out[0], eval_ref[0]);
+            d[1]=eli::geom::point::distance(eval_out[1], eval_ref[1]);
+            d[2]=eli::geom::point::distance(eval_out[2], eval_ref[2]);
 
             if (k<2)
             {
@@ -958,9 +958,9 @@ class bezier_curve_test_suite : public Test::Suite
             eval_ref[0]=bc1.f(t);
             eval_ref[1]=bc1.fp(t);
             eval_ref[2]=bc1.fpp(t);
-            eli::geom::point::distance(d[0], eval_out[0], eval_ref[0]);
-            eli::geom::point::distance(d[1], eval_out[1], eval_ref[1]);
-            eli::geom::point::distance(d[2], eval_out[2], eval_ref[2]);
+            d[0]=eli::geom::point::distance(eval_out[0], eval_ref[0]);
+            d[1]=eli::geom::point::distance(eval_out[1], eval_ref[1]);
+            d[2]=eli::geom::point::distance(eval_out[2], eval_ref[2]);
 
             if (k<2)
             {
@@ -996,9 +996,9 @@ class bezier_curve_test_suite : public Test::Suite
             eval_ref[0]=bc1.f(t);
             eval_ref[1]=bc1.fp(t);
             eval_ref[2]=bc1.fpp(t);
-            eli::geom::point::distance(d[0], eval_out[0], eval_ref[0]);
-            eli::geom::point::distance(d[1], eval_out[1], eval_ref[1]);
-            eli::geom::point::distance(d[2], eval_out[2], eval_ref[2]);
+            d[0]=eli::geom::point::distance(eval_out[0], eval_ref[0]);
+            d[1]=eli::geom::point::distance(eval_out[1], eval_ref[1]);
+            d[2]=eli::geom::point::distance(eval_out[2], eval_ref[2]);
 
             if (k<2)
             {

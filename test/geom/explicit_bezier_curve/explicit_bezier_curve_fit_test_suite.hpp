@@ -164,9 +164,7 @@ class explicit_bezier_curve_fit_test_suite : public Test::Suite
       // calculate the error at the point
       for (err_ref=0, i=0; i<pts.size(); ++i)
       {
-        data_type d;
-        eli::geom::point::distance(d, pts[i], ebez.f(t[i]));
-        err_ref+=d;
+        err_ref+=eli::geom::point::distance(pts[i], ebez.f(t[i]));
       }
 
       TEST_ASSERT(err_ref==err_out);
@@ -207,9 +205,7 @@ class explicit_bezier_curve_fit_test_suite : public Test::Suite
       // calculate the error at the point
       for (err_ref=0, i=0; i<pts.size(); ++i)
       {
-        data_type d;
-        eli::geom::point::distance(d, pts[i], ebez.f(t[i]));
-        err_ref+=d;
+        err_ref+=eli::geom::point::distance(pts[i], ebez.f(t[i]));
       }
 
       TEST_ASSERT(err_out==err_ref);
@@ -255,9 +251,7 @@ class explicit_bezier_curve_fit_test_suite : public Test::Suite
       // calculate the error at the point
       for (err_ref=0, i=0; i<pts.size(); ++i)
       {
-        data_type d;
-        eli::geom::point::distance(d, pts[i], ebez.f(t[i]));
-        err_ref+=d;
+        err_ref+=eli::geom::point::distance(pts[i], ebez.f(t[i]));
       }
 
       TEST_ASSERT(err_out==err_ref);
@@ -306,9 +300,7 @@ class explicit_bezier_curve_fit_test_suite : public Test::Suite
       // calculate the error at the point
       for (err_ref=0, i=0; i<pts.size(); ++i)
       {
-        data_type d;
-        eli::geom::point::distance(d, pts[i], ebez.f(t[i]));
-        err_ref+=d;
+        err_ref+=eli::geom::point::distance(pts[i], ebez.f(t[i]));
       }
 
       TEST_ASSERT(err_out==err_ref);

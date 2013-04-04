@@ -284,10 +284,8 @@ namespace eli
             }
 
             // set radius & origin
-            data_type r;
             point_type x, y;
-            eli::geom::point::distance(r, start, orig);
-            set_radius(r);
+            set_radius(eli::geom::point::distance(start, orig));
             this->set_origin(orig);
 
             if (get_radius()==0)
@@ -320,10 +318,8 @@ namespace eli
             }
 
             // set radius & origin
-            data_type r;
             point_type x, y;
-            eli::geom::point::distance(r, start, orig);
-            set_radius(r);
+            set_radius(eli::geom::point::distance(start, orig));
             this->set_origin(orig);
 
             if (get_radius()==0)

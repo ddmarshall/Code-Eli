@@ -598,11 +598,10 @@ namespace eli
             B=ctrl;
 
             // calculate the error at the point
-            data_type err(0), d;
+            data_type err(0);
             for (i=0; i<pts.size(); ++i)
             {
-              geom::point::distance(d, pts[i], f(t[i]));
-              err+=d;
+              err+=geom::point::distance(pts[i], f(t[i]));
             }
 
             return err;
@@ -778,7 +777,7 @@ namespace eli
             {
               data_type temp;
 
-              geom::point::distance(temp, pts[i-1], pts[i]);
+              temp=geom::point::distance(pts[i-1], pts[i]);
 
               // in case two adjacent points are given too close together
               if (temp<small_dist)
@@ -789,9 +788,7 @@ namespace eli
             len=t[npts-1];
             if (closed)
             {
-              data_type d;
-              geom::point::distance(d, pts[npts-1], pts[0]);
-              len+=d;
+              len+=geom::point::distance(pts[npts-1], pts[0]);
             }
 
             for (i=0; i<npts; ++i)

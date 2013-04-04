@@ -17,6 +17,7 @@
 
 #include "eli/util/tolerance.hpp"
 
+#include "eli/geom/point/distance.hpp"
 #include "eli/geom/curve/bezier.hpp"
 #include "eli/geom/general/continuity.hpp"
 #include "eli/geom/curve/fit_container.hpp"
@@ -271,11 +272,10 @@ namespace eli
             }
 
             // calculate the error at the point
-            data_type err(0), d;
+            data_type err(0);
             for (i=0; i<pts.size(); ++i)
             {
-              eli::geom::point::distance(d, pts[i], f(t[i]));
-              err+=d;
+              err+=eli::geom::point::distance(pts[i], f(t[i]));
             }
 
             return err;

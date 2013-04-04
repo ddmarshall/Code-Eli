@@ -197,8 +197,8 @@ namespace eli
             {
               joff=0;
               t[0]=0;
-              eli::geom::point::distance(t[1], vec[1], vec[0]);
-              eli::geom::point::distance(t[2], vec[2], vec[1]);
+              t[1]=eli::geom::point::distance(vec[1], vec[0]);
+              t[2]=eli::geom::point::distance(vec[2], vec[1]);
               t[2]+=t[1];
             }
             else
@@ -338,10 +338,10 @@ namespace eli
             {
               joff=0;
               t[0]=0;
-              eli::geom::point::distance(t[1], vec[1], vec[0]);
-              eli::geom::point::distance(t[2], vec[2], vec[1]);
+              t[1]=eli::geom::point::distance(vec[1], vec[0]);
+              t[2]=eli::geom::point::distance(vec[2], vec[1]);
               t[2]+=t[1];
-              eli::geom::point::distance(t[3], vec[3], vec[2]);
+              t[3]=eli::geom::point::distance(vec[3], vec[2]);
               t[3]+=t[2];
             }
             else

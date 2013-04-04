@@ -1653,7 +1653,7 @@ class bezier_surface_test_suite : public Test::Suite
             eval_ref[5]=bez.f_vv(u[k], v[k]);
             for (index_type i=0; i<6; ++i)
             {
-              eli::geom::point::distance(d[i], eval_out[i], eval_ref[i]);
+              d[i]=eli::geom::point::distance(eval_out[i], eval_ref[i]);
             }
 
             // boundaries have different error than interior points
@@ -1709,7 +1709,7 @@ class bezier_surface_test_suite : public Test::Suite
             eval_ref[5]=bez.f_vv(u[k], v[k]);
             for (index_type i=0; i<6; ++i)
             {
-              eli::geom::point::distance(d[i], eval_out[i], eval_ref[i]);
+              d[i]=eli::geom::point::distance(eval_out[i], eval_ref[i]);
             }
 
             // boundaries have different error than interior points
@@ -1772,7 +1772,7 @@ class bezier_surface_test_suite : public Test::Suite
             eval_ref[5]=bez.f_vv(u[k], v[k]);
             for (index_type i=0; i<6; ++i)
             {
-              eli::geom::point::distance(d[i], eval_out[i], eval_ref[i]);
+              d[i]=eli::geom::point::distance(eval_out[i], eval_ref[i]);
             }
 
             // boundaries have different error than interior points
@@ -1828,7 +1828,7 @@ class bezier_surface_test_suite : public Test::Suite
             eval_ref[5]=bez.f_vv(u[k], v[k]);
             for (index_type i=0; i<6; ++i)
             {
-              eli::geom::point::distance(d[i], eval_out[i], eval_ref[i]);
+              d[i]=eli::geom::point::distance(eval_out[i], eval_ref[i]);
             }
 
             // boundaries have different error than interior points
@@ -1891,7 +1891,7 @@ class bezier_surface_test_suite : public Test::Suite
             eval_ref[5]=bez.f_vv(u[k], v[k]);
             for (index_type i=0; i<6; ++i)
             {
-              eli::geom::point::distance(d[i], eval_out[i], eval_ref[i]);
+              d[i]=eli::geom::point::distance(eval_out[i], eval_ref[i]);
             }
 
             // boundaries have different error than interior points

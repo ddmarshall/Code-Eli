@@ -23,20 +23,16 @@ namespace eli
   {
     namespace point
     {
-      template<typename data__, typename point_type1__, typename point_type2__>
-      void distance2(data__ &d, const point_type1__ &p1, const point_type2__ &p2)
+      template<typename Derived1__, typename Derived2__>
+      typename Derived1__::Scalar distance2(const Eigen::MatrixBase<Derived1__> &p1, const Eigen::MatrixBase<Derived2__> &p2)
       {
-        Eigen::Matrix<typename point_type1__::Scalar, 1, Eigen::Dynamic> dif;
-
-        dif=p1-p2;
-        d=dif.dot(dif);
+        return (p1-p2).squaredNorm();
       }
 
-      template<typename data__, typename point_type1__, typename point_type2__>
-      void distance(data__ &d, const point_type1__ &p1, const point_type2__ &p2)
+      template<typename Derived1__, typename Derived2__>
+      typename Derived1__::Scalar distance(const Eigen::MatrixBase<Derived1__> &p1, const Eigen::MatrixBase<Derived2__> &p2)
       {
-        distance2(d, p1, p2);
-        d=std::sqrt(d);
+        return (p1-p2).norm();
       }
     }
   }

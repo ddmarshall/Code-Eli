@@ -174,9 +174,7 @@ class bezier_curve_fit_test_suite : public Test::Suite
         data_type err(0);
         for (i=0; i<pts.size(); ++i)
         {
-          data_type d;
-          eli::geom::point::distance(d, pts[i], bez.f(t[i]));
-          err+=d;
+          err+=eli::geom::point::distance(pts[i], bez.f(t[i]));
         }
 
         TEST_ASSERT(bez.open());
@@ -212,9 +210,7 @@ class bezier_curve_fit_test_suite : public Test::Suite
         data_type err(0);
         for (i=0; i<pts.size(); ++i)
         {
-          data_type d;
-          eli::geom::point::distance(d, pts[i], bez.f(t[i]));
-          err+=d;
+          err+=eli::geom::point::distance(pts[i], bez.f(t[i]));
         }
 
         TEST_ASSERT(bez.closed());
@@ -261,9 +257,7 @@ class bezier_curve_fit_test_suite : public Test::Suite
         data_type err(0);
         for (i=0; i<pts.size(); ++i)
         {
-          data_type d;
-          eli::geom::point::distance(d, pts[i], bez.f(t[i]));
-          err+=d;
+          err+=eli::geom::point::distance(pts[i], bez.f(t[i]));
         }
 
         TEST_ASSERT(bez.open());
@@ -304,9 +298,7 @@ class bezier_curve_fit_test_suite : public Test::Suite
         data_type err(0);
         for (i=0; i<pts.size(); ++i)
         {
-          data_type d;
-          eli::geom::point::distance(d, pts[i], bez.f(t[i]));
-          err+=d;
+          err+=eli::geom::point::distance(pts[i], bez.f(t[i]));
         }
 
         TEST_ASSERT(bez.closed());
@@ -344,9 +336,7 @@ class bezier_curve_fit_test_suite : public Test::Suite
         data_type err(0);
         for (i=0; i<pts.size(); ++i)
         {
-          data_type d;
-          eli::geom::point::distance(d, pts[i], bez.f(t[i]));
-          err+=d;
+          err+=eli::geom::point::distance(pts[i], bez.f(t[i]));
         }
 
         TEST_ASSERT(bez.closed());
@@ -401,9 +391,7 @@ class bezier_curve_fit_test_suite : public Test::Suite
         data_type err(0);
         for (i=0; i<pts.size(); ++i)
         {
-          data_type d;
-          eli::geom::point::distance(d, pts[i], bez.f(t[i]));
-          err+=d;
+          err+=eli::geom::point::distance(pts[i], bez.f(t[i]));
         }
 
         TEST_ASSERT(bez.open());
@@ -456,9 +444,7 @@ class bezier_curve_fit_test_suite : public Test::Suite
         data_type err(0);
         for (i=0; i<pts.size(); ++i)
         {
-          data_type d;
-          eli::geom::point::distance(d, pts[i], bez.f(t[i]));
-          err+=d;
+          err+=eli::geom::point::distance(pts[i], bez.f(t[i]));
         }
 
         TEST_ASSERT(bez.closed());
@@ -514,9 +500,7 @@ class bezier_curve_fit_test_suite : public Test::Suite
         data_type err(0);
         for (i=0; i<pts.size(); ++i)
         {
-          data_type d;
-          eli::geom::point::distance(d, pts[i], bez.f(t[i]));
-          err+=d;
+          err+=eli::geom::point::distance(pts[i], bez.f(t[i]));
         }
 
         TEST_ASSERT(bez.closed());
@@ -595,9 +579,7 @@ class bezier_curve_fit_test_suite : public Test::Suite
         data_type err(0);
         for (i=0; i<pts.size(); ++i)
         {
-          data_type d;
-          eli::geom::point::distance(d, pts[i], bez.f(t[i]));
-          err+=d;
+          err+=eli::geom::point::distance(pts[i], bez.f(t[i]));
         }
 
         TEST_ASSERT(bez.open());
@@ -645,9 +627,7 @@ class bezier_curve_fit_test_suite : public Test::Suite
         data_type err(0);
         for (i=0; i<pts.size(); ++i)
         {
-          data_type d;
-          eli::geom::point::distance(d, pts[i], bez.f(t[i]));
-          err+=d;
+          err+=eli::geom::point::distance(pts[i], bez.f(t[i]));
         }
 
         TEST_ASSERT(bez.closed());
@@ -700,9 +680,7 @@ class bezier_curve_fit_test_suite : public Test::Suite
         data_type err(0);
         for (i=0; i<pts.size(); ++i)
         {
-          data_type d;
-          eli::geom::point::distance(d, pts[i], bez.f(t[i]));
-          err+=d;
+          err+=eli::geom::point::distance(pts[i], bez.f(t[i]));
         }
 
         TEST_ASSERT(bez.closed());
