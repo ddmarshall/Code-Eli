@@ -72,3 +72,7 @@ add_executable(PiecewiseSurfaceCreatorTest ${PROJECT_SOURCE_DIR}/piecewise_surfa
 target_link_libraries(PiecewiseSurfaceCreatorTest ${_ELI_TEST_LIBRARIES_LIST})
 add_test(NAME PiecewiseSurfaceCreatorTest COMMAND $<TARGET_FILE:PiecewiseSurfaceCreatorTest> --text)
 
+# add the minimum_distance test
+add_executable(MinimumDistanceTest ${PROJECT_SOURCE_DIR}/minimum_distance/minimum_distance_test.cpp)
+target_link_libraries(MinimumDistanceTest ${_ELI_TEST_LIBRARIES_LIST})
+add_test(NAME MinimumDistanceTest COMMAND $<TARGET_FILE:MinimumDistanceTest> --text)

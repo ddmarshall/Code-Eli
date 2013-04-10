@@ -31,6 +31,7 @@ namespace eli
           typedef unsigned short dimension_type;
           typedef Eigen::Matrix<data_type, 1, dim__> point_type;
           typedef typename point_type::Index index_type;
+          typedef tol__ tolerance_type;
 
         public:
           bounding_box() : empty(true) {}
