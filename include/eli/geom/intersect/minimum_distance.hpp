@@ -15,5 +15,7 @@
 
 #include "eli/geom/intersect/minimum_distance_point.hpp"
 #include "eli/geom/intersect/minimum_distance_bounding_box.hpp"
+#include "eli/geom/intersect/minimum_distance_line.hpp"
+#include "eli/geom/intersect/minimum_distance_plane.hpp"
 
 #endif
