@@ -40,7 +40,7 @@ namespace eli
         }
 
         t=pma0.dot(a1)/a1a1;
-        return std::sqrt(pma0.dot(pma0)-a1a1*t*t);
+        return std::sqrt(std::max(static_cast<typename Derived1__::Scalar>(0), pma0.dot(pma0)-a1a1*t*t));
       }
     }
   }
