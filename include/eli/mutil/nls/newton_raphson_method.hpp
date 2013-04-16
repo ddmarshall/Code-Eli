@@ -24,16 +24,16 @@ namespace eli
       template<typename data__>
       class newton_raphson_method : public iterative_root_base<data__>
       {
-        private:
-          data__ x0;
+        public:
+          typedef data__ data_type;
 
         public:
-          newton_raphson_method() : iterative_root_base<data__>(), x0(0)
+          newton_raphson_method() : iterative_root_base<data_type>(), x0(0)
           {
           }
 
-          newton_raphson_method(const newton_raphson_method<data__> &nrm)
-          : iterative_root_base<data__>(nrm), x0(nrm.x0)
+          newton_raphson_method(const newton_raphson_method<data_type> &nrm)
+          : iterative_root_base<data_type>(nrm), x0(nrm.x0)
           {
           }
 
@@ -41,20 +41,20 @@ namespace eli
           {
           }
 
-          void set_initial_guess(const data__ &xg)
+          void set_initial_guess(const data_type &xg)
           {
             x0=xg;
           }
 
-          const data__ & get_initial_guess() const
+          const data_type & get_initial_guess() const
           {
             return x0;
           }
 
           template<typename f__, typename g__>
-          typename iterative_root_base<data__>::status find_root(data__ &root, const f__ &fun, const g__ &fprime, const data__ &f0) const
+          typename iterative_root_base<data_type>::status find_root(data_type &root, const f__ &fun, const g__ &fprime, const data_type &f0) const
           {
-            data__ x(x0), fx(fun(x0)), fpx(fprime(x0)), eval, eval_abs;
+            data_type x(x0), fx(fun(x0)), fpx(fprime(x0)), eval, eval_abs, dx(1);
             typename iterative_root_base<data__>::iteration_type count;
 
             // calculate the function evaluated at the initial location
@@ -67,12 +67,13 @@ namespace eli
             }
 
             count=0;
-            while (!this->test_converged(count, eval_abs/f0, eval_abs))
+            while (!this->test_converged(count, eval_abs/f0, eval_abs) && (std::abs(dx)>0))
             {
               if (fpx==0)
                 return iterative_root_base<data__>::no_root_found;
 
-              x-=eval/fpx;
+              dx=calculate_delta_factor(x, -eval/fpx);
+              x+=dx;
               fx=fun(x);
               fpx=fprime(x);
               eval=fx-f0;
@@ -87,6 +88,12 @@ namespace eli
 
             return iterative_root_base<data__>::converged;
           }
+
+        private:
+          virtual data_type calculate_delta_factor(const data_type &, const data_type &dx) const {return dx;}
+
+        private:
+          data_type x0;
       };
     }
   }

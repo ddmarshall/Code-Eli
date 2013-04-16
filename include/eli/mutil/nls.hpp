@@ -16,6 +16,7 @@
 #include "eli/mutil/nls/iterative_root_base.hpp"
 #include "eli/mutil/nls/bisection_method.hpp"
 #include "eli/mutil/nls/newton_raphson_method.hpp"
+#include "eli/mutil/nls/newton_raphson_shacham_method.hpp"
 #include "eli/mutil/nls/secant_method.hpp"
 #include "eli/mutil/nls/iterative_system_root_base.hpp"
 #include "eli/mutil/nls/newton_raphson_system_method.hpp"
