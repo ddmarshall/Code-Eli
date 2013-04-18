@@ -108,8 +108,30 @@ namespace eli
             tt=std::min(std::max(tt, static_cast<typename curve__::data_type>(0)), static_cast<typename curve__::data_type>(1));
 
             typename curve__::point_type fp(pc->fp(tt));
+            typename curve__::data_type rtn(fp.dot(fp)+pc->fpp(tt).dot(pc->f(tt)-pt));
+            typename curve__::tolerance_type tol;
 
-            return fp.dot(fp)+pc->fpp(tt).dot(pc->f(tt)-pt);
+            if (tol.approximately_equal(rtn, 0))
+            {
+              curve_g_functor<curve__> g;
+
+              g.pc=pc;
+              g.pt=pt;
+              if (t>=1)
+              {
+                rtn=(g(1)-g(0.99))/(0.01);
+              }
+              else if (t<=0)
+              {
+                rtn=(g(0.01)-g(0))/(0.01);
+              }
+              else
+              {
+                rtn=(g(t+0.01)-g(t))/(0.01);
+              }
+            }
+
+            return rtn;
           }
         };
       }
@@ -186,14 +208,14 @@ namespace eli
 
           if ((temp>=0) && (temp<=1))
           {
+//               std::cout << "% added point #=" << i << "\twith t=" << tsample[i]/tlen << std::endl;
             tinit.push_back(std::max(static_cast<typename curve__::data_type>(0),
                                      std::min(static_cast<typename curve__::data_type>(1),
                                               (tsample[i-1]+(tsample[i]-tsample[i-1])*temp)/tlen)));
           }
         }
 
-        // if found no candidates using linear approximation then try points
-        if (tinit.empty())
+        // add points that are minimums
         {
           // find candidate starting locations using distance between sampled points on curve and point
           for (i=0; i<=deg; ++i)
@@ -203,7 +225,12 @@ namespace eli
             if (temp<=1.01*dist)
             {
               tinit.push_back(tsample[i]/tlen);
-//               std::cout << "added point #=" << i << "\twith t=" << tsample[i]/tlen << std::endl;
+              if (temp<dist)
+              {
+                t=tsample[i]/tlen;
+                dist=temp;
+              }
+//               std::cout << "% added point #=" << i << "\twith t=" << tsample[i]/tlen << std::endl;
             }
           }
         }
@@ -224,6 +251,7 @@ namespace eli
 
           // find the root
           stat = nrm.find_root(d0, g, gp, 0);
+//           std::cout << "% completed root " << j << std::endl;
 
           // if found root then make sure it is within bounds and return
           if (stat==eli::mutil::nls::newton_raphson_method<typename curve__::data_type>::converged)
@@ -233,6 +261,8 @@ namespace eli
             {
               d1=eli::geom::point::distance(c.f(d0), pt);
 
+//               std::cout << "# d1=" << d1 << std::endl;
+//               std::cout << "# j=" << j << "\tnj=" << tinit.size() << std::endl;
               // check to see if is closer than previous minimum
               if (d1<dist)
               {
@@ -243,10 +273,11 @@ namespace eli
           }
           else
           {
-//             std::cout << "not converged!" << std::endl;
+//             std::cout << "# not converged!" << std::endl;
           }
         }
 
+//         std::cout << "# returning dist=" << dist << std::endl;
         return dist;
       }
     }

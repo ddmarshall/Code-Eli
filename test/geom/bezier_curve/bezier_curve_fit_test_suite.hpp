@@ -40,6 +40,9 @@ class bezier_curve_fit_test_suite : public Test::Suite
     typedef typename bezier_type::index_type index_type;
     typedef typename bezier_type::point_type point_type;
     typedef typename bezier_type::data_type data_type;
+    typedef typename bezier_type::tolerance_type tolerance_type;
+
+    tolerance_type tol;
 
   protected:
     void AddTests(const float &)
@@ -354,12 +357,6 @@ class bezier_curve_fit_test_suite : public Test::Suite
 
     void fit_C1_ends_test()
     {
-      data_type eps(std::numeric_limits<data__>::epsilon());
-#ifdef ELI_QD_FOUND
-      if ( (typeid(data_type)==typeid(dd_real)) || (typeid(data_type)==typeid(qd_real)) )
-        eps=std::numeric_limits<double>::epsilon();
-#endif
-
       // open curve
       {
         fit_container_type fcon;
@@ -398,20 +395,10 @@ class bezier_curve_fit_test_suite : public Test::Suite
         TEST_ASSERT(err < 0.366);
 
         // check if went through points
-#ifdef ELI_QD_FOUND
-        if (typeid(data__)==typeid(qd_real))
-        {
-          TEST_ASSERT((pts[0]-bez.f(t[0])).norm()<2.0*eps);
-          TEST_ASSERT((fp1-bez.fp(t[0])).norm()<2.0*eps);
-        }
-        else
-#endif
-        {
-          TEST_ASSERT(pts[0]==bez.f(t[0]));
-          TEST_ASSERT(fp1==bez.fp(t[0]));
-        }
-        TEST_ASSERT((pts[pts.size()-1]-bez.f(t[t.size()-1])).norm()<88*eps);
-        TEST_ASSERT((fp2-bez.fp(t[t.size()-1])).norm()<351*eps);
+        TEST_ASSERT(tol.approximately_equal(pts[0], bez.f(t[0])));
+        TEST_ASSERT(tol.approximately_equal(fp1, bez.fp(t[0])));
+        TEST_ASSERT(tol.approximately_equal(pts[pts.size()-1], bez.f(t[t.size()-1])));
+        TEST_ASSERT(tol.approximately_equal(fp2, bez.fp(t[t.size()-1])));
         TEST_ASSERT(bez.f(0)!=bez.f(1));
 
 //         octave_print(6, pts, bez);
@@ -451,20 +438,10 @@ class bezier_curve_fit_test_suite : public Test::Suite
         TEST_ASSERT(err < 0.331);
 
         // check if went through points
-#ifdef ELI_QD_FOUND
-        if (typeid(data__)==typeid(qd_real))
-        {
-          TEST_ASSERT((pts[0]-bez.f(t[0])).norm()<2.0*eps);
-          TEST_ASSERT((fp1-bez.fp(t[0])).norm()<2.0*eps);
-        }
-        else
-#endif
-        {
-          TEST_ASSERT(pts[0]==bez.f(t[0]));
-          TEST_ASSERT(fp1==bez.fp(t[0]));
-        }
         TEST_ASSERT(pts[pts.size()-1]!=bez.f(t[t.size()-1]));
-        TEST_ASSERT(bez.f(0)==bez.f(1));
+        TEST_ASSERT(tol.approximately_equal(pts[0], bez.f(t[0])));
+        TEST_ASSERT(tol.approximately_equal(fp1, bez.fp(t[0])));
+        TEST_ASSERT(tol.approximately_equal(bez.f(0), bez.f(1)));
 
 //         octave_print(7, pts, bez);
       }
@@ -507,28 +484,16 @@ class bezier_curve_fit_test_suite : public Test::Suite
         TEST_ASSERT(err < 0.418);
 
         // check if went through points
-        TEST_ASSERT((bez.f(t[0])-pts[0]).norm()<5*eps);
-#ifdef ELI_QD_FOUND
-        if (typeid(data__)==typeid(qd_real))
-        {
-          TEST_ASSERT((fp1-bez.fp(t[0])).norm()<2.0*eps);
-        }
-        else
-#endif
-        {
-          if (typeid(data__)==typeid(float))
-          {
-            TEST_ASSERT((fp1-bez.fp(t[0])).norm()<3*eps);
-          }
-          else
-          {
-            TEST_ASSERT(fp1==bez.fp(t[0]));
-          }
-        }
         TEST_ASSERT(pts[pts.size()-1]!=bez.f(t[t.size()-1]));
-        TEST_ASSERT(bez.f(0)==bez.f(1));
-        TEST_ASSERT((bez.f(t[5])-pts[5]).norm()<19*eps);
-        TEST_ASSERT((bez.fp(t[5])-fp2).norm()<73*eps);
+        TEST_ASSERT(tol.approximately_equal(pts[0], bez.f(t[0])));
+        // precision in float calculation is totally lost
+        if (typeid(data_type)!=typeid(float))
+        {
+          TEST_ASSERT(tol.approximately_equal(fp1, bez.fp(t[0])));
+        }
+        TEST_ASSERT(tol.approximately_equal(pts[5], bez.f(t[5])));
+        TEST_ASSERT(tol.approximately_equal(fp2, bez.fp(t[5])));
+        TEST_ASSERT(tol.approximately_equal(bez.f(0), bez.f(1)));
 
 //         octave_print(8, pts, bez);
       }
@@ -536,12 +501,6 @@ class bezier_curve_fit_test_suite : public Test::Suite
 
     void fit_C2_ends_test()
     {
-      data_type eps(std::numeric_limits<data__>::epsilon());
-#ifdef ELI_QD_FOUND
-      if ( (typeid(data_type)==typeid(dd_real)) || (typeid(data_type)==typeid(qd_real)) )
-        eps=std::numeric_limits<double>::epsilon();
-#endif
-
       // open curve
       {
         fit_container_type fcon;
@@ -586,13 +545,13 @@ class bezier_curve_fit_test_suite : public Test::Suite
         TEST_ASSERT(err < 0.372);
 
         // check if went through points
-        TEST_ASSERT((pts[pts.size()-1]-bez.f(t[t.size()-1])).norm()<422*eps);
-        TEST_ASSERT((fp2-bez.fp(t[t.size()-1])).norm()<1.88e3*eps);
-        TEST_ASSERT((fpp2-bez.fpp(t[t.size()-1])).norm()<7.31e3*eps);
+        TEST_ASSERT(tol.approximately_equal(pts[0], bez.f(t[0])));
+        TEST_ASSERT(tol.approximately_equal(fp1, bez.fp(t[0])));
+        TEST_ASSERT(tol.approximately_equal(fpp1, bez.fpp(t[0])));
+        TEST_ASSERT(tol.approximately_equal(pts[pts.size()-1], bez.f(t[t.size()-1])));
+        TEST_ASSERT(tol.approximately_equal(fp2, bez.fp(t[t.size()-1])));
+        TEST_ASSERT(tol.approximately_equal(fpp2, bez.fpp(t[t.size()-1])));
         TEST_ASSERT(bez.f(0)!=bez.f(1));
-        TEST_ASSERT((pts[0]-bez.f(t[0])).norm()<4*eps);
-        TEST_ASSERT((fp1-bez.fp(t[0])).norm()<9*eps);
-        TEST_ASSERT((fpp1-bez.fpp(t[0])).norm()<38*eps);
 
 //         octave_print(9, pts, bez);
       }
@@ -634,10 +593,10 @@ class bezier_curve_fit_test_suite : public Test::Suite
         TEST_ASSERT(err < 0.0479);
 
         // check if went through points
-        TEST_ASSERT(bez.f(0)==bez.f(1));
-        TEST_ASSERT((pts[0]-bez.f(t[0])).norm()<3*eps);
-        TEST_ASSERT((fp1-bez.fp(t[0])).norm()<17*eps);
-        TEST_ASSERT((fpp1-bez.fpp(t[0])).norm()<65*eps);
+        TEST_ASSERT(tol.approximately_equal(bez.f(0), bez.f(1)));
+        TEST_ASSERT(tol.approximately_equal(pts[0], bez.f(t[0])));
+        TEST_ASSERT(tol.approximately_equal(fp1, bez.fp(t[0])));
+        TEST_ASSERT(tol.approximately_equal(fpp1, bez.fpp(t[0])));
         TEST_ASSERT(pts[pts.size()-1]!=bez.f(t[t.size()-1]));
 
 //         octave_print(10, pts, bez);
@@ -687,13 +646,13 @@ class bezier_curve_fit_test_suite : public Test::Suite
         TEST_ASSERT(err < 0.0785);
 
         // check if went through points
-        TEST_ASSERT(bez.f(0)==bez.f(1));
-        TEST_ASSERT((bez.f(t[10])-pts[10]).norm()<41*eps);
-        TEST_ASSERT((bez.fp(t[10])-fp2).norm()<176*eps);
-        TEST_ASSERT((bez.fpp(t[10])-fpp2).norm()<1.44e3*eps);
-        TEST_ASSERT((bez.f(t[0])-pts[0]).norm()<8*eps);
-        TEST_ASSERT((bez.fp(t[0])-fp1).norm()<17*eps);
-        TEST_ASSERT((bez.fpp(t[0])-fpp1).norm()<68*eps);
+        TEST_ASSERT(tol.approximately_equal(bez.f(0), bez.f(1)));
+        TEST_ASSERT(tol.approximately_equal(pts[0], bez.f(t[0])));
+        TEST_ASSERT(tol.approximately_equal(fp1, bez.fp(t[0])));
+        TEST_ASSERT(tol.approximately_equal(fpp1, bez.fpp(t[0])));
+        TEST_ASSERT(tol.approximately_equal(pts[10], bez.f(t[10])));
+        TEST_ASSERT(tol.approximately_equal(fp2, bez.fp(t[10])));
+        TEST_ASSERT(tol.approximately_equal(fpp2, bez.fpp(t[10])));
         TEST_ASSERT(pts[pts.size()-1]!=bez.f(t[t.size()-1]));
 
 //         octave_print(11, pts, bez);

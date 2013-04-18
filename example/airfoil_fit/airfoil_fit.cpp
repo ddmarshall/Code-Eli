@@ -591,7 +591,7 @@ int main(int /*argc*/, char * /*argv*/[])
       fcon.add_end_C0_constraint();
 
       // do fit
-      err=bez.fit(fcon, d);
+      err=bez.fit(t, fcon, d);
     }
 
     af_pts.resize(t.size());
@@ -620,7 +620,7 @@ int main(int /*argc*/, char * /*argv*/[])
       fcon.get_end_constraint(ci[1]);
 
       // do fit
-      err=bez.fit(fcon, d);
+      err=bez.fit(t, fcon, d);
     }
 
     af_pts.resize(t.size());
@@ -656,7 +656,7 @@ int main(int /*argc*/, char * /*argv*/[])
       fcon.get_end_constraint(ci[1]);
 
       // do fit
-      err=bez.fit(fcon, d);
+      err=bez.fit(t, fcon, d);
     }
 
     af_pts.resize(t.size());
@@ -694,7 +694,7 @@ int main(int /*argc*/, char * /*argv*/[])
       fcon.get_end_constraint(ci[1]);
 
       // do fit
-      err=bez.fit(fcon, d);
+      err=bez.fit(t, fcon, d);
     }
 
     af_pts.resize(t.size());
