@@ -15,6 +15,7 @@
 
 #include <cmath>
 #include <vector>
+#include <list>
 
 #include "Eigen/Eigen"
 
@@ -194,27 +195,37 @@ namespace eli
         typename curve__::tolerance_type tol;
 
         // possible that end points are closest, so start by checking them
-        typename curve__::data_type d0, d1, dist;
+        typename curve__::data_type dist, tt, dd;
 
-        d0=eli::geom::point::distance(c.f(0), pt);
-        d1=eli::geom::point::distance(c.f(1), pt);
-
-        // start is closest
-        if (d0<=d1)
+        // first check is start, middle and (if needed) end points
         {
           t=0;
-          dist=d0;
-        }
-        else
-        {
-          t=1;
-          dist=d1;
+          dist=eli::geom::point::distance(c.f(t), pt);
+          tt=0.5;
+          dd=eli::geom::point::distance(c.f(tt), pt);
+          if (dd<dist)
+          {
+            t=tt;
+            dist=dd;
+          }
+          if (c.open())
+          {
+            tt=1;
+            dd=eli::geom::point::distance(c.f(tt), pt);
+            if (dd<dist)
+            {
+              t=tt;
+              dist=dd;
+            }
+          }
         }
 
         // need to pick initial guesses
         typename curve__::index_type i, deg(c.degree());
         typename curve__::point_type p0, p1;
-        std::vector<typename curve__::data_type> tsample(deg+1), tinit;
+        std::vector<typename curve__::data_type> tsample(deg+1);
+        std::list<typename curve__::data_type> tinit;
+        typename std::list<typename curve__::data_type>::iterator it;
         typename curve__::data_type temp, tlen;
 
         // determine the sample parameters from the control polygon points
@@ -278,23 +289,23 @@ namespace eli
         }
 
         // cycle through all possible minima to find best
-        for (size_t j=0; j<tinit.size(); ++j)
+        for (it=tinit.begin(); it!=tinit.end(); ++it)
         {
-          d1=minimum_distance(d0, c, pt, tinit[j]);
-//           std::cout << "% completed root " << j << std::endl;
+          dd=minimum_distance(tt, c, pt, *it);
+//           std::cout << "% completed root starting at" << *it << std::endl;
 
           // if have valid solution
-          if ((d0>=0) && (d0<=1))
+          if ((tt>=0) && (tt<=1))
           {
-            d1=eli::geom::point::distance(c.f(d0), pt);
+            dd=eli::geom::point::distance(c.f(tt), pt);
 
-//               std::cout << "# d1=" << d1 << std::endl;
+//               std::cout << "# dd=" << dd << std::endl;
 //               std::cout << "# j=" << j << "\tnj=" << tinit.size() << std::endl;
             // check to see if is closer than previous minimum
-            if (d1<dist)
+            if (dd<dist)
             {
-              t=d0;
-              dist=d1;
+              t=tt;
+              dist=dd;
             }
           }
         }
