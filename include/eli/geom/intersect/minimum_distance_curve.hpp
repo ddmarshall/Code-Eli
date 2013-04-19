@@ -193,6 +193,9 @@ namespace eli
       typename curve__::data_type minimum_distance(typename curve__::data_type &t, const curve__ &c, const typename curve__::point_type &pt)
       {
         typename curve__::tolerance_type tol;
+        std::list<std::pair<typename curve__::data_type, typename curve__::data_type>> tinit;
+        typename std::list<std::pair<typename curve__::data_type, typename curve__::data_type>>::iterator it;
+        std::pair<typename curve__::data_type, typename curve__::data_type> cand_pair;
 
         // possible that end points are closest, so start by checking them
         typename curve__::data_type dist, tt, dd;
@@ -219,16 +222,19 @@ namespace eli
             }
           }
         }
+        cand_pair.first=t;
+        cand_pair.second=dist;
+        tinit.push_back(cand_pair);
+
 
         // need to pick initial guesses
-        typename curve__::index_type i, deg(c.degree());
+        typename curve__::index_type i, deg(c.degree()), ssize;
+        std::vector<typename curve__::data_type> tsample(2*deg+1);
         typename curve__::point_type p0, p1;
-        std::vector<typename curve__::data_type> tsample(deg+1);
-        std::list<typename curve__::data_type> tinit;
-        typename std::list<typename curve__::data_type>::iterator it;
         typename curve__::data_type temp, tlen;
 
         // determine the sample parameters from the control polygon points
+        ssize=tsample.size();
         i=0;
         p1=c.get_control_point(i);
         tsample[i]=0;
@@ -236,39 +242,67 @@ namespace eli
         {
           p0=p1;
           p1=c.get_control_point(i);
-          tsample[i]=tsample[i-1]+eli::geom::point::distance(p0, p1);
+          temp=eli::geom::point::distance(p0, p1)/2;
+          tsample[2*i-1]=tsample[2*i-2]+temp;
+          tsample[2*i]=tsample[2*i-1]+temp;
         }
-        tlen=tsample[deg];
+        tlen=tsample[tsample.size()-1];
 
+#if 0
         // find candidate starting locations from linear approximations to curve
+        typename curve__::data_type tdist;
         i=0;
         p1=c.f(tsample[i]/tlen);
-        for (++i; i<=deg; ++i)
+        for (++i; i<ssize; ++i)
         {
           p0=p1;
           p1=c.f(tsample[i]/tlen);
-          minimum_distance(temp, p0, p1-p0, pt);
+          tdist=minimum_distance(temp, p0, p1-p0, pt);
 //           std::cout << "panel #=" << i << "\tt_temp=" << temp << "\tp0=" << p0 << "\tp1=" << p1 << std::endl;
 
           if ((temp>=0) && (temp<=1))
           {
-//               std::cout << "% added point #=" << i << "\twith t=" << tsample[i]/tlen << std::endl;
-            tinit.push_back(std::max(static_cast<typename curve__::data_type>(0),
-                                     std::min(static_cast<typename curve__::data_type>(1),
-                                              (tsample[i-1]+(tsample[i]-tsample[i-1])*temp)/tlen)));
+            temp=(tsample[i-1]+(tsample[i]-tsample[i-1])*temp)/tlen;
+            if (c.open())
+            {
+              temp=std::max(static_cast<typename curve__::data_type>(0),
+                            std::min(static_cast<typename curve__::data_type>(1),
+                                     temp));
+            }
+            else
+            {
+              while (temp<0)
+              {
+                temp+=1;
+              }
+
+              while (temp>1)
+              {
+                temp-=1;
+              }
+            }
+            tdist=eli::geom::point::distance(c.f(temp), pt);
+
+//               std::cout << "% added point #=" << i << "\twith t=" << temp << std::endl;
+            cand_pair.first=temp;
+            cand_pair.second=tdist;
+            tinit.push_back(cand_pair);
           }
         }
+#endif
 
         // add points that are minimums
         {
           // find candidate starting locations using distance between sampled points on curve and point
-          for (i=0; i<=deg; ++i)
+          for (i=0; i<ssize; ++i)
           {
             temp=eli::geom::point::distance(c.f(tsample[i]/tlen), pt);
 //             std::cout << "point #=" << i << "\tdist_temp=" << temp << std::endl;
             if (temp<=1.01*dist)
             {
-              tinit.push_back(tsample[i]/tlen);
+              cand_pair.first=tsample[i]/tlen;
+              cand_pair.second=temp;
+              tinit.push_back(cand_pair);
               if (temp<dist)
               {
                 t=tsample[i]/tlen;
@@ -282,16 +316,16 @@ namespace eli
 //         std::cout << "# t guesses=" << tinit.size() << std::endl;
 
         // make sure have some solutions to iterate
-        tinit.push_back(0);
-        if (c.open())
-        {
-          tinit.push_back(1);
-        }
+//         tinit.push_back(0);
+//         if (c.open())
+//         {
+//           tinit.push_back(1);
+//         }
 
         // cycle through all possible minima to find best
         for (it=tinit.begin(); it!=tinit.end(); ++it)
         {
-          dd=minimum_distance(tt, c, pt, *it);
+          dd=minimum_distance(tt, c, pt, it->first);
 //           std::cout << "% completed root starting at" << *it << std::endl;
 
           // if have valid solution
