@@ -137,19 +137,61 @@ namespace eli
       }
 
       template<typename curve__>
-      typename curve__::data_type minimum_distance(typename curve__::data_type &t, const curve__ &c, const typename curve__::point_type &pt)
+      typename curve__::data_type minimum_distance(typename curve__::data_type &t, const curve__ &c, const typename curve__::point_type &pt, const typename curve__::data_type &t0)
       {
-        typename curve__::tolerance_type tol;
         eli::mutil::nls::newton_raphson_shacham_method<typename curve__::data_type> nrm;
         typename eli::mutil::nls::newton_raphson_shacham_method<typename curve__::data_type>::status stat;
         internal::curve_g_functor<curve__> g;
         internal::curve_gp_functor<curve__> gp;
+        typename curve__::data_type dist0, dist;
+        typename curve__::tolerance_type tol;
 
         // setup the functors
         g.pc=&c;
         g.pt=pt;
         gp.pc=&c;
         gp.pt=pt;
+
+        // setup the solver
+        nrm.set_absolute_tolerance(tol.get_absolute_tolerance());
+        nrm.set_max_iteration(100);
+        if (c.open())
+        {
+          nrm.set_lower_condition(0, eli::mutil::nls::newton_raphson_shacham_method<typename curve__::data_type>::NRS_EXCLUSIVE);
+          nrm.set_upper_condition(1, eli::mutil::nls::newton_raphson_shacham_method<typename curve__::data_type>::NRS_EXCLUSIVE);
+        }
+
+        // set the initial guess
+        nrm.set_initial_guess(t0);
+        dist0=eli::geom::point::distance(c.f(t0), pt);
+
+        // find the root
+        stat = nrm.find_root(t, g, gp, 0);
+
+        // if found root and it is within bounds and is closer than initial guess
+        if ( (stat==eli::mutil::nls::newton_raphson_method<typename curve__::data_type>::converged)
+          && ( (t>=0) && (t<=1) ) )
+        {
+          dist = eli::geom::point::distance(c.f(t), pt);
+          if  (dist<=dist0)
+          {
+            return dist;
+          }
+        }
+        else
+        {
+//             std::cout << "# not converged!" << std::endl;
+        }
+
+        // couldn't find better answer so return initial guess
+        t=t0;
+        return dist0;
+      }
+
+      template<typename curve__>
+      typename curve__::data_type minimum_distance(typename curve__::data_type &t, const curve__ &c, const typename curve__::point_type &pt)
+      {
+        typename curve__::tolerance_type tol;
 
         // possible that end points are closest, so start by checking them
         typename curve__::data_type d0, d1, dist;
@@ -167,15 +209,6 @@ namespace eli
         {
           t=1;
           dist=d1;
-        }
-
-        // setup the solver
-        nrm.set_absolute_tolerance(tol.get_absolute_tolerance());
-        nrm.set_max_iteration(100);
-        if (c.open())
-        {
-          nrm.set_lower_condition(0, eli::mutil::nls::newton_raphson_shacham_method<typename curve__::data_type>::NRS_EXCLUSIVE);
-          nrm.set_upper_condition(1, eli::mutil::nls::newton_raphson_shacham_method<typename curve__::data_type>::NRS_EXCLUSIVE);
         }
 
         // need to pick initial guesses
@@ -247,33 +280,22 @@ namespace eli
         // cycle through all possible minima to find best
         for (size_t j=0; j<tinit.size(); ++j)
         {
-          nrm.set_initial_guess(tinit[j]);
-
-          // find the root
-          stat = nrm.find_root(d0, g, gp, 0);
+          d1=minimum_distance(d0, c, pt, tinit[j]);
 //           std::cout << "% completed root " << j << std::endl;
 
-          // if found root then make sure it is within bounds and return
-          if (stat==eli::mutil::nls::newton_raphson_method<typename curve__::data_type>::converged)
+          // if have valid solution
+          if ((d0>=0) && (d0<=1))
           {
-            // if have valid solution
-            if ((d0>=0) && (d0<=1))
-            {
-              d1=eli::geom::point::distance(c.f(d0), pt);
+            d1=eli::geom::point::distance(c.f(d0), pt);
 
 //               std::cout << "# d1=" << d1 << std::endl;
 //               std::cout << "# j=" << j << "\tnj=" << tinit.size() << std::endl;
-              // check to see if is closer than previous minimum
-              if (d1<dist)
-              {
-                t=d0;
-                dist=d1;
-              }
+            // check to see if is closer than previous minimum
+            if (d1<dist)
+            {
+              t=d0;
+              dist=d1;
             }
-          }
-          else
-          {
-//             std::cout << "# not converged!" << std::endl;
           }
         }
 
