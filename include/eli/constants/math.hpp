@@ -74,7 +74,7 @@ namespace eli
 #elif defined(__INTEL_COMPILER)
         static double cbrt_pi()        {return 1.4645918875615231;}
 #elif defined(__GNUC__)
-# if (__GNUC__==4) && (__GNUC_MINOR__==7) && (defined NDEBUG)
+# if (__GNUC__==4) && (__GNUC_MINOR__>=7) && (defined NDEBUG)
         static double cbrt_pi()        {return 1.4645918875615231;}
 # else
         static double cbrt_pi()        {return 1.4645918875615233;}
