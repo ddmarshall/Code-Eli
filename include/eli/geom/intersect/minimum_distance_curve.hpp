@@ -22,7 +22,6 @@
 #include "eli/mutil/nls/newton_raphson_shacham_method.hpp"
 
 #include "eli/geom/point/distance.hpp"
-#include "eli/geom/intersect/minimum_distance_line.hpp"
 
 namespace eli
 {
@@ -247,49 +246,6 @@ namespace eli
           tsample[2*i]=tsample[2*i-1]+temp;
         }
         tlen=tsample[tsample.size()-1];
-
-#if 0
-        // find candidate starting locations from linear approximations to curve
-        typename curve__::data_type tdist;
-        i=0;
-        p1=c.f(tsample[i]/tlen);
-        for (++i; i<ssize; ++i)
-        {
-          p0=p1;
-          p1=c.f(tsample[i]/tlen);
-          tdist=minimum_distance(temp, p0, p1-p0, pt);
-//           std::cout << "panel #=" << i << "\tt_temp=" << temp << "\tp0=" << p0 << "\tp1=" << p1 << std::endl;
-
-          if ((temp>=0) && (temp<=1))
-          {
-            temp=(tsample[i-1]+(tsample[i]-tsample[i-1])*temp)/tlen;
-            if (c.open())
-            {
-              temp=std::max(static_cast<typename curve__::data_type>(0),
-                            std::min(static_cast<typename curve__::data_type>(1),
-                                     temp));
-            }
-            else
-            {
-              while (temp<0)
-              {
-                temp+=1;
-              }
-
-              while (temp>1)
-              {
-                temp-=1;
-              }
-            }
-            tdist=eli::geom::point::distance(c.f(temp), pt);
-
-//               std::cout << "% added point #=" << i << "\twith t=" << temp << std::endl;
-            cand_pair.first=temp;
-            cand_pair.second=tdist;
-            tinit.push_back(cand_pair);
-          }
-        }
-#endif
 
         // add points that are minimums
         {
