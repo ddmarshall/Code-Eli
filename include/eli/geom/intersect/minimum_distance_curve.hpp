@@ -305,8 +305,21 @@ namespace eli
               tinit.push_back(cand_pair);
               if (temp<dist)
               {
-                t=tsample[i]/tlen;
-                dist=temp;
+                t=cand_pair.first;
+                dist=cand_pair.second;
+                it=tinit.begin();
+                while (it!=tinit.end())
+                {
+                  // check to see if distance is beyond new threshold and remove if so
+                  if (it->second>1.01*dist)
+                  {
+                    it=tinit.erase(it);
+                  }
+                  else
+                  {
+                    ++it;
+                  }
+                }
               }
 //               std::cout << "% added point #=" << i << "\twith t=" << tsample[i]/tlen << std::endl;
             }

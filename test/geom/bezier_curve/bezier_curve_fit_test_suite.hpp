@@ -661,12 +661,6 @@ class bezier_curve_fit_test_suite : public Test::Suite
 
     void fit_closed_test()
     {
-      data_type eps(std::numeric_limits<data__>::epsilon());
-#ifdef ELI_QD_FOUND
-      if ( (typeid(data_type)==typeid(dd_real)) || (typeid(data_type)==typeid(qd_real)) )
-        eps=std::numeric_limits<double>::epsilon();
-#endif
-
       // fit no constraints C0 closed
       {
         fit_container_type fcon;
@@ -690,7 +684,7 @@ class bezier_curve_fit_test_suite : public Test::Suite
         TEST_ASSERT(err < 0.393);
 
         // check if went through points
-        TEST_ASSERT(bez.f(0)==bez.f(1));
+        TEST_ASSERT(tol.approximately_equal(bez.f(0), bez.f(1)));
         TEST_ASSERT(bez.fp(0)!=bez.fp(1));
         TEST_ASSERT(bez.fpp(0)!=bez.fpp(1));
 
@@ -720,13 +714,9 @@ class bezier_curve_fit_test_suite : public Test::Suite
         TEST_ASSERT(err < 0.0312);
 
         // check if went through points
-        TEST_ASSERT(bez.f(0)==bez.f(1));
-        TEST_ASSERT((bez.fp(1)-bez.fp(0)).norm()<2.61e3*eps);
+        TEST_ASSERT(tol.approximately_equal(bez.f(0), bez.f(1)));
+        TEST_ASSERT(tol.approximately_equal(bez.fp(0), bez.fp(1)));
         TEST_ASSERT(bez.fpp(0)!=bez.fpp(1));
-//         if (typeid(data__)==typeid(double))
-//         {
-//           std::cout << "1518 rat=" << (bez.f(1)-bez.f(0)).norm()/eps << std::endl;
-//         }
 
 //         octave_print(13, pts, bez);
       }
@@ -754,9 +744,9 @@ class bezier_curve_fit_test_suite : public Test::Suite
         TEST_ASSERT(err < 0.0343);
 
         // check if went through points
-        TEST_ASSERT(bez.f(0)==bez.f(1));
-        TEST_ASSERT((bez.fp(1)-bez.fp(0)).norm()<2.40e3*eps);
-        TEST_ASSERT((bez.fpp(1)-bez.fpp(0)).norm()<1.06e4*eps);
+        TEST_ASSERT(tol.approximately_equal(bez.f(0), bez.f(1)));
+        TEST_ASSERT(tol.approximately_equal(bez.fp(0), bez.fp(1)));
+        TEST_ASSERT(tol.approximately_equal(bez.fpp(0), bez.fpp(1)));
 
 //         octave_print(14, pts, bez);
       }
@@ -785,8 +775,8 @@ class bezier_curve_fit_test_suite : public Test::Suite
         TEST_ASSERT(err < 0.0185);
 
         // check if went through points
-        TEST_ASSERT(bez.f(0)==pts[0]);
-        TEST_ASSERT(bez.f(0)==bez.f(1));
+        TEST_ASSERT(tol.approximately_equal(bez.f(0), pts[0]));
+        TEST_ASSERT(tol.approximately_equal(bez.f(0), bez.f(1)));
         TEST_ASSERT(bez.fp(0)!=bez.fp(1));
         TEST_ASSERT(bez.fpp(0)!=bez.fpp(1));
 
@@ -821,9 +811,10 @@ class bezier_curve_fit_test_suite : public Test::Suite
         TEST_ASSERT(err < 0.0395);
 
         // check if went through points
-        TEST_ASSERT((bez.f(0)-pts[0]).norm()<2*eps);
-        TEST_ASSERT(bez.f(1)==bez.f(0));
-        TEST_ASSERT((bez.fp(1)-bez.fp(0)).norm()<2.77e3*eps);
+        TEST_ASSERT(tol.approximately_equal(bez.f(0), pts[0]));
+        TEST_ASSERT(tol.approximately_equal(bez.fp(0), fp0));
+        TEST_ASSERT(tol.approximately_equal(bez.f(0), bez.f(1)));
+        TEST_ASSERT(tol.approximately_equal(bez.fp(0), bez.fp(1)));
         TEST_ASSERT(bez.fpp(0)!=bez.fpp(1));
 
 //         octave_print(16, pts, bez);
@@ -860,13 +851,12 @@ class bezier_curve_fit_test_suite : public Test::Suite
         TEST_ASSERT(err < 0.141);
 
         // check if went through points
-        TEST_ASSERT((bez.f(0)-pts[0]).norm()<2*eps);
-        TEST_ASSERT((bez.fp(0)-fp0).norm()<9*eps);
-        TEST_ASSERT((bez.fpp(0)-fpp0).norm()<38*eps);
-        TEST_ASSERT((bez.f(1)-bez.f(0)).norm()<470*eps);
-        TEST_ASSERT(bez.f(1)==bez.f(0));
-        TEST_ASSERT((bez.fp(1)-bez.fp(0)).norm()<4.70e3*eps);
-        TEST_ASSERT((bez.fpp(1)-bez.fpp(0)).norm()<1.00e4*eps);
+        TEST_ASSERT(tol.approximately_equal(bez.f(0), pts[0]));
+        TEST_ASSERT(tol.approximately_equal(bez.fp(0), fp0));
+        TEST_ASSERT(tol.approximately_equal(bez.fpp(0), fpp0));
+        TEST_ASSERT(tol.approximately_equal(bez.f(0), bez.f(1)));
+        TEST_ASSERT(tol.approximately_equal(bez.fp(0), bez.fp(1)));
+        TEST_ASSERT(tol.approximately_equal(bez.fpp(0), bez.fpp(1)));
 
 //         octave_print(17, pts, bez);
       }
@@ -900,8 +890,8 @@ class bezier_curve_fit_test_suite : public Test::Suite
 
         // check if went through points
         t5=t[ci];
-        TEST_ASSERT((bez.f(t5)-f5).norm()<6*eps);
-        TEST_ASSERT(bez.f(0)==bez.f(1));
+        TEST_ASSERT(tol.approximately_equal(bez.f(t5), f5));
+        TEST_ASSERT(tol.approximately_equal(bez.f(0), bez.f(1)));
         TEST_ASSERT(bez.fp(0)!=bez.fp(1));
         TEST_ASSERT(bez.fpp(0)!=bez.fpp(1));
 
@@ -937,14 +927,10 @@ class bezier_curve_fit_test_suite : public Test::Suite
 
         // check if went through points
         t5=t[ci];
-        TEST_ASSERT((bez.f(t5)-f5).norm()<4*eps);
-        TEST_ASSERT((bez.f(1)-bez.f(0)).norm()<391*eps);
-        TEST_ASSERT(bez.f(0)==bez.f(1));
+        TEST_ASSERT(tol.approximately_equal(bez.f(t5), f5));
+        TEST_ASSERT(tol.approximately_equal(bez.f(0), bez.f(1)));
+        TEST_ASSERT(tol.approximately_equal(bez.fp(0), bez.fp(1)));
         TEST_ASSERT(bez.fpp(0)!=bez.fpp(1));
-//         if (typeid(data__)==typeid(float))
-//         {
-//           std::cout << "1747 rat=" << (bez.f(1)-bez.f(0)).norm()/eps << std::endl;
-//         }
 
 //         octave_print(19, pts, bez);
       }
@@ -978,10 +964,15 @@ class bezier_curve_fit_test_suite : public Test::Suite
 
         // check if went through points
         t5=t[ci];
-        TEST_ASSERT((bez.f(t5)-f5).norm()<4*eps);
-        TEST_ASSERT(bez.f(0)==bez.f(1));
-        TEST_ASSERT((bez.fp(1)-bez.fp(0)).norm()<2.72e3*eps);
-        TEST_ASSERT((bez.fpp(1)-bez.fpp(0)).norm()<1.19e4*eps);
+        TEST_ASSERT(tol.approximately_equal(bez.f(t5), f5));
+        TEST_ASSERT(tol.approximately_equal(bez.f(0), bez.f(1)));
+        TEST_ASSERT(tol.approximately_equal(bez.fp(0), bez.fp(1)));
+        TEST_ASSERT(tol.approximately_equal(bez.fpp(0), bez.fpp(1)));
+
+//         TEST_ASSERT((bez.f(t5)-f5).norm()<4*eps);
+//         TEST_ASSERT(bez.f(0)==bez.f(1));
+//         TEST_ASSERT((bez.fp(1)-bez.fp(0)).norm()<2.72e3*eps);
+//         TEST_ASSERT((bez.fpp(1)-bez.fpp(0)).norm()<1.19e4*eps);
 //         if (typeid(data__)==typeid(long double))
 //         {
 //           std::cout << "1788 rat=" << (bez.f(1)-bez.f(0)).norm()/eps << std::endl;
