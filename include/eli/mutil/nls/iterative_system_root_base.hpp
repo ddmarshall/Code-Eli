@@ -78,7 +78,7 @@ namespace eli
               }
               case(max_norm):      // for vectors this is equivalent to Linf, for matrices it is the largest element in matrix
               {
-                return mat.maxCoeff();
+                return std::abs(mat.maxCoeff());
                 break;
               }
               case(L2):             // for vectors this is sqrt of sum of squares, for matrices this will be equivalent to the Frobenius norm
