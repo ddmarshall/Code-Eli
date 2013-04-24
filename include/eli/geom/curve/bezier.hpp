@@ -28,7 +28,7 @@
 #include "eli/geom/general/continuity.hpp"
 #include "eli/geom/general/bounding_box.hpp"
 #include "eli/geom/curve/fit_container.hpp"
-#include "eli/geom/intersect/minimum_distance.hpp"
+#include "eli/geom/intersect/minimum_distance_curve.hpp"
 
 // TODO: MOVE THESE TO utility namespace
 namespace eli
@@ -599,22 +599,10 @@ namespace eli
             B=ctrl;
 
             // calculate the error at the point
-            data_type err(0), tt;
+            data_type err(0);
             for (i=0; i<pts.size(); ++i)
             {
-//               std::cout << "%% starting point " << i << std::endl;
-#if 0
-              err+=geom::point::distance(pts[i], f(t[i]));
-#else
-              data_type erri(0);
-//               if (i==10) // debug only
-              {
-                erri=eli::geom::intersect::minimum_distance(tt, *this, pts[i]);
-//                 std::cout << "% err[" << i << "]=" << erri << "\tt=" << t[i] << "\ttt=" << tt << std::endl;
-                t[i]=tt;
-              }
-              err+=erri;
-#endif
+              err+=eli::geom::intersect::minimum_distance(t[i], *this, pts[i]);
             }
 
             return err;
