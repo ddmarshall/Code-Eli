@@ -37,41 +37,6 @@ namespace eli
             greater_equal  = 5
           };
 
-        protected:
-          bool satisfy_both_flag;
-          std::pair<data__, activity_state> rel_tol_info;
-          std::pair<data__, activity_state> abs_tol_info;
-
-        protected:
-          bool compare(const data__ &val, const std::pair<data__, activity_state> &ref) const
-          {
-            // test the relative tolerance terms
-            switch(ref.second)
-            {
-              case(inactive):
-                  return false;
-              break;
-              case(equal):
-                  return (val==ref.first);
-              break;
-              case(less):
-                  return (val<ref.first);
-              break;
-              case(less_equal):
-                  return (val<=ref.first);
-              break;
-              case(greater):
-                  return (val>ref.first);
-              break;
-              case(greater_equal):
-                  return (val>=ref.first);
-              break;
-              default:
-                assert(false);
-                return false;
-            }
-          }
-
         public:
           convergence_tester() : satisfy_both_flag(false)
           {
@@ -143,6 +108,41 @@ namespace eli
             else
               return rel_state || abs_state;
           }
+
+        private:
+          bool compare(const data__ &val, const std::pair<data__, activity_state> &ref) const
+          {
+            // test the relative tolerance terms
+            switch(ref.second)
+            {
+              case(inactive):
+                  return false;
+              break;
+              case(equal):
+                  return (val==ref.first);
+              break;
+              case(less):
+                  return (val<ref.first);
+              break;
+              case(less_equal):
+                  return (val<=ref.first);
+              break;
+              case(greater):
+                  return (val>ref.first);
+              break;
+              case(greater_equal):
+                  return (val>=ref.first);
+              break;
+              default:
+                assert(false);
+                return false;
+            }
+          }
+
+        private:
+          bool satisfy_both_flag;
+          std::pair<data__, activity_state> rel_tol_info;
+          std::pair<data__, activity_state> abs_tol_info;
       };
 
       template<typename data__>
@@ -159,23 +159,6 @@ namespace eli
           typedef convergence_tester<size_t> max_iteration_type;
           typedef typename error_tolerance_type::data_type tolerance_type;
           typedef typename max_iteration_type::data_type iteration_type;
-
-        private:
-          error_tolerance_type conv;
-          max_iteration_type itmax;
-          mutable iteration_type itcnt;
-
-        protected:
-          bool test_converged(const iteration_type &it, const tolerance_type &relv, const tolerance_type &absv) const
-          {
-            return conv.converged(relv, absv) || max_iteration_reached(it);
-          }
-
-          bool max_iteration_reached(const iteration_type &it) const
-          {
-            itcnt = it;
-            return itmax.converged(0, it);
-          }
 
         public:
           iterative_root_base() : itcnt(0)
@@ -268,6 +251,23 @@ namespace eli
           {
             return itcnt;
           }
+
+        protected:
+          bool test_converged(const iteration_type &it, const tolerance_type &relv, const tolerance_type &absv) const
+          {
+            return conv.converged(relv, absv) || max_iteration_reached(it);
+          }
+
+          bool max_iteration_reached(const iteration_type &it) const
+          {
+            itcnt = it;
+            return itmax.converged(0, it);
+          }
+
+        private:
+          error_tolerance_type conv;
+          max_iteration_type itmax;
+          mutable iteration_type itcnt;
       };
     }
   }

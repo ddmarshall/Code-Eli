@@ -39,8 +39,30 @@ namespace eli
             Frobenius_norm=500 // for vectors this is L2, for matrices this is the sqrt of sum of squares of each term
           };
 
-        private:
-          system_norm_type norm_type;
+        public:
+          iterative_system_root_base()
+          : iterative_root_base<data__>(), norm_type(iterative_system_root_base<data__, N__, NSOL__>::max_norm)
+          {
+          }
+
+          iterative_system_root_base(const iterative_system_root_base<data__, N__, NSOL__>& isrb)
+          : iterative_root_base<data__>(isrb), norm_type(isrb.norm_type)
+          {
+          }
+
+          ~iterative_system_root_base()
+          {
+          }
+
+          system_norm_type get_norm_type() const
+          {
+            return norm_type;
+          }
+
+          void set_norm_type(system_norm_type snt)
+          {
+            norm_type = snt;
+          }
 
         protected:
           data__ calculate_norm(const solution_matrix &mat) const
@@ -103,30 +125,8 @@ namespace eli
             return static_cast<data__>(-1);
           }
 
-        public:
-          iterative_system_root_base()
-          : iterative_root_base<data__>(), norm_type(iterative_system_root_base<data__, N__, NSOL__>::max_norm)
-          {
-          }
-
-          iterative_system_root_base(const iterative_system_root_base<data__, N__, NSOL__>& isrb)
-          : iterative_root_base<data__>(isrb), norm_type(isrb.norm_type)
-          {
-          }
-
-          ~iterative_system_root_base()
-          {
-          }
-
-          system_norm_type get_norm_type() const
-          {
-            return norm_type;
-          }
-
-          void set_norm_type(system_norm_type snt)
-          {
-            norm_type = snt;
-          }
+        private:
+          system_norm_type norm_type;
       };
     }
   }
