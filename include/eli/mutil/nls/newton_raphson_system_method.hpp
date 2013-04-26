@@ -73,22 +73,31 @@ namespace eli
               return iterative_root_base<data__>::converged;
             }
 
+            bool all_zero(false);
             count=0;
-            while (!this->test_converged(count, rel_tol_norm, abs_tol_norm))
+            while (!this->test_converged(count, rel_tol_norm, abs_tol_norm) && !all_zero)
             {
   // Don't have any easy (efficient) way of determining if matrix in invertible
   //            if (fpx==0)
   //              return iterative_root_base<data__>::no_root_found;
 
-              dx=fpx.lu().solve(eval1);
-              x-=dx;
+              dx=-fpx.lu().solve(eval1);
+              dx=calculate_delta_factor(x, dx);
+              x+=dx;
               fx=fun(x);
               fpx=fprime(x);
               eval1=fx-f0;
               abs_tol_norm=this->calculate_norm(eval1);
               bool nonzero(false);
+              all_zero=true;
               for (size_t i=0; i<N__; ++i)
               {
+                // check if stuck and cannot move x anymore
+                if (std::abs(dx(i))>std::numeric_limits<data__>::epsilon())
+                {
+                  all_zero=false;
+                }
+
                 if (std::abs(f0(i))<=std::numeric_limits<data__>::epsilon())
                   eval2(i)=std::numeric_limits<data__>::epsilon();
                 else
@@ -108,8 +117,18 @@ namespace eli
             root=x;
             if (this->max_iteration_reached(count))
               return iterative_root_base<data__>::max_iteration; // could not converge
+            if (all_zero)
+              return iterative_root_base<data__>::hit_constraint; // constraints limited convergence
 
             return iterative_root_base<data__>::converged;
+          }
+
+        private:
+          virtual typename iterative_system_root_base<data__, N__, NSOL__>::solution_matrix
+                  calculate_delta_factor(const typename iterative_system_root_base<data__, N__, NSOL__>::solution_matrix &,
+                                         const typename iterative_system_root_base<data__, N__, NSOL__>::solution_matrix &dx) const
+          {
+            return dx;
           }
       };
     }
