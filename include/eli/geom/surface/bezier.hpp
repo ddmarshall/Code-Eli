@@ -22,6 +22,7 @@
 #include "eli/util/tolerance.hpp"
 
 #include "eli/geom/utility/bezier.hpp"
+#include "eli/geom/curve/bezier.hpp"
 #include "eli/geom/general/continuity.hpp"
 #include "eli/geom/general/bounding_box.hpp"
 
@@ -43,6 +44,7 @@ namespace eli
           typedef tol__ tolerance_type;
           typedef Eigen::Matrix<data_type, dim__, dim__> rotation_matrix_type;
           typedef eli::geom::general::bounding_box<data_type, dim__, tolerance_type> bounding_box_type;
+          typedef eli::geom::curve::bezier<data_type, dim__, tolerance_type> boundary_curve_type;
 
         private:
           typedef Eigen::Map<Eigen::Matrix<data_type, Eigen::Dynamic, dim__>,
@@ -182,6 +184,19 @@ namespace eli
             }
           }
 
+          bool open_u() const {return !closed_u();}
+          bool closed_u() const
+          {
+            // TODO: Need to implement
+            return false;
+          }
+          bool open_v() const {return !closed_v();}
+          bool closed_v() const
+          {
+            // TODO: Need to implement
+            return false;
+          }
+
           void set_control_point(const point_type &cp, const index_type &i, const index_type &j)
           {
             // make sure have valid indexes
@@ -257,9 +272,47 @@ namespace eli
             }
           }
 
-// NOTE: These would need to be done for u-direction and v-direction
-//           bool open() const {return open_flag;}
-//           bool closed() const {return !open_flag;}
+          void get_uconst_curve(boundary_curve_type &bc, const data_type &u) const
+          {
+            index_type j, m(degree_v());
+
+            // check to make sure have valid curve
+            assert(m>=0);
+
+            // check to make sure given valid parametric value
+            assert((u>=0) && (u<=1));
+
+            // build curve
+            point_type cp;
+
+            bc.resize(m);
+            for (j=0; j<=m; ++j)
+            {
+              eli::geom::utility::de_casteljau(cp, B_u[j], u);
+              bc.set_control_point(cp, j);
+            }
+          }
+
+          void get_vconst_curve(boundary_curve_type &bc, const data_type &v) const
+          {
+            index_type i, n(degree_u());
+
+            // check to make sure have valid curve
+            assert(n>=0);
+
+            // check to make sure given valid parametric value
+            assert((v>=0) && (v<=1));
+
+            // build curve
+            point_type cp;
+
+            bc.resize(n);
+            for (i=0; i<=n; ++i)
+            {
+              eli::geom::utility::de_casteljau(cp, B_v[i], v);
+              bc.set_control_point(cp, i);
+            }
+          }
 
           point_type f(const data_type &u, const data_type &v) const
           {
@@ -268,8 +321,8 @@ namespace eli
             index_type i, n(degree_u()), m(degree_v());
 
             // check to make sure have valid curve
-            assert(this->degree_u()>=0);
-            assert(this->degree_v()>=0);
+            assert(n>=0);
+            assert(m>=0);
 
             // check to make sure given valid parametric value
             assert((u>=0) && (u<=1));
@@ -308,8 +361,8 @@ namespace eli
             Eigen::Matrix<data_type, Eigen::Dynamic, dim__> temp_cp, B_up(n+1-1, dim__);
 
             // check to make sure have valid curve
-            assert(this->degree_u()>=0);
-            assert(this->degree_v()>=0);
+            assert(n>=0);
+            assert(m>=0);
 
             // check to make sure given valid parametric value
             assert((u>=0) && (u<=1));
@@ -358,8 +411,8 @@ namespace eli
             Eigen::Matrix<data_type, Eigen::Dynamic, dim__> temp_cp, B_vp(m+1-1, dim__);
 
             // check to make sure have valid curve
-            assert(this->degree_u()>=0);
-            assert(this->degree_v()>=0);
+            assert(n>=0);
+            assert(m>=0);
 
             // check to make sure given valid parametric value
             assert((u>=0) && (u<=1));
@@ -408,8 +461,8 @@ namespace eli
             Eigen::Matrix<data_type, Eigen::Dynamic, dim__> temp_cp, B_upp(n+1-2, dim__);
 
             // check to make sure have valid curve
-            assert(this->degree_u()>=0);
-            assert(this->degree_v()>=0);
+            assert(n>=0);
+            assert(m>=0);
 
             // check to make sure given valid parametric value
             assert((u>=0) && (u<=1));
@@ -459,8 +512,8 @@ namespace eli
             Eigen::Matrix<data_type, Eigen::Dynamic, dim__> temp_cp, B_up(n+1-1, dim__), B_vp(m+1-1, dim__);
 
             // check to make sure have valid curve
-            assert(this->degree_u()>=0);
-            assert(this->degree_v()>=0);
+            assert(n>=0);
+            assert(m>=0);
 
             // check to make sure given valid parametric value
             assert((u>=0) && (u<=1));
@@ -513,8 +566,8 @@ namespace eli
             Eigen::Matrix<data_type, Eigen::Dynamic, dim__> temp_cp, B_vpp(m+1-2, dim__);
 
             // check to make sure have valid curve
-            assert(this->degree_u()>=0);
-            assert(this->degree_v()>=0);
+            assert(n>=0);
+            assert(m>=0);
 
             // check to make sure given valid parametric value
             assert((u>=0) && (u<=1));
@@ -564,8 +617,8 @@ namespace eli
             Eigen::Matrix<data_type, Eigen::Dynamic, dim__> temp_cp, B_uppp(n+1-3, dim__);
 
             // check to make sure have valid curve
-            assert(this->degree_u()>=0);
-            assert(this->degree_v()>=0);
+            assert(n>=0);
+            assert(m>=0);
 
             // check to make sure given valid parametric value
             assert((u>=0) && (u<=1));
@@ -615,8 +668,8 @@ namespace eli
             Eigen::Matrix<data_type, Eigen::Dynamic, dim__> temp_cp, B_upp(n+1-2, dim__), B_vp(m+1-1, dim__);
 
             // check to make sure have valid curve
-            assert(this->degree_u()>=0);
-            assert(this->degree_v()>=0);
+            assert(n>=0);
+            assert(m>=0);
 
             // check to make sure given valid parametric value
             assert((u>=0) && (u<=1));
@@ -669,8 +722,8 @@ namespace eli
             Eigen::Matrix<data_type, Eigen::Dynamic, dim__> temp_cp, B_up(n+1-1, dim__), B_vpp(m+1-2, dim__);
 
             // check to make sure have valid curve
-            assert(this->degree_u()>=0);
-            assert(this->degree_v()>=0);
+            assert(n>=0);
+            assert(m>=0);
 
             // check to make sure given valid parametric value
             assert((u>=0) && (u<=1));
@@ -723,8 +776,8 @@ namespace eli
             Eigen::Matrix<data_type, Eigen::Dynamic, dim__> temp_cp, B_vppp(m+1-3, dim__);
 
             // check to make sure have valid curve
-            assert(this->degree_u()>=0);
-            assert(this->degree_v()>=0);
+            assert(n>=0);
+            assert(m>=0);
 
             // check to make sure given valid parametric value
             assert((u>=0) && (u<=1));

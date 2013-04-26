@@ -18,5 +18,6 @@
 #include "eli/geom/intersect/minimum_distance_line.hpp"
 #include "eli/geom/intersect/minimum_distance_plane.hpp"
 #include "eli/geom/intersect/minimum_distance_curve.hpp"
+#include "eli/geom/intersect/minimum_distance_surface.hpp"
 
 #endif
