@@ -151,9 +151,10 @@ namespace eli
         public:
           enum status
           {
-            converged     = 0,
-            max_iteration = 1,
-            no_root_found = 2
+            converged      = 0,
+            max_iteration  = 1,
+            no_root_found  = 2,
+            hit_constraint = 3
           };
           typedef convergence_tester<data__> error_tolerance_type;
           typedef convergence_tester<size_t> max_iteration_type;

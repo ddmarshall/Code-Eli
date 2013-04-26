@@ -85,6 +85,8 @@ namespace eli
             root=x;
             if (this->max_iteration_reached(count))
               return iterative_root_base<data__>::max_iteration; // could not converge
+            if (dx==0)
+              return iterative_root_base<data__>::hit_constraint; // constraints limited convergence
 
             return iterative_root_base<data__>::converged;
           }
