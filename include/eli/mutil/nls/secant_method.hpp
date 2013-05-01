@@ -54,7 +54,7 @@ namespace eli
           }
 
           template<typename f__>
-          typename iterative_root_base<data__>::status find_root(data__ &root, const f__ &fun, const data__ &f0) const
+          int find_root(data__ &root, const f__ &fun, const data__ &f0) const
           {
             data__ x(x1), fx(fun(x1)), xm1(x2), fxm1(x2), eval, eval_abs, tmp;
             typename iterative_root_base<data__>::iteration_type count;
@@ -65,14 +65,14 @@ namespace eli
             if (this->test_converged(0, eval_abs/f0, eval_abs))
             {
               root=x;
-              return iterative_root_base<data__>::converged;
+              return this->converged;
             }
 
             count=0;
             while (!this->test_converged(count, eval_abs/f0, eval_abs))
             {
               if (fx==fxm1)
-                return iterative_root_base<data__>::no_root_found;
+                return this->no_root_found;
 
               tmp=x;
               x-=eval*(x-xm1)/(fx-fxm1);
@@ -87,9 +87,9 @@ namespace eli
 
             root=x;
             if (this->max_iteration_reached(count))
-              return iterative_root_base<data__>::max_iteration; // could not converge
+              return this->max_iteration; // could not converge
 
-            return iterative_root_base<data__>::converged;
+            return this->converged;
           }
       };
     }

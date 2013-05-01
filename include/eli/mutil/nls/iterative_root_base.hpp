@@ -149,13 +149,10 @@ namespace eli
       class iterative_root_base
       {
         public:
-          enum status
-          {
-            converged      = 0,
-            max_iteration  = 1,
-            no_root_found  = 2,
-            hit_constraint = 3
-          };
+          static const int converged = 0;
+          static const int max_iteration = 1;
+          static const int no_root_found = 2;
+
           typedef convergence_tester<data__> error_tolerance_type;
           typedef convergence_tester<size_t> max_iteration_type;
           typedef typename error_tolerance_type::data_type tolerance_type;

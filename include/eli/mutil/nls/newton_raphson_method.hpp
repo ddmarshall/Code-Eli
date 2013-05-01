@@ -27,6 +27,8 @@ namespace eli
         public:
           typedef data__ data_type;
 
+          static const int hit_constraint = 101;
+
         public:
           newton_raphson_method() : iterative_root_base<data_type>(), x0(0)
           {
@@ -52,7 +54,7 @@ namespace eli
           }
 
           template<typename f__, typename g__>
-          typename iterative_root_base<data_type>::status find_root(data_type &root, const f__ &fun, const g__ &fprime, const data_type &f0) const
+          int find_root(data_type &root, const f__ &fun, const g__ &fprime, const data_type &f0) const
           {
             data_type x(x0), fx(fun(x0)), fpx(fprime(x0)), eval, eval_abs, dx(1);
             typename iterative_root_base<data__>::iteration_type count;
@@ -84,11 +86,11 @@ namespace eli
 
             root=x;
             if (this->max_iteration_reached(count))
-              return iterative_root_base<data__>::max_iteration; // could not converge
+              return this->max_iteration; // could not converge
             if (dx==0)
-              return iterative_root_base<data__>::hit_constraint; // constraints limited convergence
+              return this->hit_constraint; // constraints limited convergence
 
-            return iterative_root_base<data__>::converged;
+            return this->converged;
           }
 
         private:

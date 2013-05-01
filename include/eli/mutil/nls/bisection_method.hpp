@@ -76,7 +76,7 @@ namespace eli
           }
 
           template<typename f__>
-          typename iterative_root_base<data__>::status find_root(data__ &root, const f__ &fun, const data__ &f0) const
+          int find_root(data__ &root, const f__ &fun, const data__ &f0) const
           {
             data__ xmn(xmin), xmx(xmax), two(2);
             data__ fmin, fmid, fmax, xmid, data_abs, data_abs2;
@@ -88,7 +88,7 @@ namespace eli
             if (this->test_converged(0, data_abs/f0, data_abs))
             {
               root=xmn;
-              return iterative_root_base<data__>::converged;
+              return this->converged;
             }
 
             // calculate the function evaluated at the maximum location
@@ -97,7 +97,7 @@ namespace eli
             if (this->test_converged(0, data_abs/f0, data_abs))
             {
               root=xmx;
-              return iterative_root_base<data__>::converged;
+              return this->converged;
             }
 
             count=0;
@@ -121,11 +121,8 @@ namespace eli
               }
               else
               {
-  #if (DEBUG>1)
-                std::cerr << "bisection_method_def.hpp:" << " Iterative root not found! Bounds are [" << xmn << ", " << xmx << "]=>[" << fun(xmn) << ", " << fun(xmx) << "] with f0=" << f0 << std::endl;
-  #endif
                 root=(xmn+xmx)/2;
-                return iterative_root_base<data__>::no_root_found;
+                return this->no_root_found;
               }
 
               xmid=(xmx+xmn)/two;
@@ -138,13 +135,10 @@ namespace eli
             root=xmid;
             if (this->max_iteration_reached(count))
             {
-  #if (DEBUG>1)
-              std::cerr << "bisection_method_def.hpp:" << " Iterative root not converged! Bounds are [" << xmn << ", " << xmx << "]=>[" << fun(xmn) << ", " << fun(xmx) << "] with f0=" << f0 << std::endl;
-  #endif
-              return iterative_root_base<data__>::max_iteration; // could not converge
+              return this->max_iteration; // could not converge
             }
 
-            return iterative_root_base<data__>::converged;
+            return this->converged;
           }
       };
     }

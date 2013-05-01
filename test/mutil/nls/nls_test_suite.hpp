@@ -207,7 +207,9 @@ class nls_test_suite : public Test::Suite
       TEST_ADD(nls_test_suite<float>::bisection_method_test);
       TEST_ADD(nls_test_suite<float>::newton_raphson_method_test);
       TEST_ADD(nls_test_suite<float>::secant_method_test);
+      TEST_ADD(nls_test_suite<float>::newton_raphson_constrained_method_test);
       TEST_ADD(nls_test_suite<float>::newton_raphson_system_method_test);
+      TEST_ADD(nls_test_suite<float>::newton_raphson_constrained_system_method_test);
     }
 
     void AddTests(const double &)
@@ -215,7 +217,9 @@ class nls_test_suite : public Test::Suite
       TEST_ADD(nls_test_suite<double>::bisection_method_test);
       TEST_ADD(nls_test_suite<double>::newton_raphson_method_test);
       TEST_ADD(nls_test_suite<double>::secant_method_test);
+      TEST_ADD(nls_test_suite<double>::newton_raphson_constrained_method_test);
       TEST_ADD(nls_test_suite<double>::newton_raphson_system_method_test);
+      TEST_ADD(nls_test_suite<double>::newton_raphson_constrained_system_method_test);
     }
 
     void AddTests(const long double &)
@@ -223,7 +227,9 @@ class nls_test_suite : public Test::Suite
       TEST_ADD(nls_test_suite<long double>::bisection_method_test);
       TEST_ADD(nls_test_suite<long double>::newton_raphson_method_test);
       TEST_ADD(nls_test_suite<long double>::secant_method_test);
+      TEST_ADD(nls_test_suite<long double>::newton_raphson_constrained_method_test);
       TEST_ADD(nls_test_suite<long double>::newton_raphson_system_method_test);
+      TEST_ADD(nls_test_suite<long double>::newton_raphson_constrained_system_method_test);
     }
 #ifdef ELI_QD_FOUND
     void AddTests(const dd_real &)
@@ -231,7 +237,9 @@ class nls_test_suite : public Test::Suite
       TEST_ADD(nls_test_suite<dd_real>::bisection_method_test);
       TEST_ADD(nls_test_suite<dd_real>::newton_raphson_method_test);
       TEST_ADD(nls_test_suite<dd_real>::secant_method_test);
+      TEST_ADD(nls_test_suite<dd_real>::newton_raphson_constrained_method_test);
       TEST_ADD(nls_test_suite<dd_real>::newton_raphson_system_method_test);
+      TEST_ADD(nls_test_suite<dd_real>::newton_raphson_constrained_system_method_test);
     }
 
     void AddTests(const qd_real &)
@@ -239,7 +247,9 @@ class nls_test_suite : public Test::Suite
       TEST_ADD(nls_test_suite<qd_real>::bisection_method_test);
       TEST_ADD(nls_test_suite<qd_real>::newton_raphson_method_test);
       TEST_ADD(nls_test_suite<qd_real>::secant_method_test);
+      TEST_ADD(nls_test_suite<qd_real>::newton_raphson_constrained_method_test);
       TEST_ADD(nls_test_suite<qd_real>::newton_raphson_system_method_test);
+      TEST_ADD(nls_test_suite<qd_real>::newton_raphson_constrained_system_method_test);
     }
 #endif
 
@@ -258,7 +268,7 @@ class nls_test_suite : public Test::Suite
     {
       data__ delta(std::sqrt(std::numeric_limits<data__>::epsilon())), rhs(0.5), root;
       eli::mutil::nls::bisection_method<data__> bm;
-      typename eli::mutil::nls::bisection_method<data__>::status stat;
+      int stat;
 
       bm.set_absolute_tolerance(delta);
       bm.set_max_iteration(200);
@@ -287,7 +297,7 @@ class nls_test_suite : public Test::Suite
     {
       data__ delta(std::sqrt(std::numeric_limits<data__>::epsilon())), rhs(0.5), root;
       eli::mutil::nls::newton_raphson_method<data__> nrm;
-      typename eli::mutil::nls::newton_raphson_method<data__>::status stat;
+      int stat;
 
       nrm.set_absolute_tolerance(delta);
       nrm.set_max_iteration(200);
@@ -321,7 +331,7 @@ class nls_test_suite : public Test::Suite
     {
       data__ delta(std::sqrt(std::numeric_limits<data__>::epsilon())), rhs(0.5), root(0);
       eli::mutil::nls::secant_method<data__> sm;
-      typename eli::mutil::nls::secant_method<data__>::status stat;
+      int stat;
 
       sm.set_absolute_tolerance(delta);
       sm.set_max_iteration(200);
@@ -346,6 +356,52 @@ class nls_test_suite : public Test::Suite
       TEST_ASSERT_DELTA(root, std::acos(rhs), 2*delta);
     }
 
+    void newton_raphson_constrained_method_test()
+    {
+      typedef eli::mutil::nls::newton_raphson_constrained_method<data__> nrcm_type;
+      data__ delta(std::sqrt(std::numeric_limits<data__>::epsilon())), rhs(0.5), root;
+      nrcm_type nrcm;
+      int stat;
+
+      nrcm.set_absolute_tolerance(delta);
+      nrcm.set_max_iteration(200);
+      nrcm.set_initial_guess(eli::constants::math<data__>::two_pi()+static_cast<data__>(0.3)*eli::constants::math<data__>::pi_by_four());
+      nrcm.set_lower_condition(eli::constants::math<data__>::two_pi(), nrcm_type::NRC_EXCLUSIVE);
+      nrcm.set_upper_condition(eli::constants::math<data__>::pi()*3, nrcm_type::NRC_EXCLUSIVE);
+
+      // test using user defined functions
+      stat = nrcm.find_root(root, std::ptr_fun(my_function<data__>), std::ptr_fun(my_function_derivative<data__>), rhs);
+      TEST_ASSERT(stat==nrcm_type::converged);
+      TEST_ASSERT_DELTA(root, eli::constants::math<data__>::two_pi()+std::acos(rhs), 2*delta);
+
+      nrcm.set_max_iteration(2);
+      stat = nrcm.find_root(root, std::ptr_fun(my_function<data__>), std::ptr_fun(my_function_derivative<data__>), rhs);
+      TEST_ASSERT(stat==nrcm_type::max_iteration);
+
+      nrcm.set_max_iteration(100);
+      nrcm.set_initial_guess(eli::constants::math<data__>::two_pi()+static_cast<data__>(0.3)*eli::constants::math<data__>::pi_by_four());
+      nrcm.set_upper_condition(static_cast<data__>(0.1)+eli::constants::math<data__>::two_pi(), nrcm_type::NRC_EXCLUSIVE);
+      stat = nrcm.find_root(root, std::ptr_fun(my_function<data__>), std::ptr_fun(my_function_derivative<data__>), rhs);
+      TEST_ASSERT(stat==nrcm_type::hit_constraint);
+
+      data__ rhs2(cos(eli::constants::math<data__>::pi()+static_cast<data__>(0.001)));
+      nrcm.set_initial_guess(eli::constants::math<data__>::pi()*3);
+      nrcm.set_periodic_condition(eli::constants::math<data__>::pi(), eli::constants::math<data__>::pi()*3);
+      stat = nrcm.find_root(root, std::ptr_fun(my_function<data__>), std::ptr_fun(my_function_derivative<data__>), rhs2);
+      TEST_ASSERT(stat==nrcm_type::converged);
+
+      // test using functor
+      nrcm.set_absolute_tolerance(delta);
+      nrcm.set_max_iteration(200);
+      nrcm.set_lower_condition(eli::constants::math<data__>::two_pi(), nrcm_type::NRC_EXCLUSIVE);
+      nrcm.set_upper_condition(eli::constants::math<data__>::pi()*3, nrcm_type::NRC_EXCLUSIVE);
+      nrcm.set_initial_guess(eli::constants::math<data__>::two_pi()+static_cast<data__>(0.3)*eli::constants::math<data__>::pi_by_four());
+
+      stat = nrcm.find_root(root, my_functor<data__>(), my_functor_derivative<data__>(), rhs);
+      TEST_ASSERT(stat==nrcm_type::converged);
+      TEST_ASSERT_DELTA(root, eli::constants::math<data__>::two_pi()+std::acos(rhs), 2*delta);
+    }
+
     void newton_raphson_system_method_test()
     {
       typedef eli::mutil::nls::newton_raphson_system_method<data__, 3, 1> nr_system;
@@ -353,7 +409,7 @@ class nls_test_suite : public Test::Suite
       data__ delta(std::sqrt(std::numeric_limits<data__>::epsilon()));
       nr_system nrm;
       typename nr_system::solution_matrix rhs, root, x0, x_exact;
-      typename nr_system::status stat;
+      int stat;
 
       nrm.set_absolute_tolerance(delta);
       nrm.set_max_iteration(200);
@@ -430,6 +486,95 @@ class nls_test_suite : public Test::Suite
       stat = nrm.find_root(root, my_coupled_nonlinear_system_functor<data__>(), my_coupled_nonlinear_system_functor_derivative<data__>(), rhs);
       TEST_ASSERT(stat==nr_system::converged);
       TEST_ASSERT(nrm.get_iteration_count()<nrm.get_max_iteration());
+      TEST_ASSERT((x_exact-root).norm()<delta);
+    }
+
+    void newton_raphson_constrained_system_method_test()
+    {
+      typedef eli::mutil::nls::newton_raphson_constrained_system_method<data__, 3, 1> nrcs_type;
+
+      data__ delta(std::sqrt(std::numeric_limits<data__>::epsilon()));
+      nrcs_type nrcm;
+      typename nrcs_type::solution_matrix rhs, root, x0, x_exact;
+      int stat;
+
+      nrcm.set_absolute_tolerance(delta);
+      nrcm.set_max_iteration(200);
+      nrcm.set_norm_type(nrcs_type::max_norm);
+      nrcm.set_lower_condition(0, 0, nrcs_type::NRC_EXCLUSIVE);
+      nrcm.set_upper_condition(0, 4, nrcs_type::NRC_EXCLUSIVE);
+
+      // decoupled system
+      // set right hand side, initial guess & exact answer
+      x_exact << 2, 3, 1;
+      rhs = my_decoupled_system_function<data__>(x_exact);
+      x0 << 1.5, 2.5, 1.5;
+      nrcm.set_initial_guess(x0);
+
+      // test using user defined functions
+      stat = nrcm.find_root(root, std::ptr_fun(my_decoupled_system_function<data__>), std::ptr_fun(my_decoupled_system_function_derivative<data__>), rhs);
+      TEST_ASSERT(stat==nrcs_type::converged);
+      TEST_ASSERT(nrcm.get_iteration_count()<nrcm.get_max_iteration());
+      TEST_ASSERT((x_exact-root).norm()<=2*delta);
+
+      nrcm.set_max_iteration(2);
+      stat = nrcm.find_root(root, std::ptr_fun(my_decoupled_system_function<data__>), std::ptr_fun(my_decoupled_system_function_derivative<data__>), rhs);
+      TEST_ASSERT(stat==nrcs_type::max_iteration);
+
+      // test using functor
+      nrcm.set_absolute_tolerance(delta);
+      nrcm.set_max_iteration(200);
+      nrcm.set_initial_guess(x0);
+
+      stat = nrcm.find_root(root, my_decoupled_system_functor<data__>(), my_decoupled_system_functor_derivative<data__>(), rhs);
+      TEST_ASSERT(stat==nrcs_type::converged);
+      TEST_ASSERT(nrcm.get_iteration_count()<nrcm.get_max_iteration());
+      TEST_ASSERT((x_exact-root).norm()<=2*delta);
+
+      // linear coupled system
+      // set right hand side, initial guess & exact answer
+      x_exact << 2, 3, 1;
+      rhs = my_coupled_linear_system_function<data__>(x_exact);
+      x0 << 1.5, 2.5, 1.5;
+      nrcm.set_initial_guess(x0);
+
+      // test using user defined functions
+      stat = nrcm.find_root(root, std::ptr_fun(my_coupled_linear_system_function<data__>), std::ptr_fun(my_coupled_linear_system_function_derivative<data__>), rhs);
+      TEST_ASSERT(stat==nrcs_type::converged);
+      TEST_ASSERT(nrcm.get_iteration_count()<2);
+      TEST_ASSERT((x_exact-root).norm()<delta);
+
+      // test using functor
+      nrcm.set_absolute_tolerance(delta);
+      nrcm.set_max_iteration(200);
+      nrcm.set_initial_guess(x0);
+
+      stat = nrcm.find_root(root, my_coupled_linear_system_functor<data__>(), my_coupled_linear_system_functor_derivative<data__>(), rhs);
+      TEST_ASSERT(stat==nrcs_type::converged);
+      TEST_ASSERT(nrcm.get_iteration_count()<2);
+      TEST_ASSERT((x_exact-root).norm()<delta);
+
+      // nonlinear coupled system
+      // set right hand side, initial guess & exact answer
+      x_exact << 2, 3, 1;
+      rhs = my_coupled_nonlinear_system_function<data__>(x_exact);
+      x0 << 1.5, 2.5, 1.5;
+      nrcm.set_initial_guess(x0);
+
+      // test using user defined functions
+      stat = nrcm.find_root(root, std::ptr_fun(my_coupled_nonlinear_system_function<data__>), std::ptr_fun(my_coupled_nonlinear_system_function_derivative<data__>), rhs);
+      TEST_ASSERT(stat==nrcs_type::converged);
+      TEST_ASSERT(nrcm.get_iteration_count()<nrcm.get_max_iteration());
+      TEST_ASSERT((x_exact-root).norm()<delta);
+
+      // test using functor
+      nrcm.set_absolute_tolerance(delta);
+      nrcm.set_max_iteration(200);
+      nrcm.set_initial_guess(x0);
+
+      stat = nrcm.find_root(root, my_coupled_nonlinear_system_functor<data__>(), my_coupled_nonlinear_system_functor_derivative<data__>(), rhs);
+      TEST_ASSERT(stat==nrcs_type::converged);
+      TEST_ASSERT(nrcm.get_iteration_count()<nrcm.get_max_iteration());
       TEST_ASSERT((x_exact-root).norm()<delta);
     }
 };

@@ -24,8 +24,8 @@ namespace eli
       template<typename data__, size_t N__, size_t NSOL__=1>
       class newton_raphson_system_method : public iterative_system_root_base<data__, N__, NSOL__>
       {
-        private:
-          typename iterative_system_root_base<data__, N__, NSOL__>::solution_matrix x0;
+        public:
+          static const int hit_constraint = 101;
 
         public:
           newton_raphson_system_method()
@@ -54,7 +54,7 @@ namespace eli
           }
 
           template<typename f__, typename g__>
-          typename iterative_root_base<data__>::status find_root(typename iterative_system_root_base<data__, N__, NSOL__>::solution_matrix &root, const f__ &fun, const g__ &fprime, const typename iterative_system_root_base<data__, N__, NSOL__>::solution_matrix &f0) const
+          int find_root(typename iterative_system_root_base<data__, N__, NSOL__>::solution_matrix &root, const f__ &fun, const g__ &fprime, const typename iterative_system_root_base<data__, N__, NSOL__>::solution_matrix &f0) const
           {
             typename iterative_system_root_base<data__, N__, NSOL__>::solution_matrix dx, x(x0), fx(fun(x0)), eval1, eval2;
             typename iterative_system_root_base<data__, N__, NSOL__>::jacobian_matrix fpx(fprime(x0));
@@ -70,7 +70,7 @@ namespace eli
             if (this->test_converged(0, rel_tol_norm, abs_tol_norm))
             {
               root=x;
-              return iterative_root_base<data__>::converged;
+              return this->converged;
             }
 
             bool all_zero(false);
@@ -116,11 +116,11 @@ namespace eli
 
             root=x;
             if (this->max_iteration_reached(count))
-              return iterative_root_base<data__>::max_iteration; // could not converge
+              return this->max_iteration; // could not converge
             if (all_zero)
-              return iterative_root_base<data__>::hit_constraint; // constraints limited convergence
+              return this->hit_constraint; // constraints limited convergence
 
-            return iterative_root_base<data__>::converged;
+            return this->converged;
           }
 
         private:
@@ -130,6 +130,9 @@ namespace eli
           {
             return dx;
           }
+
+        private:
+          typename iterative_system_root_base<data__, N__, NSOL__>::solution_matrix x0;
       };
     }
   }
