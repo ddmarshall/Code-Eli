@@ -14,6 +14,7 @@
 #define eli_mutil_nls_newton_raphson_constrained_system_method_hpp
 
 #include <limits>
+#include <algorithm>
 
 #include "eli/mutil/nls/newton_raphson_system_method.hpp"
 
@@ -243,9 +244,22 @@ namespace eli
                 assert(xmax[i]>xmin[i]);
                 assert(period>0);
 
+                if (std::abs(dx[i])>period)
+                {
+                  if (dx[i]>0)
+                    xinew=x[i]+static_cast<data__>(0.9999)*period;
+                  else
+                    xinew=x[i]-static_cast<data__>(0.9999)*period;
+                }
+
                 if (xinew<xmin[i])
                 {
-                  dx_new[i]=fmod(xinew, period)-x[i];
+                  xinew-=period*std::floor((xinew-xmin[i])/period);
+
+                  assert(xinew>=xmin[i]);
+                  assert(xinew<=xmax[i]);
+
+                  dx_new[i]=xinew-x[i];
                 }
               }
 
@@ -256,9 +270,22 @@ namespace eli
                 assert(xmax[i]>xmin[i]);
                 assert(period>0);
 
+                if (std::abs(dx[i])>period)
+                {
+                  if (dx[i]>0)
+                    xinew=x[i]+static_cast<data__>(0.9999)*period;
+                  else
+                    xinew=x[i]-static_cast<data__>(0.9999)*period;
+                }
+
                 if (xinew>xmax[i])
                 {
+                  xinew-=period*std::ceil((xinew-xmax[i])/period);
                   dx_new[i]=fmod(xinew, period)-x[i];
+                  assert(xinew>=xmin[i]);
+                  assert(xinew<=xmax[i]);
+
+                  dx_new[i]=xinew-x[i];
                 }
               }
             }

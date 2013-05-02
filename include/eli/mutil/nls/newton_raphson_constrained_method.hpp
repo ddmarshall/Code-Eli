@@ -14,6 +14,7 @@
 #define eli_mutil_nls_newton_raphson_constrained_method_hpp
 
 #include <limits>
+#include <algorithm>
 
 #include "eli/mutil/nls/newton_raphson_method.hpp"
 
@@ -138,9 +139,19 @@ namespace eli
                 assert(xmax>xmin);
                 assert(period>0);
 
+                if (std::abs(dx)>period)
+                {
+                  if (dx>0)
+                    xnew=x+static_cast<data__>(0.9999)*period;
+                  else
+                    xnew=x-static_cast<data__>(0.9999)*period;
+                }
+
                 if (xnew<xmin)
                 {
-                  xnew=fmod(xnew, period);
+                  xnew-=period*std::floor((xnew-xmin)/period);
+                  assert(xnew>=xmin);
+                  assert(xnew<=xmax);
                 }
                 break;
               }
@@ -177,9 +188,17 @@ namespace eli
                 assert(xmax>xmin);
                 assert(period>0);
 
+                if (std::abs(dx)>period)
+                {
+                  if (dx>0)
+                    xnew=x+static_cast<data__>(0.9999)*period;
+                  else
+                    xnew=x-static_cast<data__>(0.9999)*period;
+                }
+
                 if (xnew>xmax)
                 {
-                  xnew=fmod(xnew, xmax);
+                  xnew-=period*std::ceil((xnew-xmax)/period);
                 }
                 break;
               }
