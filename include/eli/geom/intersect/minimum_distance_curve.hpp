@@ -19,7 +19,7 @@
 
 #include "Eigen/Eigen"
 
-#include "eli/mutil/nls/newton_raphson_shacham_method.hpp"
+#include "eli/mutil/nls/newton_raphson_constrained_method.hpp"
 
 #include "eli/geom/point/distance.hpp"
 
@@ -41,31 +41,7 @@ namespace eli
           {
             typename curve__::data_type tt(t);
 
-            // if closed curve then wrap t
-            if (pc->closed())
-            {
-              if (t<0)
-              {
-                while(tt<0)
-                {
-                  tt+=1;
-                }
-              }
-              else if (t>1)
-              {
-                while(tt>1)
-                {
-                  tt-=1;
-                }
-              }
-              assert((tt>-0.001) && (tt<1.001));
-            }
-            else
-            {
-              assert((tt>-0.001) && (tt<1.001));
-            }
-
-            tt=std::min(std::max(tt, static_cast<typename curve__::data_type>(0)), static_cast<typename curve__::data_type>(1));
+            assert((tt>=0) && (tt<=1));
 
             return (pc->f(tt)-pt).dot(pc->fp(tt));
           }
@@ -81,31 +57,7 @@ namespace eli
           {
             typename curve__::data_type tt(t);
 
-            // if closed curve then wrap t
-            if (pc->closed())
-            {
-              if (t<0)
-              {
-                while(tt<0)
-                {
-                  tt+=1;
-                }
-              }
-              else if (t>1)
-              {
-                while(tt>1)
-                {
-                  tt-=1;
-                }
-              }
-              assert((tt>-0.001) && (tt<1.001));
-            }
-            else
-            {
-              assert((tt>-0.001) && (tt<1.001));
-            }
-
-            tt=std::min(std::max(tt, static_cast<typename curve__::data_type>(0)), static_cast<typename curve__::data_type>(1));
+            assert((tt>=0) && (tt<=1));
 
             typename curve__::point_type fp(pc->fp(tt));
             typename curve__::data_type rtn(fp.dot(fp)+pc->fpp(tt).dot(pc->f(tt)-pt));
@@ -139,8 +91,8 @@ namespace eli
       template<typename curve__>
       typename curve__::data_type minimum_distance(typename curve__::data_type &t, const curve__ &c, const typename curve__::point_type &pt, const typename curve__::data_type &t0)
       {
-        eli::mutil::nls::newton_raphson_shacham_method<typename curve__::data_type> nrm;
-        typename eli::mutil::nls::newton_raphson_shacham_method<typename curve__::data_type>::status stat;
+        eli::mutil::nls::newton_raphson_constrained_method<typename curve__::data_type> nrm;
+        int stat;
         internal::curve_g_functor<curve__> g;
         internal::curve_gp_functor<curve__> gp;
         typename curve__::data_type dist0, dist;
@@ -157,8 +109,12 @@ namespace eli
         nrm.set_max_iteration(100);
         if (c.open())
         {
-          nrm.set_lower_condition(0, eli::mutil::nls::newton_raphson_shacham_method<typename curve__::data_type>::NRS_EXCLUSIVE);
-          nrm.set_upper_condition(1, eli::mutil::nls::newton_raphson_shacham_method<typename curve__::data_type>::NRS_EXCLUSIVE);
+          nrm.set_lower_condition(0, eli::mutil::nls::newton_raphson_constrained_method<typename curve__::data_type>::NRC_EXCLUSIVE);
+          nrm.set_upper_condition(1, eli::mutil::nls::newton_raphson_constrained_method<typename curve__::data_type>::NRC_EXCLUSIVE);
+        }
+        else
+        {
+          nrm.set_periodic_condition(0, 1);
         }
 
         // set the initial guess
@@ -169,9 +125,10 @@ namespace eli
         stat = nrm.find_root(t, g, gp, 0);
 
         // if found root and it is within bounds and is closer than initial guess
-        if ( (stat==eli::mutil::nls::newton_raphson_method<typename curve__::data_type>::converged)
-          && ( (t>=0) && (t<=1) ) )
+        if (stat==eli::mutil::nls::newton_raphson_method<typename curve__::data_type>::converged)
         {
+          assert((t>=0) && (t<=1));
+
           dist = eli::geom::point::distance(c.f(t), pt);
           if  (dist<=dist0)
           {
@@ -297,20 +254,19 @@ namespace eli
           dd=minimum_distance(tt, c, pt, it->first);
 //           std::cout << "% completed root starting at" << *it << std::endl;
 
-          // if have valid solution
-          if ((tt>=0) && (tt<=1))
+          assert((tt>=0) && (tt<=1));
+
+          dd=eli::geom::point::distance(c.f(tt), pt);
+
+          // check to see if is closer than previous minimum
+          if (dd<dist)
           {
-            dd=eli::geom::point::distance(c.f(tt), pt);
+            t=tt;
+            dist=dd;
+          }
 
 //               std::cout << "# dd=" << dd << std::endl;
 //               std::cout << "# j=" << j << "\tnj=" << tinit.size() << std::endl;
-            // check to see if is closer than previous minimum
-            if (dd<dist)
-            {
-              t=tt;
-              dist=dd;
-            }
-          }
         }
 
 //         std::cout << "# returning dist=" << dist << std::endl;

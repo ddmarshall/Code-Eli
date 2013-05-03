@@ -122,10 +122,10 @@ namespace eli
         public:
           bezier() : B(1, dim__) {}
           bezier(const index_type &n) : B((n<=0)?(1):(n+1), dim__) {}
-          bezier(const bezier<data_type, dim__> &bc) : B(bc.B) {}
+          bezier(const bezier<data_type, dim__, tolerance_type> &bc) : B(bc.B) {}
           ~bezier() {}
 
-          bezier & operator=(const bezier<data_type, dim__> &bc)
+          bezier & operator=(const bezier<data_type, dim__, tolerance_type> &bc)
           {
             if (this != &bc)
             {
@@ -134,7 +134,7 @@ namespace eli
             return *this;
           }
 
-          bool operator==(const bezier<data_type, dim__> &bc) const
+          bool operator==(const bezier<data_type, dim__, tolerance_type> &bc) const
           {
             if (this == &bc)
               return true;
@@ -145,9 +145,30 @@ namespace eli
             return true;
           }
 
-          bool operator!=(const bezier<data_type, dim__> &bc) const
+          bool operator!=(const bezier<data_type, dim__, tolerance_type> &bc) const
           {
             return !operator==(bc);
+          }
+
+          bool approximately_equal(const bezier<data_type, dim__, tolerance_type> &bc) const
+          {
+            tolerance_type tol;
+
+            if (this==&bc)
+              return true;
+
+            if ((B.rows()!=B.rows()) || (B.cols()!=B.cols()))
+              return false;
+
+            for (index_type i=0; i<=degree(); ++i)
+            {
+              if (!tol.approximately_equal(get_control_point(i), bc.get_control_point(i)))
+              {
+                return false;
+              }
+            }
+
+            return true;
           }
 
           void resize(const index_type &t_dim)

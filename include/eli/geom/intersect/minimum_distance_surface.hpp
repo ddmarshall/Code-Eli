@@ -19,7 +19,7 @@
 
 #include "Eigen/Eigen"
 
-#include "eli/mutil/nls/newton_raphson_shacham_system_method.hpp"
+#include "eli/mutil/nls/newton_raphson_constrained_system_method.hpp"
 
 #include "eli/geom/intersect/minimum_distance_curve.hpp"
 #include "eli/geom/point/distance.hpp"
@@ -44,53 +44,8 @@ namespace eli
             typename surface__::data_type uu(u[0]), vv(u[1]);
             vec rtn;
 
-            // if closed curve in u-direction then wrap
-            if (ps->closed_u())
-            {
-              if (uu<0)
-              {
-                while(uu<0)
-                {
-                  uu+=1;
-                }
-              }
-              else if (uu>1)
-              {
-                while(uu>1)
-                {
-                  uu-=1;
-                }
-              }
-              assert((uu>-0.001) && (uu<1.001));
-            }
-            else
-            {
-              assert((uu>-0.001) && (uu<1.001));
-            }
-
-            // if closed curve in v-direction then wrap
-            if (ps->closed_v())
-            {
-              if (vv<0)
-              {
-                while(vv<0)
-                {
-                  vv+=1;
-                }
-              }
-              else if (vv>1)
-              {
-                while(vv>1)
-                {
-                  vv-=1;
-                }
-              }
-              assert((vv>-0.001) && (vv<1.001));
-            }
-            else
-            {
-              assert((vv>-0.001) && (vv<1.001));
-            }
+            assert((uu>=0) && (uu<=1));
+            assert((vv>=0) && (vv<=1));
 
             uu=std::min(std::max(uu, static_cast<typename surface__::data_type>(0)), static_cast<typename surface__::data_type>(1));
             vv=std::min(std::max(vv, static_cast<typename surface__::data_type>(0)), static_cast<typename surface__::data_type>(1));
@@ -117,53 +72,8 @@ namespace eli
             typename surface__::data_type uu(u[0]), vv(u[1]);
             mat rtn;
 
-            // if closed curve in u-direction then wrap
-            if (ps->closed_u())
-            {
-              if (uu<0)
-              {
-                while(uu<0)
-                {
-                  uu+=1;
-                }
-              }
-              else if (uu>1)
-              {
-                while(uu>1)
-                {
-                  uu-=1;
-                }
-              }
-              assert((uu>-0.001) && (uu<1.001));
-            }
-            else
-            {
-              assert((uu>-0.001) && (uu<1.001));
-            }
-
-            // if closed curve in v-direction then wrap
-            if (ps->closed_v())
-            {
-              if (vv<0)
-              {
-                while(vv<0)
-                {
-                  vv+=1;
-                }
-              }
-              else if (vv>1)
-              {
-                while(vv>1)
-                {
-                  vv-=1;
-                }
-              }
-              assert((vv>-0.001) && (vv<1.001));
-            }
-            else
-            {
-              assert((vv>-0.001) && (vv<1.001));
-            }
+            assert((uu>=0) && (uu<=1));
+            assert((vv>=0) && (vv<=1));
 
             uu=std::min(std::max(uu, static_cast<typename surface__::data_type>(0)), static_cast<typename surface__::data_type>(1));
             vv=std::min(std::max(vv, static_cast<typename surface__::data_type>(0)), static_cast<typename surface__::data_type>(1));
@@ -193,9 +103,9 @@ namespace eli
       typename surface__::data_type minimum_distance(typename surface__::data_type &u, typename surface__::data_type &v, const surface__ &s, const typename surface__::point_type &pt,
                                                      const typename surface__::data_type &u0, const typename surface__::data_type &v0)
       {
-        typedef eli::mutil::nls::newton_raphson_shacham_system_method<typename surface__::data_type, 2, 1> nonlinear_solver_type;
+        typedef eli::mutil::nls::newton_raphson_constrained_system_method<typename surface__::data_type, 2, 1> nonlinear_solver_type;
         nonlinear_solver_type nrm;
-        typename nonlinear_solver_type::status stat;
+        int stat;
         internal::surface_g_functor<surface__> g;
         internal::surface_gp_functor<surface__> gp;
         typename surface__::data_type dist0, dist;
@@ -213,13 +123,21 @@ namespace eli
         nrm.set_norm_type(nonlinear_solver_type::max_norm);
         if (s.open_u())
         {
-          nrm.set_lower_condition(0, 0, nonlinear_solver_type::NRS_EXCLUSIVE);
-          nrm.set_upper_condition(0, 1, nonlinear_solver_type::NRS_EXCLUSIVE);
+          nrm.set_lower_condition(0, 0, nonlinear_solver_type::NRC_EXCLUSIVE);
+          nrm.set_upper_condition(0, 1, nonlinear_solver_type::NRC_EXCLUSIVE);
+        }
+        else
+        {
+          nrm.set_periodic_condition(0, 0, 1);
         }
         if (s.open_v())
         {
-          nrm.set_lower_condition(1, 0, nonlinear_solver_type::NRS_EXCLUSIVE);
-          nrm.set_upper_condition(1, 1, nonlinear_solver_type::NRS_EXCLUSIVE);
+          nrm.set_lower_condition(1, 0, nonlinear_solver_type::NRC_EXCLUSIVE);
+          nrm.set_upper_condition(1, 1, nonlinear_solver_type::NRC_EXCLUSIVE);
+        }
+        else
+        {
+          nrm.set_periodic_condition(1, 0, 1);
         }
 
         // set the initial guess
@@ -237,19 +155,27 @@ namespace eli
         v=ans(1);
 
         // if found root and it is within bounds and is closer than initial guess
-        if ( (stat==nonlinear_solver_type::converged)
-          && ( (u>=0) && (u<=1) ) && ( (v>=0) && (v<=1) ) )
+        if (stat==nonlinear_solver_type::converged)
         {
+          assert((u>=0) && (u<=1));
+          assert((v>=0) && (v<=1));
+
           dist = eli::geom::point::distance(s.f(u, v), pt);
           if  (dist<=dist0)
           {
             return dist;
           }
         }
-        else
-        {
-//             std::cout << "# not converged!" << std::endl;
-        }
+//         else
+//         {
+//             std::cout << "% not converged";
+//             if (stat==nonlinear_solver_type::hit_constraint)
+//               std::cout << " because hit constraint" << std::endl;
+//             else if (stat==nonlinear_solver_type::max_iteration)
+//               std::cout << " reached max iteration" << std::endl;
+//             else
+//               std::cout << " for out of range parameters (" << ans(0) << ", " << ans(1) << ")" << std::endl;
+//         }
 
         // couldn't find better answer so return initial guess
         u=u0;
@@ -404,7 +330,7 @@ namespace eli
 
         // need to pick initial guesses
         typename surface__::index_type i, j, degu(s.degree_u()), degv(s.degree_v()), susize, svsize;
-        std::vector<typename surface__::data_type> usample(2*degu+1), vsample(2*degv+1);
+        std::vector<typename surface__::data_type> usample(1*degu+1), vsample(1*degv+1);
         typename surface__::point_type p0, p1;
         typename surface__::data_type temp;
 
@@ -433,7 +359,7 @@ namespace eli
           }
           for (j=0; j<svsize; ++j)
           {
-            vsample[j]=static_cast<typename surface__::data_type>(j)/(susize-1);
+            vsample[j]=static_cast<typename surface__::data_type>(j)/(svsize-1);
           }
 #endif
 
@@ -445,7 +371,7 @@ namespace eli
             for (j=0; j<svsize; ++j)
             {
               temp=eli::geom::point::distance(s.f(usample[i], vsample[j]), pt);
-//             std::cout << "point #=" << i << "\tdist_temp=" << temp << std::endl;
+//             std::cout << "% point #=" << i << ", " << j << "\tdist_temp=" << temp << std::endl;
               if (temp<=1.01*dist)
               {
                 cand_match.u=usample[i];
@@ -471,19 +397,19 @@ namespace eli
                     }
                   }
                 }
-  //               std::cout << "% added point #=" << i << "\twith t=" << tsample[i]/tlen << std::endl;
+//               std::cout << "% added point #=" << i << ", "<< j << "\tat (" << cand_match.u << ", " << cand_match.v << ")" << std::endl;
               }
             }
           }
         }
 
-//         std::cout << "# t guesses=" << tinit.size() << std::endl;
+//         std::cout << "% t guesses=" << uvinit.size() << std::endl;
 
         // cycle through all possible minima to find best
         for (it=uvinit.begin(); it!=uvinit.end(); ++it)
         {
           dd=minimum_distance(uu, vv, s, pt, it->u, it->v);
-//           std::cout << "% completed root starting at" << *it << std::endl;
+//           std::cout << "% completed root starting at (" << it->u << ", " << it->v << ") and ending at (" << uu << ", " << vv << ") with distance=" << dd << std::endl;
 
           // if have valid solution
           if ((uu>=0) && (uu<=1) && (vv>=0) && (vv<=1))
@@ -491,7 +417,6 @@ namespace eli
             dd=eli::geom::point::distance(s.f(uu, vv), pt);
 
 //               std::cout << "# dd=" << dd << std::endl;
-//               std::cout << "# j=" << j << "\tnj=" << tinit.size() << std::endl;
             // check to see if is closer than previous minimum
             if (dd<dist)
             {

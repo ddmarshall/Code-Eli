@@ -246,6 +246,8 @@ class minimum_distance_surface_test_suite : public Test::Suite
           s.set_control_point(cp[i][j], i, j);
         }
       }
+      TEST_ASSERT(s.open_u());
+      TEST_ASSERT(s.open_v());
 
       // test point on surface
       dist_ref=0;
@@ -460,166 +462,214 @@ class minimum_distance_surface_test_suite : public Test::Suite
 
     void point_closed_test()
     {
-#if 0
-      if (typeid(data_type)==typeid(double))
-      {
-        std::cout << "% s_f(" << u_ref << ", " << v_ref << ")=" << s.f(u_ref, v_ref)
-                  << "\ts_f(" << u << ", " << v << ")=" << s.f(u, v) << "\tpt=" << pt << std::endl;
-        std::cout << "% dist=" << dist << "\tdist_ref=" << dist_ref
-                  << "\t(u, v)=(" << u << ", " << v << ")"
-                  << "\t(u_ref, v_ref)=(" << u_ref << ", " << v_ref << ")" << std::endl;
-        std::vector<point_type> vec(2);
-        vec[0]=pt;
-        vec[1]=s.f(u_ref, v_ref);
-//         octave_print(1, vec, s);
-      }
-      point_type3 cntrl_in[13];
+      const index_type n(12), m(3);
+      surface_type s(n, m);
+      point_type cp[n+1], offset[m+1], pt_out;
+      point_type pt, norm, u_contra, v_contra;
+      data_type  z[m+1], dist, u, v, dist_ref, u_ref, v_ref;
+      index_type i, j;
 
       // set control points
-      cntrl_in[0]  <<   1, 0,   0;
-      cntrl_in[1]  <<   1, 0.5,-0.5;
-      cntrl_in[2]  << 0.5, 1,  -0.5;
-      cntrl_in[3]  <<   0, 1,   0;
-      cntrl_in[4]  <<-0.5, 1,   0;
-      cntrl_in[5]  <<  -1, 0.5, 0.5;
-      cntrl_in[6]  <<  -1, 0,   0.5;
-      cntrl_in[7]  <<  -1,-0.5, 0;
-      cntrl_in[8]  <<-0.5,-1,  -0.5;
-      cntrl_in[9]  <<   0,-1,   0;
-      cntrl_in[10] << 0.5,-1,   0.5;
-      cntrl_in[11] <<   1,-0.5, 0.5;
-      cntrl_in[12] <<   1,0,    0;
+      cp[0]  <<   1, 0,   0;
+      cp[1]  <<   1, 0.5, 0;
+      cp[2]  << 0.5, 1,   0;
+      cp[3]  <<   0, 1,   0;
+      cp[4]  <<-0.5, 1,   0;
+      cp[5]  <<  -1, 0.5, 0;
+      cp[6]  <<  -1, 0,   0;
+      cp[7]  <<  -1,-0.5, 0;
+      cp[8]  <<-0.5,-1,   0;
+      cp[9]  <<   0,-1,   0;
+      cp[10] << 0.5,-1,   0;
+      cp[11] <<   1,-0.5, 0;
+      cp[12] <<   1,0,    0;
+      z[0]=-0.5;
+      z[1]=0;
+      z[2]=0.5;
+      z[3]=1;
+      offset[0] << 0, 0, 0;
+      offset[1] << 0.5, 0, 0;
+      offset[2] << -0.5, 0.5, 0;
+      offset[3] << 0, 0, 0;
 
-      curve_type3 c(12);
-      point_type3 pt, norm, fp;
-      data_type  dist, t, dist_ref, t_ref;
-
-      // set control points
-      for (index_type3 i=0; i<13; ++i)
+      // create surface with specified dimensions and set control points
+      for (j=0; j<=m; ++j)
       {
-        c.set_control_point(cntrl_in[i], i);
+        for (i=0; i<=n; ++i)
+        {
+          cp[i].z() = z[j];
+          s.set_control_point(cp[i]+offset[j], i, j);
+        }
       }
+      TEST_ASSERT(s.closed_u());
+      TEST_ASSERT(s.open_v());
 
-      // test point on curve
+      // test point on surface
       dist_ref=0;
-      t_ref=0.25;
-      fp=c.fp(t_ref);
-      norm << fp.z(), -fp.z(), -fp.x()+fp.y();
-      norm.normalize();
-      pt=c.f(t_ref)+dist_ref*norm;
-      dist=eli::geom::intersect::minimum_distance(t, c, pt);
-      TEST_ASSERT(tol.approximately_equal(t, t_ref));
+      u_ref=0.35;
+      v_ref=0.35;
+      norm=s.normal(u_ref, v_ref);
+      pt=s.f(u_ref, v_ref)+dist_ref*norm;
+      dist=eli::geom::intersect::minimum_distance(u, v, s, pt);
+      TEST_ASSERT(tol.approximately_equal(u, u_ref));
+      TEST_ASSERT(tol.approximately_equal(v, v_ref));
       TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
 
-      // test point near curve
+      // test point very near surface
+      dist_ref=0.01;
+      u_ref=0.35;
+      v_ref=0.35;
+      norm=-s.normal(u_ref, v_ref);
+      pt=s.f(u_ref, v_ref)+dist_ref*norm;
+      dist=eli::geom::intersect::minimum_distance(u, v, s, pt);
+      TEST_ASSERT(tol.approximately_equal(u, u_ref));
+      TEST_ASSERT(tol.approximately_equal(v, v_ref));
+      TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
+
+      // test point near surface
       dist_ref=0.1;
-      t_ref=0.25;
-      fp=c.fp(t_ref);
-      norm << fp.z(), -fp.z(), -fp.x()+fp.y();
-      norm.normalize();
-      pt=c.f(t_ref)+dist_ref*norm;
-      dist=eli::geom::intersect::minimum_distance(t, c, pt);
-      TEST_ASSERT(tol.approximately_equal(t, t_ref));
+      u_ref=0.35;
+      v_ref=0.35;
+      norm=-s.normal(u_ref, v_ref);
+      pt=s.f(u_ref, v_ref)+dist_ref*norm;
+      dist=eli::geom::intersect::minimum_distance(u, v, s, pt);
+      TEST_ASSERT(tol.approximately_equal(u, u_ref));
+      TEST_ASSERT(tol.approximately_equal(v, v_ref));
       TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
 
-      // test point near center
-      dist_ref=0.77;
-      t_ref=0.25;
-      fp=c.fp(t_ref);
-      norm << fp.z(), -fp.z(), -fp.x()+fp.y();
-      norm.normalize();
-      pt=c.f(t_ref)+dist_ref*norm;
-      dist=eli::geom::intersect::minimum_distance(t, c, pt);
-      TEST_ASSERT(tol.approximately_equal(t, t_ref));
+      // test point near center surface
+      dist_ref=0.72;
+      u_ref=0.35;
+      v_ref=0.35;
+      norm=-s.normal(u_ref, v_ref);
+      pt=s.f(u_ref, v_ref)+dist_ref*norm;
+      dist=eli::geom::intersect::minimum_distance(u, v, s, pt);
+      TEST_ASSERT(tol.approximately_equal(u, u_ref));
+      TEST_ASSERT(tol.approximately_equal(v, v_ref));
       TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
 
-      // test point near and outside curve
+      // test point near and outside surface
       dist_ref=0.1;
-      t_ref=0.7;
-      fp=c.fp(t_ref);
-      norm << fp.z(), -fp.z(), -fp.x()+fp.y();
-      norm.normalize();
-      pt=c.f(t_ref)+dist_ref*norm;
-      dist=eli::geom::intersect::minimum_distance(t, c, pt);
-      TEST_ASSERT(tol.approximately_equal(t, t_ref));
+      u_ref=0.35;
+      v_ref=0.35;
+      norm=s.normal(u_ref, v_ref);
+      pt=s.f(u_ref, v_ref)+dist_ref*norm;
+      dist=eli::geom::intersect::minimum_distance(u, v, s, pt);
+      TEST_ASSERT(tol.approximately_equal(u, u_ref));
+      TEST_ASSERT(tol.approximately_equal(v, v_ref));
       TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
 
-      // test point far and outside curve
+      // test point far and outside surface
       dist_ref=3;
-      t_ref=0.7;
-      fp=c.fp(t_ref);
-      norm << fp.z(), -fp.z(), -fp.x()+fp.y();
-      norm.normalize();
-      pt=c.f(t_ref)+dist_ref*norm;
-      dist=eli::geom::intersect::minimum_distance(t, c, pt);
-      TEST_ASSERT(tol.approximately_equal(t, t_ref));
+      u_ref=0.25;
+      v_ref=0.7;
+      norm=s.normal(u_ref, v_ref);
+      pt=s.f(u_ref, v_ref)+dist_ref*norm;
+      dist=eli::geom::intersect::minimum_distance(u, v, s, pt);
+      TEST_ASSERT(tol.approximately_equal(u, u_ref));
+      TEST_ASSERT(tol.approximately_equal(v, v_ref));
       TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
 
-      // test point near end of curve
+      // test point near end of surface
       dist_ref=0.1;
-      t_ref=0.999;
-      fp=c.fp(t_ref);
-      norm << fp.z(), -fp.z(), -fp.x()+fp.y();
-      norm.normalize();
-      pt=c.f(t_ref)+dist_ref*norm;
-      dist=eli::geom::intersect::minimum_distance(t, c, pt);
-      TEST_ASSERT(tol.approximately_equal(t, t_ref));
+      u_ref=0.25;
+      v_ref=0.999;
+      norm=-s.normal(u_ref, v_ref);
+      pt=s.f(u_ref, v_ref)+dist_ref*norm;
+      dist=eli::geom::intersect::minimum_distance(u, v, s, pt);
+      TEST_ASSERT(tol.approximately_equal(u, u_ref));
+      TEST_ASSERT(tol.approximately_equal(v, v_ref));
       TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
 
-      // test point near end of and outside curve
+      // test point near end and outside of surface
       dist_ref=0.1;
-      t_ref=0.999;
-      fp=c.fp(t_ref);
-      norm << -fp.z(), fp.z(), fp.x()-fp.y();
-      norm.normalize();
-      pt=c.f(t_ref)+dist_ref*norm;
-      dist=eli::geom::intersect::minimum_distance(t, c, pt);
-      TEST_ASSERT(tol.approximately_equal(t, t_ref));
+      u_ref=0.25;
+      v_ref=0.999;
+      norm=s.normal(u_ref, v_ref);
+      pt=s.f(u_ref, v_ref)+dist_ref*norm;
+      dist=eli::geom::intersect::minimum_distance(u, v, s, pt);
+      TEST_ASSERT(tol.approximately_equal(u, u_ref));
+      TEST_ASSERT(tol.approximately_equal(v, v_ref));
       TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
 
-      // test point near start of curve
+      // test point near end of surface
       dist_ref=0.1;
-      t_ref=0.001;
-      fp=c.fp(t_ref);
-      norm << fp.z(), -fp.z(), -fp.x()+fp.y();
-      norm.normalize();
-      pt=c.f(t_ref)+dist_ref*norm;
-      dist=eli::geom::intersect::minimum_distance(t, c, pt);
-      TEST_ASSERT(tol.approximately_equal(t, t_ref));
+      u_ref=0.25;
+      v_ref=0.001;
+      norm=-s.normal(u_ref, v_ref);
+      pt=s.f(u_ref, v_ref)+dist_ref*norm;
+      dist=eli::geom::intersect::minimum_distance(u, v, s, pt);
+      TEST_ASSERT(tol.approximately_equal(u, u_ref));
+      TEST_ASSERT(tol.approximately_equal(v, v_ref));
       TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
 
-      // test point near start of and outside curve
+      // test point near end and outside of surface
       dist_ref=0.1;
-      t_ref=0.001;
-      fp=c.fp(t_ref);
-      norm << -fp.z(), fp.z(), fp.x()-fp.y();
-      norm.normalize();
-      pt=c.f(t_ref)+dist_ref*norm;
-      dist=eli::geom::intersect::minimum_distance(t, c, pt);
-      TEST_ASSERT(tol.approximately_equal(t, t_ref));
+      u_ref=0.25;
+      v_ref=0.001;
+      norm=s.normal(u_ref, v_ref);
+      pt=s.f(u_ref, v_ref)+dist_ref*norm;
+      dist=eli::geom::intersect::minimum_distance(u, v, s, pt);
+      TEST_ASSERT(tol.approximately_equal(u, u_ref));
+      TEST_ASSERT(tol.approximately_equal(v, v_ref));
       TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
 
-      // test point near start of and far outside curve
-      dist_ref=3;
-      t_ref=0.001;
-      fp=c.fp(t_ref);
-      norm << -fp.z(), fp.z(), fp.x()-fp.y();
-      norm.normalize();
-      pt=c.f(t_ref)+dist_ref*norm;
-      dist=eli::geom::intersect::minimum_distance(t, c, pt);
-      TEST_ASSERT(tol.approximately_equal(t, t_ref));
+      // test point near closed portion of surface
+      dist_ref=0.1;
+      u_ref=0.001;
+      v_ref=0.3;
+      norm=-s.normal(u_ref, v_ref);
+      pt=s.f(u_ref, v_ref)+dist_ref*norm;
+      dist=eli::geom::intersect::minimum_distance(u, v, s, pt);
+      TEST_ASSERT(tol.approximately_equal(u, u_ref));
+      TEST_ASSERT(tol.approximately_equal(v, v_ref));
+      TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
+
+      // test point near closed portion and outside of surface
+      dist_ref=0.1;
+      u_ref=0.001;
+      v_ref=0.3;
+      norm=s.normal(u_ref, v_ref);
+      pt=s.f(u_ref, v_ref)+dist_ref*norm;
+      dist=eli::geom::intersect::minimum_distance(u, v, s, pt);
+      TEST_ASSERT(tol.approximately_equal(u, u_ref));
+      TEST_ASSERT(tol.approximately_equal(v, v_ref));
+      TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
+
+      // test point near closed portion of surface
+      dist_ref=0.1;
+      u_ref=0.999;
+      v_ref=0.3;
+      norm=-s.normal(u_ref, v_ref);
+      pt=s.f(u_ref, v_ref)+dist_ref*norm;
+      dist=eli::geom::intersect::minimum_distance(u, v, s, pt);
+      TEST_ASSERT(tol.approximately_equal(u, u_ref));
+      TEST_ASSERT(tol.approximately_equal(v, v_ref));
+      TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
+
+      // test point near closed portion and outside of surface
+      dist_ref=0.1;
+      u_ref=0.999;
+      v_ref=0.3;
+      norm=s.normal(u_ref, v_ref);
+      pt=s.f(u_ref, v_ref)+dist_ref*norm;
+      dist=eli::geom::intersect::minimum_distance(u, v, s, pt);
+      TEST_ASSERT(tol.approximately_equal(u, u_ref));
+      TEST_ASSERT(tol.approximately_equal(v, v_ref));
       TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
 //       if (typeid(data_type)==typeid(double))
 //       {
-//         std::cout << "c_f(t_ref)=" << c.f(t_ref) << "\tpt=" << pt << std::endl;
-//         std::cout << "dist=" << dist << "\tdist_ref=" << dist_ref << "\tt=" << t << "\tt_ref=" << t_ref << std::endl;
-//         std::cout << "dist to end=" << (cntrl_in[0]-pt).norm() << std::endl;
-//         std::vector<point_type3> vec(2);
+//         std::cout << "% s_f(" << u_ref << ", " << v_ref << ")=" << s.f(u_ref, v_ref)
+//                   << "\ts_f(" << u << ", " << v << ")=" << s.f(u, v) << "\tpt=" << pt << std::endl;
+//         std::cout << "% dist=" << dist << "\tdist_ref=" << dist_ref
+//                   << "\t(u, v)=(" << u << ", " << v << ")"
+//                   << "\t(u_ref, v_ref)=(" << u_ref << ", " << v_ref << ")" << std::endl;
+//         std::vector<point_type> vec(3);
 //         vec[0]=pt;
-//         vec[1]=c.f(t);
-//         octave_print(1, vec, c);
+//         vec[1]=s.f(u_ref, v_ref);
+//         vec[2]=s.f(u, v);
+//         octave_print(1, vec, s);
 //       }
-#endif
     }
 };
 
