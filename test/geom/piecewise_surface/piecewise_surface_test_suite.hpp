@@ -863,256 +863,204 @@ class piecewise_surface_test_suite : public Test::Suite
 
     void transformation_test()
     {
-#if 0
-      data_type eps(std::numeric_limits<data__>::epsilon());
-#ifdef ELI_QD_FOUND
-      if ( (typeid(data_type)==typeid(dd_real)) || (typeid(data_type)==typeid(qd_real)) )
-        eps=std::numeric_limits<double>::epsilon();
-#endif
+      piecewise_surface_type ps1, ps2;
+      data_type u, v;
+      typename piecewise_surface_type::error_code err;
 
-      // test two curves with delta t=1
+      // create 3x2 patches with unit spacing
+      ps1.resize(3, 2);
+
+      // create piecewise surface
       {
-        piecewise_surface_type pwc;
-        typename curve_type::control_point_type cntrl_in[4];
-        curve_type bc1, bc1l, bc1r;
-        point_type eval_out, eval_ref;
-        data_type t, tl, tr, ts;
-        tl = static_cast<data__>(0.3);
-        tr = static_cast<data__>(0.87);
-        ts = static_cast<data__>(0.586);
+        surface_type s, s1, s2, s3, s4, s5, s6;
+        index_type i, j, n(3), m(3);
+        point_type pt[3+1][3+1], pt_out;
 
-        // set control points
-        cntrl_in[0] << 0, 0, 0;
-        cntrl_in[1] << 0, 2, 0;
-        cntrl_in[2] << 8, 2, 0;
-        cntrl_in[3] << 4, 0, 0;
-        bc1.resize(3);
-        for (index_type i=0; i<4; ++i)
+        // create surface with specified control points
+        pt[0][0] << -15, 0,  15;
+        pt[1][0] <<  -5, 5,  15;
+        pt[2][0] <<   5, 5,  15;
+        pt[3][0] <<  15, 0,  15;
+        pt[0][1] << -15, 5,   5;
+        pt[1][1] <<  -5, 5,   5;
+        pt[2][1] <<   5, 5,   5;
+        pt[3][1] <<  15, 5,   5;
+        pt[0][2] << -15, 5,  -5;
+        pt[1][2] <<  -5, 5,  -5;
+        pt[2][2] <<   5, 5,  -5;
+        pt[3][2] <<  15, 5,  -5;
+        pt[0][3] << -15, 0, -15;
+        pt[1][3] <<  -5, 5, -15;
+        pt[2][3] <<   5, 5, -15;
+        pt[3][3] <<  15, 0, -15;
+        s.resize(n, m);
+        for (i=0; i<=n; ++i)
         {
-          bc1.set_control_point(cntrl_in[i], i);
+          for (j=0; j<=m; ++j)
+          {
+            s.set_control_point(pt[i][j], i, j);
+          }
         }
 
-        // split curve and create piecewise
-        bc1.split(bc1l, bc1r, ts);
-        pwc.push_back(bc1l);
-        pwc.push_back(bc1r);
-        TEST_ASSERT(pwc.number_segments()==2);
-
-        // check the left curve
-        t=tl*ts;
-        eval_out=pwc.f(tl);
-        eval_ref=bc1.f(t);
-        TEST_ASSERT((eval_out-eval_ref).norm()<1e2*eps);
-        eval_out=pwc.fp(tl);
-        eval_ref=bc1.fp(t)*ts;
-        TEST_ASSERT((eval_out-eval_ref).norm()<1e2*eps);
-        eval_out=pwc.fpp(tl);
-        eval_ref=bc1.fpp(t)*ts*ts;
-        TEST_ASSERT((eval_out-eval_ref).norm()<1e2*eps);
-        eval_out=pwc.fppp(tl);
-        eval_ref=bc1.fppp(t)*ts*ts*ts;
-        TEST_ASSERT((eval_out-eval_ref).norm()<1e2*eps);
-
-        // check the right curve
-        t=ts+tr*(1-ts);
-        eval_out=pwc.f(1+tr);
-        eval_ref=bc1.f(t);
-        TEST_ASSERT((eval_out-eval_ref).norm()<1e2*eps);
-        eval_out=pwc.fp(1+tr);
-        eval_ref=bc1.fp(t)*(1-ts);
-        TEST_ASSERT((eval_out-eval_ref).norm()<1e2*eps);
-        eval_out=pwc.fpp(1+tr);
-        eval_ref=bc1.fpp(t)*(1-ts)*(1-ts);
-        TEST_ASSERT((eval_out-eval_ref).norm()<1e2*eps);
-        eval_out=pwc.fppp(1+tr);
-        eval_ref=bc1.fppp(t)*(1-ts)*(1-ts)*(1-ts);
-        TEST_ASSERT((eval_out-eval_ref).norm()<1.21e2*eps);
+        // create and set each surface
+        s.split_v(s1, s2, 0.5);  // this splits surface into lower and upper
+        s1.split_u(s3, s4, 0.5); // this splits lower into first segment and last two
+        err=ps1.replace(s3, 0, 0);
+        TEST_ASSERT(err==piecewise_surface_type::NO_ERROR);
+        s2.split_u(s5, s6, 0.5); // this splits upper into first segment and last two
+        err=ps1.replace(s5, 0, 1);
+        TEST_ASSERT(err==piecewise_surface_type::NO_ERROR);
+        s4.split_u(s1, s2, 0.5); // this splits lower end into final two pieces
+        err=ps1.replace(s1, 1, 0);
+        TEST_ASSERT(err==piecewise_surface_type::NO_ERROR);
+        err=ps1.replace(s2, 2, 0);
+        TEST_ASSERT(err==piecewise_surface_type::NO_ERROR);
+        s6.split_u(s1, s2, 0.5); // this splits the upper end into final two pieces
+        err=ps1.replace(s1, 1, 1);
+        TEST_ASSERT(err==piecewise_surface_type::NO_ERROR);
+        err=ps1.replace(s2, 2, 1);
+        TEST_ASSERT(err==piecewise_surface_type::NO_ERROR);
       }
 
-      // test two curves with delta t!=1
+      // test translation
       {
-        piecewise_surface_type pwc;
-        typename curve_type::control_point_type cntrl_in[4];
-        curve_type bc1, bc1l, bc1r;
-        point_type eval_out, eval_ref;
-        data_type tl, tr, ts;
-        tl = static_cast<data__>(0.3);
-        tr = static_cast<data__>(0.87);
-        ts = static_cast<data__>(0.586);
+        point_type trans;
 
-        // set control points
-        cntrl_in[0] << 0, 0, 0;
-        cntrl_in[1] << 0, 2, 0;
-        cntrl_in[2] << 8, 2, 0;
-        cntrl_in[3] << 4, 0, 0;
-        bc1.resize(3);
-        for (index_type i=0; i<4; ++i)
-        {
-          bc1.set_control_point(cntrl_in[i], i);
-        }
-
-        // split curve and create piecewise
-        bc1.split(bc1l, bc1r, ts);
-        pwc.push_back(bc1l, ts);
-        pwc.push_back(bc1r, 1-ts);
-        TEST_ASSERT(pwc.number_segments()==2);
-
-        // check the left curve
-        eval_out=pwc.f(tl);
-        eval_ref=bc1.f(tl);
-        TEST_ASSERT((eval_out-eval_ref).norm()<1e2*eps);
-        eval_out=pwc.fp(tl);
-        eval_ref=bc1.fp(tl);
-        TEST_ASSERT((eval_out-eval_ref).norm()<1e2*eps);
-        eval_out=pwc.fpp(tl);
-        eval_ref=bc1.fpp(tl);
-        TEST_ASSERT((eval_out-eval_ref).norm()<1e2*eps);
-        eval_out=pwc.fppp(tl);
-        eval_ref=bc1.fppp(tl);
-        TEST_ASSERT((eval_out-eval_ref).norm()<1e2*eps);
-
-        // check the right curve
-        eval_out=pwc.f(tr);
-        eval_ref=bc1.f(tr);
-        TEST_ASSERT((eval_out-eval_ref).norm()<1e2*eps);
-        eval_out=pwc.fp(tr);
-        eval_ref=bc1.fp(tr);
-        TEST_ASSERT((eval_out-eval_ref).norm()<1e2*eps);
-        eval_out=pwc.fpp(tr);
-        eval_ref=bc1.fpp(tr);
-        TEST_ASSERT((eval_out-eval_ref).norm()<2.6e2*eps);
-        eval_out=pwc.fppp(tr);
-        eval_ref=bc1.fppp(tr);
-        TEST_ASSERT((eval_out-eval_ref).norm()<1.8e3*eps);
+        // set up translation vector and apply
+        u=1.5;
+        v=0.75;
+        ps2=ps1;
+        trans << 2, 1, 3;
+        ps2.translate(trans);
+        TEST_ASSERT(tol.approximately_equal(ps2.f(u, v), ps1.f(u, v)+trans));
       }
-#endif
+
+      // test rotation about origin
+      {
+        typename piecewise_surface_type::rotation_matrix_type rmat;
+
+        // set up rotation and apply
+        ps2=ps1;
+        rmat << cos(1), 0, -sin(1),
+                     0, 1,       0,
+                sin(1), 0,  cos(1);
+        ps2.rotate(rmat);
+        TEST_ASSERT(tol.approximately_equal(ps2.f(u, v), ps1.f(u, v)*rmat.transpose()));
+      }
+
+      // test rotation about point
+      {
+        typename piecewise_surface_type::rotation_matrix_type rmat;
+        point_type rorig;
+
+        // set up rotation and apply
+        ps2=ps1;
+        rorig << 2, 1, 3;
+        rmat << cos(1), 0, -sin(1),
+                     0, 1,       0,
+                sin(1), 0,  cos(1);
+        ps2.rotate(rmat, rorig);
+        TEST_ASSERT(tol.approximately_equal(ps2.f(u, v), rorig+(ps1.f(u, v)-rorig)*rmat.transpose()));
+      }
     }
 
     void evaluation_test()
     {
-#if 0
-      data_type eps(std::numeric_limits<data__>::epsilon());
-#ifdef ELI_QD_FOUND
-      if ( (typeid(data_type)==typeid(dd_real)) || (typeid(data_type)==typeid(qd_real)) )
-        eps=std::numeric_limits<double>::epsilon();
-#endif
+      surface_type s_patches[6];
+      piecewise_surface_type ps1;
+      data_type u, v, up, vp;
+      typename piecewise_surface_type::error_code err;
 
-      // test two curves with delta t=1
+      // create 3x2 patches with unit spacing
+      ps1.resize(3, 2);
+
+      // create piecewise surface
       {
-        piecewise_surface_type pwc;
-        typename curve_type::control_point_type cntrl_in[4];
-        curve_type bc1, bc1l, bc1r;
-        point_type eval_out, eval_ref;
-        data_type t, tl, tr, ts;
-        tl = static_cast<data__>(0.3);
-        tr = static_cast<data__>(0.87);
-        ts = static_cast<data__>(0.586);
+        surface_type s, s1, s2, s3, s4, s5, s6;
+        index_type i, j, n(3), m(3);
+        point_type pt[3+1][3+1], pt_out;
 
-        // set control points
-        cntrl_in[0] << 0, 0, 0;
-        cntrl_in[1] << 0, 2, 0;
-        cntrl_in[2] << 8, 2, 0;
-        cntrl_in[3] << 4, 0, 0;
-        bc1.resize(3);
-        for (index_type i=0; i<4; ++i)
+        // create surface with specified control points
+        pt[0][0] << -15, 0,  15;
+        pt[1][0] <<  -5, 5,  15;
+        pt[2][0] <<   5, 5,  15;
+        pt[3][0] <<  15, 0,  15;
+        pt[0][1] << -15, 5,   5;
+        pt[1][1] <<  -5, 5,   5;
+        pt[2][1] <<   5, 5,   5;
+        pt[3][1] <<  15, 5,   5;
+        pt[0][2] << -15, 5,  -5;
+        pt[1][2] <<  -5, 5,  -5;
+        pt[2][2] <<   5, 5,  -5;
+        pt[3][2] <<  15, 5,  -5;
+        pt[0][3] << -15, 0, -15;
+        pt[1][3] <<  -5, 5, -15;
+        pt[2][3] <<   5, 5, -15;
+        pt[3][3] <<  15, 0, -15;
+        s.resize(n, m);
+        for (i=0; i<=n; ++i)
         {
-          bc1.set_control_point(cntrl_in[i], i);
+          for (j=0; j<=m; ++j)
+          {
+            s.set_control_point(pt[i][j], i, j);
+          }
         }
 
-        // split curve and create piecewise
-        bc1.split(bc1l, bc1r, ts);
-        pwc.push_back(bc1l);
-        pwc.push_back(bc1r);
-        TEST_ASSERT(pwc.number_segments()==2);
-
-        // check the left curve
-        t=tl*ts;
-        eval_out=pwc.f(tl);
-        eval_ref=bc1.f(t);
-        TEST_ASSERT((eval_out-eval_ref).norm()<1e2*eps);
-        eval_out=pwc.fp(tl);
-        eval_ref=bc1.fp(t)*ts;
-        TEST_ASSERT((eval_out-eval_ref).norm()<1e2*eps);
-        eval_out=pwc.fpp(tl);
-        eval_ref=bc1.fpp(t)*ts*ts;
-        TEST_ASSERT((eval_out-eval_ref).norm()<1e2*eps);
-        eval_out=pwc.fppp(tl);
-        eval_ref=bc1.fppp(t)*ts*ts*ts;
-        TEST_ASSERT((eval_out-eval_ref).norm()<1e2*eps);
-
-        // check the right curve
-        t=ts+tr*(1-ts);
-        eval_out=pwc.f(1+tr);
-        eval_ref=bc1.f(t);
-        TEST_ASSERT((eval_out-eval_ref).norm()<1e2*eps);
-        eval_out=pwc.fp(1+tr);
-        eval_ref=bc1.fp(t)*(1-ts);
-        TEST_ASSERT((eval_out-eval_ref).norm()<1e2*eps);
-        eval_out=pwc.fpp(1+tr);
-        eval_ref=bc1.fpp(t)*(1-ts)*(1-ts);
-        TEST_ASSERT((eval_out-eval_ref).norm()<1e2*eps);
-        eval_out=pwc.fppp(1+tr);
-        eval_ref=bc1.fppp(t)*(1-ts)*(1-ts)*(1-ts);
-        TEST_ASSERT((eval_out-eval_ref).norm()<1.21e2*eps);
+        // create and set each surface
+        s.split_v(s1, s2, 0.5);  // this splits surface into lower and upper
+        s1.split_u(s3, s4, 0.5); // this splits lower into first segment and last two
+        err=ps1.replace(s3, 0, 0); s_patches[0]=s3;
+        TEST_ASSERT(err==piecewise_surface_type::NO_ERROR);
+        s2.split_u(s5, s6, 0.5); // this splits upper into first segment and last two
+        err=ps1.replace(s5, 0, 1); s_patches[3]=s5;
+        TEST_ASSERT(err==piecewise_surface_type::NO_ERROR);
+        s4.split_u(s1, s2, 0.5); // this splits lower end into final two pieces
+        err=ps1.replace(s1, 1, 0); s_patches[1]=s1;
+        TEST_ASSERT(err==piecewise_surface_type::NO_ERROR);
+        err=ps1.replace(s2, 2, 0); s_patches[2]=s2;
+        TEST_ASSERT(err==piecewise_surface_type::NO_ERROR);
+        s6.split_u(s1, s2, 0.5); // this splits the upper end into final two pieces
+        err=ps1.replace(s1, 1, 1); s_patches[4]=s1;
+        TEST_ASSERT(err==piecewise_surface_type::NO_ERROR);
+        err=ps1.replace(s2, 2, 1); s_patches[5]=s2;
+        TEST_ASSERT(err==piecewise_surface_type::NO_ERROR);
       }
 
-      // test two curves with delta t!=1
-      {
-        piecewise_surface_type pwc;
-        typename curve_type::control_point_type cntrl_in[4];
-        curve_type bc1, bc1l, bc1r;
-        point_type eval_out, eval_ref;
-        data_type tl, tr, ts;
-        tl = static_cast<data__>(0.3);
-        tr = static_cast<data__>(0.87);
-        ts = static_cast<data__>(0.586);
+      // test evaluation on first patch
+      u=0.25;
+      v=0.75;
+      up=u;
+      vp=v;
+      TEST_ASSERT(tol.approximately_equal(ps1.f(u, v), s_patches[0].f(up, vp)));
+      TEST_ASSERT(tol.approximately_equal(ps1.f_u(u, v), s_patches[0].f_u(up, vp)));
+      TEST_ASSERT(tol.approximately_equal(ps1.f_v(u, v), s_patches[0].f_v(up, vp)));
+      TEST_ASSERT(tol.approximately_equal(ps1.f_uu(u, v), s_patches[0].f_uu(up, vp)));
+      TEST_ASSERT(tol.approximately_equal(ps1.f_uv(u, v), s_patches[0].f_uv(up, vp)));
+      TEST_ASSERT(tol.approximately_equal(ps1.f_vv(u, v), s_patches[0].f_vv(up, vp)));
 
-        // set control points
-        cntrl_in[0] << 0, 0, 0;
-        cntrl_in[1] << 0, 2, 0;
-        cntrl_in[2] << 8, 2, 0;
-        cntrl_in[3] << 4, 0, 0;
-        bc1.resize(3);
-        for (index_type i=0; i<4; ++i)
-        {
-          bc1.set_control_point(cntrl_in[i], i);
-        }
+      // test evaluation on a lower patch
+      u=2.25;
+      v=0.75;
+      up=u-2;
+      vp=v;
+      TEST_ASSERT(tol.approximately_equal(ps1.f(u, v), s_patches[2].f(up, vp)));
+      TEST_ASSERT(tol.approximately_equal(ps1.f_u(u, v), s_patches[2].f_u(up, vp)));
+      TEST_ASSERT(tol.approximately_equal(ps1.f_v(u, v), s_patches[2].f_v(up, vp)));
+      TEST_ASSERT(tol.approximately_equal(ps1.f_uu(u, v), s_patches[2].f_uu(up, vp)));
+      TEST_ASSERT(tol.approximately_equal(ps1.f_uv(u, v), s_patches[2].f_uv(up, vp)));
+      TEST_ASSERT(tol.approximately_equal(ps1.f_vv(u, v), s_patches[2].f_vv(up, vp)));
 
-        // split curve and create piecewise
-        bc1.split(bc1l, bc1r, ts);
-        pwc.push_back(bc1l, ts);
-        pwc.push_back(bc1r, 1-ts);
-        TEST_ASSERT(pwc.number_segments()==2);
-
-        // check the left curve
-        eval_out=pwc.f(tl);
-        eval_ref=bc1.f(tl);
-        TEST_ASSERT((eval_out-eval_ref).norm()<1e2*eps);
-        eval_out=pwc.fp(tl);
-        eval_ref=bc1.fp(tl);
-        TEST_ASSERT((eval_out-eval_ref).norm()<1e2*eps);
-        eval_out=pwc.fpp(tl);
-        eval_ref=bc1.fpp(tl);
-        TEST_ASSERT((eval_out-eval_ref).norm()<1e2*eps);
-        eval_out=pwc.fppp(tl);
-        eval_ref=bc1.fppp(tl);
-        TEST_ASSERT((eval_out-eval_ref).norm()<1e2*eps);
-
-        // check the right curve
-        eval_out=pwc.f(tr);
-        eval_ref=bc1.f(tr);
-        TEST_ASSERT((eval_out-eval_ref).norm()<1e2*eps);
-        eval_out=pwc.fp(tr);
-        eval_ref=bc1.fp(tr);
-        TEST_ASSERT((eval_out-eval_ref).norm()<1e2*eps);
-        eval_out=pwc.fpp(tr);
-        eval_ref=bc1.fpp(tr);
-        TEST_ASSERT((eval_out-eval_ref).norm()<2.6e2*eps);
-        eval_out=pwc.fppp(tr);
-        eval_ref=bc1.fppp(tr);
-        TEST_ASSERT((eval_out-eval_ref).norm()<1.8e3*eps);
-      }
-#endif
+      // test evaluation on an upper patch
+      u=2.25;
+      v=1.75;
+      up=u-2;
+      vp=v-1;
+      TEST_ASSERT(tol.approximately_equal(ps1.f(u, v), s_patches[5].f(up, vp)));
+      TEST_ASSERT(tol.approximately_equal(ps1.f_u(u, v), s_patches[5].f_u(up, vp)));
+      TEST_ASSERT(tol.approximately_equal(ps1.f_v(u, v), s_patches[5].f_v(up, vp)));
+      TEST_ASSERT(tol.approximately_equal(ps1.f_uu(u, v), s_patches[5].f_uu(up, vp)));
+      TEST_ASSERT(tol.approximately_equal(ps1.f_uv(u, v), s_patches[5].f_uv(up, vp)));
+      TEST_ASSERT(tol.approximately_equal(ps1.f_vv(u, v), s_patches[5].f_vv(up, vp)));
     }
 
     void split_test()
