@@ -282,12 +282,11 @@ class piecewise_surface_creator_test_suite : public Test::Suite
 
         TEST_ASSERT(eli::geom::surface::create_body_of_revolution(ps, pc, 0));
 
-        if (typeid(data_type)==typeid(double))
-          octave_print(2, ps);
-      }
+//         if (typeid(data_type)==typeid(double))
+//           octave_print(2, ps);
 
-      // create geometry with customized parameterizations
-      {
+        TEST_ASSERT(ps.open_u());
+        TEST_ASSERT(ps.closed_v());
       }
     }
 };

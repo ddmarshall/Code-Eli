@@ -18,6 +18,7 @@
 #include "eli/util/tolerance.hpp"
 
 #include "eli/geom/general/continuity.hpp"
+#include "eli/geom/curve/equivalent_curves.hpp"
 
 namespace eli
 {
@@ -133,17 +134,60 @@ namespace eli
             nv=nv_in;
           }
 
-          bool open() const
+          bool open_u() const
           {
-#if 0
-            return check_continuity(patches.rbegin()->s, patches.begin()->s, eli::geom::general::C0);
-#else
-            return false;
-#endif
+            return !closed_u();
           }
-          bool closed() const
+          bool closed_u() const
           {
-            return !open();
+            index_type i, j;
+            typename surface_type::boundary_curve_type bc0, bc1;
+
+            typename patch_collection_type::const_iterator pcis, pcie;
+
+            // set the umin and umax surface iterators
+            pcis=patches.begin();
+            for (i=0, pcie=patches.begin(); i<number_u_patches()-1; ++i, ++pcie) {}
+
+            // test each patch
+            for (j=0; j<number_v_patches(); ++j, pcis+=number_u_patches(), pcie+=number_u_patches())
+            {
+              pcis->s.get_uconst_curve(bc0, 0);
+              pcie->s.get_uconst_curve(bc1, 1);
+              if (!eli::geom::curve::equivalent_curves(bc0, bc1))
+                return false;
+            }
+
+            return true;
+          }
+
+          bool open_v() const
+          {
+            return !closed_v();
+          }
+          bool closed_v() const
+          {
+            index_type i, j;
+            typename surface_type::boundary_curve_type bc0, bc1;
+
+            typename patch_collection_type::const_iterator pcis, pcie;
+
+            // set the vmin and vmax surface iterators
+            pcis=patches.begin();
+            for (j=0, pcie=patches.begin(); j<number_v_patches()-1; ++j, pcie+=number_u_patches()) {}
+
+            // test each patch
+            for (i=0; i<number_u_patches(); ++i, ++pcis, ++pcie)
+            {
+              pcis->s.get_vconst_curve(bc0, 0);
+              pcie->s.get_vconst_curve(bc1, 1);
+              if (!eli::geom::curve::equivalent_curves(bc0, bc1))
+              {
+                return false;
+              }
+            }
+
+            return true;
           }
 
           void get_bounding_box(bounding_box_type &bb) const

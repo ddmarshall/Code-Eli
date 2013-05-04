@@ -23,52 +23,9 @@
 
 #include "eli/geom/utility/bezier.hpp"
 #include "eli/geom/curve/bezier.hpp"
+#include "eli/geom/curve/equivalent_curves.hpp"
 #include "eli/geom/general/continuity.hpp"
 #include "eli/geom/general/bounding_box.hpp"
-
-namespace eli
-{
-  namespace geom
-  {
-    namespace curve
-    {
-      template<typename data__, unsigned short dim__, typename tol__>
-      bool equivalent_curves(const bezier<data__, dim__, tol__> &c0, const bezier<data__, dim__, tol__> &c1)
-      {
-        // if are same degree then compare control points
-        if (c0.degree()==c1.degree())
-        {
-          return c0.approximately_equal(c1);
-        }
-        // else need to degree promote lower degree curve
-        else if (c0.degree()<c1.degree())
-        {
-          bezier<data__, dim__, tol__> c0e(c0);
-          while(c0e.degree()<c1.degree())
-          {
-            c0e.degree_promote();
-          }
-
-          return c0e.approximately_equal(c1);
-        }
-        else
-        {
-          assert(c0.degree()>c1.degree());
-
-          bezier<data__, dim__, tol__> c1e(c1);
-          while(c1e.degree()<c0.degree())
-          {
-            c1e.degree_promote();
-          }
-
-          return c1e.approximately_equal(c0);
-        }
-
-        return false;
-      }
-    }
-  }
-}
 
 namespace eli
 {
