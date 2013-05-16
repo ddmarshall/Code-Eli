@@ -384,44 +384,93 @@ namespace eli
             return NO_ERROR;
           }
 
-#if 0
-          error_code split_u(const data_type &u0)
+          error_code split_u(const data_type &u_in)
           {
-// This needs to split the entire column of surfaces that correspond to the u0 location
-#if 0
             // find patch that corresponds to given t
             typename patch_collection_type::iterator it;
-            data_type uu(0), vv(0), u, v;
-            find_patch(it, uu, vv, u, v);
+            data_type uu(0), vv(0);
+            find_patch(it, uu, vv, u_in, v0);
 
             if (it==patches.end())
               return INVALID_PARAM;
 
-            // split the patch and replace
-            surface_type cl, cr;
-            patch_info stl, str;
-            it->s.split(cl, cr, tt);
-            stl.c=cl;
-            stl.delta_t=it->delta_t*tt;
-            str.c=cr;
-            str.delta_t=it->delta_t*(1-tt);
-            (*it)=str;
-            patches.insert(it, stl);
+            patch_collection_type old_patches(patches);
+            index_type i, j, isplit(std::distance(patches.begin(), it));
+            resize(nu+1, nv);
 
-            assert(check_continuity(eli::geom::general::C0));
+            // copy over the pre-split patches
+            for (i=0; i<isplit; ++i)
+            {
+              for (j=0; j<nv; ++j)
+              {
+                patches[j*nv+i]=old_patches[j*nv+i];
+              }
+            }
+
+            // split the patch and replace
+            i=isplit;
+            for (j=0; j<nv; ++j)
+            {
+              old_patches[j*nv+i].s.split_u(patches[j*nv+i].s, patches[j*nv+i+1].s, uu);
+              patches[j*nv+i].delta_u=old_patches[j*nv+i].delta_u*uu;
+              patches[j*nv+i+1].delta_u=old_patches[j*nv+i].delta_u*(1-uu);
+            }
+
+            // copy over the post-split patches
+            for (i=isplit+2; i<nu; ++i)
+            {
+              for (j=0; j<nv; ++j)
+              {
+                patches[j*nv+i]=old_patches[j*nv+i-1];
+              }
+            }
 
             return NO_ERROR;
-#else
-            return UNKNOWN_ERROR;
-#endif
           }
 
-          error_code split_v(const data_type &v0)
+          error_code split_v(const data_type &v_in)
           {
-// This needs to split the entire row of surfaces that correspond to the v0 location
-            return UNKNOWN_ERROR;
+            // find patch that corresponds to given t
+            typename patch_collection_type::iterator it;
+            data_type uu(0), vv(0);
+            find_patch(it, uu, vv, u0, v_in);
+
+            if (it==patches.end())
+              return INVALID_PARAM;
+
+            patch_collection_type old_patches(patches);
+            index_type i, j, jsplit(std::distance(patches.begin(), it)/nu);
+            resize(nu, nv+1);
+
+            // copy over the pre-split patches
+            for (j=0; j<jsplit; ++j)
+            {
+              for (i=0; i<nu; ++i)
+              {
+                patches[j*nv+i]=old_patches[j*nv+i];
+              }
+            }
+
+            // split the patch and replace
+            j=jsplit;
+            for (i=0; i<nu; ++i)
+            {
+              old_patches[j*nv+i].s.split_v(patches[j*nv+i].s, patches[(j+1)*nv+i].s, vv);
+              patches[j*nv+i].delta_u=old_patches[j*nv+i].delta_v*vv;
+              patches[(j+1)*nv+i].delta_u=old_patches[j*nv+i].delta_v*(1-vv);
+            }
+
+            // copy over the post-split patches
+            for (j=jsplit+2; j<nv; ++j)
+            {
+              for (i=0; i<nu; ++i)
+              {
+                patches[j*nv+i]=old_patches[(j-1)*nv+i];
+              }
+            }
+
+            return NO_ERROR;
           }
-#endif
 
           point_type f(const data_type &u, const data_type &v) const
           {

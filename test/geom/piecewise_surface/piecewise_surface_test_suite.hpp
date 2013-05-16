@@ -1249,8 +1249,6 @@ class piecewise_surface_test_suite : public Test::Suite
 
     void split_test()
     {
-#if 0
-
       piecewise_surface_type ps1, ps2;
       data_type u, v;
 
@@ -1310,148 +1308,62 @@ class piecewise_surface_test_suite : public Test::Suite
         TEST_ASSERT(err==piecewise_surface_type::NO_ERROR);
       }
 
-      data_type eps(std::numeric_limits<data__>::epsilon());
-#ifdef ELI_QD_FOUND
-      if ( (typeid(data_type)==typeid(dd_real)) || (typeid(data_type)==typeid(qd_real)) )
-        eps=std::numeric_limits<double>::epsilon();
-#endif
-        piecewise_surface_type pwc0, pwc1;
-        typename curve_type::control_point_type cntrl_in[4];
-        typename piecewise_surface_type::error_code err;
-        curve_type bc;
-        point_type eval_out, eval_ref;
-        data_type ts, t;
-        ts=static_cast<data__>(1.56);
+      // split u-direction
+      ps2=ps1;
+      ps2.split_u(1.5);
 
-        // build piecewise curve
-        cntrl_in[0] << 0, 0, 0;
-        cntrl_in[1] << 0, 2, 0;
-        cntrl_in[2] << 8, 2, 0;
-        cntrl_in[3] << 4, 0, 0;
-        bc.resize(3);
-        for (index_type i=0; i<4; ++i)
-        {
-          bc.set_control_point(cntrl_in[i], i);
-        }
-        err=pwc0.push_back(bc);
-        TEST_ASSERT(err==piecewise_surface_type::NO_ERROR);
-        cntrl_in[0] << 4,  0,   0;
-        cntrl_in[1] << 3, -0.5, 0;
-        cntrl_in[2] << 2, -1,   0;
-        cntrl_in[3] << 1, -1,   0;
-        bc.resize(3);
-        for (index_type i=0; i<4; ++i)
-        {
-          bc.set_control_point(cntrl_in[i], i);
-        }
-        err=pwc0.push_back(bc);
-        TEST_ASSERT(err==piecewise_surface_type::NO_ERROR);
-        TEST_ASSERT(pwc0.number_segments()==2);
+      // test evaluation before split
+      u=0.25;
+      v=1.5;
+      TEST_ASSERT(tol.approximately_equal(ps1.f(u, v), ps2.f(u, v)));
+      TEST_ASSERT(tol.approximately_equal(ps1.f_u(u, v), ps2.f_u(u, v)));
+      TEST_ASSERT(tol.approximately_equal(ps1.f_v(u, v), ps2.f_v(u, v)));
 
-        // split curve and create piecewise
-        pwc1=pwc0;
-        err=pwc0.split(ts);
-        TEST_ASSERT(err==piecewise_surface_type::NO_ERROR);
-        TEST_ASSERT(pwc0.number_segments()==pwc1.number_segments()+1);
+      // test evaluation before split
+      u=1.25;
+      v=1.75;
+      TEST_ASSERT(tol.approximately_equal(ps1.f(u, v), ps2.f(u, v)));
+      TEST_ASSERT(tol.approximately_equal(ps1.f_u(u, v), ps2.f_u(u, v)));
+      TEST_ASSERT(tol.approximately_equal(ps1.f_v(u, v), ps2.f_v(u, v)));
 
-        t=0;
-        eval_out=pwc0.f(t);
-        eval_ref=pwc1.f(t);
-        TEST_ASSERT(eval_out==eval_ref);
-        eval_out=pwc0.fp(t);
-        eval_ref=pwc1.fp(t);
-        TEST_ASSERT(eval_out==eval_ref);
-        eval_out=pwc0.fpp(t);
-        eval_ref=pwc1.fpp(t);
-        TEST_ASSERT(eval_out==eval_ref);
-        eval_out=pwc0.fppp(t);
-        eval_ref=pwc1.fppp(t);
-        TEST_ASSERT(eval_out==eval_ref);
+      // test evaluation after split
+      u=1.75;
+      v=0.75;
+      TEST_ASSERT(tol.approximately_equal(ps1.f(u, v), ps2.f(u, v)));
+      TEST_ASSERT(tol.approximately_equal(ps1.f_u(u, v), ps2.f_u(u, v)));
+      TEST_ASSERT(tol.approximately_equal(ps1.f_v(u, v), ps2.f_v(u, v)));
 
-        t=0.5;
-        eval_out=pwc0.f(t);
-        eval_ref=pwc1.f(t);
-        TEST_ASSERT(eval_out==eval_ref);
-        eval_out=pwc0.fp(t);
-        eval_ref=pwc1.fp(t);
-        TEST_ASSERT(eval_out==eval_ref);
-        eval_out=pwc0.fpp(t);
-        eval_ref=pwc1.fpp(t);
-        TEST_ASSERT(eval_out==eval_ref);
-        eval_out=pwc0.fppp(t);
-        eval_ref=pwc1.fppp(t);
-        TEST_ASSERT(eval_out==eval_ref);
+      // test evaluation after split
+      u=2.25;
+      v=0.25;
+      TEST_ASSERT(tol.approximately_equal(ps1.f(u, v), ps2.f(u, v)));
+      TEST_ASSERT(tol.approximately_equal(ps1.f_u(u, v), ps2.f_u(u, v)));
+      TEST_ASSERT(tol.approximately_equal(ps1.f_v(u, v), ps2.f_v(u, v)));
 
-        t=1;
-        eval_out=pwc0.f(t);
-        eval_ref=pwc1.f(t);
-        TEST_ASSERT(eval_out==eval_ref);
-        eval_out=pwc0.fp(t);
-        eval_ref=pwc1.fp(t);
-        TEST_ASSERT(eval_out==eval_ref);
-        eval_out=pwc0.fpp(t);
-        eval_ref=pwc1.fpp(t);
-        TEST_ASSERT(eval_out==eval_ref);
-        eval_out=pwc0.fppp(t);
-        eval_ref=pwc1.fppp(t);
-        TEST_ASSERT(eval_out==eval_ref);
+      // split v-direction
+      ps2=ps1;
+      ps2.split_v(1.5);
 
-        t=1.25;
-        eval_out=pwc0.f(t);
-        eval_ref=pwc1.f(t);
-        TEST_ASSERT((eval_out-eval_ref).norm()<3*eps);
-        eval_out=pwc0.fp(t);
-        eval_ref=pwc1.fp(t);
-        TEST_ASSERT((eval_out-eval_ref).norm()<3*eps);
-        eval_out=pwc0.fpp(t);
-        eval_ref=pwc1.fpp(t);
-        TEST_ASSERT((eval_out-eval_ref).norm()<18*eps);
-        eval_out=pwc0.fppp(t);
-        eval_ref=pwc1.fppp(t);
-        TEST_ASSERT((eval_out-eval_ref).norm()<138*eps);
+      // test evaluation before split
+      u=0.25;
+      v=0.5;
+      TEST_ASSERT(tol.approximately_equal(ps1.f(u, v), ps2.f(u, v)));
+      TEST_ASSERT(tol.approximately_equal(ps1.f_u(u, v), ps2.f_u(u, v)));
+      TEST_ASSERT(tol.approximately_equal(ps1.f_v(u, v), ps2.f_v(u, v)));
 
-        t=1.5;
-        eval_out=pwc0.f(t);
-        eval_ref=pwc1.f(t);
-        TEST_ASSERT((eval_out-eval_ref).norm()<3*eps);
-        eval_out=pwc0.fp(t);
-        eval_ref=pwc1.fp(t);
-        TEST_ASSERT((eval_out-eval_ref).norm()<7*eps);
-        eval_out=pwc0.fpp(t);
-        eval_ref=pwc1.fpp(t);
-        TEST_ASSERT((eval_out-eval_ref).norm()<35*eps);
-        eval_out=pwc0.fppp(t);
-        eval_ref=pwc1.fppp(t);
-        TEST_ASSERT((eval_out-eval_ref).norm()<138*eps);
+      // test evaluation before split
+      u=1.25;
+      v=0.75;
+      TEST_ASSERT(tol.approximately_equal(ps1.f(u, v), ps2.f(u, v)));
+      TEST_ASSERT(tol.approximately_equal(ps1.f_u(u, v), ps2.f_u(u, v)));
+      TEST_ASSERT(tol.approximately_equal(ps1.f_v(u, v), ps2.f_v(u, v)));
 
-        t=1.75;
-        eval_out=pwc0.f(t);
-        eval_ref=pwc1.f(t);
-        TEST_ASSERT((eval_out-eval_ref).norm()<2*eps);
-        eval_out=pwc0.fp(t);
-        eval_ref=pwc1.fp(t);
-        TEST_ASSERT((eval_out-eval_ref).norm()<3*eps);
-        eval_out=pwc0.fpp(t);
-        eval_ref=pwc1.fpp(t);
-        TEST_ASSERT((eval_out-eval_ref).norm()<28*eps);
-        eval_out=pwc0.fppp(t);
-        eval_ref=pwc1.fppp(t);
-        TEST_ASSERT((eval_out-eval_ref).norm()<142*eps);
-
-        t=2;
-        eval_out=pwc0.f(t);
-        eval_ref=pwc1.f(t);
-        TEST_ASSERT((eval_out-eval_ref).norm()<1*eps);
-        eval_out=pwc0.fp(t);
-        eval_ref=pwc1.fp(t);
-        TEST_ASSERT((eval_out-eval_ref).norm()<9*eps);
-        eval_out=pwc0.fpp(t);
-        eval_ref=pwc1.fpp(t);
-        TEST_ASSERT((eval_out-eval_ref).norm()<63*eps);
-        eval_out=pwc0.fppp(t);
-        eval_ref=pwc1.fppp(t);
-        TEST_ASSERT((eval_out-eval_ref).norm()<142*eps);
-#endif
+      // test evaluation after split
+      u=1.75;
+      v=1.75;
+      TEST_ASSERT(tol.approximately_equal(ps1.f(u, v), ps2.f(u, v)));
+      TEST_ASSERT(tol.approximately_equal(ps1.f_u(u, v), ps2.f_u(u, v)));
+      TEST_ASSERT(tol.approximately_equal(ps1.f_v(u, v), ps2.f_v(u, v)));
     }
 
     void area_test()
