@@ -120,7 +120,7 @@ namespace eli
           // set the surface patches
           for (qq=0; qq<4; ++qq)
           {
-            ps.replace(s[qq], pp, qq);
+            ps.set(s[qq], pp, qq);
           }
         }
 

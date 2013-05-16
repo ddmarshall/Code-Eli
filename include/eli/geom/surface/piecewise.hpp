@@ -327,6 +327,24 @@ namespace eli
             return NO_ERROR;
           }
 
+          error_code set(const surface_type &surf, const index_type &ui, const index_type &vi)
+          {
+            if ( (ui>=number_u_patches()) || (vi>=number_v_patches()) )
+              return INVALID_INDEX;
+
+            // advance to desired index
+            index_type i, j;
+            typename surface_type::boundary_curve_type bc0, bc1;
+            typename patch_collection_type::iterator pcit, pcito;
+            for (i=0, pcit=patches.begin(); i<ui; ++i, ++pcit) {}
+            for (j=0; j<vi; ++j, pcit+=nu) {}
+
+            // set the new surf
+            pcit->s=surf;
+
+            return NO_ERROR;
+          }
+
           error_code replace(const surface_type &surf, const index_type &ui, const index_type &vi)
           {
             if ( (ui>=number_u_patches()) || (vi>=number_v_patches()) )
@@ -334,16 +352,18 @@ namespace eli
 
             // advance to desired index
             index_type i, j;
+            typename surface_type::boundary_curve_type bc0, bc1;
             typename patch_collection_type::iterator pcit, pcito;
             for (i=0, pcit=patches.begin(); i<ui; ++i, ++pcit) {}
             for (j=0; j<vi; ++j, pcit+=nu) {}
 
-            // check the connectivity on adjacent nodes (if available)
             if (ui>0)
             {
               pcito=pcit;
               --pcito;
-              if (!check_u_continuity(pcito->s, surf, eli::geom::general::C0))
+              surf.get_uconst_curve(bc0, 0);
+              pcito->s.get_uconst_curve(bc1, 1);
+              if (!eli::geom::curve::equivalent_curves(bc0, bc1))
               {
                 return PATCH_NOT_CONNECTED;
               }
@@ -352,7 +372,9 @@ namespace eli
             {
               pcito=pcit;
               ++pcito;
-              if (!check_u_continuity(surf, pcito->s, eli::geom::general::C0))
+              surf.get_uconst_curve(bc0, 1);
+              pcito->s.get_uconst_curve(bc1, 0);
+              if (!eli::geom::curve::equivalent_curves(bc0, bc1))
               {
                 return PATCH_NOT_CONNECTED;
               }
@@ -361,7 +383,9 @@ namespace eli
             {
               pcito=pcit;
               pcito-=nu;
-              if (!check_v_continuity(pcito->s, surf, eli::geom::general::C0))
+              surf.get_vconst_curve(bc0, 0);
+              pcito->s.get_vconst_curve(bc1, 1);
+              if (!eli::geom::curve::equivalent_curves(bc0, bc1))
               {
                 return PATCH_NOT_CONNECTED;
               }
@@ -370,7 +394,9 @@ namespace eli
             {
               pcito=pcit;
               pcito+=nu;
-              if (!check_u_continuity(surf, pcito->s, eli::geom::general::C0))
+              surf.get_vconst_curve(bc0, 1);
+              pcito->s.get_vconst_curve(bc1, 0);
+              if (!eli::geom::curve::equivalent_curves(bc0, bc1))
               {
                 return PATCH_NOT_CONNECTED;
               }

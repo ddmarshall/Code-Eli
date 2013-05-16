@@ -329,20 +329,20 @@ class piecewise_surface_test_suite : public Test::Suite
 
       s.split_v(s1, s2, 0.5);  // this splits surface into lower and upper
       s1.split_u(s3, s4, 0.5); // this splits lower into first segment and last two
-      err=ps1.replace(s3, 0, 0); s_patches[0]=s3;
+      err=ps1.set(s3, 0, 0); s_patches[0]=s3;
       TEST_ASSERT(err==piecewise_surface_type::NO_ERROR);
       s2.split_u(s5, s6, 0.5); // this splits upper into first segment and last two
-      err=ps1.replace(s5, 0, 1); s_patches[3]=s5;
+      err=ps1.set(s5, 0, 1); s_patches[3]=s5;
       TEST_ASSERT(err==piecewise_surface_type::NO_ERROR);
       s4.split_u(s1, s2, 0.5); // this splits lower end into final two pieces
-      err=ps1.replace(s1, 1, 0); s_patches[1]=s1;
+      err=ps1.set(s1, 1, 0); s_patches[1]=s1;
       TEST_ASSERT(err==piecewise_surface_type::NO_ERROR);
-      err=ps1.replace(s2, 2, 0); s_patches[2]=s2;
+      err=ps1.set(s2, 2, 0); s_patches[2]=s2;
       TEST_ASSERT(err==piecewise_surface_type::NO_ERROR);
       s6.split_u(s1, s2, 0.5); // this splits the upper end into final two pieces
-      err=ps1.replace(s1, 1, 1); s_patches[4]=s1;
+      err=ps1.set(s1, 1, 1); s_patches[4]=s1;
       TEST_ASSERT(err==piecewise_surface_type::NO_ERROR);
-      err=ps1.replace(s2, 2, 1); s_patches[5]=s2;
+      err=ps1.set(s2, 2, 1); s_patches[5]=s2;
       TEST_ASSERT(err==piecewise_surface_type::NO_ERROR);
 
       // test getting parameter max
@@ -409,20 +409,20 @@ class piecewise_surface_test_suite : public Test::Suite
 
       s.split_v(s1, s2, 0.5);  // this splits surface into lower and upper
       s1.split_u(s3, s4, 0.5); // this splits lower into first segment and last two
-      err=ps1.replace(s3, 0, 0); s_patches[0]=s3;
+      err=ps1.set(s3, 0, 0); s_patches[0]=s3;
       TEST_ASSERT(err==piecewise_surface_type::NO_ERROR);
       s2.split_u(s5, s6, 0.5); // this splits upper into first segment and last two
-      err=ps1.replace(s5, 0, 1); s_patches[3]=s5;
+      err=ps1.set(s5, 0, 1); s_patches[3]=s5;
       TEST_ASSERT(err==piecewise_surface_type::NO_ERROR);
       s4.split_u(s1, s2, 0.5); // this splits lower end into final two pieces
-      err=ps1.replace(s1, 1, 0); s_patches[1]=s1;
+      err=ps1.set(s1, 1, 0); s_patches[1]=s1;
       TEST_ASSERT(err==piecewise_surface_type::NO_ERROR);
-      err=ps1.replace(s2, 2, 0); s_patches[2]=s2;
+      err=ps1.set(s2, 2, 0); s_patches[2]=s2;
       TEST_ASSERT(err==piecewise_surface_type::NO_ERROR);
       s6.split_u(s1, s2, 0.5); // this splits the upper end into final two pieces
-      err=ps1.replace(s1, 1, 1); s_patches[4]=s1;
+      err=ps1.set(s1, 1, 1); s_patches[4]=s1;
       TEST_ASSERT(err==piecewise_surface_type::NO_ERROR);
-      err=ps1.replace(s2, 2, 1); s_patches[5]=s2;
+      err=ps1.set(s2, 2, 1); s_patches[5]=s2;
       TEST_ASSERT(err==piecewise_surface_type::NO_ERROR);
 
       // test the bounding box
@@ -481,20 +481,20 @@ class piecewise_surface_test_suite : public Test::Suite
         // create and set each surface
         s.split_v(s1, s2, 0.5);  // this splits surface into lower and upper
         s1.split_u(s3, s4, 0.5); // this splits lower into first segment and last two
-        err=ps1.replace(s3, 0, 0);
+        err=ps1.set(s3, 0, 0);
         TEST_ASSERT(err==piecewise_surface_type::NO_ERROR);
         s2.split_u(s5, s6, 0.5); // this splits upper into first segment and last two
-        err=ps1.replace(s5, 0, 1);
+        err=ps1.set(s5, 0, 1);
         TEST_ASSERT(err==piecewise_surface_type::NO_ERROR);
         s4.split_u(s1, s2, 0.5); // this splits lower end into final two pieces
-        err=ps1.replace(s1, 1, 0);
+        err=ps1.set(s1, 1, 0);
         TEST_ASSERT(err==piecewise_surface_type::NO_ERROR);
-        err=ps1.replace(s2, 2, 0);
+        err=ps1.set(s2, 2, 0);
         TEST_ASSERT(err==piecewise_surface_type::NO_ERROR);
         s6.split_u(s1, s2, 0.5); // this splits the upper end into final two pieces
-        err=ps1.replace(s1, 1, 1);
+        err=ps1.set(s1, 1, 1);
         TEST_ASSERT(err==piecewise_surface_type::NO_ERROR);
-        err=ps1.replace(s2, 2, 1);
+        err=ps1.set(s2, 2, 1);
         TEST_ASSERT(err==piecewise_surface_type::NO_ERROR);
       }
       ps1.get_parameter_max(umax, vmax);
@@ -580,20 +580,20 @@ class piecewise_surface_test_suite : public Test::Suite
         // create and set each surface
         s.split_v(s1, s2, 0.5);  // this splits surface into lower and upper
         s1.split_u(s3, s4, 0.5); // this splits lower into first segment and last two
-        err=ps1.replace(s3, 0, 0);
+        err=ps1.set(s3, 0, 0);
         TEST_ASSERT(err==piecewise_surface_type::NO_ERROR);
         s2.split_u(s5, s6, 0.5); // this splits upper into first segment and last two
-        err=ps1.replace(s5, 0, 1);
+        err=ps1.set(s5, 0, 1);
         TEST_ASSERT(err==piecewise_surface_type::NO_ERROR);
         s4.split_u(s1, s2, 0.5); // this splits lower end into final two pieces
-        err=ps1.replace(s1, 1, 0);
+        err=ps1.set(s1, 1, 0);
         TEST_ASSERT(err==piecewise_surface_type::NO_ERROR);
-        err=ps1.replace(s2, 2, 0);
+        err=ps1.set(s2, 2, 0);
         TEST_ASSERT(err==piecewise_surface_type::NO_ERROR);
         s6.split_u(s1, s2, 0.5); // this splits the upper end into final two pieces
-        err=ps1.replace(s1, 1, 1);
+        err=ps1.set(s1, 1, 1);
         TEST_ASSERT(err==piecewise_surface_type::NO_ERROR);
-        err=ps1.replace(s2, 2, 1);
+        err=ps1.set(s2, 2, 1);
         TEST_ASSERT(err==piecewise_surface_type::NO_ERROR);
       }
 
@@ -618,7 +618,7 @@ class piecewise_surface_test_suite : public Test::Suite
 
     void replace_test()
     {
-#if 0
+      typename piecewise_surface_type::error_code err;
       piecewise_surface_type ps1, ps2;
       data_type u, v;
 
@@ -627,7 +627,6 @@ class piecewise_surface_test_suite : public Test::Suite
 
       // create piecewise surface
       {
-        typename piecewise_surface_type::error_code err;
         surface_type s, s1, s2, s3, s4, s5, s6;
         index_type i, j, n(3), m(3);
         point_type pt[3+1][3+1], pt_out;
@@ -661,388 +660,47 @@ class piecewise_surface_test_suite : public Test::Suite
         // create and set each surface
         s.split_v(s1, s2, 0.5);  // this splits surface into lower and upper
         s1.split_u(s3, s4, 0.5); // this splits lower into first segment and last two
-        err=ps1.replace(s3, 0, 0);
+        err=ps1.set(s3, 0, 0);
         TEST_ASSERT(err==piecewise_surface_type::NO_ERROR);
         s2.split_u(s5, s6, 0.5); // this splits upper into first segment and last two
-        err=ps1.replace(s5, 0, 1);
+        err=ps1.set(s5, 0, 1);
         TEST_ASSERT(err==piecewise_surface_type::NO_ERROR);
         s4.split_u(s1, s2, 0.5); // this splits lower end into final two pieces
-        err=ps1.replace(s1, 1, 0);
+        err=ps1.set(s1, 1, 0);
         TEST_ASSERT(err==piecewise_surface_type::NO_ERROR);
-        err=ps1.replace(s2, 2, 0);
+        err=ps1.set(s2, 2, 0);
         TEST_ASSERT(err==piecewise_surface_type::NO_ERROR);
         s6.split_u(s1, s2, 0.5); // this splits the upper end into final two pieces
-        err=ps1.replace(s1, 1, 1);
+        err=ps1.set(s1, 1, 1);
         TEST_ASSERT(err==piecewise_surface_type::NO_ERROR);
-        err=ps1.replace(s2, 2, 1);
+        err=ps1.set(s2, 2, 1);
         TEST_ASSERT(err==piecewise_surface_type::NO_ERROR);
       }
 
-      piecewise_surface_type c1, c1c, c2, c3;
-      curve_type bc[3], bc2, bc_out;
-      data_type dt[3], dt2, dt_out;
-      index_type i;
-      typename curve_type::control_point_type cntrl1_in[4], cntrl2_in[5], cntrl3_in[3], cntrl2a_in[2];
-      typename piecewise_surface_type::error_code err;
+      surface_type s;
 
-      // create bezier curves
-      cntrl1_in[0] << 2.0, 2.0, 0.0;
-      cntrl1_in[1] << 1.0, 1.5, 0.0;
-      cntrl1_in[2] << 3.5, 0.0, 0.0;
-      cntrl1_in[3] << 4.0, 1.0, 0.0;
-      dt[0]=0.5;
-      bc[0].resize(3);
-      for (i=0; i<4; ++i)
-      {
-        bc[0].set_control_point(cntrl1_in[i], i);
-      }
-      cntrl2_in[0] << 4.0, 1.0, 0.0;
-      cntrl2_in[1] << 5.0, 2.5, 0.0;
-      cntrl2_in[2] << 5.5, 1.0, 0.0;
-      cntrl2_in[3] << 6.0, 0.0, 0.0;
-      cntrl2_in[4] << 6.5,-0.5, 0.0;
-      dt[1]=2.0;
-      bc[1].resize(4);
-      for (i=0; i<5; ++i)
-      {
-        bc[1].set_control_point(cntrl2_in[i], i);
-      }
-      cntrl3_in[0] << 6.5,-0.5, 0.0;
-      cntrl3_in[1] << 6.0,-1.0, 0.0;
-      cntrl3_in[2] << 5.5,-2.0, 0.0;
-      dt[2]=1.5;
-      bc[2].resize(2);
-      for (i=0; i<3; ++i)
-      {
-        bc[2].set_control_point(cntrl3_in[i], i);
-      }
-
-      // initialize by passing iterators to curve collection
-      err=c1.set(bc, bc+3, dt);
+      // test adding valid patch
+      ps2=ps1;
+      ps2.get(s, 2, 1);
+      s.promote_u();
+      s.promote_v();
+      err=ps2.replace(s, 2, 1);
       TEST_ASSERT(err==piecewise_surface_type::NO_ERROR);
 
-      // replace segment correctly
-      cntrl2a_in[0] << 4.0, 1.0, 0.0;
-      cntrl2a_in[1] << 6.5,-0.5, 0.0;
-      bc2.resize(1);
-      for (i=0; i<2; ++i)
-      {
-        bc2.set_control_point(cntrl2a_in[i], i);
-      }
-      err=c1.replace(bc2, 1);
-      TEST_ASSERT(err==piecewise_surface_type::NO_ERROR);
-      err=c1.get(bc_out, dt_out, 1);
-      TEST_ASSERT(err==piecewise_surface_type::NO_ERROR);
-      TEST_ASSERT(bc2==bc_out);
-      TEST_ASSERT(dt[1]==dt_out);
+      u=2.25;
+      v=1.75;
+      TEST_ASSERT(ps1.f(u, v)==ps2.f(u, v));
+      TEST_ASSERT(ps1.f_u(u, v)==ps2.f_u(u, v));
+      TEST_ASSERT(ps1.f_v(u, v)==ps2.f_v(u, v));
 
-      // replace segment with segment that doesn't connect to neighbor(s)
-      cntrl2a_in[0] << 4.0, 1.0, 0.0;
-      cntrl2a_in[1] << 5.5,-0.5, 0.0;
-      bc2.resize(1);
-      for (i=0; i<2; ++i)
-      {
-        bc2.set_control_point(cntrl2a_in[i], i);
-      }
-      err=c1.replace(bc2, 1);
-      TEST_ASSERT(err==piecewise_surface_type::SEGMENT_NOT_CONNECTED);
-      cntrl2a_in[0] << 4.0, 2.0, 0.0;
-      cntrl2a_in[1] << 6.5,-0.5, 0.0;
-      bc2.resize(1);
-      for (i=0; i<2; ++i)
-      {
-        bc2.set_control_point(cntrl2a_in[i], i);
-      }
-      err=c1.replace(bc2, 1);
-      TEST_ASSERT(err==piecewise_surface_type::SEGMENT_NOT_CONNECTED);
-
-      // replace one segment with several segments
-      cntrl1_in[0] << 4.0, 1.0, 0.0;
-      cntrl1_in[1] << 3.0, 1.5, 0.0;
-      cntrl1_in[2] << 3.5, 2.0, 0.0;
-      cntrl1_in[3] << 5.5, 2.5, 0.0;
-      dt[0]=0.25;
-      bc[0].resize(3);
-      for (i=0; i<4; ++i)
-      {
-        bc[0].set_control_point(cntrl1_in[i], i);
-      }
-      cntrl2_in[0] << 5.5, 2.5, 0.0;
-      cntrl2_in[1] << 5.0, 2.5, 0.0;
-      cntrl2_in[2] << 5.5, 2.0, 0.0;
-      cntrl2_in[3] << 5.0, 2.0, 0.0;
-      cntrl2_in[4] << 5.0, 0.5, 0.0;
-      dt[1]=1.0;
-      bc[1].resize(4);
-      for (i=0; i<5; ++i)
-      {
-        bc[1].set_control_point(cntrl2_in[i], i);
-      }
-      cntrl3_in[0] << 5.0, 0.5, 0.0;
-      cntrl3_in[1] << 5.5, 0.0, 0.0;
-      cntrl3_in[2] << 6.5,-0.5, 0.0;
-      dt[2]=3.0;
-      bc[2].resize(2);
-      for (i=0; i<3; ++i)
-      {
-        bc[2].set_control_point(cntrl3_in[i], i);
-      }
-      err=c2.set(bc, bc+3, dt);
-      TEST_ASSERT(err==piecewise_surface_type::NO_ERROR);
-      c1c=c1;
-      err=c1.replace(c2, 1);
-      TEST_ASSERT(err==piecewise_surface_type::NO_ERROR);
-      TEST_ASSERT(c1.number_segments()==5);
-      err=c1.get(bc_out, dt_out, 1);
-      TEST_ASSERT(err==piecewise_surface_type::NO_ERROR);
-      TEST_ASSERT(bc[0]==bc_out);
-      TEST_ASSERT(dt[0]==dt_out);
-      err=c1.get(bc_out, dt_out, 2);
-      TEST_ASSERT(err==piecewise_surface_type::NO_ERROR);
-      TEST_ASSERT(bc[1]==bc_out);
-      TEST_ASSERT(dt[1]==dt_out);
-      err=c1.get(bc_out, dt_out, 3);
-      TEST_ASSERT(err==piecewise_surface_type::NO_ERROR);
-      TEST_ASSERT(bc[2]==bc_out);
-      TEST_ASSERT(dt[2]==dt_out);
-      c3=c1;
-
-      // replace segment with piecewise that doesn't connect to neighbor(s)
-      c1=c1c;
-      cntrl1_in[0] << 5.0, 1.0, 0.0;
-      cntrl1_in[1] << 3.0, 1.5, 0.0;
-      cntrl1_in[2] << 3.5, 2.0, 0.0;
-      cntrl1_in[3] << 5.5, 2.5, 0.0;
-      dt[0]=0.25;
-      bc[0].resize(3);
-      for (i=0; i<4; ++i)
-      {
-        bc[0].set_control_point(cntrl1_in[i], i);
-      }
-      cntrl2_in[0] << 5.5, 2.5, 0.0;
-      cntrl2_in[1] << 5.0, 2.5, 0.0;
-      cntrl2_in[2] << 5.5, 2.0, 0.0;
-      cntrl2_in[3] << 5.0, 2.0, 0.0;
-      cntrl2_in[4] << 5.0, 0.5, 0.0;
-      dt[1]=1.0;
-      bc[1].resize(4);
-      for (i=0; i<5; ++i)
-      {
-        bc[1].set_control_point(cntrl2_in[i], i);
-      }
-      cntrl3_in[0] << 5.0, 0.5, 0.0;
-      cntrl3_in[1] << 5.5, 0.0, 0.0;
-      cntrl3_in[2] << 6.5,-0.5, 0.0;
-      dt[2]=3.0;
-      bc[2].resize(2);
-      for (i=0; i<3; ++i)
-      {
-        bc[2].set_control_point(cntrl3_in[i], i);
-      }
-      err=c2.set(bc, bc+3, dt);
-      TEST_ASSERT(err==piecewise_surface_type::NO_ERROR);
-      err=c1.replace(c2, 1);
-      TEST_ASSERT(err==piecewise_surface_type::SEGMENT_NOT_CONNECTED);
-      cntrl1_in[0] << 4.0, 1.0, 0.0;
-      cntrl1_in[1] << 3.0, 1.5, 0.0;
-      cntrl1_in[2] << 3.5, 2.0, 0.0;
-      cntrl1_in[3] << 5.5, 2.5, 0.0;
-      dt[0]=0.25;
-      bc[0].resize(3);
-      for (i=0; i<4; ++i)
-      {
-        bc[0].set_control_point(cntrl1_in[i], i);
-      }
-      cntrl2_in[0] << 5.5, 2.5, 0.0;
-      cntrl2_in[1] << 5.0, 2.5, 0.0;
-      cntrl2_in[2] << 5.5, 2.0, 0.0;
-      cntrl2_in[3] << 5.0, 2.0, 0.0;
-      cntrl2_in[4] << 5.0, 0.5, 0.0;
-      dt[1]=1.0;
-      bc[1].resize(4);
-      for (i=0; i<5; ++i)
-      {
-        bc[1].set_control_point(cntrl2_in[i], i);
-      }
-      cntrl3_in[0] << 5.0, 0.5, 0.0;
-      cntrl3_in[1] << 5.5, 0.0, 0.0;
-      cntrl3_in[2] << 7.5,-0.5, 0.0;
-      dt[2]=3.0;
-      bc[2].resize(2);
-      for (i=0; i<3; ++i)
-      {
-        bc[2].set_control_point(cntrl3_in[i], i);
-      }
-      err=c2.set(bc, bc+3, dt);
-      TEST_ASSERT(err==piecewise_surface_type::NO_ERROR);
-      err=c1.replace(c2, 1);
-      TEST_ASSERT(err==piecewise_surface_type::SEGMENT_NOT_CONNECTED);
-
-      // replace several segments with one segment
-      c1=c3;
-      c1c=c1;
-      cntrl2a_in[0] << 4.0, 1.0, 0.0;
-      cntrl2a_in[1] << 5.0, 0.5, 0.0;
-      dt2=1.25;
-      bc2.resize(1);
-      for (i=0; i<2; ++i)
-      {
-        bc2.set_control_point(cntrl2a_in[i], i);
-      }
-      err=c1.replace(bc2, dt2, 1, 3);
-      TEST_ASSERT(err==piecewise_surface_type::NO_ERROR);
-      TEST_ASSERT(c1.number_segments()==4);
-      err=c1.get(bc_out, dt_out, 1);
-      TEST_ASSERT(err==piecewise_surface_type::NO_ERROR);
-      TEST_ASSERT(bc2==bc_out);
-      TEST_ASSERT(dt2==dt_out);
-      c3=c1;
-
-      // replace segments with segment that doesn't connect to neighbor(s)
-      c1=c1c;
-      cntrl2a_in[0] << 4.5, 1.0, 0.0;
-      cntrl2a_in[1] << 5.0, 0.5, 0.0;
-      dt2=1.25;
-      bc2.resize(1);
-      for (i=0; i<2; ++i)
-      {
-        bc2.set_control_point(cntrl2a_in[i], i);
-      }
-      err=c1.replace(bc2, dt2, 1, 3);
-      TEST_ASSERT(err==piecewise_surface_type::SEGMENT_NOT_CONNECTED);
-      cntrl2a_in[0] << 4.0, 1.0, 0.0;
-      cntrl2a_in[1] << 5.5, 0.5, 0.0;
-      dt2=1.25;
-      bc2.resize(1);
-      for (i=0; i<2; ++i)
-      {
-        bc2.set_control_point(cntrl2a_in[i], i);
-      }
-      err=c1.replace(bc2, dt2, 1, 3);
-      TEST_ASSERT(err==piecewise_surface_type::SEGMENT_NOT_CONNECTED);
-
-      // replace several segments with several segments
-      c1=c3;
-      c1c=c1;
-      cntrl1_in[0] << 4.0, 1.0, 0.0;
-      cntrl1_in[1] << 3.0, 1.5, 0.0;
-      cntrl1_in[2] << 3.5, 2.0, 0.0;
-      cntrl1_in[3] << 5.5, 2.5, 0.0;
-      dt[0]=0.25;
-      bc[0].resize(3);
-      for (i=0; i<4; ++i)
-      {
-        bc[0].set_control_point(cntrl1_in[i], i);
-      }
-      cntrl2_in[0] << 5.5, 2.5, 0.0;
-      cntrl2_in[1] << 5.0, 2.5, 0.0;
-      cntrl2_in[2] << 4.5, 2.0, 0.0;
-      cntrl2_in[3] << 4.0, 2.0, 0.0;
-      cntrl2_in[4] << 3.5, 0.5, 0.0;
-      dt[1]=1.0;
-      bc[1].resize(4);
-      for (i=0; i<5; ++i)
-      {
-        bc[1].set_control_point(cntrl2_in[i], i);
-      }
-      cntrl3_in[0] << 3.5, 0.5, 0.0;
-      cntrl3_in[1] << 4.5, 0.0, 0.0;
-      cntrl3_in[2] << 6.5,-0.5, 0.0;
-      dt[2]=3.0;
-      bc[2].resize(2);
-      for (i=0; i<3; ++i)
-      {
-        bc[2].set_control_point(cntrl3_in[i], i);
-      }
-      err=c2.set(bc, bc+3, dt);
-      TEST_ASSERT(err==piecewise_surface_type::NO_ERROR);
-      err=c1.replace(c2, 1, 3);
-      TEST_ASSERT(err==piecewise_surface_type::NO_ERROR);
-      TEST_ASSERT(c1.number_segments()==5);
-      err=c1.get(bc_out, dt_out, 1);
-      TEST_ASSERT(err==piecewise_surface_type::NO_ERROR);
-      TEST_ASSERT(bc[0]==bc_out);
-      TEST_ASSERT(dt[0]==dt_out);
-      err=c1.get(bc_out, dt_out, 2);
-      TEST_ASSERT(err==piecewise_surface_type::NO_ERROR);
-      TEST_ASSERT(bc[1]==bc_out);
-      TEST_ASSERT(dt[1]==dt_out);
-      err=c1.get(bc_out, dt_out, 3);
-      TEST_ASSERT(err==piecewise_surface_type::NO_ERROR);
-      TEST_ASSERT(bc[2]==bc_out);
-      TEST_ASSERT(dt[2]==dt_out);
-
-      // replace segments with piecewise that doesn't connect to neighbor(s)
-      c1=c1c;
-      cntrl1_in[0] << 3.0, 1.0, 0.0;
-      cntrl1_in[1] << 3.0, 1.5, 0.0;
-      cntrl1_in[2] << 3.5, 2.0, 0.0;
-      cntrl1_in[3] << 5.5, 2.5, 0.0;
-      dt[0]=1.25;
-      bc[0].resize(3);
-      for (i=0; i<4; ++i)
-      {
-        bc[0].set_control_point(cntrl1_in[i], i);
-      }
-      cntrl2_in[0] << 5.5, 2.5, 0.0;
-      cntrl2_in[1] << 5.0, 2.5, 0.0;
-      cntrl2_in[2] << 4.5, 2.0, 0.0;
-      cntrl2_in[3] << 4.0, 2.0, 0.0;
-      cntrl2_in[4] << 3.5, 0.5, 0.0;
-      dt[1]=1.5;
-      bc[1].resize(4);
-      for (i=0; i<5; ++i)
-      {
-        bc[1].set_control_point(cntrl2_in[i], i);
-      }
-      cntrl3_in[0] << 3.5, 0.5, 0.0;
-      cntrl3_in[1] << 4.5, 0.0, 0.0;
-      cntrl3_in[2] << 6.5,-0.5, 0.0;
-      dt[2]=3.5;
-      bc[2].resize(2);
-      for (i=0; i<3; ++i)
-      {
-        bc[2].set_control_point(cntrl3_in[i], i);
-      }
-      err=c2.set(bc, bc+3, dt);
-      TEST_ASSERT(err==piecewise_surface_type::NO_ERROR);
-      err=c1.replace(c2, 1, 3);
-      TEST_ASSERT(err==piecewise_surface_type::SEGMENT_NOT_CONNECTED);
-      cntrl1_in[0] << 4.0, 1.0, 0.0;
-      cntrl1_in[1] << 3.0, 1.5, 0.0;
-      cntrl1_in[2] << 3.5, 2.0, 0.0;
-      cntrl1_in[3] << 5.5, 2.5, 0.0;
-      dt[0]=1.25;
-      bc[0].resize(3);
-      for (i=0; i<4; ++i)
-      {
-        bc[0].set_control_point(cntrl1_in[i], i);
-      }
-      cntrl2_in[0] << 5.5, 2.5, 0.0;
-      cntrl2_in[1] << 5.0, 2.5, 0.0;
-      cntrl2_in[2] << 4.5, 2.0, 0.0;
-      cntrl2_in[3] << 4.0, 2.0, 0.0;
-      cntrl2_in[4] << 3.5, 0.5, 0.0;
-      dt[1]=1.5;
-      bc[1].resize(4);
-      for (i=0; i<5; ++i)
-      {
-        bc[1].set_control_point(cntrl2_in[i], i);
-      }
-      cntrl3_in[0] << 3.5, 0.5, 0.0;
-      cntrl3_in[1] << 4.5, 0.0, 0.0;
-      cntrl3_in[2] << 5.5,-0.5, 0.0;
-      dt[2]=3.5;
-      bc[2].resize(2);
-      for (i=0; i<3; ++i)
-      {
-        bc[2].set_control_point(cntrl3_in[i], i);
-      }
-      err=c2.set(bc, bc+3, dt);
-      TEST_ASSERT(err==piecewise_surface_type::NO_ERROR);
-      err=c1.replace(c2, 1, 3);
-      TEST_ASSERT(err==piecewise_surface_type::SEGMENT_NOT_CONNECTED);
-#endif
+      // test adding invalid patch
+      point_type nudge;
+      nudge << 0, 0.01, 0;
+      ps2=ps1;
+      ps2.get(s, 2, 1);
+      s.set_control_point(s.get_control_point(0, 0)+nudge, 0, 0);
+      err=ps2.replace(s, 2, 1);
+      TEST_ASSERT(err==piecewise_surface_type::PATCH_NOT_CONNECTED);
     }
 
     void transformation_test()
@@ -1089,20 +747,20 @@ class piecewise_surface_test_suite : public Test::Suite
         // create and set each surface
         s.split_v(s1, s2, 0.5);  // this splits surface into lower and upper
         s1.split_u(s3, s4, 0.5); // this splits lower into first segment and last two
-        err=ps1.replace(s3, 0, 0);
+        err=ps1.set(s3, 0, 0);
         TEST_ASSERT(err==piecewise_surface_type::NO_ERROR);
         s2.split_u(s5, s6, 0.5); // this splits upper into first segment and last two
-        err=ps1.replace(s5, 0, 1);
+        err=ps1.set(s5, 0, 1);
         TEST_ASSERT(err==piecewise_surface_type::NO_ERROR);
         s4.split_u(s1, s2, 0.5); // this splits lower end into final two pieces
-        err=ps1.replace(s1, 1, 0);
+        err=ps1.set(s1, 1, 0);
         TEST_ASSERT(err==piecewise_surface_type::NO_ERROR);
-        err=ps1.replace(s2, 2, 0);
+        err=ps1.set(s2, 2, 0);
         TEST_ASSERT(err==piecewise_surface_type::NO_ERROR);
         s6.split_u(s1, s2, 0.5); // this splits the upper end into final two pieces
-        err=ps1.replace(s1, 1, 1);
+        err=ps1.set(s1, 1, 1);
         TEST_ASSERT(err==piecewise_surface_type::NO_ERROR);
-        err=ps1.replace(s2, 2, 1);
+        err=ps1.set(s2, 2, 1);
         TEST_ASSERT(err==piecewise_surface_type::NO_ERROR);
       }
 
@@ -1193,20 +851,20 @@ class piecewise_surface_test_suite : public Test::Suite
         // create and set each surface
         s.split_v(s1, s2, 0.5);  // this splits surface into lower and upper
         s1.split_u(s3, s4, 0.5); // this splits lower into first segment and last two
-        err=ps1.replace(s3, 0, 0); s_patches[0]=s3;
+        err=ps1.set(s3, 0, 0); s_patches[0]=s3;
         TEST_ASSERT(err==piecewise_surface_type::NO_ERROR);
         s2.split_u(s5, s6, 0.5); // this splits upper into first segment and last two
-        err=ps1.replace(s5, 0, 1); s_patches[3]=s5;
+        err=ps1.set(s5, 0, 1); s_patches[3]=s5;
         TEST_ASSERT(err==piecewise_surface_type::NO_ERROR);
         s4.split_u(s1, s2, 0.5); // this splits lower end into final two pieces
-        err=ps1.replace(s1, 1, 0); s_patches[1]=s1;
+        err=ps1.set(s1, 1, 0); s_patches[1]=s1;
         TEST_ASSERT(err==piecewise_surface_type::NO_ERROR);
-        err=ps1.replace(s2, 2, 0); s_patches[2]=s2;
+        err=ps1.set(s2, 2, 0); s_patches[2]=s2;
         TEST_ASSERT(err==piecewise_surface_type::NO_ERROR);
         s6.split_u(s1, s2, 0.5); // this splits the upper end into final two pieces
-        err=ps1.replace(s1, 1, 1); s_patches[4]=s1;
+        err=ps1.set(s1, 1, 1); s_patches[4]=s1;
         TEST_ASSERT(err==piecewise_surface_type::NO_ERROR);
-        err=ps1.replace(s2, 2, 1); s_patches[5]=s2;
+        err=ps1.set(s2, 2, 1); s_patches[5]=s2;
         TEST_ASSERT(err==piecewise_surface_type::NO_ERROR);
       }
 
@@ -1291,20 +949,20 @@ class piecewise_surface_test_suite : public Test::Suite
         // create and set each surface
         s.split_v(s1, s2, 0.5);  // this splits surface into lower and upper
         s1.split_u(s3, s4, 0.5); // this splits lower into first segment and last two
-        err=ps1.replace(s3, 0, 0);
+        err=ps1.set(s3, 0, 0);
         TEST_ASSERT(err==piecewise_surface_type::NO_ERROR);
         s2.split_u(s5, s6, 0.5); // this splits upper into first segment and last two
-        err=ps1.replace(s5, 0, 1);
+        err=ps1.set(s5, 0, 1);
         TEST_ASSERT(err==piecewise_surface_type::NO_ERROR);
         s4.split_u(s1, s2, 0.5); // this splits lower end into final two pieces
-        err=ps1.replace(s1, 1, 0);
+        err=ps1.set(s1, 1, 0);
         TEST_ASSERT(err==piecewise_surface_type::NO_ERROR);
-        err=ps1.replace(s2, 2, 0);
+        err=ps1.set(s2, 2, 0);
         TEST_ASSERT(err==piecewise_surface_type::NO_ERROR);
         s6.split_u(s1, s2, 0.5); // this splits the upper end into final two pieces
-        err=ps1.replace(s1, 1, 1);
+        err=ps1.set(s1, 1, 1);
         TEST_ASSERT(err==piecewise_surface_type::NO_ERROR);
-        err=ps1.replace(s2, 2, 1);
+        err=ps1.set(s2, 2, 1);
         TEST_ASSERT(err==piecewise_surface_type::NO_ERROR);
       }
 
