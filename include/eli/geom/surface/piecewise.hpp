@@ -15,6 +15,7 @@
 
 #include <vector>
 #include <utility>
+#include <algorithm>
 
 #include "eli/util/tolerance.hpp"
 
@@ -236,23 +237,40 @@ namespace eli
             }
           }
 
-          void reverse()
+          void reverse_u()
           {
-#if 0
-            // reverse order of patches
-            patches.reverse();
+            typename patch_collection_type::iterator itrowb, itrowe;
 
-            // reverse each patch
-            for (typename patch_collection_type::iterator it=patches.begin(); it!=patches.end(); ++it)
+            // for each j reverse the elements
+            itrowb=patches.begin();
+            for (index_type j=0; j<nv; ++j)
             {
-              it->s.reverse();
+              itrowe=itrowb;
+              for (index_type i=0; i<nu; ++i, ++itrowe)
+              {
+                itrowe->s.reverse_u();
+              }
+              std::reverse(itrowb, itrowe);
+              itrowb=itrowe;
             }
+          }
 
-            // check if still connected
-            assert(check_continuity(eli::geom::general::C0));
-#else
-            assert(false);
-#endif
+          void reverse_v()
+          {
+            // for each i reverse the elements
+            for (index_type i=0; i<nu; ++i)
+            {
+              for (index_type j=0; j<nv/2; ++j)
+              {
+                patches[j*nu+i].s.reverse_v();
+                patches[(nv-j-1)*nu+i].s.reverse_v();
+                std::swap(patches[j*nu+i], patches[(nv-j-1)*nu+i]);
+              }
+              if (nv%2==1)
+              {
+                patches[1+nv%2].s.reverse_v();
+              }
+            }
           }
 
           void swap_uv()

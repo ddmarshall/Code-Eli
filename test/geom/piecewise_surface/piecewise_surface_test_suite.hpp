@@ -438,62 +438,102 @@ class piecewise_surface_test_suite : public Test::Suite
 
     void reverse_test()
     {
-#if 0
-      piecewise_surface_type c1, c2;
-      curve_type bc[3], bc1_out, bc2_out;
-      data_type dt[3], dt1_out, dt2_out;
-      index_type i;
-      typename curve_type::control_point_type cntrl1_in[4], cntrl2_in[5], cntrl3_in[3];
-      typename piecewise_surface_type::error_code err;
 
-      // create bezier curves
-      cntrl1_in[0] << 2.0, 2.0, 0.0;
-      cntrl1_in[1] << 1.0, 1.5, 0.0;
-      cntrl1_in[2] << 3.5, 0.0, 0.0;
-      cntrl1_in[3] << 4.0, 1.0, 0.0;
-      dt[0]=0.5;
-      bc[0].resize(3);
-      for (i=0; i<4; ++i)
-      {
-        bc[0].set_control_point(cntrl1_in[i], i);
-      }
-      cntrl2_in[0] << 4.0, 1.0, 0.0;
-      cntrl2_in[1] << 5.0, 2.5, 0.0;
-      cntrl2_in[2] << 5.5, 1.0, 0.0;
-      cntrl2_in[3] << 6.0, 0.0, 0.0;
-      cntrl2_in[4] << 6.5,-0.5, 0.0;
-      dt[1]=2.0;
-      bc[1].resize(4);
-      for (i=0; i<5; ++i)
-      {
-        bc[1].set_control_point(cntrl2_in[i], i);
-      }
-      cntrl3_in[0] << 6.5,-0.5, 0.0;
-      cntrl3_in[1] << 6.0,-1.0, 0.0;
-      cntrl3_in[2] << 5.5,-2.0, 0.0;
-      dt[2]=1.5;
-      bc[2].resize(2);
-      for (i=0; i<3; ++i)
-      {
-        bc[2].set_control_point(cntrl3_in[i], i);
-      }
+      piecewise_surface_type ps1, ps2;
+      data_type u, v, umax, vmax;
 
-      // initialize by passing iterators to curve collection
-      err=c1.set(bc, bc+3, dt);
-      TEST_ASSERT(err==piecewise_surface_type::NO_ERROR);
+      // create 3x2 patches with unit spacing
+      ps1.resize(3, 2);
 
-      c1=c2;
-      c2.reverse();
-      for (i=0; i<c1.number_segments(); ++i)
+      // create piecewise surface
       {
-        c1.get(bc1_out, dt1_out, i);
-        c2.get(bc2_out, dt2_out, c1.number_segments()-i-1);
-        for (index_type ii=0; ii<=bc1_out.degree(); ++ii)
+        typename piecewise_surface_type::error_code err;
+        surface_type s, s1, s2, s3, s4, s5, s6;
+        index_type i, j, n(3), m(3);
+        point_type pt[3+1][3+1], pt_out;
+
+        // create surface with specified control points
+        pt[0][0] << -15, 0,  15;
+        pt[1][0] <<  -5, 5,  15;
+        pt[2][0] <<   5, 5,  15;
+        pt[3][0] <<  15, 0,  15;
+        pt[0][1] << -15, 5,   5;
+        pt[1][1] <<  -5, 5,   5;
+        pt[2][1] <<   5, 5,   5;
+        pt[3][1] <<  15, 5,   5;
+        pt[0][2] << -15, 5,  -5;
+        pt[1][2] <<  -5, 5,  -5;
+        pt[2][2] <<   5, 5,  -5;
+        pt[3][2] <<  15, 5,  -5;
+        pt[0][3] << -15, 0, -15;
+        pt[1][3] <<  -5, 5, -15;
+        pt[2][3] <<   5, 5, -15;
+        pt[3][3] <<  15, 0, -15;
+        s.resize(n, m);
+        for (i=0; i<=n; ++i)
         {
-          TEST_ASSERT(bc1_out.get_control_point(ii)==bc2_out.get_control_point(bc1_out.degree()-ii));
+          for (j=0; j<=m; ++j)
+          {
+            s.set_control_point(pt[i][j], i, j);
+          }
         }
+
+        // create and set each surface
+        s.split_v(s1, s2, 0.5);  // this splits surface into lower and upper
+        s1.split_u(s3, s4, 0.5); // this splits lower into first segment and last two
+        err=ps1.replace(s3, 0, 0);
+        TEST_ASSERT(err==piecewise_surface_type::NO_ERROR);
+        s2.split_u(s5, s6, 0.5); // this splits upper into first segment and last two
+        err=ps1.replace(s5, 0, 1);
+        TEST_ASSERT(err==piecewise_surface_type::NO_ERROR);
+        s4.split_u(s1, s2, 0.5); // this splits lower end into final two pieces
+        err=ps1.replace(s1, 1, 0);
+        TEST_ASSERT(err==piecewise_surface_type::NO_ERROR);
+        err=ps1.replace(s2, 2, 0);
+        TEST_ASSERT(err==piecewise_surface_type::NO_ERROR);
+        s6.split_u(s1, s2, 0.5); // this splits the upper end into final two pieces
+        err=ps1.replace(s1, 1, 1);
+        TEST_ASSERT(err==piecewise_surface_type::NO_ERROR);
+        err=ps1.replace(s2, 2, 1);
+        TEST_ASSERT(err==piecewise_surface_type::NO_ERROR);
       }
-#endif
+      ps1.get_parameter_max(umax, vmax);
+
+      // reverse u-direction
+      ps2=ps1;
+      ps2.reverse_u();
+
+      // test point
+      u=1.25;
+      v=0.75;
+      TEST_ASSERT(tol.approximately_equal(ps1.f(u, v), ps2.f(umax-u, v)));
+      TEST_ASSERT(tol.approximately_equal(ps1.f_u(u, v), -ps2.f_u(umax-u, v)));
+      TEST_ASSERT(tol.approximately_equal(ps1.f_v(u, v), ps2.f_v(umax-u, v)));
+
+      // test another point
+      u=2.75;
+      v=1.25;
+      TEST_ASSERT(tol.approximately_equal(ps1.f(u, v), ps2.f(umax-u, v)));
+      TEST_ASSERT(tol.approximately_equal(ps1.f_u(u, v), -ps2.f_u(umax-u, v)));
+      TEST_ASSERT(tol.approximately_equal(ps1.f_v(u, v), ps2.f_v(umax-u, v)));
+
+      // reverse v-direction
+      ps2=ps1;
+      ps2.reverse_v();
+
+      // test point
+      u=1.25;
+      v=0.75;
+      TEST_ASSERT(tol.approximately_equal(ps1.f(u, v), ps2.f(u, vmax-v)));
+      TEST_ASSERT(tol.approximately_equal(ps1.f_u(u, v), ps2.f_u(u, vmax-v)));
+      TEST_ASSERT(tol.approximately_equal(ps1.f_v(u, v), -ps2.f_v(u, vmax-v)));
+
+      // test another point
+      u=2.75;
+      v=1.25;
+      TEST_ASSERT(tol.approximately_equal(ps1.f(u, v), ps2.f(u, vmax-v)));
+      TEST_ASSERT(tol.approximately_equal(ps1.f_u(u, v), ps2.f_u(u, vmax-v)));
+      TEST_ASSERT(tol.approximately_equal(ps1.f_v(u, v), -ps2.f_v(u, vmax-v)));
     }
 
     void swap_test()
@@ -579,6 +619,65 @@ class piecewise_surface_test_suite : public Test::Suite
     void replace_test()
     {
 #if 0
+      piecewise_surface_type ps1, ps2;
+      data_type u, v;
+
+      // create 3x2 patches with unit spacing
+      ps1.resize(3, 2);
+
+      // create piecewise surface
+      {
+        typename piecewise_surface_type::error_code err;
+        surface_type s, s1, s2, s3, s4, s5, s6;
+        index_type i, j, n(3), m(3);
+        point_type pt[3+1][3+1], pt_out;
+
+        // create surface with specified control points
+        pt[0][0] << -15, 0,  15;
+        pt[1][0] <<  -5, 5,  15;
+        pt[2][0] <<   5, 5,  15;
+        pt[3][0] <<  15, 0,  15;
+        pt[0][1] << -15, 5,   5;
+        pt[1][1] <<  -5, 5,   5;
+        pt[2][1] <<   5, 5,   5;
+        pt[3][1] <<  15, 5,   5;
+        pt[0][2] << -15, 5,  -5;
+        pt[1][2] <<  -5, 5,  -5;
+        pt[2][2] <<   5, 5,  -5;
+        pt[3][2] <<  15, 5,  -5;
+        pt[0][3] << -15, 0, -15;
+        pt[1][3] <<  -5, 5, -15;
+        pt[2][3] <<   5, 5, -15;
+        pt[3][3] <<  15, 0, -15;
+        s.resize(n, m);
+        for (i=0; i<=n; ++i)
+        {
+          for (j=0; j<=m; ++j)
+          {
+            s.set_control_point(pt[i][j], i, j);
+          }
+        }
+
+        // create and set each surface
+        s.split_v(s1, s2, 0.5);  // this splits surface into lower and upper
+        s1.split_u(s3, s4, 0.5); // this splits lower into first segment and last two
+        err=ps1.replace(s3, 0, 0);
+        TEST_ASSERT(err==piecewise_surface_type::NO_ERROR);
+        s2.split_u(s5, s6, 0.5); // this splits upper into first segment and last two
+        err=ps1.replace(s5, 0, 1);
+        TEST_ASSERT(err==piecewise_surface_type::NO_ERROR);
+        s4.split_u(s1, s2, 0.5); // this splits lower end into final two pieces
+        err=ps1.replace(s1, 1, 0);
+        TEST_ASSERT(err==piecewise_surface_type::NO_ERROR);
+        err=ps1.replace(s2, 2, 0);
+        TEST_ASSERT(err==piecewise_surface_type::NO_ERROR);
+        s6.split_u(s1, s2, 0.5); // this splits the upper end into final two pieces
+        err=ps1.replace(s1, 1, 1);
+        TEST_ASSERT(err==piecewise_surface_type::NO_ERROR);
+        err=ps1.replace(s2, 2, 1);
+        TEST_ASSERT(err==piecewise_surface_type::NO_ERROR);
+      }
+
       piecewise_surface_type c1, c1c, c2, c3;
       curve_type bc[3], bc2, bc_out;
       data_type dt[3], dt2, dt_out;
@@ -1151,6 +1250,66 @@ class piecewise_surface_test_suite : public Test::Suite
     void split_test()
     {
 #if 0
+
+      piecewise_surface_type ps1, ps2;
+      data_type u, v;
+
+      // create 3x2 patches with unit spacing
+      ps1.resize(3, 2);
+
+      // create piecewise surface
+      {
+        typename piecewise_surface_type::error_code err;
+        surface_type s, s1, s2, s3, s4, s5, s6;
+        index_type i, j, n(3), m(3);
+        point_type pt[3+1][3+1], pt_out;
+
+        // create surface with specified control points
+        pt[0][0] << -15, 0,  15;
+        pt[1][0] <<  -5, 5,  15;
+        pt[2][0] <<   5, 5,  15;
+        pt[3][0] <<  15, 0,  15;
+        pt[0][1] << -15, 5,   5;
+        pt[1][1] <<  -5, 5,   5;
+        pt[2][1] <<   5, 5,   5;
+        pt[3][1] <<  15, 5,   5;
+        pt[0][2] << -15, 5,  -5;
+        pt[1][2] <<  -5, 5,  -5;
+        pt[2][2] <<   5, 5,  -5;
+        pt[3][2] <<  15, 5,  -5;
+        pt[0][3] << -15, 0, -15;
+        pt[1][3] <<  -5, 5, -15;
+        pt[2][3] <<   5, 5, -15;
+        pt[3][3] <<  15, 0, -15;
+        s.resize(n, m);
+        for (i=0; i<=n; ++i)
+        {
+          for (j=0; j<=m; ++j)
+          {
+            s.set_control_point(pt[i][j], i, j);
+          }
+        }
+
+        // create and set each surface
+        s.split_v(s1, s2, 0.5);  // this splits surface into lower and upper
+        s1.split_u(s3, s4, 0.5); // this splits lower into first segment and last two
+        err=ps1.replace(s3, 0, 0);
+        TEST_ASSERT(err==piecewise_surface_type::NO_ERROR);
+        s2.split_u(s5, s6, 0.5); // this splits upper into first segment and last two
+        err=ps1.replace(s5, 0, 1);
+        TEST_ASSERT(err==piecewise_surface_type::NO_ERROR);
+        s4.split_u(s1, s2, 0.5); // this splits lower end into final two pieces
+        err=ps1.replace(s1, 1, 0);
+        TEST_ASSERT(err==piecewise_surface_type::NO_ERROR);
+        err=ps1.replace(s2, 2, 0);
+        TEST_ASSERT(err==piecewise_surface_type::NO_ERROR);
+        s6.split_u(s1, s2, 0.5); // this splits the upper end into final two pieces
+        err=ps1.replace(s1, 1, 1);
+        TEST_ASSERT(err==piecewise_surface_type::NO_ERROR);
+        err=ps1.replace(s2, 2, 1);
+        TEST_ASSERT(err==piecewise_surface_type::NO_ERROR);
+      }
+
       data_type eps(std::numeric_limits<data__>::epsilon());
 #ifdef ELI_QD_FOUND
       if ( (typeid(data_type)==typeid(dd_real)) || (typeid(data_type)==typeid(qd_real)) )
