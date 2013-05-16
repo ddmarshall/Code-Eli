@@ -14,6 +14,7 @@
 #define eli_geom_surface_piecewise_hpp
 
 #include <vector>
+#include <utility>
 
 #include "eli/util/tolerance.hpp"
 
@@ -256,10 +257,33 @@ namespace eli
 
           void swap_uv()
           {
-            assert(false);
+            // this isn't the most memory efficient algorithm, but since the collection type
+            // is a std::vector, moves wouldn't be efficient.
+            patch_collection_type old_patches(patches);
+
+            // swap the starting parameters and the patch counts
+            std::swap(u0, v0);
+            std::swap(nu, nv);
+
+            for (index_type i=0; i<nu; ++i)
+            {
+              for (index_type j=0; j<nv; ++j)
+              {
+                old_patches[i*nv+j].s.swap_uv();
+                std::swap(old_patches[i*nv+j].delta_u, old_patches[i*nv+j].delta_v);
+                patches[j*nu+i]=old_patches[i*nv+j];
+              }
+            }
           }
 
-          void clear() {patches.clear();}
+          void clear()
+          {
+            nu=0;
+            nv=0;
+            u0=0;
+            v0=0;
+            patches.clear();
+          }
 
           error_code get(surface_type &surf, const index_type &ui, const index_type &vi) const
           {
