@@ -253,6 +253,15 @@ namespace eli
             }
           }
 
+          void scale(const data_type &s)
+          {
+            index_type i, deg(degree());
+            for (i=0; i<=deg; ++i)
+            {
+              B.row(i)*=s;
+            }
+          }
+
           bool open() const {return !closed();}
           bool closed() const
           {

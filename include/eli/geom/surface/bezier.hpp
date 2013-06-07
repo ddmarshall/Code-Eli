@@ -185,6 +185,18 @@ namespace eli
             }
           }
 
+          void scale(const data_type &s)
+          {
+            index_type i, j, degu(degree_u()), degv(degree_v());
+            for (j=0; j<=degv; ++j)
+            {
+              for (i=0; i<=degu; ++i)
+              {
+                B_u[j].row(i)*=s;
+              }
+            }
+          }
+
           bool open_u() const {return !closed_u();}
           bool closed_u() const
           {
