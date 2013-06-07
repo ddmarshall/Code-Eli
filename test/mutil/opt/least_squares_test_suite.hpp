@@ -47,7 +47,7 @@ class least_squares_test_suite : public Test::Suite
       TEST_ADD(least_squares_test_suite<long double>::least_squares_ineqcon_test);
     }
 
-#ifdef ELI_QD_FOUND
+#ifdef ELI_USING_QD
     void AddTests(const dd_real &)
     {
       TEST_ADD(least_squares_test_suite<dd_real>::least_squares_unc_test);

@@ -58,7 +58,7 @@ class piecewise_point_creator_test_suite : public Test::Suite
       // add the tests
       TEST_ADD(piecewise_point_creator_test_suite<long double>::create_point_test);
     }
-#ifdef ELI_QD_FOUND
+#ifdef ELI_USING_QD
     void AddTests(const dd_real &)
     {
       // add the tests

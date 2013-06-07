@@ -14,9 +14,6 @@ project(ELI_EXAMPLE)
 
 # set what libraries need to be used
 set(_ELI_EXAMPLE_LIBRARIES_LIST "")
-if (QD_FOUND)
-  SET (_ELI_EXAMPLE_LIBRARIES_LIST ${_ELI_EXAMPLE_LIBRARIES_LIST} ${QD_LIBRARIES})
-endif()
 
 add_subdirectory(airfoil_fit)
 add_subdirectory(vsp_pod)

@@ -122,7 +122,7 @@ namespace eli
         static long double sqrt_two_by_two() {return 0.7071067811865475244L;}
     };
 
-#ifdef ELI_QD_FOUND
+#ifdef ELI_USING_QD
     template<>
     class math <dd_real>
     {

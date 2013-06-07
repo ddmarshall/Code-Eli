@@ -75,7 +75,7 @@ class bezier_curve_fit_test_suite : public Test::Suite
       TEST_ADD(bezier_curve_fit_test_suite<long double>::fit_closed_test);
       TEST_ADD(bezier_curve_fit_test_suite<long double>::interpolate_test);
     }
-#ifdef ELI_QD_FOUND
+#ifdef ELI_USING_QD
     void AddTests(const dd_real &)
     {
       // add the tests
@@ -231,7 +231,7 @@ class bezier_curve_fit_test_suite : public Test::Suite
     void fit_C0_ends_test()
     {
       data_type eps(std::numeric_limits<data__>::epsilon());
-#ifdef ELI_QD_FOUND
+#ifdef ELI_USING_QD
       if ( (typeid(data_type)==typeid(dd_real)) || (typeid(data_type)==typeid(qd_real)) )
         eps=std::numeric_limits<double>::epsilon();
 #endif
@@ -991,7 +991,7 @@ class bezier_curve_fit_test_suite : public Test::Suite
     void interpolate_test()
     {
       data_type eps(std::numeric_limits<data__>::epsilon());
-#ifdef ELI_QD_FOUND
+#ifdef ELI_USING_QD
       if ( (typeid(data_type)==typeid(dd_real)) || (typeid(data_type)==typeid(qd_real)) )
         eps=std::numeric_limits<double>::epsilon();
 #endif

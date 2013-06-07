@@ -109,18 +109,8 @@ namespace eli
           kmin=H-tmp;
 
           // check if round-off error has crept in
-          typename surface__::data_type tol=std::numeric_limits<typename surface__::data_type>::epsilon();
-#ifdef ELI_QD_FOUND
-          if (typeid(typename surface__::data_type)==typeid(dd_real))
-          {
-            tol=1e-9*static_cast<typename surface__::data_type>(std::numeric_limits<double>::epsilon());
-          }
-          else if (typeid(typename surface__::data_type)==typeid(qd_real))
-          {
-            tol=1e-6*static_cast<typename surface__::data_type>(std::numeric_limits<dd_real>::epsilon());
-          }
-#endif
-          if ((tmp<1e-5) && (tmp/std::max(e*e*gg*gg, std::max(f*f*ff*ff, g*g*ee*ee))<tol))
+          typename surface__::tolerance_type tol;
+          if ((tmp<1e-5) && (tmp/std::max(e*e*gg*gg, std::max(f*f*ff*ff, g*g*ee*ee))<tol.get_relative_tolerance()))
           {
             kmax=H;
             kmin=H;

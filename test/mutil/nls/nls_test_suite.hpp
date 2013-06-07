@@ -231,7 +231,7 @@ class nls_test_suite : public Test::Suite
       TEST_ADD(nls_test_suite<long double>::newton_raphson_system_method_test);
       TEST_ADD(nls_test_suite<long double>::newton_raphson_constrained_system_method_test);
     }
-#ifdef ELI_QD_FOUND
+#ifdef ELI_USING_QD
     void AddTests(const dd_real &)
     {
       TEST_ADD(nls_test_suite<dd_real>::bisection_method_test);
@@ -387,7 +387,7 @@ class nls_test_suite : public Test::Suite
       data__ rhs2(cos(eli::constants::math<data__>::pi()+static_cast<data__>(0.001)));
       nrcm.set_initial_guess(eli::constants::math<data__>::pi());
       nrcm.set_periodic_condition(eli::constants::math<data__>::pi(), eli::constants::math<data__>::pi()*3);
-#ifdef ELI_QD_FOUND
+#ifdef ELI_USING_QD
       // QD math fails for this case :(
       if ( (typeid(data__)!=typeid(dd_real)) && (typeid(data__)!=typeid(qd_real)) )
 #endif

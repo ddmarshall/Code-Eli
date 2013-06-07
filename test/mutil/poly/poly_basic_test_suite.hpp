@@ -51,7 +51,7 @@ class poly_basic_test_suite : public Test::Suite
       TEST_ADD(poly_basic_test_suite<long double>::evaluation_test);
     }
 
-#ifdef ELI_QD_FOUND
+#ifdef ELI_USING_QD
     void AddTests(const dd_real &)
     {
       TEST_ADD(poly_basic_test_suite<dd_real>::assignment_test);

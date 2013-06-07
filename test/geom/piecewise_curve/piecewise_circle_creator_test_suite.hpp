@@ -71,7 +71,7 @@ class piecewise_circle_creator_test_suite : public Test::Suite
       TEST_ADD(piecewise_circle_creator_test_suite<long double>::create_circle_3_point_test);
       TEST_ADD(piecewise_circle_creator_test_suite<long double>::create_ellipse_primative_test);
     }
-#ifdef ELI_QD_FOUND
+#ifdef ELI_USING_QD
     void AddTests(const dd_real &)
     {
       // add the tests

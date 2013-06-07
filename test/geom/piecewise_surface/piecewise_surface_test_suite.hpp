@@ -87,7 +87,7 @@ class piecewise_surface_test_suite : public Test::Suite
       TEST_ADD(piecewise_surface_test_suite<long double>::area_test);
     }
 
-#ifdef ELI_QD_FOUND
+#ifdef ELI_USING_QD
     void AddTests(const dd_real &)
     {
       // add the tests
@@ -1028,7 +1028,7 @@ class piecewise_surface_test_suite : public Test::Suite
     {
 #if 0
       data_type eps(std::numeric_limits<data__>::epsilon());
-#ifdef ELI_QD_FOUND
+#ifdef ELI_USING_QD
       if ( (typeid(data_type)==typeid(dd_real)) || (typeid(data_type)==typeid(qd_real)) )
         eps=std::numeric_limits<double>::epsilon();
 #endif
@@ -1080,7 +1080,7 @@ class piecewise_surface_test_suite : public Test::Suite
       // create two segment curve calc length of each segment to compare
       eli::geom::curve::length(len, c1, tol);
       ref_len=bc_len[0]+bc_len[1]+bc_len[2];
-#ifdef ELI_QD_FOUND
+#ifdef ELI_USING_QD
       if ( (typeid(data_type)==typeid(dd_real)) || (typeid(data_type)==typeid(qd_real)) )
       {
         TEST_ASSERT(std::abs(len-ref_len)<3*eps);

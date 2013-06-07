@@ -29,7 +29,7 @@ namespace eli
         tolerance() : abs_tol(1000*std::numeric_limits<data__>::epsilon()),
                       rel_tol(std::sqrt(std::numeric_limits<data__>::epsilon()))
         {
-#ifdef ELI_QD_FOUND
+#ifdef ELI_USING_QD
           // QD Library does not always result in eps error in calculations. This is seen
           // in sqrt() calculations
           if (typeid(data__)==typeid(dd_real))

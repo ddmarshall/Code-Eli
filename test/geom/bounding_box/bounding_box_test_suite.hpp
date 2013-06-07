@@ -66,7 +66,7 @@ class bounding_box_test_suite : public Test::Suite
       TEST_ADD(bounding_box_test_suite<long double>::inside_test);
       TEST_ADD(bounding_box_test_suite<long double>::intersect_test);
     }
-#ifdef ELI_QD_FOUND
+#ifdef ELI_USING_QD
     void AddTests(const dd_real &)
     {
       // add the tests

@@ -72,7 +72,7 @@ class fit_container_test_suite : public Test::Suite
       TEST_ADD(fit_container_test_suite<long double>::list_constraints_test);
       TEST_ADD(fit_container_test_suite<long double>::closed_constraints_test);
     }
-#ifdef ELI_QD_FOUND
+#ifdef ELI_USING_QD
     void AddTests(const dd_real &)
     {
       // add the tests

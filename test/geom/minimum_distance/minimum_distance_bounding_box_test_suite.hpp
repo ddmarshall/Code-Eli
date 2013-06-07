@@ -64,7 +64,7 @@ class minimum_distance_bounding_box_test_suite : public Test::Suite
       TEST_ADD(minimum_distance_bounding_box_test_suite<long double>::point_2d_test);
       TEST_ADD(minimum_distance_bounding_box_test_suite<long double>::point_3d_test);
     }
-#ifdef ELI_QD_FOUND
+#ifdef ELI_USING_QD
     void AddTests(const dd_real &)
     {
       // add the tests

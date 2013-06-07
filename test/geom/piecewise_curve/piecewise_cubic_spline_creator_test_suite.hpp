@@ -100,7 +100,7 @@ class piecewise_cubic_spline_creator_test_suite : public Test::Suite
       TEST_ADD(piecewise_cubic_spline_creator_test_suite<long double>::create_periodic_cubic_spline_test);
       TEST_ADD(piecewise_cubic_spline_creator_test_suite<long double>::create_closed_cubic_spline_test);
     }
-#ifdef ELI_QD_FOUND
+#ifdef ELI_USING_QD
     void AddTests(const dd_real &)
     {
       // add the tests

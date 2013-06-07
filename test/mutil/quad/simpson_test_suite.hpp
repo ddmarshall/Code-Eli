@@ -92,7 +92,7 @@ void get_reference_adaptive_params<long double>(typename eli::mutil::quad::simps
 #endif
 }
 
-#ifdef ELI_QD_FOUND
+#ifdef ELI_USING_QD
 template <>
 void get_reference_adaptive_params<dd_real>(typename eli::mutil::quad::simpson<dd_real>::adaptive_params &ap)
 {
@@ -151,7 +151,7 @@ class simpson_test_suite : public Test::Suite
       TEST_ADD(simpson_test_suite<long double>::adaptive_test);
     }
 
-#ifdef ELI_QD_FOUND
+#ifdef ELI_USING_QD
     void AddTests(const dd_real &)
     {
       TEST_ADD(simpson_test_suite<dd_real>::uniform_points_test);
@@ -310,7 +310,7 @@ class simpson_test_suite : public Test::Suite
       data__ x0(1.0), x1(3.0), F_exact(std::exp(x1)-std::exp(x0)), F_quad, tol(std::numeric_limits<data__>::epsilon());
 
       // it takes too long to reach eps for QD types
-#ifdef ELI_QD_FOUND
+#ifdef ELI_USING_QD
       if ((typeid(data__)==typeid(dd_real)) || (typeid(data__)==typeid(qd_real)))
       {
         tol=std::sqrt(std::numeric_limits<dd_real>::epsilon())/2;
@@ -339,7 +339,7 @@ class simpson_test_suite : public Test::Suite
 
       // integrate to a known state
       ap=ap2;
-#ifdef ELI_QD_FOUND
+#ifdef ELI_USING_QD
       // do this because it takes too long to converge to default tolerance
       if (typeid(data__)==typeid(qd_real))
       {

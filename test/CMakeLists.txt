@@ -15,7 +15,8 @@ project(ELI_TEST)
 # set what libraries need to be used
 set(_ELI_TEST_LIBRARIES_LIST ${CPPTEST_LIBRARIES})
 if (QD_FOUND)
-  SET (_ELI_TEST_LIBRARIES_LIST ${_ELI_TEST_LIBRARIES_LIST} ${QD_LIBRARIES})
+  add_definitions(-DELI_USE_QD)
+  set(_ELI_TEST_LIBRARIES_LIST ${_ELI_TEST_LIBRARIES_LIST} ${QD_LIBRARIES})
 endif()
 
 add_subdirectory(constants)

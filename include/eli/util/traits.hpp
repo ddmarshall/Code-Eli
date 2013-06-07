@@ -221,7 +221,7 @@ namespace eli
       typedef long double promote_t;
     };
 
-#ifdef ELI_QD_FOUND
+#ifdef ELI_USING_QD
     //
     // traits promotion definitions for QD types
     //

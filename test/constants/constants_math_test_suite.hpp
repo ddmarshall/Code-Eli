@@ -48,7 +48,7 @@ void set_pi<long double>(long double &p)
 {
   p=3.141592653589793238462643383279502884196716939937510582L;
 }
-#ifdef ELI_QD_FOUND
+#ifdef ELI_USING_QD
 template<>
 void set_pi<dd_real>(dd_real &p)
 {
@@ -86,7 +86,7 @@ class constants_math_test_suite : public Test::Suite
       TEST_ADD(constants_math_test_suite<long double>::sqrt_test);
     }
 
-#ifdef ELI_QD_FOUND
+#ifdef ELI_USING_QD
     void AddTests(const dd_real &)
     {
       TEST_ADD(constants_math_test_suite<dd_real>::exp_test);

@@ -93,7 +93,7 @@ class bezier_curve_test_suite : public Test::Suite
       TEST_ADD(bezier_curve_test_suite<long double>::split_test);
       TEST_ADD(bezier_curve_test_suite<long double>::length_test);
     }
-#ifdef ELI_QD_FOUND
+#ifdef ELI_USING_QD
     void AddTests(const dd_real &)
     {
       // add the tests
@@ -256,7 +256,7 @@ class bezier_curve_test_suite : public Test::Suite
     {
       point_type cntrl_in[4];
       data_type eps(std::numeric_limits<data__>::epsilon());
-#ifdef ELI_QD_FOUND
+#ifdef ELI_USING_QD
       if ( (typeid(data_type)==typeid(dd_real)) || (typeid(data_type)==typeid(qd_real)) )
         eps=std::numeric_limits<double>::epsilon();
 #endif
@@ -369,7 +369,7 @@ class bezier_curve_test_suite : public Test::Suite
     {
       point_type cntrl_in[4];
       data_type eps(std::numeric_limits<data__>::epsilon());
-#ifdef ELI_QD_FOUND
+#ifdef ELI_USING_QD
       if ( (typeid(data_type)==typeid(dd_real)) || (typeid(data_type)==typeid(qd_real)) )
         eps=std::numeric_limits<double>::epsilon();
 #endif
@@ -409,7 +409,7 @@ class bezier_curve_test_suite : public Test::Suite
     {
       point_type cntrl_in[4];
       data_type eps(std::numeric_limits<data__>::epsilon());
-#ifdef ELI_QD_FOUND
+#ifdef ELI_USING_QD
       if ( (typeid(data_type)==typeid(dd_real)) || (typeid(data_type)==typeid(qd_real)) )
         eps=std::numeric_limits<double>::epsilon();
 #endif
@@ -450,7 +450,7 @@ class bezier_curve_test_suite : public Test::Suite
     {
       point_type cntrl_in[4];
       data_type eps(std::numeric_limits<data__>::epsilon());
-#ifdef ELI_QD_FOUND
+#ifdef ELI_USING_QD
       if ( (typeid(data_type)==typeid(dd_real)) || (typeid(data_type)==typeid(qd_real)) )
         eps=std::numeric_limits<double>::epsilon();
 #endif
@@ -491,7 +491,7 @@ class bezier_curve_test_suite : public Test::Suite
     {
       point_type cntrl_in[4];
       data_type eps(std::numeric_limits<data__>::epsilon());
-#ifdef ELI_QD_FOUND
+#ifdef ELI_USING_QD
       if ( (typeid(data_type)==typeid(dd_real)) || (typeid(data_type)==typeid(qd_real)) )
         eps=std::numeric_limits<double>::epsilon();
 #endif
@@ -549,7 +549,7 @@ class bezier_curve_test_suite : public Test::Suite
     {
       point_type cntrl_in[4];
       data_type eps(std::numeric_limits<data__>::epsilon());
-#ifdef ELI_QD_FOUND
+#ifdef ELI_USING_QD
       if ( (typeid(data_type)==typeid(dd_real)) || (typeid(data_type)==typeid(qd_real)) )
         eps=std::numeric_limits<double>::epsilon();
 #endif
@@ -611,7 +611,7 @@ class bezier_curve_test_suite : public Test::Suite
     {
       point_type cntrl_in[5];
       data_type eps(std::numeric_limits<data__>::epsilon());
-#ifdef ELI_QD_FOUND
+#ifdef ELI_USING_QD
       if ( (typeid(data_type)==typeid(dd_real)) || (typeid(data_type)==typeid(qd_real)) )
         eps=std::numeric_limits<double>::epsilon();
 #endif
@@ -657,7 +657,7 @@ class bezier_curve_test_suite : public Test::Suite
           {
             TEST_ASSERT((bc2.get_control_point(i)-cntrl_ref[i]).norm()<std::sqrt(eps));
           }
-#ifdef ELI_QD_FOUND
+#ifdef ELI_USING_QD
           else if ( (typeid(data__)==typeid(dd_real)) || (typeid(data__)==typeid(qd_real)) )
           {
             TEST_ASSERT((bc2.get_control_point(i)-cntrl_ref[i]).norm()<2.0*eps);
@@ -754,7 +754,7 @@ class bezier_curve_test_suite : public Test::Suite
     void demotion_test()
     {
       data_type eps(std::numeric_limits<data__>::epsilon());
-#ifdef ELI_QD_FOUND
+#ifdef ELI_USING_QD
       if ( (typeid(data_type)==typeid(dd_real)) || (typeid(data_type)==typeid(qd_real)) )
         eps=std::numeric_limits<double>::epsilon();
 #endif
@@ -1021,7 +1021,7 @@ class bezier_curve_test_suite : public Test::Suite
     {
       point_type cntrl_in[4], cntrl_ref[4];
       data_type eps(std::numeric_limits<data__>::epsilon());
-#ifdef ELI_QD_FOUND
+#ifdef ELI_USING_QD
       if ( (typeid(data_type)==typeid(dd_real)) || (typeid(data_type)==typeid(qd_real)) )
         eps=std::numeric_limits<double>::epsilon();
 #endif
@@ -1105,7 +1105,7 @@ class bezier_curve_test_suite : public Test::Suite
     {
       point_type  cntrl_in[4];
       data_type eps(std::numeric_limits<data__>::epsilon());
-#ifdef ELI_QD_FOUND
+#ifdef ELI_USING_QD
       if ( (typeid(data_type)==typeid(dd_real)) || (typeid(data_type)==typeid(qd_real)) )
         eps=std::numeric_limits<double>::epsilon();
 #endif

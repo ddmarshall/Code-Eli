@@ -86,7 +86,7 @@ class fd_test_suite : public Test::Suite
       TEST_ADD(fd_test_suite<long double>::d2o2_test);
     }
 
-#ifdef ELI_QD_FOUND
+#ifdef ELI_USING_QD
     void AddTests(const dd_real &)
     {
       TEST_ADD(fd_test_suite<dd_real>::d1o1_test);

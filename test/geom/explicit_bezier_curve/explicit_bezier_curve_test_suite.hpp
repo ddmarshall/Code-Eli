@@ -74,7 +74,7 @@ class explicit_bezier_curve_test_suite : public Test::Suite
       TEST_ADD(explicit_bezier_curve_test_suite<long double>::demotion_test);
       TEST_ADD(explicit_bezier_curve_test_suite<long double>::length_test);
     }
-#ifdef ELI_QD_FOUND
+#ifdef ELI_USING_QD
     void AddTests(const dd_real &)
     {
       // add the tests
@@ -219,7 +219,7 @@ class explicit_bezier_curve_test_suite : public Test::Suite
     {
       typedef eli::geom::curve::bezier<data__, 2> bezier_curve_type;
       data_type eps(std::numeric_limits<data__>::epsilon());
-#ifdef ELI_QD_FOUND
+#ifdef ELI_USING_QD
       if ( (typeid(data_type)==typeid(dd_real)) || (typeid(data_type)==typeid(qd_real)) )
         eps=std::numeric_limits<double>::epsilon();
 #endif
@@ -272,7 +272,7 @@ class explicit_bezier_curve_test_suite : public Test::Suite
     {
       typedef eli::geom::curve::bezier<data__, 2> bezier_curve_type;
       data_type eps(std::numeric_limits<data__>::epsilon());
-#ifdef ELI_QD_FOUND
+#ifdef ELI_USING_QD
       if ( (typeid(data_type)==typeid(dd_real)) || (typeid(data_type)==typeid(qd_real)) )
         eps=std::numeric_limits<double>::epsilon();
 #endif
@@ -395,7 +395,7 @@ class explicit_bezier_curve_test_suite : public Test::Suite
     {
       typedef eli::geom::curve::bezier<data__, 2> bezier_curve_type;
       data_type eps(std::numeric_limits<data__>::epsilon());
-#ifdef ELI_QD_FOUND
+#ifdef ELI_USING_QD
       if ( (typeid(data_type)==typeid(dd_real)) || (typeid(data_type)==typeid(qd_real)) )
         eps=std::numeric_limits<double>::epsilon();
 #endif
@@ -714,7 +714,7 @@ class explicit_bezier_curve_test_suite : public Test::Suite
     void length_test()
     {
       data_type eps(std::numeric_limits<data__>::epsilon());
-#ifdef ELI_QD_FOUND
+#ifdef ELI_USING_QD
       if ( (typeid(data_type)==typeid(dd_real)) || (typeid(data_type)==typeid(qd_real)) )
         eps=std::numeric_limits<double>::epsilon();
 #endif

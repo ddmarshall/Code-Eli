@@ -66,7 +66,7 @@ class poly_root_test_suite : public Test::Suite
       TEST_ADD(poly_root_test_suite<long double>::root_finder_test);
     }
 
-#ifdef ELI_QD_FOUND
+#ifdef ELI_USING_QD
     void AddTests(const dd_real &)
     {
       TEST_ADD(poly_root_test_suite<dd_real>::descartes_test);
@@ -632,7 +632,7 @@ class poly_root_test_suite : public Test::Suite
       TEST_ASSERT(root.size()==3);
       if (root.size()==3)
       {
-#ifdef ELI_QD_FOUND
+#ifdef ELI_USING_QD
         if ((typeid(data__)==typeid(dd_real)) || (typeid(data__)==typeid(qd_real)))
         {
           TEST_ASSERT_DELTA(root[0], root_val[0], 2*std::numeric_limits<data__>::epsilon());
@@ -792,7 +792,7 @@ class poly_root_test_suite : public Test::Suite
           TEST_ASSERT_DELTA(root[0], root_val[0], 17*std::numeric_limits<data__>::epsilon());
           TEST_ASSERT_DELTA(root[1], root_val[1], 17*std::numeric_limits<data__>::epsilon());
         }
-#ifdef ELI_QD_FOUND
+#ifdef ELI_USING_QD
         else if (typeid(data__)==typeid(dd_real))
         {
           TEST_ASSERT_DELTA(root[0], root_val[0], std::numeric_limits<data__>::epsilon());
@@ -866,7 +866,7 @@ class poly_root_test_suite : public Test::Suite
       TEST_ASSERT(root.size()==4);
       if (root.size()==4)
       {
-#ifdef ELI_QD_FOUND
+#ifdef ELI_USING_QD
         if ((typeid(data__)==typeid(dd_real)) || (typeid(data__)==typeid(qd_real)))
         {
           TEST_ASSERT_DELTA(root[0], root_val[0], std::numeric_limits<data__>::epsilon());
@@ -904,7 +904,7 @@ class poly_root_test_suite : public Test::Suite
           TEST_ASSERT_DELTA(root[2], root_val[2], std::numeric_limits<data__>::epsilon());
           TEST_ASSERT(root[3]==root_val[3]);
         }
-#ifdef ELI_QD_FOUND
+#ifdef ELI_USING_QD
         else if ((typeid(data__)==typeid(dd_real)) || (typeid(data__)==typeid(qd_real)))
         {
           TEST_ASSERT_DELTA(root[0], root_val[0], std::numeric_limits<data__>::epsilon());
@@ -942,7 +942,7 @@ class poly_root_test_suite : public Test::Suite
           TEST_ASSERT(root[2]==root_val[1]);
           TEST_ASSERT(root[3]==root_val[3]);
         }
-#ifdef ELI_QD_FOUND
+#ifdef ELI_USING_QD
         else if ((typeid(data__)==typeid(dd_real)) || (typeid(data__)==typeid(qd_real)))
         {
           TEST_ASSERT_DELTA(root[0], root_val[0], std::numeric_limits<data__>::epsilon());
@@ -998,7 +998,7 @@ class poly_root_test_suite : public Test::Suite
       TEST_ASSERT(root.size()==2);
       if (root.size()==2)
       {
-#ifdef ELI_QD_FOUND
+#ifdef ELI_USING_QD
         if ((typeid(data__)==typeid(dd_real)) || (typeid(data__)==typeid(qd_real)))
         {
           TEST_ASSERT_DELTA(root[0], root_val[1], std::numeric_limits<data__>::epsilon());

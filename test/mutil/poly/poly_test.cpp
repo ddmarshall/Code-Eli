@@ -157,7 +157,7 @@ int main(int argc, char *argv[])
     ts.add(std::auto_ptr<Test::Suite>(new poly_basic_test_suite<float>()));
     ts.add(std::auto_ptr<Test::Suite>(new poly_basic_test_suite<double>()));
     ts.add(std::auto_ptr<Test::Suite>(new poly_basic_test_suite<long double>()));
-#ifdef ELI_QD_FOUND
+#ifdef ELI_USING_QD
     ts.add(std::auto_ptr<Test::Suite>(new poly_basic_test_suite<dd_real>()));
     ts.add(std::auto_ptr<Test::Suite>(new poly_basic_test_suite<qd_real>()));
 #endif
@@ -165,14 +165,14 @@ int main(int argc, char *argv[])
     ts.add(std::auto_ptr<Test::Suite>(new poly_math_test_suite<float>()));
     ts.add(std::auto_ptr<Test::Suite>(new poly_math_test_suite<double>()));
     ts.add(std::auto_ptr<Test::Suite>(new poly_math_test_suite<long double>()));
-#ifdef ELI_QD_FOUND
+#ifdef ELI_USING_QD
     ts.add(std::auto_ptr<Test::Suite>(new poly_math_test_suite<dd_real>()));
     ts.add(std::auto_ptr<Test::Suite>(new poly_math_test_suite<qd_real>()));
 #endif
     ts.add(std::auto_ptr<Test::Suite>(new poly_root_test_suite<float>()));
     ts.add(std::auto_ptr<Test::Suite>(new poly_root_test_suite<double>()));
     ts.add(std::auto_ptr<Test::Suite>(new poly_root_test_suite<long double>()));
-#ifdef ELI_QD_FOUND
+#ifdef ELI_USING_QD
     ts.add(std::auto_ptr<Test::Suite>(new poly_root_test_suite<dd_real>()));
     ts.add(std::auto_ptr<Test::Suite>(new poly_root_test_suite<qd_real>()));
 #endif

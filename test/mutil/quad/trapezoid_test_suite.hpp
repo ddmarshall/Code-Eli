@@ -47,7 +47,7 @@ class trapezoid_test_suite : public Test::Suite
       TEST_ADD(trapezoid_test_suite<long double>::nonuniform_points_test);
     }
 
-#ifdef ELI_QD_FOUND
+#ifdef ELI_USING_QD
     void AddTests(const dd_real &)
     {
       TEST_ADD(trapezoid_test_suite<dd_real>::uniform_points_test);

@@ -199,7 +199,13 @@ namespace std
 
 #cmakedefine ELI_QD_FOUND
 
-#ifdef ELI_QD_FOUND
+#if !defined(ELI_QD_FOUND) && defined(ELI_USE_QD)
+# error Cannot use QD since it was not found!
+#endif
+
+#if defined(ELI_QD_FOUND) && defined(ELI_USE_QD)
+# define ELI_USING_QD
+
 # include <qd/dd_real.h>
 # include <qd/qd_real.h>
 # include <qd/fpu.h>
