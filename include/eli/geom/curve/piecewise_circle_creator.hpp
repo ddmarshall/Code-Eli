@@ -15,6 +15,8 @@
 
 #include <iterator>
 
+#include "eli/constants/math.hpp"
+
 #include "eli/geom/point/distance.hpp"
 
 #include "eli/geom/curve/piecewise_creator_base.hpp"
