@@ -18,6 +18,7 @@
 
 #include "eli/mutil/fd/d1o2.hpp"
 
+#include "eli/geom/general/continuity.hpp"
 #include "eli/geom/curve/piecewise_creator_base.hpp"
 #include "eli/geom/curve/piecewise.hpp"
 #include "eli/geom/curve/bezier.hpp"
@@ -88,6 +89,8 @@ namespace eli
             typedef piecewise<bezier, data_type, dim__, tolerance_type> piecewise_curve_type;
             typedef typename piecewise_curve_type::curve_type curve_type;
             typedef typename piecewise_curve_type::error_code error_code;
+
+            pc.clear();
 
             curve_type c(3);
             error_code err;

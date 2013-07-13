@@ -15,6 +15,7 @@
 
 #include "eli/geom/curve/piecewise_circle_creator.hpp"
 #include "eli/geom/curve/piecewise_point_creator.hpp"
+#include "eli/geom/curve/piecewise_linear_creator.hpp"
 #include "eli/geom/curve/piecewise_polygon_creator.hpp"
 #include "eli/geom/curve/piecewise_cubic_spline_creator.hpp"
 

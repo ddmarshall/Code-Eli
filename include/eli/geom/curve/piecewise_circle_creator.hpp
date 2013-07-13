@@ -102,6 +102,8 @@ namespace eli
             typedef typename piecewise_curve_type::error_code error_code;
             typedef typename curve_type::control_point_type control_point_type;
 
+            pc.clear();
+
             curve_type c(3);
             control_point_type cp[4];
             error_code err;

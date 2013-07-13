@@ -57,6 +57,8 @@ namespace eli
             typedef typename piecewise_curve_type::curve_type curve_type;
             typedef typename piecewise_curve_type::error_code error_code;
 
+            pc.clear();
+
             curve_type c(1);
             error_code err;
 
