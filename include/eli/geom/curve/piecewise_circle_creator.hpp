@@ -69,6 +69,7 @@ namespace eli
             : piecewise_creator_base<data_type, dim__, tolerance_type>(ns, 0), xradius(xr), yradius(yr) {}
           piecewise_ellipse_creator_base(const piecewise_ellipse_creator_base<data_type, dim__, tolerance_type> &pcc)
             : piecewise_creator_base<data_type, dim__, tolerance_type>(pcc), xradius(pcc.xradius), yradius(pcc.yradius), x(pcc.x), y(pcc.y) {}
+          virtual ~piecewise_ellipse_creator_base() {};
 
           void set_origin(const point_type &orig) {origin=orig;}
           point_type get_origin() const {return origin;}

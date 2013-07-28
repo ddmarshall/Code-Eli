@@ -39,6 +39,7 @@ namespace eli
               dt[i]=1;
           }
           piecewise_creator_base(const piecewise_creator_base<data_type, dim__, tolerance_type> &pcb) : dt(pcb.dt), t0(pcb.t0) {}
+          virtual ~piecewise_creator_base() {}
 
           index_type get_number_segments() const
           {

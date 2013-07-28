@@ -40,7 +40,7 @@ namespace eli
           piecewise_point_creator(const index_type &ns) : piecewise_creator_base<data_type, dim__, tolerance_type>(ns, 0) {}
           piecewise_point_creator(const piecewise_point_creator<data_type, dim__, tolerance_type> &ppc)
             : piecewise_creator_base<data_type, dim__, tolerance_type>(ppc), point(ppc.point) {}
-          ~piecewise_point_creator() {}
+          virtual ~piecewise_point_creator() {}
 
           void set_point(const point_type &p)
           {
