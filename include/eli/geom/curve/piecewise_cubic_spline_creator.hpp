@@ -487,12 +487,13 @@ namespace eli
             // itm1 -> i-1
             // it ---> i
             // itp1 -> i+1
+            ++itm1; ++it; ++itp1;
             for (i=1; i<npts-2; ++i, ++itm1, ++it, ++itp1)
             {
               m[1]=(1-c)*((*itp1)-(*itm1))/(this->get_segment_dt(i)+this->get_segment_dt(i+1));
 
               dt=this->get_segment_dt(i);
-              set_segment_control_points(*it, (*it)+dt*m[0]/3, (*itp1)-dt*m[1]/3, *itp1, i);
+              set_segment_control_points(*itm1, (*itm1)+dt*m[0]/3, (*it)-dt*m[1]/3, *it, i);
               m[0]=m[1];
             }
 
@@ -501,6 +502,9 @@ namespace eli
             // itm1 -> npts-3
             // it ---> npts-2
             // itp1 -> npts-1
+            itp1=it;
+            it=itm1;
+            itm1=it; --itm1;
             dt=this->get_segment_dt(npts-2);
             switch (end_cont)
             {
