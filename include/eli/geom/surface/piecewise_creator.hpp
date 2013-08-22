@@ -30,9 +30,16 @@ namespace eli
   {
     namespace surface
     {
+      enum surface_orientation
+      {
+        OUTWARD_NORMAL = 1,
+        INWARD_NORMAL  = 2
+      };
+
       template<typename data__, unsigned short dim__, typename tol__>
       bool create_body_of_revolution(piecewise<bezier, data__, dim__, tol__> &ps,
-                                     const eli::geom::curve::piecewise<eli::geom::curve::bezier, data__, dim__, tol__> &pc, int axis)
+                                     const eli::geom::curve::piecewise<eli::geom::curve::bezier, data__, dim__, tol__> &pc,
+                                     int axis, surface_orientation orient)
       {
         typedef piecewise<bezier, data__, dim__, tol__> piecewise_surface_type;
         typedef eli::geom::curve::piecewise<eli::geom::curve::bezier, data__, dim__, tol__> piecewise_curve_type;
@@ -76,6 +83,10 @@ namespace eli
             assert(false);
             return false;
           }
+        }
+        if (orient==OUTWARD_NORMAL)
+        {
+          normal*=-1;
         }
 
         // cycle through each curve segment
