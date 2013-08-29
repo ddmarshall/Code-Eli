@@ -280,7 +280,7 @@ int main(int /*argc*/, char * /*argv*/[])
   piecewise_surface_type ps;
 
   // create the pod surface from the piecewise curve
-  eli::geom::surface::create_body_of_revolution(ps, pc1, 0);
+  eli::geom::surface::create_body_of_revolution(ps, pc1, 0, eli::geom::surface::OUTWARD_NORMAL);
 
   // print out octave code
   octave_print(std::cout, "bez_c", pc1);

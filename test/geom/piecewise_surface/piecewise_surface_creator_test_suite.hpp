@@ -280,7 +280,7 @@ class piecewise_surface_creator_test_suite : public Test::Suite
 
         piecewise_surface_type ps;
 
-        TEST_ASSERT(eli::geom::surface::create_body_of_revolution(ps, pc, 0));
+        TEST_ASSERT(eli::geom::surface::create_body_of_revolution(ps, pc, 0, eli::geom::surface::OUTWARD_NORMAL));
 
 //         if (typeid(data_type)==typeid(double))
 //           octave_print(2, ps);
