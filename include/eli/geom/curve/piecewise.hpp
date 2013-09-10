@@ -444,11 +444,14 @@ namespace eli
             return NO_ERROR;
           }
 
+          /** index0 - start index of segments to replace
+            * index1 - index of the first segment after the ones to be replaced
+            */
           error_code replace(const curve_type &curve, const data_type &dt, const index_type &index0, const index_type &index1)
           {
             if (index0>=number_segments())
               return INVALID_INDEX;
-            if (index1>=number_segments())
+            if (index1>number_segments())
               return INVALID_INDEX;
             if (index0>=index1)
               return INVALID_INDEX;
@@ -541,11 +544,14 @@ namespace eli
             return NO_ERROR;
           }
 
+          /** index0 - start index of segments to replace
+            * index1 - index of the first segment after the ones to be replaced
+            */
           error_code replace(const piecewise<curve__, data_type, dim__> &p, const index_type &index0, const index_type &index1)
           {
             if (index0>=number_segments())
               return INVALID_INDEX;
-            if (index1>=number_segments())
+            if (index1>number_segments())
               return INVALID_INDEX;
             if (index0>=index1)
               return INVALID_INDEX;
