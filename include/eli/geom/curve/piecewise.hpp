@@ -15,6 +15,7 @@
 
 #include <list>
 
+#include "eli/constants/math.hpp"
 #include "eli/util/tolerance.hpp"
 
 #include "eli/geom/general/continuity.hpp"
@@ -76,6 +77,13 @@ namespace eli
   {
     namespace curve
     {
+      // forward declaration of length function used in methods below. The length function
+      // includes this header.
+      template<typename curve__>
+      void length(typename curve__::data_type &len, const curve__ &c, const typename curve__::data_type &tol);
+      template<typename curve__>
+      void length(typename curve__::data_type &len, const curve__ &c, const typename curve__::data_type &t0, const typename curve__::data_type &t1, const typename curve__::data_type &tol);
+
       template<template<typename, unsigned short, typename> class curve__, typename data__, unsigned short dim__, typename tol__=eli::util::tolerance<data__> >
       class piecewise
       {
@@ -624,6 +632,206 @@ namespace eli
             return NO_ERROR;
           }
 
+          void round(const data_type &rad)
+          {
+            // catch special case of no rounding
+            if (rad<=0)
+            {
+              return;
+            }
+
+            // Note: this could be implemented more efficiently if wanted to track the
+            //       segment container iterators, but that would require more code
+            //       duplication since the round(rad, i) method calls other methods with
+            //       useful error checking.
+
+            // Note: need to keep calling number_segments() because a call to round(rad, i)
+            //       might increase the number of sections and need to make sure that this
+            //       loop gets to the last segment
+            for (index_type i=0; i<=number_segments(); ++i)
+            {
+              round(rad, i);
+            }
+          }
+
+          bool round(const data_type &rad, const index_type &joint)
+          {
+            // if joint doesn't exist then return
+            if ((joint<0) || (joint>number_segments()))
+            {
+              assert(false);
+              return false;
+            }
+
+            // catch special case of no rounding
+            if (rad<=0)
+            {
+              return false;
+            }
+
+            // catch special case of rounding first or last joint of open curve
+            if (((joint==0) || (joint==number_segments())) && open())
+            {
+              return false;
+            }
+
+            index_type im1, i;
+            bool rounding_end(false);
+
+            if ((joint==0) || (joint==number_segments()))
+            {
+              i=0;
+              im1=number_segments()-1;
+              rounding_end=true;
+            }
+            else
+            {
+              i=joint;
+              im1=joint-1;
+            }
+
+            curve_type cim1, ci, arc, c, ctrim;
+            data_type dtim1, dti, r, lenim1, leni, tim1_split(-1), ti_split(-1);
+            point_type fim1, fi, fpim1, fpi;
+            control_point_type cp[4];
+            tolerance_type tol;
+
+            // get the two curve segments
+            get(cim1, dtim1, im1);
+            get(ci, dti, i);
+
+            // check to see if joint needs to be rounded
+            fpim1=cim1.fp(1); fpim1.normalize();
+            fpi=ci.fp(0); fpi.normalize();
+            if (tol.approximately_equal(fpi.dot(fpim1), 1))
+            {
+              return false;
+            }
+
+            // determine what the actual radius will be
+            r=rad;
+            eli::geom::curve::length(lenim1, cim1, tol.get_absolute_tolerance());
+            eli::geom::curve::length(leni, ci, tol.get_absolute_tolerance());
+            if (lenim1<r)
+            {
+              tim1_split=0;
+              r=lenim1;
+            }
+            if (leni<r)
+            {
+              tim1_split=-1;
+              ti_split=0;
+              r=leni;
+            }
+
+            // find coordinate that corresponds to location of radius on each curve
+            if (tim1_split<0)
+            {
+              // FIX: this is exact for straight lines and approximate for other curves
+              tim1_split=1-r/lenim1;
+            }
+            if (ti_split<0)
+            {
+              // FIX: this is exact for straight lines and approximate for other curves
+              ti_split=r/leni;
+            }
+
+            // calculate the points & slopes for end of round
+            fim1=cim1.f(tim1_split);
+            fpim1=cim1.fp(tim1_split); fpim1.normalize();
+            fi=ci.f(ti_split);
+            fpi=ci.fp(ti_split); fpi.normalize();
+
+            // build round curve
+            data_type k=static_cast<data_type>(4)*(eli::constants::math<data_type>::sqrt_two()-static_cast<data_type>(1))/static_cast<data_type>(3); // use this value so that 90 deg. corners will have close circle
+            arc.resize(3);
+            cp[0]=fim1;
+            cp[1]=fim1+fpim1*(k*r);
+            cp[2]=fi-fpi*(k*r);
+            cp[3]=fi;
+            arc.set_control_point(cp[0], 0);
+            arc.set_control_point(cp[1], 1);
+            arc.set_control_point(cp[2], 2);
+            arc.set_control_point(cp[3], 3);
+
+            // split the two curves
+            cim1.split(c, ctrim, tim1_split); cim1=c;
+            ci.split(ctrim, c, ti_split); ci=c;
+
+            // replace/add curves
+            error_code ec;
+            if (rounding_end)
+            {
+              curve_type arc1, arc2;
+              data_type orig_t0(get_t0());
+
+              // split the arc
+              arc.split(arc1, arc2, static_cast<data_type>(0.5));
+
+              // put the ith segment and arc2 onto the end of the list of curves
+              ec=replace(cim1, dtim1*tim1_split, number_segments()-1);
+              if (ec!=NO_ERROR)
+              {
+                assert(false);
+                return false;
+              }
+              ec=push_back(arc1, dtim1*(static_cast<data_type>(1)-tim1_split));
+              if (ec!=NO_ERROR)
+              {
+                assert(false);
+                return false;
+              }
+
+              // put arc1 and the (i-1)st segment onto the front of the list of curves
+              ec=replace(ci, dti*(static_cast<data_type>(1)-ti_split), 0);
+              if (ec!=NO_ERROR)
+              {
+                assert(false);
+                return false;
+              }
+              ec=push_front(arc2, dti*ti_split);
+              if (ec!=NO_ERROR)
+              {
+                assert(false);
+                return false;
+              }
+              set_t0(orig_t0);
+            }
+            else
+            {
+              piecewise<curve__, data_type, dim__> pct;
+
+              ec=pct.push_back(cim1, dtim1*tim1_split);
+              if (ec!=NO_ERROR)
+              {
+                assert(false);
+                return false;
+              }
+              ec=pct.push_back(arc, dtim1*(1-tim1_split)+dti*ti_split);
+              if (ec!=NO_ERROR)
+              {
+                assert(false);
+                return false;
+              }
+              ec=pct.push_back(ci, dti*(1-ti_split));
+              if (ec!=NO_ERROR)
+              {
+                assert(false);
+                return false;
+              }
+
+              // replace the two segments with the piecewise curve
+              ec=replace(pct, i-1, i+1);
+              if (ec!=NO_ERROR)
+              {
+                assert(false);
+                return false;
+              }
+            }
+
+            return true;
+          }
+
           point_type f(const data_type &t) const
           {
             // find segment that corresponds to given t
@@ -788,20 +996,37 @@ namespace eli
 
           void find_segment(typename segment_collection_type::const_iterator &it, data_type &tt, const data_type &t_in) const
           {
+            tol__ tol;
             data_type t(t0);
 
             // check to see if have invalid t_in
             if (t_in<t0)
             {
+              if (tol.approximately_equal(t_in, t0))
+              {
+                it=segments.begin();
+                tt=0;
+                return;
+              }
               it=segments.end();
               return;
             }
 
             for (it=segments.begin(); it!=segments.end(); ++it)
             {
+              if (tol.approximately_equal(t_in, t+it->delta_t))
+              {
+                tt=1;
+                return;
+              }
+
               if (t_in<=t+it->delta_t)
               {
                 tt=(t_in-t)/it->delta_t;
+                if (tt>static_cast<data_type>(1))
+                  tt=static_cast<data_type>(1);
+                if (tt<static_cast<data_type>(0))
+                  tt=static_cast<data_type>(0);
                 return;
               }
               t+=it->delta_t;
@@ -810,20 +1035,37 @@ namespace eli
 
           void find_segment(typename segment_collection_type::iterator &it, data_type &tt, const data_type &t_in)
           {
+            tol__ tol;
             data_type t(t0);
 
             // check to see if have invalid t_in
             if (t_in<t0)
             {
+              if (tol.approximately_equal(t_in, t0))
+              {
+                it=segments.begin();
+                tt=0;
+                return;
+              }
               it=segments.end();
               return;
             }
 
             for (it=segments.begin(); it!=segments.end(); ++it)
             {
+              if (tol.approximately_equal(t_in, t+it->delta_t))
+              {
+                tt=1;
+                return;
+              }
+
               if (t_in<=t+it->delta_t)
               {
                 tt=(t_in-t)/it->delta_t;
+                if (tt>static_cast<data_type>(1))
+                  tt=static_cast<data_type>(1);
+                if (tt<static_cast<data_type>(0))
+                  tt=static_cast<data_type>(0);
                 return;
               }
               t+=it->delta_t;

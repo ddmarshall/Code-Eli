@@ -53,6 +53,7 @@ class piecewise_curve_test_suite : public Test::Suite
       TEST_ADD(piecewise_curve_test_suite<float>::evaluation_test);
       TEST_ADD(piecewise_curve_test_suite<float>::split_test);
       TEST_ADD(piecewise_curve_test_suite<float>::length_test);
+      TEST_ADD(piecewise_curve_test_suite<float>::round_test);
     }
     void AddTests(const double &)
     {
@@ -65,6 +66,7 @@ class piecewise_curve_test_suite : public Test::Suite
       TEST_ADD(piecewise_curve_test_suite<double>::evaluation_test);
       TEST_ADD(piecewise_curve_test_suite<double>::split_test);
       TEST_ADD(piecewise_curve_test_suite<double>::length_test);
+      TEST_ADD(piecewise_curve_test_suite<double>::round_test);
     }
     void AddTests(const long double &)
     {
@@ -77,6 +79,7 @@ class piecewise_curve_test_suite : public Test::Suite
       TEST_ADD(piecewise_curve_test_suite<long double>::evaluation_test);
       TEST_ADD(piecewise_curve_test_suite<long double>::split_test);
       TEST_ADD(piecewise_curve_test_suite<long double>::length_test);
+      TEST_ADD(piecewise_curve_test_suite<long double>::round_test);
     }
 #ifdef ELI_USING_QD
     void AddTests(const dd_real &)
@@ -90,6 +93,7 @@ class piecewise_curve_test_suite : public Test::Suite
       TEST_ADD(piecewise_curve_test_suite<dd_real>::evaluation_test);
       TEST_ADD(piecewise_curve_test_suite<dd_real>::split_test);
       TEST_ADD(piecewise_curve_test_suite<dd_real>::length_test);
+      TEST_ADD(piecewise_curve_test_suite<dd_real>::round_test);
     }
 
     void AddTests(const qd_real &)
@@ -103,6 +107,7 @@ class piecewise_curve_test_suite : public Test::Suite
       TEST_ADD(piecewise_curve_test_suite<qd_real>::evaluation_test);
       TEST_ADD(piecewise_curve_test_suite<qd_real>::split_test);
       TEST_ADD(piecewise_curve_test_suite<qd_real>::length_test);
+      TEST_ADD(piecewise_curve_test_suite<qd_real>::round_test);
     }
 #endif
   public:
@@ -115,6 +120,111 @@ class piecewise_curve_test_suite : public Test::Suite
     }
 
   private:
+  void octave_print(int figno, const piecewise_curve_type &pc)
+  {
+    index_type i, pp, ns;
+    data_type tmin, tmax;
+
+    ns=pc.number_segments();
+    pc.get_parameter_min(tmin);
+    pc.get_parameter_max(tmax);
+
+    std::cout << "figure(" << figno << ");" << std::endl;
+
+    // get control points and print
+    std::cout << "cp_x=[";
+    for (pp=0; pp<ns; ++pp)
+    {
+      curve_type bez;
+      pc.get(bez, pp);
+      for (i=0; i<=bez.degree(); ++i)
+      {
+        std::cout << bez.get_control_point(i).x();
+        if (i<bez.degree())
+          std::cout << ", ";
+        else if (pp<ns-1)
+          std::cout << "; ";
+      }
+      std::cout << std::endl;
+    }
+    std::cout << "];" << std::endl;
+
+    std::cout << "cp_y=[";
+    for (pp=0; pp<ns; ++pp)
+    {
+      curve_type bez;
+      pc.get(bez, pp);
+      for (i=0; i<=bez.degree(); ++i)
+      {
+        std::cout << bez.get_control_point(i).y();
+        if (i<bez.degree())
+          std::cout << ", ";
+        else if (pp<ns-1)
+          std::cout << "; ";
+      }
+      std::cout << std::endl;
+    }
+    std::cout << "];" << std::endl;
+
+    std::cout << "cp_z=[";
+    for (pp=0; pp<ns; ++pp)
+    {
+      curve_type bez;
+      pc.get(bez, pp);
+      for (i=0; i<=bez.degree(); ++i)
+      {
+        std::cout << bez.get_control_point(i).z();
+        if (i<bez.degree())
+          std::cout << ", ";
+        else if (pp<ns-1)
+          std::cout << "; ";
+      }
+      std::cout << std::endl;
+    }
+    std::cout << "];" << std::endl;
+
+    // initialize the t parameters
+    std::vector<data_type> t(129);
+    for (i=0; i<static_cast<index_type>(t.size()); ++i)
+    {
+      t[i]=tmin+(tmax-tmin)*static_cast<data_type>(i)/(t.size()-1);
+    }
+
+    // set the surface points
+    std::cout << "surf_x=[";
+    for (i=0; i<static_cast<index_type>(t.size()); ++i)
+    {
+      std::cout << pc.f(t[i]).x();
+      if (i<static_cast<index_type>(t.size()-1))
+        std::cout << ", ";
+    }
+    std::cout << "];" << std::endl;
+
+    std::cout << "surf_y=[";
+    for (i=0; i<static_cast<index_type>(t.size()); ++i)
+    {
+      std::cout << pc.f(t[i]).y();
+      if (i<static_cast<index_type>(t.size()-1))
+        std::cout << ", ";
+    }
+    std::cout << "];" << std::endl;
+
+    std::cout << "surf_z=[";
+    for (i=0; i<static_cast<index_type>(t.size()); ++i)
+    {
+      std::cout << pc.f(t[i]).z();
+      if (i<static_cast<index_type>(t.size()-1))
+        std::cout << ", ";
+    }
+    std::cout << "];" << std::endl;
+
+    std::cout << "setenv('GNUTERM', 'x11');" << std::endl;
+    std::cout << "plot3(surf_x, surf_y, surf_z, '-k');" << std::endl;
+    std::cout << "hold on;" << std::endl;
+    std::cout << "plot3(cp_x', cp_y', cp_z', '-ok', 'MarkerFaceColor', [0 0 0]);" << std::endl;
+    std::cout << "hold off;" << std::endl;
+  }
+
     void creation_test()
     {
       piecewise_curve_type c1, c2;
@@ -1150,7 +1260,106 @@ class piecewise_curve_test_suite : public Test::Suite
       ref_len=temp0+bc_len[1]+temp1;
       TEST_ASSERT(std::abs(len-ref_len)<166*tol);
     }
-};
 
+    void round_test()
+    {
+      // create closed piecewise curve
+      data_type eps(std::numeric_limits<data__>::epsilon());
+#ifdef ELI_USING_QD
+      if ( (typeid(data_type)==typeid(dd_real)) || (typeid(data_type)==typeid(qd_real)) )
+        eps=std::numeric_limits<double>::epsilon();
+#endif
+      piecewise_curve_type pwc0, pwc1;
+      typename curve_type::control_point_type cntrl_in[3];
+      typename piecewise_curve_type::error_code err;
+      curve_type bc;
+      point_type pt0, pt1, ptref;
+      data_type t[4], rad(0.2);
+      index_type i, ip1;
+
+      // build piecewise curve
+      cntrl_in[0] << 0, 0, 0;
+      cntrl_in[1] << 0, 2, 0;
+      cntrl_in[2] << 1, 1, 0;
+      t[0]=-0.5;
+      t[1]=0.5;
+      t[2]=1.5;
+      t[3]=2.5;
+      bc.resize(1);
+      pwc0.set_t0(t[0]);
+      i=0;
+      ip1=1;
+      bc.set_control_point(cntrl_in[i], 0);
+      bc.set_control_point(cntrl_in[ip1], 1);
+      err=pwc0.push_back(bc, t[i+1]-t[i]);
+      TEST_ASSERT(err==piecewise_curve_type::NO_ERROR);
+      i=1;
+      ip1=2;
+      bc.set_control_point(cntrl_in[i], 0);
+      bc.set_control_point(cntrl_in[ip1], 1);
+      err=pwc0.push_back(bc, t[i+1]-t[i]);
+      TEST_ASSERT(err==piecewise_curve_type::NO_ERROR);
+      i=2;
+      ip1=0;
+      bc.set_control_point(cntrl_in[i], 0);
+      bc.set_control_point(cntrl_in[ip1], 1);
+      err=pwc0.push_back(bc, t[i+1]-t[i]);
+      TEST_ASSERT(err==piecewise_curve_type::NO_ERROR);
+      TEST_ASSERT(pwc0.number_segments()==3);
+      pwc1=pwc0;
+
+      // round internal joint
+      TEST_ASSERT(pwc0.round(rad, 1));
+      TEST_ASSERT(pwc0.number_segments()==4);
+      pt0=pwc0.f(t[1]);
+      pt1=pwc1.f(t[1]);
+      ptref << 0.0291414, 1.89247, 0;
+      TEST_ASSERT(pt0!=pt1);
+      TEST_ASSERT((pt0-ptref).norm()<1e-4);
+
+      // round joint 0
+      pwc0=pwc1;
+      TEST_ASSERT(pwc0.round(rad, 0));
+      pt0=pwc0.f(t[0]);
+      pt1=pwc1.f(t[0]);
+      ptref << 0.0414214, 0.1, 0;
+      data_type v; pwc0.get_parameter_max(v);
+      TEST_ASSERT(pt0!=pt1);
+      TEST_ASSERT((pt0-ptref).norm()<1e-4);
+
+      // round last joint
+      pwc0=pwc1;
+      TEST_ASSERT(pwc0.round(rad, 3));
+      pt0=pwc0.f(t[3]);
+      pt1=pwc1.f(t[3]);
+      ptref << 0.0414214, 0.1, 0;
+      TEST_ASSERT(pt0!=pt1);
+      TEST_ASSERT((pt0-ptref).norm()<1e-4);
+
+      // round all joints
+      pwc0=pwc1;
+      pwc0.round(rad);
+      pt0=pwc0.f(t[0]);
+      pt1=pwc1.f(t[0]);
+      ptref << 0.0414214, 0.1, 0;
+      TEST_ASSERT(pt0!=pt1);
+      TEST_ASSERT((pt0-ptref).norm()<1e-4);
+      pt0=pwc0.f(t[1]);
+      pt1=pwc1.f(t[1]);
+      ptref << 0.0291414, 1.89247, 0;
+      TEST_ASSERT(pt0!=pt1);
+      TEST_ASSERT((pt0-ptref).norm()<1e-4);
+      pt0=pwc0.f(t[2]);
+      pt1=pwc1.f(t[2]);
+      ptref << 0.9171573, 1, 0;
+      TEST_ASSERT(pt0!=pt1);
+      TEST_ASSERT((pt0-ptref).norm()<1e-4);
+      pt0=pwc0.f(t[3]);
+      pt1=pwc1.f(t[3]);
+      ptref << 0.0414214, 0.1, 0;
+      TEST_ASSERT(pt0!=pt1);
+      TEST_ASSERT((pt0-ptref).norm()<1e-4);
+    }
+};
 #endif
 
