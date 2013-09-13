@@ -17,7 +17,7 @@ project(ELI)
 # set the release version number
 set(ELI_VERSION_MAJOR 0)
 set(ELI_VERSION_MINOR 2)
-set(ELI_VERSION_PATCH 1)
+set(ELI_VERSION_PATCH 2)
 
 # capture the build date and time
 if (WIN32)

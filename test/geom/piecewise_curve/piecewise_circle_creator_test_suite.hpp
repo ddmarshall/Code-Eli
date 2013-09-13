@@ -480,9 +480,6 @@ class piecewise_circle_creator_test_suite : public Test::Suite
 
         // create the circle
         TEST_ASSERT(ellipse_creator.create(pc));
-
-        if (typeid(data_type)==typeid(double))
-          octave_print(1, pc);
       }
     }
 };
