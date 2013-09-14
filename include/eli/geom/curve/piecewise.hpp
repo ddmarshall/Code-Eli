@@ -26,28 +26,71 @@ namespace eli
   {
     namespace utility
     {
-      // NOTE: Create check_equivalence function that demotes higher order curve to see
-      //       if get (nearly) the same control points for the two curves. This could
-      //       work for all curve types that have control points and support demotion.
-
       template<typename curve1__, typename curve2__, typename tol__>
-      static bool check_joint_continuity(const curve1__ &curve1, const curve2__ &curve2, const eli::geom::general::continuity &cont, const tol__ &tol)
+      bool check_point_continuity(const curve1__ &curve1, const typename curve1__::data_type &dt1,
+                                  const curve2__ &curve2, const typename curve2__::data_type &dt2,
+                                  const eli::geom::general::continuity &cont, const tol__ &tol)
       {
         switch(cont)
         {
+          case(eli::geom::general::G3):
+          {
+            typename curve1__::point_type fppp1(curve1.fppp(1)); fppp1.normalize();
+            typename curve2__::point_type fppp2(curve2.fppp(0)); fppp2.normalize();
+
+            if (!tol.approximately_equal(fppp1, fppp2))
+              return false;
+            else
+              return check_point_continuity(curve1, dt1, curve2, dt2, eli::geom::general::G2, tol);
+            break;
+          }
+          case(eli::geom::general::C3):
+          {
+            if (!tol.approximately_equal(curve1.fppp(1)/dt1/dt1/dt1, curve2.fppp(0)/dt2/dt2/dt2))
+              return false;
+            else
+              return check_point_continuity(curve1, dt1, curve2, dt2, eli::geom::general::C2, tol);
+            break;
+          }
           case(eli::geom::general::G2):
           {
+            typename curve1__::point_type fpp1(curve1.fpp(1)); fpp1.normalize();
+            typename curve2__::point_type fpp2(curve2.fpp(0)); fpp2.normalize();
+
+            if (!tol.approximately_equal(fpp1, fpp2))
+              return false;
+            else
+              return check_point_continuity(curve1, dt1, curve2, dt2, eli::geom::general::G1, tol);
+            break;
           }
           case(eli::geom::general::C2):
           {
-            if (!tol.approximately_equal(curve1.fpp(1), curve2.fpp(0)))
+            if (!tol.approximately_equal(curve1.fpp(1)/dt1/dt1, curve2.fpp(0)/dt2/dt2))
               return false;
+            else
+              return check_point_continuity(curve1, dt1, curve2, dt2, eli::geom::general::C1, tol);
+            break;
+          }
+          case(eli::geom::general::G1):
+          {
+            typename curve1__::point_type fp1(curve1.fp(1)); fp1.normalize();
+            typename curve2__::point_type fp2(curve2.fp(0)); fp2.normalize();
+
+            if (!tol.approximately_equal(fp1, fp2))
+              return false;
+            else
+              return check_point_continuity(curve1, dt1, curve2, dt2, eli::geom::general::G0, tol);
+            break;
           }
           case(eli::geom::general::C1):
           {
-            if (!tol.approximately_equal(curve1.fp(1), curve2.fp(0)))
+            if (!tol.approximately_equal(curve1.fp(1)/dt1, curve2.fp(0)/dt2))
               return false;
+            else
+              return check_point_continuity(curve1, dt1, curve2, dt2, eli::geom::general::C0, tol);
+            break;
           }
+          case(eli::geom::general::G0):
           case(eli::geom::general::C0):
           {
             return tol.approximately_equal(curve1.f(1), curve2.f(0));
@@ -60,12 +103,128 @@ namespace eli
           }
           default:
           {
+            // shouldn't get here
+            assert(false);
             return false;
             break;
           }
         }
 
+        // shouldn't get here
+        assert(false);
         return false;
+      }
+
+      namespace internal
+      {
+        template<typename curve1__, typename curve2__, typename tol__>
+        eli::geom::general::continuity report_point_continuity(const curve1__ &curve1, const typename curve1__::data_type &dt1,
+                                                               const curve2__ &curve2, const typename curve2__::data_type &dt2,
+                                                               const eli::geom::general::continuity &cont, const tol__ &tol)
+        {
+          typename curve1__::point_type v1;
+          typename curve2__::point_type v2;
+
+          switch(cont)
+          {
+            case(eli::geom::general::NOT_CONNECTED):
+            {
+              v1=curve1.f(1);
+              v2=curve2.f(0);
+
+              if (tol.approximately_equal(v1, v2))
+                return report_point_continuity(curve1, dt1, curve2, dt2, eli::geom::general::C0, tol);
+              else
+                return cont;
+
+              break;
+            }
+            case(eli::geom::general::C0):
+            {
+              v1=curve1.fp(1)/dt1;
+              v2=curve2.fp(0)/dt2;
+
+              if (tol.approximately_equal(v1, v2))
+                return report_point_continuity(curve1, dt1, curve2, dt2, eli::geom::general::C1, tol);
+            }
+            case(eli::geom::general::G0):
+            {
+              v1.normalize();
+              v2.normalize();
+
+              if (tol.approximately_equal(v1, v2))
+                return report_point_continuity(curve1, dt1, curve2, dt2, eli::geom::general::G1, tol);
+              else
+                return cont;
+
+              break;
+            }
+            case(eli::geom::general::C1):
+            {
+              v1=curve1.fpp(1)/dt1/dt1;
+              v2=curve2.fpp(0)/dt2/dt2;
+
+              if (tol.approximately_equal(v1, v2))
+                return report_point_continuity(curve1, dt1, curve2, dt2, eli::geom::general::C2, tol);
+            }
+            case(eli::geom::general::G1):
+            {
+              v1.normalize();
+              v2.normalize();
+
+              if (tol.approximately_equal(v1, v2))
+                return report_point_continuity(curve1, dt1, curve2, dt2, eli::geom::general::G2, tol);
+              else
+                  return cont;
+
+              break;
+            }
+            case(eli::geom::general::C2):
+            {
+              v1=curve1.fppp(1)/dt1/dt1/dt1;
+              v2=curve2.fppp(0)/dt2/dt2/dt2;
+
+              if (tol.approximately_equal(v1, v2))
+                return report_point_continuity(curve1, dt1, curve2, dt2, eli::geom::general::C3, tol);
+            }
+            case(eli::geom::general::G2):
+            {
+              v1.normalize();
+              v2.normalize();
+
+              if (tol.approximately_equal(v1, v2))
+                return report_point_continuity(curve1, dt1, curve2, dt2, eli::geom::general::G3, tol);
+              else
+                  return cont;
+
+              break;
+            }
+            case(eli::geom::general::C3):
+            case(eli::geom::general::G3):
+            {
+              return cont;
+            }
+            default:
+            {
+              // shouldn't get here
+              assert(false);
+              return eli::geom::general::NOT_CONNECTED;
+              break;
+            }
+          }
+
+          // shouldn't get here
+          assert(false);
+          return eli::geom::general::NOT_CONNECTED;
+        }
+      }
+
+      template<typename curve1__, typename curve2__, typename tol__>
+      eli::geom::general::continuity report_point_continuity(const curve1__ &curve1, const typename curve1__::data_type &dt1,
+                                                             const curve2__ &curve2, const typename curve2__::data_type &dt2,
+                                                             const tol__ &tol)
+      {
+        return internal::report_point_continuity(curve1, dt1, curve2, dt2, eli::geom::general::NOT_CONNECTED, tol);
       }
     }
   }
@@ -209,29 +368,15 @@ namespace eli
 
           bool closed() const
           {
-            return eli::geom::utility::check_joint_continuity(segments.rbegin()->c, segments.begin()->c, eli::geom::general::C0, tol);
+            typename segment_collection_type::const_iterator itlast, itfirst;
+
+            itlast=segments.end(); --itlast;
+            itfirst=segments.begin();
+            return eli::geom::utility::check_point_continuity(itlast->c, itlast->delta_t, itfirst->c, itfirst->delta_t, eli::geom::general::C0, tol);
           }
           bool open() const
           {
             return !closed();
-          }
-
-          bool continuous(const eli::geom::general::continuity &cont)
-          {
-            switch (cont)
-            {
-              case(eli::geom::general::NOT_CONNECTED):
-              {
-                return check_continuity(cont);
-              }
-              default:
-              {
-                assert(false);
-                return false;
-              }
-            }
-
-            return true;
           }
 
           void reverse()
@@ -308,7 +453,7 @@ namespace eli
             // check to make sure have valid segments
             if (!segments.empty())
             {
-              if (!eli::geom::utility::check_joint_continuity(curve, segments.begin()->c, eli::geom::general::C0, tol))
+              if (!eli::geom::utility::check_point_continuity(curve, dt, segments.begin()->c, segments.begin()->delta_t, eli::geom::general::C0, tol))
               {
                 return SEGMENT_NOT_CONNECTED;
               }
@@ -337,7 +482,7 @@ namespace eli
             // check to make sure have valid segments
             if (!segments.empty())
             {
-              if (!eli::geom::utility::check_joint_continuity(segments.rbegin()->c, curve, eli::geom::general::C0, tol))
+              if (!eli::geom::utility::check_point_continuity(segments.rbegin()->c, segments.rbegin()->delta_t, curve, dt, eli::geom::general::C0, tol))
               {
                 return SEGMENT_NOT_CONNECTED;
               }
@@ -387,7 +532,7 @@ namespace eli
             {
               scito=scit;
               --scito;
-              if (!eli::geom::utility::check_joint_continuity(scito->c, curve, eli::geom::general::C0, tol))
+              if (!eli::geom::utility::check_point_continuity(scito->c, scito->delta_t, curve, scito->delta_t, eli::geom::general::C0, tol))
               {
                 return SEGMENT_NOT_CONNECTED;
               }
@@ -396,7 +541,7 @@ namespace eli
             {
               scito=scit;
               ++scito;
-              if (!eli::geom::utility::check_joint_continuity(curve, scito->c, eli::geom::general::C0, tol))
+              if (!eli::geom::utility::check_point_continuity(curve, scito->delta_t, scito->c, scito->delta_t, eli::geom::general::C0, tol))
               {
                 return SEGMENT_NOT_CONNECTED;
               }
@@ -428,7 +573,7 @@ namespace eli
             {
               scito=scit;
               --scito;
-              if (!eli::geom::utility::check_joint_continuity(scito->c, curve, eli::geom::general::C0, tol))
+              if (!eli::geom::utility::check_point_continuity(scito->c, scito->delta_t, curve, dt, eli::geom::general::C0, tol))
               {
                 return SEGMENT_NOT_CONNECTED;
               }
@@ -437,7 +582,7 @@ namespace eli
             {
               scito=scit;
               ++scito;
-              if (!eli::geom::utility::check_joint_continuity(curve, scito->c, eli::geom::general::C0, tol))
+              if (!eli::geom::utility::check_point_continuity(curve, dt, scito->c, scito->delta_t, eli::geom::general::C0, tol))
               {
                 return SEGMENT_NOT_CONNECTED;
               }
@@ -478,7 +623,7 @@ namespace eli
             {
               scito=scit0;
               --scito;
-              if (!eli::geom::utility::check_joint_continuity(scito->c, curve, eli::geom::general::C0, tol))
+              if (!eli::geom::utility::check_point_continuity(scito->c, scito->delta_t, curve, dt, eli::geom::general::C0, tol))
               {
                 return SEGMENT_NOT_CONNECTED;
               }
@@ -486,7 +631,7 @@ namespace eli
             if (index1<number_segments())
             {
               scito=scit1;
-              if (!eli::geom::utility::check_joint_continuity(curve, scito->c, eli::geom::general::C0, tol))
+              if (!eli::geom::utility::check_point_continuity(curve, dt, scito->c, scito->delta_t, eli::geom::general::C0, tol))
               {
                 return SEGMENT_NOT_CONNECTED;
               }
@@ -515,16 +660,16 @@ namespace eli
 
             // get the first and last curve
             curve_type cs, ce;
-            data_type dt;
-            p.get(cs, dt, 0);
-            p.get(ce, dt, p.number_segments()-1);
+            data_type dts, dte;
+            p.get(cs, dts, 0);
+            p.get(ce, dte, p.number_segments()-1);
 
             // check the connectivity on adjacent nodes (if available)
             if (index>0)
             {
               scito=scit;
               --scito;
-              if (!eli::geom::utility::check_joint_continuity(scito->c, cs, eli::geom::general::C0, tol))
+              if (!eli::geom::utility::check_point_continuity(scito->c, scito->delta_t, cs, dts, eli::geom::general::C0, tol))
               {
                 return SEGMENT_NOT_CONNECTED;
               }
@@ -533,7 +678,7 @@ namespace eli
             {
               scito=scit;
               ++scito;
-              if (!eli::geom::utility::check_joint_continuity(ce, scito->c, eli::geom::general::C0, tol))
+              if (!eli::geom::utility::check_point_continuity(ce, dte, scito->c, scito->delta_t, eli::geom::general::C0, tol))
               {
                 return SEGMENT_NOT_CONNECTED;
               }
@@ -572,16 +717,16 @@ namespace eli
 
             // get the first and last curve
             curve_type cs, ce;
-            data_type dt;
-            p.get(cs, dt, 0);
-            p.get(ce, dt, p.number_segments()-1);
+            data_type dts, dte;
+            p.get(cs, dts, 0);
+            p.get(ce, dte, p.number_segments()-1);
 
             // check the connectivity on adjacent nodes (if available)
             if (index0>0)
             {
               scito=scit0;
               --scito;
-              if (!eli::geom::utility::check_joint_continuity(scito->c, cs, eli::geom::general::C0, tol))
+              if (!eli::geom::utility::check_point_continuity(scito->c, scito->delta_t, cs, dts, eli::geom::general::C0, tol))
               {
                 return SEGMENT_NOT_CONNECTED;
               }
@@ -589,7 +734,7 @@ namespace eli
             if (index1<number_segments())
             {
               scito=scit1;
-              if (!eli::geom::utility::check_joint_continuity(ce, scito->c, eli::geom::general::C0, tol))
+              if (!eli::geom::utility::check_point_continuity(ce, dte, scito->c, scito->delta_t, eli::geom::general::C0, tol))
               {
                 return SEGMENT_NOT_CONNECTED;
               }
@@ -694,7 +839,6 @@ namespace eli
             data_type dtim1, dti, r, lenim1, leni, tim1_split(-1), ti_split(-1);
             point_type fim1, fi, fpim1, fpi;
             control_point_type cp[4];
-            tolerance_type tol;
 
             // get the two curve segments
             get(cim1, dtim1, im1);
@@ -830,6 +974,142 @@ namespace eli
             }
 
             return true;
+          }
+
+          bool continuous(eli::geom::general::continuity cont, const data_type &t) const
+          {
+            // find segment that corresponds to given t
+            typename segment_collection_type::const_iterator it, itfirst, itsecond;
+            data_type tt(0);
+            find_segment(it, tt, t);
+
+            if (it==segments.end())
+            {
+              assert(false);
+              return eli::geom::general::NOT_CONNECTED;
+            }
+
+            if (tt==0)
+            {
+              if (it==segments.begin())
+              {
+                if (open())
+                {
+                  return (cont==eli::geom::general::NOT_CONNECTED);
+                }
+                else
+                {
+                  typename segment_collection_type::const_iterator itlast(segments.end());
+
+                  --itlast;
+                  itfirst=itlast;
+                  itsecond=it;
+                }
+              }
+              else
+              {
+                itfirst=it;
+                itsecond=it; ++itsecond;
+              }
+            }
+            else if (tt==1)
+            {
+              typename segment_collection_type::const_iterator itlast(segments.end());
+
+              --itlast;
+              if (it==itlast)
+              {
+                if (open())
+                {
+                  return (cont==eli::geom::general::NOT_CONNECTED);
+                }
+                else
+                {
+                  itfirst=it;
+                  itsecond=segments.begin();
+                }
+              }
+              else
+              {
+                itfirst=it;
+                itsecond=it; ++itsecond;
+              }
+            }
+            else
+            {
+              return (cont!=eli::geom::general::NOT_CONNECTED);
+            }
+
+            // check the continuity of the two sections
+            return eli::geom::utility::check_point_continuity(itfirst->c, itfirst->delta_t, itsecond->c, itsecond->delta_t, cont, tol);
+          }
+
+          eli::geom::general::continuity continuity(const data_type &t) const
+          {
+            // find segment that corresponds to given t
+            typename segment_collection_type::const_iterator it, itfirst, itsecond;
+            data_type tt(0);
+            find_segment(it, tt, t);
+
+            if (it==segments.end())
+            {
+              assert(false);
+              return eli::geom::general::NOT_CONNECTED;
+            }
+
+            if (tt==0)
+            {
+              if (it==segments.begin())
+              {
+                if (open())
+                {
+                  return eli::geom::general::NOT_CONNECTED;
+                }
+                else
+                {
+                  typename segment_collection_type::const_iterator itlast(segments.end());
+
+                  --itlast;
+                  itfirst=itlast;
+                  itsecond=it;
+                }
+              }
+              else
+              {
+                itfirst=it;
+                itsecond=it; ++itsecond;
+              }
+            }
+            else if (tt==1)
+            {
+              typename segment_collection_type::const_iterator itlast(segments.end());
+
+              --itlast;
+              if (it==itlast)
+              {
+                if (open())
+                {
+                  return eli::geom::general::NOT_CONNECTED;
+                }
+                else
+                {
+                  itfirst=it;
+                  itsecond=segments.begin();
+                }
+              }
+              else
+              {
+                itfirst=it;
+                itsecond=it; ++itsecond;
+              }
+            }
+            else
+            {
+              return eli::geom::general::CINFINITY;
+            }
+
+            // check the continuity of the two sections
+            return eli::geom::utility::report_point_continuity(itfirst->c, itfirst->delta_t, itsecond->c, itsecond->delta_t, tol);
           }
 
           point_type f(const data_type &t) const
@@ -985,7 +1265,7 @@ namespace eli
 
             for (++it; it!=segments.end(); ++it, ++itp)
             {
-              if (!eli::geom::utility::check_joint_continuity(itp->c, it->c, cont, tol))
+              if (!eli::geom::utility::check_point_continuity(itp->c, itp->delta_t, it->c, it->delta_t, cont, tol))
               {
                 return false;
               }
