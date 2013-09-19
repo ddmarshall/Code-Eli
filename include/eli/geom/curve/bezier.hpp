@@ -115,6 +115,7 @@ namespace eli
           typedef Eigen::Matrix<data_type, 1, dim__> point_type;
           typedef point_type control_point_type;
           typedef typename point_type::Index index_type;
+          typedef Eigen::Matrix<data_type, Eigen::Dynamic, dim__> control_point_matrix_type;
           typedef geom::curve::fit_container<data_type, index_type, dim__, dim__> fit_container_type;
           typedef tol__ tolerance_type;
           typedef Eigen::Matrix<data_type, dim__, dim__> rotation_matrix_type;
@@ -206,6 +207,11 @@ namespace eli
             }
 
             return B.row(i);
+          }
+
+          control_point_matrix_type get_control_points() const
+          {
+            return B;
           }
 
           void reverse()
@@ -807,7 +813,6 @@ namespace eli
           }
 
         private:
-          typedef Eigen::Matrix<data_type, Eigen::Dynamic, dim__> control_point_matrix_type;
           typedef Eigen::Matrix<data_type, Eigen::Dynamic, dim__> row_pts_type;
           typedef Eigen::Matrix<data_type, Eigen::Dynamic, 1> col_type;
           typedef Eigen::Matrix<data_type, 1, Eigen::Dynamic> row_type;
