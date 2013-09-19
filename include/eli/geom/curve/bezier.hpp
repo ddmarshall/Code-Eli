@@ -400,6 +400,18 @@ namespace eli
             B=B_new;
           }
 
+          void degree_promote_to(const index_type target_degree)
+          {
+            // create vector of new control points
+            control_point_matrix_type B_new(target_degree+1, dim__);
+
+            // build the new control points
+            eli::geom::utility::bezier_promote_control_points_to(B_new, B);
+
+            // set the new control points
+            B=B_new;
+          }
+
           bool degree_demote(const geom::general::continuity &continuity_degree=geom::general::C0)
           {
             // check if can demote

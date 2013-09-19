@@ -104,6 +104,33 @@ namespace eli
           cp_out.row(i)=(cp_in.row(i-1)-cp_in.row(i))*(static_cast<typename Derived1::Scalar>(i)/n)+cp_in.row(i);
       }
 
+      template<typename Derived1, typename Derived2>
+      void bezier_promote_control_points_to(Eigen::MatrixBase<Derived1> &cp_out, const Eigen::MatrixBase<Derived2> &cp_in)
+      {
+        typedef typename Derived1::Index index_type;
+        typedef typename Derived1::Scalar data_type;
+
+        // do some dimension checks
+        assert(cp_out.rows()>cp_in.rows());
+        assert(cp_out.cols()==cp_in.cols());
+
+        index_type i, j, ntarget(cp_out.rows()-1), nstart(cp_in.rows()-1);
+        index_type n(nstart);
+
+        // Make in-place copy of control points.
+        for (i=0; i<n+1; ++i)
+          cp_out.row(i)=cp_in.row(i);
+
+        for ( ; n<ntarget; n++)
+        {
+          // Assign final value, n'th value no longer needed and can be replaced.
+          cp_out.row(n+1)=cp_out.row(n);
+          // Work backwards, calculating in-place.
+          for (i=n; i>0; --i)
+            cp_out.row(i)=(cp_out.row(i-1)-cp_out.row(i))*(static_cast<typename Derived1::Scalar>(i)/(n+1))+cp_out.row(i);
+        }
+      }
+
       // NOTE: Implements Eck's method: Matthias Eck. Least Squares Degree reduction of Bézier curves.
       //                                Computer-Aided Design. Volume 27, No. 11. (1995), 845-851
       // NOTE: This paper also provides an algorithm for creating a bezier spline order reduced
