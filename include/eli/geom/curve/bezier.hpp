@@ -173,6 +173,16 @@ namespace eli
             return true;
           }
 
+          data_type eqp_distance_bound(const bezier<data_type, dim__, tolerance_type> &bc) const
+          {
+            if (this==&bc)
+              return 0;
+
+            data_type d;
+            eli::geom::utility::bezier_eqp_distance_bound(B, bc.get_control_points(), d);
+            return d;
+          }
+
           void resize(const index_type &t_dim)
           {
             B.resize(t_dim+1, dim__);

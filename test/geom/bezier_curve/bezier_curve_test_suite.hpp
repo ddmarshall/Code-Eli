@@ -58,6 +58,7 @@ class bezier_curve_test_suite : public Test::Suite
       TEST_ADD(bezier_curve_test_suite<float>::promotion_to_test);
       TEST_ADD(bezier_curve_test_suite<float>::demotion_test);
       TEST_ADD(bezier_curve_test_suite<float>::degree_to_cubic_test);
+      TEST_ADD(bezier_curve_test_suite<float>::distance_bound_test);
       TEST_ADD(bezier_curve_test_suite<float>::split_test);
       TEST_ADD(bezier_curve_test_suite<float>::length_test);
     }
@@ -77,6 +78,7 @@ class bezier_curve_test_suite : public Test::Suite
       TEST_ADD(bezier_curve_test_suite<double>::promotion_to_test);
       TEST_ADD(bezier_curve_test_suite<double>::demotion_test);
       TEST_ADD(bezier_curve_test_suite<double>::degree_to_cubic_test);
+      TEST_ADD(bezier_curve_test_suite<double>::distance_bound_test);
       TEST_ADD(bezier_curve_test_suite<double>::split_test);
       TEST_ADD(bezier_curve_test_suite<double>::length_test);
     }
@@ -96,6 +98,7 @@ class bezier_curve_test_suite : public Test::Suite
       TEST_ADD(bezier_curve_test_suite<long double>::promotion_to_test);
       TEST_ADD(bezier_curve_test_suite<long double>::demotion_test);
       TEST_ADD(bezier_curve_test_suite<long double>::degree_to_cubic_test);
+      TEST_ADD(bezier_curve_test_suite<long double>::distance_bound_test);
       TEST_ADD(bezier_curve_test_suite<long double>::split_test);
       TEST_ADD(bezier_curve_test_suite<long double>::length_test);
     }
@@ -116,6 +119,7 @@ class bezier_curve_test_suite : public Test::Suite
       TEST_ADD(bezier_curve_test_suite<dd_real>::promotion_to_test);
       TEST_ADD(bezier_curve_test_suite<dd_real>::demotion_test);
       TEST_ADD(bezier_curve_test_suite<dd_real>::degree_to_cubic_test);
+      TEST_ADD(bezier_curve_test_suite<dd_real>::distance_bound_test);
       TEST_ADD(bezier_curve_test_suite<dd_real>::split_test);
       TEST_ADD(bezier_curve_test_suite<dd_real>::length_test);
     }
@@ -136,6 +140,7 @@ class bezier_curve_test_suite : public Test::Suite
       TEST_ADD(bezier_curve_test_suite<qd_real>::promotion_to_test);
       TEST_ADD(bezier_curve_test_suite<qd_real>::demotion_test);
       TEST_ADD(bezier_curve_test_suite<qd_real>::degree_to_cubic_test);
+      TEST_ADD(bezier_curve_test_suite<qd_real>::distance_bound_test);
       TEST_ADD(bezier_curve_test_suite<qd_real>::split_test);
       TEST_ADD(bezier_curve_test_suite<qd_real>::length_test);
     }
@@ -1445,6 +1450,124 @@ class bezier_curve_test_suite : public Test::Suite
         t = 1;
         TEST_ASSERT(eli::geom::point::distance(bc2.f(t), bc1.f(t))==0);
         TEST_ASSERT(eli::geom::point::distance(bc2.fp(t), bc1.fp(t))==0);
+      }
+    }
+
+    void distance_bound_test()
+    {
+      {  // Test that curve has zero distance itself
+        point_type cntrl_in[5];
+
+        // set control points
+        cntrl_in[0] << 0,   0, 0;
+        cntrl_in[1] << 0,   4, 0;
+        cntrl_in[2] << 2,   4, 0;
+        cntrl_in[3] << 2,   3, 0;
+        cntrl_in[4] << 1.5, 3, 0;
+
+        bezier_type bc1(4);
+
+        // set control points
+        for (index_type i=0; i<5; ++i)
+        {
+          bc1.set_control_point(cntrl_in[i], i);
+        }
+
+        data_type d1 = bc1.eqp_distance_bound(bc1);
+        TEST_ASSERT(d1==0);
+      }
+      {  // Test that curve has zero distance from promoted-self (and vis-versa)
+        point_type cntrl_in[5];
+
+        // set control points
+        cntrl_in[0] << 0,   0, 0;
+        cntrl_in[1] << 0,   4, 0;
+        cntrl_in[2] << 2,   4, 0;
+        cntrl_in[3] << 2,   3, 0;
+        cntrl_in[4] << 1.5, 3, 0;
+
+        bezier_type bc1(4), bc2;
+
+        // set control points
+        for (index_type i=0; i<5; ++i)
+        {
+          bc1.set_control_point(cntrl_in[i], i);
+        }
+        bc2=bc1;
+
+        // promote_to curve high order
+        bc2.degree_promote_to(bc1.degree()+5);
+
+        data_type d1 = bc2.eqp_distance_bound(bc1);
+        TEST_ASSERT(d1==0);
+
+        data_type d2 = bc1.eqp_distance_bound(bc2);
+        TEST_ASSERT(d2==0);
+      }
+      {  // Test that curve has known distance from offset & promoted-self (and vis-versa)
+        point_type cntrl_in[5];
+
+        // set control points
+        cntrl_in[0] << 0,   0, 0;
+        cntrl_in[1] << 0,   4, 0;
+        cntrl_in[2] << 2,   4, 0;
+        cntrl_in[3] << 2,   3, 0;
+        cntrl_in[4] << 1.5, 3, 0;
+
+        data_type dz(3);
+        point_type offset;
+        offset << 0, 0, dz;
+
+        bezier_type bc1(4), bc2(4);
+
+        // set control points
+        for (index_type i=0; i<5; ++i)
+        {
+          bc1.set_control_point(cntrl_in[i], i);
+          bc2.set_control_point(cntrl_in[i]+offset, i);
+        }
+
+        // promote_to curve high order
+        bc2.degree_promote_to(bc1.degree()+5);
+
+        data_type d1 = bc2.eqp_distance_bound(bc1);
+        TEST_ASSERT(d1==dz);
+
+        data_type d2 = bc1.eqp_distance_bound(bc2);
+        TEST_ASSERT(d2==dz);
+      }
+      {  // Test that curve has known distance from reversed & promoted-self (and vis-versa)
+        point_type cntrl_in[5];
+
+        // set control points
+        // curve constructed such that greatest distance from reverse will be the endpoints.
+        cntrl_in[0] << 0,   0,   0;
+        cntrl_in[1] << 1,   1,   0;
+        cntrl_in[2] << 2,   0.5, 0;
+        cntrl_in[3] << 3,   2.5, 0;
+        cntrl_in[4] << 4,   6.0, 0;
+
+        bezier_type bc1(4), bc2(4);
+
+        // set control points
+        for (index_type i=0; i<5; ++i)
+        {
+          bc1.set_control_point(cntrl_in[i], i);
+        }
+        bc2=bc1;
+
+        bc2.reverse();
+
+        data_type dendpts = (bc1.get_control_point(4)-bc1.get_control_point(0) ).norm();
+
+        // promote_to curve high order
+        bc2.degree_promote_to(bc1.degree()+5);
+
+        data_type d1 = bc2.eqp_distance_bound(bc1);
+        TEST_ASSERT(d1==dendpts);
+
+        data_type d2 = bc1.eqp_distance_bound(bc2);
+        TEST_ASSERT(d2==dendpts);
       }
     }
 

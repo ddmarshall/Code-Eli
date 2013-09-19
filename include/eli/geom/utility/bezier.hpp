@@ -238,6 +238,56 @@ namespace eli
           cp_out.row(i)=B_I.row(i)*(1-lambda(i))+B_II.row(i)*lambda(i);
       }
 
+      // Calculate upper bound of equiparametric distance between bezier curves.
+      // This routine efficiently calculates an upper bound of the distance between
+      // equal parameter points on two bezier curves.  While not useful for
+      // calculating distances between arbitrary curves, this is just the ticket
+      // for judging the quality of one curve meant to approximate another.
+      // This algorithm requires that both curves have identical order, so the
+      // lower order curve is first promoted to match the higher order curve.
+      // Then, the control points of the curves are differenced, resulting in
+      // the control points of the curve that is the equiparametric difference
+      // between the curves.  Since the control points provide a convex hull of
+      // a curve, they represent the worst-case difference between curves.  The
+      // maximum distance between the origin and a control point of this curve
+      // is an upper bound of the equipmarametric distance between the input
+      // curves.
+      template<typename Derived1, typename Derived2>
+      void bezier_eqp_distance_bound(const Eigen::MatrixBase<Derived1> &cp_a, const Eigen::MatrixBase<Derived2> &cp_b, typename Derived1::Scalar &maxd)
+      {
+        typedef typename Derived1::Index index_type;
+        typedef typename Derived1::Scalar data_type;
+
+        // dimension check
+        assert(cp_a.cols()==cp_b.cols());
+
+        index_type na(cp_a.rows()-1), nb(cp_b.rows()-1), n;
+
+        // make working copies
+        Eigen::Matrix<data_type, Eigen::Dynamic, Eigen::Dynamic> cp_A(cp_a);
+        Eigen::Matrix<data_type, Eigen::Dynamic, Eigen::Dynamic> cp_B(cp_b);
+
+        if( na == nb )
+        {
+          n=na;
+        }
+        else if( na > nb )
+        {
+          n=na;
+          cp_B=cp_A; // Copy to allocate proper size
+          bezier_promote_control_points_to(cp_B, cp_b); // promote b to B
+        }
+        else
+        {
+          n=nb;
+          cp_A=cp_B; // Copy to allocate proper size
+          bezier_promote_control_points_to(cp_A, cp_a); // promote a to A
+        }
+
+        // calculate control point differences and track farthest from origin
+        maxd = (cp_B-cp_A).rowwise().norm().maxCoeff();
+      }
+
       // get the coefficients for the split curves by constructing a de Casteljau triangle scheme.
       // The lower side is the t<t0 section, and the higher side is the t>t0 section.
       template<typename Derived1, typename Derived2>
