@@ -446,6 +446,14 @@ namespace eli
             return true;
           }
 
+          void degree_to_cubic()
+          {
+              // allocate control points and set them
+              control_point_matrix_type B_new(4, dim__);
+              eli::geom::utility::bezier_control_points_to_cubic(B_new, B);
+              B=B_new;
+          }
+
           void split(bezier<data_type, dim__> &bc_l, bezier<data_type, dim__> &bc_r, const data_type &t0) const
           {
             if ( (t0>1) || (t0<0) )

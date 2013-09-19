@@ -131,6 +131,45 @@ namespace eli
         }
       }
 
+      // Calculate cubic 'equivalent' to bezier curve.  If input curve has degree less than cubic,
+      // the curve is promoted to an exactly equivalent cubic curve.  If the input curve is cubic,
+      // the output curve is copied from the input.  If the input curve is higher order, the output
+      // curve is a cubic bezier curve that will match the input curve in endpoint position and
+      // slopes.  This approximation is used because it is very simple and fast.  This curve may be
+      // a terrible approximation of the original curve, but through successive subdivision, a
+      // piecewise cubic approximation of any curve to any accuracy should be possible.
+      template<typename Derived1, typename Derived2>
+      void bezier_control_points_to_cubic(Eigen::MatrixBase<Derived1> &cp_out, const Eigen::MatrixBase<Derived2> &cp_in)
+      {
+        typedef typename Derived1::Index index_type;
+        typedef typename Derived1::Scalar data_type;
+
+        // do some dimension checks
+        assert(cp_out.rows() == 4);
+        assert(cp_out.cols() == cp_in.cols());
+
+        if( cp_in.rows() < 4 ) // Promote
+        {
+          bezier_promote_control_points_to(cp_out, cp_in);
+        }
+        else if( cp_in.rows() == 4 ) // Do nothing
+        {
+          index_type i;
+          for( i=0; i<4; ++i)
+            cp_out.row(i) = cp_in.row(i);
+        }
+        else // C1 Cubic demote
+        {
+          index_type n(cp_in.rows()-1);
+          data_type s = static_cast<data_type>(n)/static_cast<data_type>(3);
+
+          cp_out.row(0) = cp_in.row(0);
+          cp_out.row(1) = cp_in.row(0) + s * (cp_in.row(1)-cp_in.row(0));
+          cp_out.row(2) = cp_in.row(n) + s * (cp_in.row(n-1)-cp_in.row(n));
+          cp_out.row(3) = cp_in.row(n);
+        }
+      }
+
       // NOTE: Implements Eck's method: Matthias Eck. Least Squares Degree reduction of Bézier curves.
       //                                Computer-Aided Design. Volume 27, No. 11. (1995), 845-851
       // NOTE: This paper also provides an algorithm for creating a bezier spline order reduced
