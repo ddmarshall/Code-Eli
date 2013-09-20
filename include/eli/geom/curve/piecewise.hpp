@@ -321,6 +321,29 @@ namespace eli
 
           index_type number_segments() const {return static_cast<index_type>(segments.size());}
 
+          void degree(index_type &mind, index_type &maxd)
+          {
+            typename segment_collection_type::const_iterator it;
+
+            it=segments.begin();
+
+            index_type d = it->c.degree();
+            mind = d;
+            maxd = d;
+            ++it;
+
+            // cycle through all segments to get each bounding box to add
+            for (; it!=segments.end(); ++it)
+            {
+              index_type d = it->c.degree();
+
+              if(d<mind)
+                mind=d;
+              if(d>maxd)
+                maxd=d;
+            }
+          }
+
           void get_bounding_box(bounding_box_type &bb) const
           {
             typename segment_collection_type::const_iterator it;
