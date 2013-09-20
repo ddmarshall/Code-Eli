@@ -762,19 +762,8 @@ namespace eli
               return INVALID_PARAM;
 
             // split the segment and replace
-            curve_type cl, cr;
-            segment_info stl, str;
-            it->c.split(cl, cr, tt);
-            stl.c=cl;
-            stl.delta_t=it->delta_t*tt;
-            str.c=cr;
-            str.delta_t=it->delta_t*(1-tt);
-            (*it)=str;
-            segments.insert(it, stl);
+            return split_seg(it, tt);
 
-            assert(check_continuity(eli::geom::general::C0));
-
-            return NO_ERROR;
           }
 
           void round(const data_type &rad)
@@ -1259,6 +1248,32 @@ namespace eli
           tolerance_type tol;
 
         private:
+          template<typename it__>
+          error_code split_seg(it__ it, const data_type &tt=0.5)
+          {
+            it__ itinsert;
+            return split_seg(it, itinsert, tt);
+          }
+
+          template<typename it__>
+          error_code split_seg(it__ it, it__ &itinsert, const data_type &tt=0.5)
+          {
+            // split the segment and replace
+            curve_type cl, cr;
+            segment_info stl, str;
+            it->c.split(cl, cr, tt);
+            stl.c=cl;
+            stl.delta_t=it->delta_t*tt;
+            str.c=cr;
+            str.delta_t=it->delta_t*(1-tt);
+            (*it)=str;
+            itinsert = segments.insert(it, stl);
+
+            assert(check_continuity(eli::geom::general::C0));
+
+            return NO_ERROR;
+          }
+
           bool check_continuity(const eli::geom::general::continuity &cont) const
           {
             typename segment_collection_type::const_iterator it(segments.begin()), itp(it);
