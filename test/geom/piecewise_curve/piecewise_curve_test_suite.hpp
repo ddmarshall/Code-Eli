@@ -52,6 +52,7 @@ class piecewise_curve_test_suite : public Test::Suite
       TEST_ADD(piecewise_curve_test_suite<float>::transformation_test);
       TEST_ADD(piecewise_curve_test_suite<float>::evaluation_test);
       TEST_ADD(piecewise_curve_test_suite<float>::split_test);
+      TEST_ADD(piecewise_curve_test_suite<float>::to_cubic_test);
       TEST_ADD(piecewise_curve_test_suite<float>::length_test);
       TEST_ADD(piecewise_curve_test_suite<float>::round_test);
     }
@@ -65,6 +66,7 @@ class piecewise_curve_test_suite : public Test::Suite
       TEST_ADD(piecewise_curve_test_suite<double>::transformation_test);
       TEST_ADD(piecewise_curve_test_suite<double>::evaluation_test);
       TEST_ADD(piecewise_curve_test_suite<double>::split_test);
+      TEST_ADD(piecewise_curve_test_suite<double>::to_cubic_test);
       TEST_ADD(piecewise_curve_test_suite<double>::length_test);
       TEST_ADD(piecewise_curve_test_suite<double>::round_test);
     }
@@ -78,6 +80,7 @@ class piecewise_curve_test_suite : public Test::Suite
       TEST_ADD(piecewise_curve_test_suite<long double>::transformation_test);
       TEST_ADD(piecewise_curve_test_suite<long double>::evaluation_test);
       TEST_ADD(piecewise_curve_test_suite<long double>::split_test);
+      TEST_ADD(piecewise_curve_test_suite<long double>::to_cubic_test);
       TEST_ADD(piecewise_curve_test_suite<long double>::length_test);
       TEST_ADD(piecewise_curve_test_suite<long double>::round_test);
     }
@@ -92,6 +95,7 @@ class piecewise_curve_test_suite : public Test::Suite
       TEST_ADD(piecewise_curve_test_suite<dd_real>::transformation_test);
       TEST_ADD(piecewise_curve_test_suite<dd_real>::evaluation_test);
       TEST_ADD(piecewise_curve_test_suite<dd_real>::split_test);
+      TEST_ADD(piecewise_curve_test_suite<dd_real>::to_cubic_test);
       TEST_ADD(piecewise_curve_test_suite<dd_real>::length_test);
       TEST_ADD(piecewise_curve_test_suite<dd_real>::round_test);
     }
@@ -106,6 +110,7 @@ class piecewise_curve_test_suite : public Test::Suite
       TEST_ADD(piecewise_curve_test_suite<qd_real>::transformation_test);
       TEST_ADD(piecewise_curve_test_suite<qd_real>::evaluation_test);
       TEST_ADD(piecewise_curve_test_suite<qd_real>::split_test);
+      TEST_ADD(piecewise_curve_test_suite<qd_real>::to_cubic_test);
       TEST_ADD(piecewise_curve_test_suite<qd_real>::length_test);
       TEST_ADD(piecewise_curve_test_suite<qd_real>::round_test);
     }
@@ -1167,6 +1172,407 @@ class piecewise_curve_test_suite : public Test::Suite
         eval_out=pwc0.fppp(t);
         eval_ref=pwc1.fppp(t);
         TEST_ASSERT((eval_out-eval_ref).norm()<142*eps);
+    }
+
+    void to_cubic_test()
+    {
+      {  // Two-segment piecewise 4th order.
+        piecewise_curve_type pwc0, pwc1;
+        typename curve_type::control_point_type cntrl_in[5];
+        typename piecewise_curve_type::error_code err;
+        curve_type bc;
+        point_type eval_out, eval_ref;
+        data_type t;
+
+        // build piecewise curve
+        cntrl_in[0] << 0, 0, 0;
+        cntrl_in[1] << 0, 2, 0;
+        cntrl_in[2] << 8, 2, 0;
+        cntrl_in[3] << 4, 0, 0;
+        cntrl_in[4] << 6, 3, 0;
+        bc.resize(4);
+        for (index_type i=0; i<5; ++i)
+          {
+            bc.set_control_point(cntrl_in[i], i);
+          }
+        err=pwc0.push_back(bc);
+        TEST_ASSERT(err==piecewise_curve_type::NO_ERROR);
+
+        cntrl_in[0] << 6,  3,   0;
+        cntrl_in[1] << 3, -0.5, 0;
+        cntrl_in[2] << 2, -1,   0;
+        cntrl_in[3] << 1, -1,   0;
+        cntrl_in[4] << 2,  1,   0;
+        bc.resize(4);
+        for (index_type i=0; i<5; ++i)
+          {
+            bc.set_control_point(cntrl_in[i], i);
+          }
+        err=pwc0.push_back(bc);
+        TEST_ASSERT(err==piecewise_curve_type::NO_ERROR);
+        TEST_ASSERT(pwc0.number_segments()==2);
+
+        index_type mind, maxd;
+        pwc0.degree(mind, maxd);
+
+        TEST_ASSERT(mind==4);
+        TEST_ASSERT(maxd==4);
+
+        TEST_ASSERT(pwc0.number_segments()==2);
+
+        pwc1=pwc0;
+
+        data_type ttol = 0.0001;
+        pwc1.to_cubic(ttol);
+
+//        std::cout << pwc1.number_segments() << std::endl;
+//        octave_print(1, pwc0);
+//        octave_print(2, pwc1);
+
+        pwc1.degree(mind, maxd);
+        TEST_ASSERT(mind==3);
+        TEST_ASSERT(maxd==3);
+
+        t=0;
+        eval_out=pwc0.f(t);
+        eval_ref=pwc1.f(t);
+        TEST_ASSERT((eval_out-eval_ref).norm()<ttol);
+
+        t=0.5;
+        eval_out=pwc0.f(t);
+        eval_ref=pwc1.f(t);
+        TEST_ASSERT((eval_out-eval_ref).norm()<ttol);
+
+        t=1;
+        eval_out=pwc0.f(t);
+        eval_ref=pwc1.f(t);
+        TEST_ASSERT((eval_out-eval_ref).norm()<ttol);
+
+        t=1.25;
+        eval_out=pwc0.f(t);
+        eval_ref=pwc1.f(t);
+        TEST_ASSERT((eval_out-eval_ref).norm()<ttol);
+
+        t=1.5;
+        eval_out=pwc0.f(t);
+        eval_ref=pwc1.f(t);
+        TEST_ASSERT((eval_out-eval_ref).norm()<ttol);
+
+        t=1.75;
+        eval_out=pwc0.f(t);
+        eval_ref=pwc1.f(t);
+        TEST_ASSERT((eval_out-eval_ref).norm()<ttol);
+
+        t=2;
+        eval_out=pwc0.f(t);
+        eval_ref=pwc1.f(t);
+        TEST_ASSERT((eval_out-eval_ref).norm()<ttol);
+      }
+      {  // One segment cubic, promoted.
+        piecewise_curve_type pwc0, pwc1;
+        typename curve_type::control_point_type cntrl_in[4];
+        typename piecewise_curve_type::error_code err;
+        curve_type bc;
+        point_type eval_out, eval_ref;
+        point_type p, offset;
+        data_type t;
+
+        // build piecewise curve
+        cntrl_in[0] << 0, 0, 0;
+        cntrl_in[1] << 0, 2, 0;
+        cntrl_in[2] << 8, 2, 0;
+        cntrl_in[3] << 4, 0, 0;
+        bc.resize(3);
+        for (index_type i=0; i<4; ++i)
+          {
+            bc.set_control_point(cntrl_in[i], i);
+          }
+        bc.degree_promote_to(bc.degree()+4);
+
+        err=pwc0.push_back(bc);
+        TEST_ASSERT(err==piecewise_curve_type::NO_ERROR);
+
+        TEST_ASSERT(pwc0.number_segments()==1);
+
+        index_type mind, maxd;
+        pwc0.degree(mind, maxd);
+
+        TEST_ASSERT(mind==7);
+        TEST_ASSERT(maxd==7);
+
+        pwc1=pwc0;
+
+        data_type ttol = 0.0001;
+        pwc1.to_cubic(ttol);
+
+//        std::cout << pwc1.number_segments() << std::endl;
+//        octave_print(1, pwc0);
+//        octave_print(2, pwc1);
+
+        TEST_ASSERT(pwc1.number_segments()==1);  // Original was cubic, then promoted.
+
+        pwc1.degree(mind, maxd);
+        TEST_ASSERT(mind==3);
+        TEST_ASSERT(maxd==3);
+
+        t=0;
+        eval_out=pwc0.f(t);
+        eval_ref=pwc1.f(t);
+        TEST_ASSERT((eval_out-eval_ref).norm()<ttol);
+
+        t=0.235;
+        eval_out=pwc0.f(t);
+        eval_ref=pwc1.f(t);
+        TEST_ASSERT((eval_out-eval_ref).norm()<ttol);
+
+        t=1;
+        eval_out=pwc0.f(t);
+        eval_ref=pwc1.f(t);
+        TEST_ASSERT((eval_out-eval_ref).norm()<ttol);
+      }
+      {  // One segment cubic, promoted and perturbed.
+        piecewise_curve_type pwc0, pwc1, pwc2;
+        typename curve_type::control_point_type cntrl_in[4];
+        typename piecewise_curve_type::error_code err;
+        curve_type bc;
+        point_type eval_out, eval_ref;
+        point_type p, offset;
+        data_type t;
+
+        // build piecewise curve
+        cntrl_in[0] << 0, 0, 0;
+        cntrl_in[1] << 0, 2, 0;
+        cntrl_in[2] << 8, 2, 0;
+        cntrl_in[3] << 4, 0, 0;
+        bc.resize(3);
+        for (index_type i=0; i<4; ++i)
+          {
+            bc.set_control_point(cntrl_in[i], i);
+          }
+
+        err=pwc2.push_back(bc);  // Keep unperturbed low-order curve for reference.
+
+        bc.degree_promote_to(bc.degree()+4);
+
+        p=bc.get_control_point(5); // Pick control point near middle.
+        offset << -1, -1, 0;
+        p=p+offset; // Perturb point.
+        bc.set_control_point(p, 5);  // Set perturbed value.
+
+        err=pwc0.push_back(bc);
+        TEST_ASSERT(err==piecewise_curve_type::NO_ERROR);
+
+        TEST_ASSERT(pwc0.number_segments()==1);
+
+        index_type mind, maxd;
+        pwc0.degree(mind, maxd);
+
+        TEST_ASSERT(mind==7);
+        TEST_ASSERT(maxd==7);
+
+        pwc1=pwc0;
+
+        data_type ttol = 0.0001;
+        pwc1.to_cubic(ttol);
+
+//        std::cout << pwc1.number_segments() << std::endl;
+//        octave_print(1, pwc2);
+//        octave_print(2, pwc0);
+//        octave_print(3, pwc1);
+
+        pwc1.degree(mind, maxd);
+        TEST_ASSERT(mind==3);
+        TEST_ASSERT(maxd==3);
+
+        t=0;
+        eval_out=pwc0.f(t);
+        eval_ref=pwc1.f(t);
+        TEST_ASSERT((eval_out-eval_ref).norm()<ttol);
+
+        t=0.235;
+        eval_out=pwc0.f(t);
+        eval_ref=pwc1.f(t);
+        TEST_ASSERT((eval_out-eval_ref).norm()<ttol);
+
+        t=1;
+        eval_out=pwc0.f(t);
+        eval_ref=pwc1.f(t);
+        TEST_ASSERT((eval_out-eval_ref).norm()<ttol);
+      }
+      {  // One segment cubic
+        piecewise_curve_type pwc0, pwc1;
+        typename curve_type::control_point_type cntrl_in[4];
+        typename piecewise_curve_type::error_code err;
+        curve_type bc;
+        point_type eval_out, eval_ref;
+        data_type t;
+
+        // build piecewise curve
+        cntrl_in[0] << 0, 0, 0;
+        cntrl_in[1] << 0, 2, 0;
+        cntrl_in[2] << 8, 2, 0;
+        cntrl_in[3] << 4, 0, 0;
+        bc.resize(3);
+        for (index_type i=0; i<4; ++i)
+          {
+            bc.set_control_point(cntrl_in[i], i);
+          }
+        err=pwc0.push_back(bc);
+        TEST_ASSERT(err==piecewise_curve_type::NO_ERROR);
+
+        TEST_ASSERT(pwc0.number_segments()==1);
+
+        index_type mind, maxd;
+        pwc0.degree(mind, maxd);
+
+        TEST_ASSERT(mind==3);
+        TEST_ASSERT(maxd==3);
+
+        pwc1=pwc0;
+
+        data_type ttol = 0.0001;
+        pwc1.to_cubic(ttol);
+
+//        std::cout << pwc1.number_segments() << std::endl;
+//        octave_print(1, pwc0);
+//        octave_print(2, pwc1);
+
+        TEST_ASSERT(pwc1.number_segments()==1);  // Original was cubic.
+
+        pwc1.degree(mind, maxd);
+        TEST_ASSERT(mind==3);
+        TEST_ASSERT(maxd==3);
+
+        t=0;
+        eval_out=pwc0.f(t);
+        eval_ref=pwc1.f(t);
+        TEST_ASSERT((eval_out-eval_ref).norm()<ttol);
+
+        t=0.235;
+        eval_out=pwc0.f(t);
+        eval_ref=pwc1.f(t);
+        TEST_ASSERT((eval_out-eval_ref).norm()<ttol);
+
+        t=1;
+        eval_out=pwc0.f(t);
+        eval_ref=pwc1.f(t);
+        TEST_ASSERT((eval_out-eval_ref).norm()<ttol);
+      }
+      {  // One segment quadratic
+        piecewise_curve_type pwc0, pwc1;
+        typename curve_type::control_point_type cntrl_in[3];
+        typename piecewise_curve_type::error_code err;
+        curve_type bc;
+        point_type eval_out, eval_ref;
+        data_type t;
+
+        // build piecewise curve
+        cntrl_in[0] << 0, 0, 0;
+        cntrl_in[1] << 0, 2, 0;
+        cntrl_in[2] << 8, 2, 0;
+        bc.resize(2);
+        for (index_type i=0; i<3; ++i)
+          {
+            bc.set_control_point(cntrl_in[i], i);
+          }
+        err=pwc0.push_back(bc);
+        TEST_ASSERT(err==piecewise_curve_type::NO_ERROR);
+
+        TEST_ASSERT(pwc0.number_segments()==1);
+
+        index_type mind, maxd;
+        pwc0.degree(mind, maxd);
+
+        TEST_ASSERT(mind==2);
+        TEST_ASSERT(maxd==2);
+
+        pwc1=pwc0;
+
+        data_type ttol = 0.0001;
+        pwc1.to_cubic(ttol);
+
+//        std::cout << pwc1.number_segments() << std::endl;
+//        octave_print(1, pwc0);
+//        octave_print(2, pwc1);
+
+        TEST_ASSERT(pwc1.number_segments()==1);  // Original was quadratic.
+
+        pwc1.degree(mind, maxd);
+        TEST_ASSERT(mind==3);
+        TEST_ASSERT(maxd==3);
+
+        t=0;
+        eval_out=pwc0.f(t);
+        eval_ref=pwc1.f(t);
+        TEST_ASSERT((eval_out-eval_ref).norm()<ttol);
+
+        t=0.235;
+        eval_out=pwc0.f(t);
+        eval_ref=pwc1.f(t);
+        TEST_ASSERT((eval_out-eval_ref).norm()<ttol);
+
+        t=1;
+        eval_out=pwc0.f(t);
+        eval_ref=pwc1.f(t);
+        TEST_ASSERT((eval_out-eval_ref).norm()<ttol);
+      }
+      {  // One segment linear
+        piecewise_curve_type pwc0, pwc1;
+        typename curve_type::control_point_type cntrl_in[2];
+        typename piecewise_curve_type::error_code err;
+        curve_type bc;
+        point_type eval_out, eval_ref;
+        data_type t;
+
+        // build piecewise curve
+        cntrl_in[0] << 0, 0, 0;
+        cntrl_in[1] << 1.4, 2, 0;
+        bc.resize(1);
+        for (index_type i=0; i<2; ++i)
+          {
+            bc.set_control_point(cntrl_in[i], i);
+          }
+        err=pwc0.push_back(bc);
+        TEST_ASSERT(err==piecewise_curve_type::NO_ERROR);
+
+        TEST_ASSERT(pwc0.number_segments()==1);
+
+        index_type mind, maxd;
+        pwc0.degree(mind, maxd);
+
+        TEST_ASSERT(mind==1);
+        TEST_ASSERT(maxd==1);
+
+        pwc1=pwc0;
+
+        data_type ttol = 0.0001;
+        pwc1.to_cubic(ttol);
+
+//        std::cout << pwc1.number_segments() << std::endl;
+//        octave_print(1, pwc0);
+//        octave_print(2, pwc1);
+
+        TEST_ASSERT(pwc1.number_segments()==1);  // Original was linear.
+
+        pwc1.degree(mind, maxd);
+        TEST_ASSERT(mind==3);
+        TEST_ASSERT(maxd==3);
+
+        t=0;
+        eval_out=pwc0.f(t);
+        eval_ref=pwc1.f(t);
+        TEST_ASSERT((eval_out-eval_ref).norm()<ttol);
+
+        t=0.235;
+        eval_out=pwc0.f(t);
+        eval_ref=pwc1.f(t);
+        TEST_ASSERT((eval_out-eval_ref).norm()<ttol);
+
+        t=1;
+        eval_out=pwc0.f(t);
+        eval_ref=pwc1.f(t);
+        TEST_ASSERT((eval_out-eval_ref).norm()<ttol);
+      }
     }
 
     void length_test()
