@@ -111,7 +111,7 @@ namespace eli
         typedef typename Derived1::Scalar data_type;
 
         // do some dimension checks
-        assert(cp_out.rows()>cp_in.rows());
+        assert(cp_out.rows()>=cp_in.rows());
         assert(cp_out.cols()==cp_in.cols());
 
         index_type i, j, ntarget(cp_out.rows()-1), nstart(cp_in.rows()-1);
