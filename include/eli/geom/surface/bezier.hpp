@@ -1091,6 +1091,54 @@ namespace eli
             return true;
           }
 
+          void to_cubic_u()
+          {
+              typedef Eigen::Matrix<data_type, Eigen::Dynamic, dim__> control_row_type;
+              typedef std::vector<control_row_type, Eigen::aligned_allocator<control_row_type> > control_row_collection_type;
+
+              index_type i, n(degree_u()), m(degree_v());
+              control_row_collection_type current_row(m+1, control_row_type(n+1, dim__));
+
+              // copy the control rows
+              for (i=0; i<=m; ++i)
+                current_row[i]=B_u[i];
+
+              // resize current surface
+              resize(3, m);
+
+              // set the new control points
+              control_row_type tmp_cp(4, dim__);
+              for (i=0; i<=m; ++i)
+              {
+                eli::geom::utility::bezier_control_points_to_cubic(tmp_cp, current_row[i]);
+                B_u[i]=tmp_cp;
+              }
+          }
+
+          void to_cubic_v()
+          {
+            typedef Eigen::Matrix<data_type, Eigen::Dynamic, dim__> control_col_type;
+            typedef std::vector<control_col_type, Eigen::aligned_allocator<control_col_type> > control_col_collection_type;
+
+            index_type i, n(degree_u()), m(degree_v());
+            control_col_collection_type current_col(n+1, control_col_type(m+1, dim__));
+
+            // copy the control rows
+            for (i=0; i<=n; ++i)
+              current_col[i]=B_v[i];
+
+            // resize current surface
+            resize(n, 3);
+
+            // set the new control points
+            control_col_type tmp_cp(4, dim__);
+            for (i=0; i<=n; ++i)
+            {
+              eli::geom::utility::bezier_control_points_to_cubic(tmp_cp, current_col[i]);
+              B_v[i]=tmp_cp;
+            }
+          }
+
           void split_u(bezier<data_type, dim__, tol__> &bs_lo, bezier<data_type, dim__, tol__> &bs_hi, const data_type &u0) const
           {
             typedef Eigen::Matrix<data_type, Eigen::Dynamic, dim__> control_row_type;
