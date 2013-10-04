@@ -412,7 +412,7 @@ namespace eli
 
           error_code split_u(const data_type &u_in)
           {
-            // find patch that corresponds to given t
+            // find patch that corresponds to given u & v
             typename patch_collection_type::iterator it;
             data_type uu(0), vv(0);
             find_patch(it, uu, vv, u_in, v0);
@@ -456,7 +456,7 @@ namespace eli
 
           error_code split_v(const data_type &v_in)
           {
-            // find patch that corresponds to given t
+            // find patch that corresponds to given u & v
             typename patch_collection_type::iterator it;
             data_type uu(0), vv(0);
             find_patch(it, uu, vv, u0, v_in);
@@ -500,7 +500,7 @@ namespace eli
 
           point_type f(const data_type &u, const data_type &v) const
           {
-            // find patch that corresponds to given t
+            // find patch that corresponds to given u & v
             typename patch_collection_type::const_iterator it;
             data_type uu(0), vv(0);
             find_patch(it, uu, vv, u, v);
@@ -516,7 +516,7 @@ namespace eli
 
           point_type f_u(const data_type &u, const data_type &v) const
           {
-            // find patch that corresponds to given t
+            // find patch that corresponds to given u & v
             typename patch_collection_type::const_iterator it;
             data_type uu(0), vv(0);
             find_patch(it, uu, vv, u, v);
@@ -532,7 +532,7 @@ namespace eli
 
           point_type f_v(const data_type &u, const data_type &v) const
           {
-            // find patch that corresponds to given t
+            // find patch that corresponds to given u & v
             typename patch_collection_type::const_iterator it;
             data_type uu(0), vv(0);
             find_patch(it, uu, vv, u, v);
@@ -548,7 +548,7 @@ namespace eli
 
           point_type f_uu(const data_type &u, const data_type &v) const
           {
-            // find patch that corresponds to given t
+            // find patch that corresponds to given u & v
             typename patch_collection_type::const_iterator it;
             data_type uu(0), vv(0);
             find_patch(it, uu, vv, u, v);
@@ -564,7 +564,7 @@ namespace eli
 
           point_type f_uv(const data_type &u, const data_type &v) const
           {
-            // find patch that corresponds to given t
+            // find patch that corresponds to given u & v
             typename patch_collection_type::const_iterator it;
             data_type uu(0), vv(0);
             find_patch(it, uu, vv, u, v);
@@ -580,7 +580,7 @@ namespace eli
 
           point_type f_vv(const data_type &u, const data_type &v) const
           {
-            // find patch that corresponds to given t
+            // find patch that corresponds to given u & v
             typename patch_collection_type::const_iterator it;
             data_type uu(0), vv(0);
             find_patch(it, uu, vv, u, v);
@@ -596,7 +596,7 @@ namespace eli
 
           point_type f_uuu(const data_type &u, const data_type &v) const
           {
-            // find patch that corresponds to given t
+            // find patch that corresponds to given u & v
             typename patch_collection_type::const_iterator it;
             data_type uu(0), vv(0);
             find_patch(it, uu, vv, u, v);
@@ -612,7 +612,7 @@ namespace eli
 
           point_type f_uuv(const data_type &u, const data_type &v) const
           {
-            // find patch that corresponds to given t
+            // find patch that corresponds to given u & v
             typename patch_collection_type::const_iterator it;
             data_type uu(0), vv(0);
             find_patch(it, uu, vv, u, v);
@@ -628,7 +628,7 @@ namespace eli
 
           point_type f_uvv(const data_type &u, const data_type &v) const
           {
-            // find patch that corresponds to given t
+            // find patch that corresponds to given u & v
             typename patch_collection_type::const_iterator it;
             data_type uu(0), vv(0);
             find_patch(it, uu, vv, u, v);
@@ -644,7 +644,7 @@ namespace eli
 
           point_type f_vvv(const data_type &u, const data_type &v) const
           {
-            // find patch that corresponds to given t
+            // find patch that corresponds to given u & v
             typename patch_collection_type::const_iterator it;
             data_type uu(0), vv(0);
             find_patch(it, uu, vv, u, v);
@@ -660,9 +660,18 @@ namespace eli
 
           point_type normal(const data_type &u, const data_type &v) const
           {
-            point_type n=f_u(u, v).cross(f_v(u, v));
-            n.normalize();
-            return n;
+            // find patch that corresponds to given u & v
+            typename patch_collection_type::const_iterator it;
+            data_type uu(0), vv(0);
+            find_patch(it, uu, vv, u, v);
+
+            if (it==patches.end())
+            {
+              assert(false);
+              --it;
+            }
+
+            return it->s.normal(uu, vv);
           }
 
           // TODO: NEED TO IMPLEMENT
