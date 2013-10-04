@@ -124,6 +124,52 @@ namespace eli
             }
           }
 
+          void degree_u(index_type &mind, index_type &maxd)
+          {
+            typename patch_collection_type::iterator it;
+
+            it=patches.begin();
+
+            index_type d = it->s.degree_u();
+            mind = d;
+            maxd = d;
+
+            it++;
+
+            for ( ; it!=patches.end(); ++it)
+            {
+              d = it->s.degree_u();
+
+              if(d<mind)
+                mind = d;
+              if(d>maxd)
+                maxd=d;
+            }
+          }
+
+          void degree_v(index_type &mind, index_type &maxd)
+          {
+            typename patch_collection_type::iterator it;
+
+            it=patches.begin();
+
+            index_type d = it->s.degree_v();
+            mind = d;
+            maxd = d;
+
+            it++;
+
+            for ( ; it!=patches.end(); ++it)
+            {
+              d = it->s.degree_v();
+
+              if(d<mind)
+                mind = d;
+              if(d>maxd)
+                maxd=d;
+            }
+          }
+
           void resize(const index_type &nu_in, const index_type &nv_in)
           {
             if ( (nu_in<=0) || (nv_in<=0) )
