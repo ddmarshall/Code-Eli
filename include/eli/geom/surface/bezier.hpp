@@ -1191,6 +1191,45 @@ namespace eli
             }
           }
 
+          data_type eqp_distance_bound(const bezier<data_type, dim__, tol__> &bs) const
+          {
+            typedef bezier<data_type, dim__, tol__> surf_type;
+
+            // Make working copies of surfaces.
+            surf_type bsa(*this);
+            surf_type bsb(bs);
+
+            // Find maximum common order.
+            index_type n(bsa.degree_u()), m(bsa.degree_v());
+            if( bsb.degree_u() > n )
+              n = bsb.degree_u();
+
+            if( bsb.degree_v() > m )
+              m = bsb.degree_v();
+
+            // Promote both to max common order.
+            bsa.promote_u_to(n);
+            bsa.promote_v_to(m);
+
+            bsb.promote_u_to(n);
+            bsb.promote_v_to(m);
+
+            // Find maximum distance between control points.
+            index_type i, j;
+            data_type d, maxd(0);
+            for (i=0; i<=n; ++i)
+            {
+              for (j=0; j<=m; ++j)
+              {
+                d = (bsa.get_control_point(i, j) - bsb.get_control_point(i, j)).norm();
+                if(d > maxd)
+                  maxd=d;
+              }
+            }
+
+            return maxd;
+          }
+
         private:
           void set_Bs(index_type n, index_type m)
           {

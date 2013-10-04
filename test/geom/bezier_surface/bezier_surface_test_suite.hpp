@@ -60,6 +60,7 @@ class bezier_surface_test_suite : public Test::Suite
       TEST_ADD(bezier_surface_test_suite<float>::promotion_to_test);
       TEST_ADD(bezier_surface_test_suite<float>::demotion_test);
       TEST_ADD(bezier_surface_test_suite<float>::to_cubic_test);
+      TEST_ADD(bezier_surface_test_suite<float>::distance_bound_test);
       TEST_ADD(bezier_surface_test_suite<float>::split_test);
       TEST_ADD(bezier_surface_test_suite<float>::normal_test);
     }
@@ -80,6 +81,7 @@ class bezier_surface_test_suite : public Test::Suite
       TEST_ADD(bezier_surface_test_suite<double>::promotion_to_test);
       TEST_ADD(bezier_surface_test_suite<double>::demotion_test);
       TEST_ADD(bezier_surface_test_suite<double>::to_cubic_test);
+      TEST_ADD(bezier_surface_test_suite<double>::distance_bound_test);
       TEST_ADD(bezier_surface_test_suite<double>::split_test);
       TEST_ADD(bezier_surface_test_suite<double>::normal_test);
     }
@@ -100,6 +102,7 @@ class bezier_surface_test_suite : public Test::Suite
       TEST_ADD(bezier_surface_test_suite<long double>::promotion_to_test);
       TEST_ADD(bezier_surface_test_suite<long double>::demotion_test);
       TEST_ADD(bezier_surface_test_suite<long double>::to_cubic_test);
+      TEST_ADD(bezier_surface_test_suite<long double>::distance_bound_test);
       TEST_ADD(bezier_surface_test_suite<long double>::split_test);
       TEST_ADD(bezier_surface_test_suite<long double>::normal_test);
     }
@@ -121,6 +124,7 @@ class bezier_surface_test_suite : public Test::Suite
       TEST_ADD(bezier_surface_test_suite<dd_real>::promotion_to_test);
       TEST_ADD(bezier_surface_test_suite<dd_real>::demotion_test);
       TEST_ADD(bezier_surface_test_suite<dd_real>::to_cubic_test);
+      TEST_ADD(bezier_surface_test_suite<dd_real>::distance_bound_test);
       TEST_ADD(bezier_surface_test_suite<dd_real>::split_test);
       TEST_ADD(bezier_surface_test_suite<dd_real>::normal_test);
     }
@@ -142,6 +146,7 @@ class bezier_surface_test_suite : public Test::Suite
       TEST_ADD(bezier_surface_test_suite<qd_real>::promotion_to_test);
       TEST_ADD(bezier_surface_test_suite<qd_real>::demotion_test);
       TEST_ADD(bezier_surface_test_suite<qd_real>::to_cubic_test);
+      TEST_ADD(bezier_surface_test_suite<qd_real>::distance_bound_test);
       TEST_ADD(bezier_surface_test_suite<qd_real>::split_test);
       TEST_ADD(bezier_surface_test_suite<qd_real>::normal_test);
     }
@@ -2267,6 +2272,102 @@ class bezier_surface_test_suite : public Test::Suite
         TEST_ASSERT(bez.f_v(u, v)==bez2.f_v(u, v));
       }
 
+    }
+
+    void distance_bound_test()
+    {
+        data_type eps(std::numeric_limits<data__>::epsilon());
+  #ifdef ELI_USING_QD
+        if ( (typeid(data_type)==typeid(dd_real)) || (typeid(data_type)==typeid(qd_real)) )
+          eps=std::numeric_limits<double>::epsilon();
+  #endif
+
+        index_type n(6), m(4);
+        point_type pt[6+1][4+1], pt_ref[5+1][4+1];
+
+        // create surface with specified control points
+        pt[0][0] <<  0, 0, 15;
+        pt[1][0] <<  2, 6, 15;
+        pt[2][0] <<  3, 0, 15;
+        pt[3][0] <<  5, 4, 15;
+        pt[4][0] <<  7, 1, 15;
+        pt[5][0] <<  5, 5, 15;
+        pt[6][0] << 10, 6, 15;
+        pt[0][1] <<  0, 0, 11;
+        pt[1][1] <<  2, 6, 11;
+        pt[2][1] <<  3, 0, 11;
+        pt[3][1] <<  5, 4, 11;
+        pt[4][1] <<  7, 1, 11;
+        pt[5][1] <<  5, 5, 11;
+        pt[6][1] << 10, 6, 11;
+        pt[0][2] <<  0, 0,  3;
+        pt[1][2] <<  2, 6,  3;
+        pt[2][2] <<  3, 0,  3;
+        pt[3][2] <<  5, 4,  3;
+        pt[4][2] <<  7, 1,  3;
+        pt[5][2] <<  5, 5,  3;
+        pt[6][2] << 10, 6,  3;
+        pt[0][3] <<  0, 0,  0;
+        pt[1][3] <<  2, 6,  0;
+        pt[2][3] <<  3, 0,  0;
+        pt[3][3] <<  5, 4,  0;
+        pt[4][3] <<  7, 1,  0;
+        pt[5][3] <<  5, 5,  0;
+        pt[6][3] << 10, 6,  0;
+        pt[0][4] <<  0, 0, -5;
+        pt[1][4] <<  2, 6, -5;
+        pt[2][4] <<  3, 0, -5;
+        pt[3][4] <<  5, 4, -5;
+        pt[4][4] <<  7, 1, -5;
+        pt[5][4] <<  5, 5, -5;
+        pt[6][4] << 10, 6, -5;
+
+        // create surface with specified dimensions and set control points
+        bezier_type bez(n, m);
+
+        for (index_type i=0; i<=n; ++i)
+        {
+          for (index_type j=0; j<=m; ++j)
+          {
+            bez.set_control_point(pt[i][j], i, j);
+          }
+        }
+
+        {
+          data_type d;
+
+          d = bez.eqp_distance_bound(bez);
+
+          TEST_ASSERT(d==0);
+        }
+        {
+          bezier_type bez2(bez);
+
+          data_type d;
+
+          bez2.promote_u_to(bez.degree_u()+3);
+          bez2.promote_v_to(bez.degree_v()+3);
+
+          d = bez.eqp_distance_bound(bez2);
+
+          TEST_ASSERT(d==0);
+        }
+        {
+          bezier_type bez2(bez);
+
+          data_type d;
+          data_type offset(3);
+
+          point_type trans;
+
+          trans << 0, 0, offset;
+
+          bez2.translate(trans);
+
+          d = bez.eqp_distance_bound(bez2);
+
+          TEST_ASSERT(d==offset);
+        }
     }
 
     void split_test()
