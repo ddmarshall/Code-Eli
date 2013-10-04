@@ -420,38 +420,9 @@ namespace eli
             if (it==patches.end())
               return INVALID_PARAM;
 
-            patch_collection_type old_patches(patches);
-            index_type i, j, isplit(std::distance(patches.begin(), it));
-            resize(nu+1, nv);
+            index_type isplit(std::distance(patches.begin(), it));
 
-            // copy over the pre-split patches
-            for (i=0; i<isplit; ++i)
-            {
-              for (j=0; j<nv; ++j)
-              {
-                patches[j*nv+i]=old_patches[j*nv+i];
-              }
-            }
-
-            // split the patch and replace
-            i=isplit;
-            for (j=0; j<nv; ++j)
-            {
-              old_patches[j*nv+i].s.split_u(patches[j*nv+i].s, patches[j*nv+i+1].s, uu);
-              patches[j*nv+i].delta_u=old_patches[j*nv+i].delta_u*uu;
-              patches[j*nv+i+1].delta_u=old_patches[j*nv+i].delta_u*(1-uu);
-            }
-
-            // copy over the post-split patches
-            for (i=isplit+2; i<nu; ++i)
-            {
-              for (j=0; j<nv; ++j)
-              {
-                patches[j*nv+i]=old_patches[j*nv+i-1];
-              }
-            }
-
-            return NO_ERROR;
+            return split_u(isplit, uu);
           }
 
           error_code split_v(const data_type &v_in)
@@ -464,38 +435,9 @@ namespace eli
             if (it==patches.end())
               return INVALID_PARAM;
 
-            patch_collection_type old_patches(patches);
-            index_type i, j, jsplit(std::distance(patches.begin(), it)/nu);
-            resize(nu, nv+1);
+            index_type jsplit(std::distance(patches.begin(), it)/nu);
 
-            // copy over the pre-split patches
-            for (j=0; j<jsplit; ++j)
-            {
-              for (i=0; i<nu; ++i)
-              {
-                patches[j*nv+i]=old_patches[j*nv+i];
-              }
-            }
-
-            // split the patch and replace
-            j=jsplit;
-            for (i=0; i<nu; ++i)
-            {
-              old_patches[j*nv+i].s.split_v(patches[j*nv+i].s, patches[(j+1)*nv+i].s, vv);
-              patches[j*nv+i].delta_u=old_patches[j*nv+i].delta_v*vv;
-              patches[(j+1)*nv+i].delta_u=old_patches[j*nv+i].delta_v*(1-vv);
-            }
-
-            // copy over the post-split patches
-            for (j=jsplit+2; j<nv; ++j)
-            {
-              for (i=0; i<nu; ++i)
-              {
-                patches[j*nv+i]=old_patches[(j-1)*nv+i];
-              }
-            }
-
-            return NO_ERROR;
+            return split_v(jsplit, vv);
           }
 
           point_type f(const data_type &u, const data_type &v) const
@@ -833,6 +775,79 @@ namespace eli
               it=patches.end();
               return;
             }
+          }
+
+          error_code split_u(const index_type &isplit, const data_type &uu)
+          {
+            patch_collection_type old_patches(patches);
+            index_type i, j;
+
+            resize(nu+1, nv);
+
+            // copy over the pre-split patches
+            for (i=0; i<isplit; ++i)
+            {
+              for (j=0; j<nv; ++j)
+              {
+                patches[j*nv+i]=old_patches[j*nv+i];
+              }
+            }
+
+            // split the patch and replace
+            i=isplit;
+            for (j=0; j<nv; ++j)
+            {
+              old_patches[j*nv+i].s.split_u(patches[j*nv+i].s, patches[j*nv+i+1].s, uu);
+              patches[j*nv+i].delta_u=old_patches[j*nv+i].delta_u*uu;
+              patches[j*nv+i+1].delta_u=old_patches[j*nv+i].delta_u*(1-uu);
+            }
+
+            // copy over the post-split patches
+            for (i=isplit+2; i<nu; ++i)
+            {
+              for (j=0; j<nv; ++j)
+              {
+                patches[j*nv+i]=old_patches[j*nv+i-1];
+              }
+            }
+
+            return NO_ERROR;
+          }
+
+          error_code split_v(const index_type &jsplit, const data_type &vv)
+          {
+            patch_collection_type old_patches(patches);
+            index_type i, j;
+            resize(nu, nv+1);
+
+            // copy over the pre-split patches
+            for (j=0; j<jsplit; ++j)
+            {
+              for (i=0; i<nu; ++i)
+              {
+                patches[j*nv+i]=old_patches[j*nv+i];
+              }
+            }
+
+            // split the patch and replace
+            j=jsplit;
+            for (i=0; i<nu; ++i)
+            {
+              old_patches[j*nv+i].s.split_v(patches[j*nv+i].s, patches[(j+1)*nv+i].s, vv);
+              patches[j*nv+i].delta_u=old_patches[j*nv+i].delta_v*vv;
+              patches[(j+1)*nv+i].delta_u=old_patches[j*nv+i].delta_v*(1-vv);
+            }
+
+            // copy over the post-split patches
+            for (j=jsplit+2; j<nv; ++j)
+            {
+              for (i=0; i<nu; ++i)
+              {
+                patches[j*nv+i]=old_patches[(j-1)*nv+i];
+              }
+            }
+
+            return NO_ERROR;
           }
       };
     }
