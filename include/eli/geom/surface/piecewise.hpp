@@ -482,8 +482,8 @@ namespace eli
             for (i=0; i<nu; ++i)
             {
               old_patches[j*nv+i].s.split_v(patches[j*nv+i].s, patches[(j+1)*nv+i].s, vv);
-              patches[j*nv+i].delta_u=old_patches[j*nv+i].delta_v*vv;
-              patches[(j+1)*nv+i].delta_u=old_patches[j*nv+i].delta_v*(1-vv);
+              patches[j*nv+i].delta_v=old_patches[j*nv+i].delta_v*vv;
+              patches[(j+1)*nv+i].delta_v=old_patches[j*nv+i].delta_v*(1-vv);
             }
 
             // copy over the post-split patches
