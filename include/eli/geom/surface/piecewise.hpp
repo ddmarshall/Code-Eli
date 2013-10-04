@@ -486,6 +486,88 @@ namespace eli
             return split_v(jsplit, vv);
           }
 
+          void to_cubic_u(const data_type &ttol)
+          {
+            // First pass to split patches until cubic approximation is within tolerance.
+            for (index_type i=0; i<nu; ++i)
+            {
+              for (index_type j=0; j<nv; ++j)
+              {
+                surface_type s = patches[j*nu+i].s;
+                surface_type sc(s);
+
+                sc.to_cubic_u();
+
+                data_type d = s.eqp_distance_bound(sc);
+
+                while(d > ttol)
+                {
+                  split_u(i, 0.5);
+
+                  s = patches[j*nu+i].s;
+                  sc = s;
+
+                  sc.to_cubic_u();
+
+                  d = s.eqp_distance_bound(sc);
+                }
+              }
+            }
+
+            // Second pass to convert all patches to cubic.
+            for (index_type i=0; i<nu; ++i)
+            {
+              for (index_type j=0; j<nv; ++j)
+              {
+                patches[j*nu+i].s.to_cubic_u();
+              }
+            }
+          }
+
+          void to_cubic_v(const data_type &ttol)
+          {
+            // First pass to split patches until cubic approximation is within tolerance.
+            for (index_type i=0; i<nu; ++i)
+            {
+              for (index_type j=0; j<nv; ++j)
+              {
+                surface_type s = patches[j*nu+i].s;
+                surface_type sc(s);
+
+                sc.to_cubic_v();
+
+                data_type d = s.eqp_distance_bound(sc);
+
+                while(d > ttol)
+                {
+                  split_v(j, 0.5);
+
+                  s = patches[j*nu+i].s;
+                  sc = s;
+
+                  sc.to_cubic_v();
+
+                  d = s.eqp_distance_bound(sc);
+                }
+              }
+            }
+
+            // Second pass to convert all patches to cubic.
+            for (index_type i=0; i<nu; ++i)
+            {
+              for (index_type j=0; j<nv; ++j)
+              {
+                patches[j*nu+i].s.to_cubic_v();
+              }
+            }
+          }
+
+          void to_cubic(const data_type &ttol)
+          {
+            to_cubic_u(ttol);
+            to_cubic_v(ttol);
+          }
+
           point_type f(const data_type &u, const data_type &v) const
           {
             // find patch that corresponds to given t
