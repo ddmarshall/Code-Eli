@@ -115,6 +115,7 @@ namespace eli
           typedef Eigen::Matrix<data_type, 1, dim__> point_type;
           typedef point_type control_point_type;
           typedef typename point_type::Index index_type;
+          typedef Eigen::Matrix<data_type, Eigen::Dynamic, dim__> control_point_matrix_type;
           typedef geom::curve::fit_container<data_type, index_type, dim__, dim__> fit_container_type;
           typedef tol__ tolerance_type;
           typedef Eigen::Matrix<data_type, dim__, dim__> rotation_matrix_type;
@@ -172,6 +173,16 @@ namespace eli
             return true;
           }
 
+          data_type eqp_distance_bound(const bezier<data_type, dim__, tolerance_type> &bc) const
+          {
+            if (this==&bc)
+              return 0;
+
+            data_type d;
+            eli::geom::utility::bezier_eqp_distance_bound(B, bc.get_control_points(), d);
+            return d;
+          }
+
           void resize(const index_type &t_dim)
           {
             B.resize(t_dim+1, dim__);
@@ -206,6 +217,11 @@ namespace eli
             }
 
             return B.row(i);
+          }
+
+          control_point_matrix_type get_control_points() const
+          {
+            return B;
           }
 
           void reverse()
@@ -400,6 +416,18 @@ namespace eli
             B=B_new;
           }
 
+          void degree_promote_to(const index_type target_degree)
+          {
+            // create vector of new control points
+            control_point_matrix_type B_new(target_degree+1, dim__);
+
+            // build the new control points
+            eli::geom::utility::bezier_promote_control_points_to(B_new, B);
+
+            // set the new control points
+            B=B_new;
+          }
+
           bool degree_demote(const geom::general::continuity &continuity_degree=geom::general::C0)
           {
             // check if can demote
@@ -432,6 +460,14 @@ namespace eli
             B=B_new;
 
             return true;
+          }
+
+          void degree_to_cubic()
+          {
+              // allocate control points and set them
+              control_point_matrix_type B_new(4, dim__);
+              eli::geom::utility::bezier_control_points_to_cubic(B_new, B);
+              B=B_new;
           }
 
           void split(bezier<data_type, dim__> &bc_l, bezier<data_type, dim__> &bc_r, const data_type &t0) const
@@ -787,7 +823,6 @@ namespace eli
           }
 
         private:
-          typedef Eigen::Matrix<data_type, Eigen::Dynamic, dim__> control_point_matrix_type;
           typedef Eigen::Matrix<data_type, Eigen::Dynamic, dim__> row_pts_type;
           typedef Eigen::Matrix<data_type, Eigen::Dynamic, 1> col_type;
           typedef Eigen::Matrix<data_type, 1, Eigen::Dynamic> row_type;

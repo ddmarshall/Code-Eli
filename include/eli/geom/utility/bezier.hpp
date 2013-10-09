@@ -104,6 +104,72 @@ namespace eli
           cp_out.row(i)=(cp_in.row(i-1)-cp_in.row(i))*(static_cast<typename Derived1::Scalar>(i)/n)+cp_in.row(i);
       }
 
+      template<typename Derived1, typename Derived2>
+      void bezier_promote_control_points_to(Eigen::MatrixBase<Derived1> &cp_out, const Eigen::MatrixBase<Derived2> &cp_in)
+      {
+        typedef typename Derived1::Index index_type;
+        typedef typename Derived1::Scalar data_type;
+
+        // do some dimension checks
+        assert(cp_out.rows()>=cp_in.rows());
+        assert(cp_out.cols()==cp_in.cols());
+
+        index_type i, j, ntarget(cp_out.rows()-1), nstart(cp_in.rows()-1);
+        index_type n(nstart);
+
+        // Make in-place copy of control points.
+        for (i=0; i<n+1; ++i)
+          cp_out.row(i)=cp_in.row(i);
+
+        for ( ; n<ntarget; n++)
+        {
+          // Assign final value, n'th value no longer needed and can be replaced.
+          cp_out.row(n+1)=cp_out.row(n);
+          // Work backwards, calculating in-place.
+          for (i=n; i>0; --i)
+            cp_out.row(i)=(cp_out.row(i-1)-cp_out.row(i))*(static_cast<typename Derived1::Scalar>(i)/(n+1))+cp_out.row(i);
+        }
+      }
+
+      // Calculate cubic 'equivalent' to bezier curve.  If input curve has degree less than cubic,
+      // the curve is promoted to an exactly equivalent cubic curve.  If the input curve is cubic,
+      // the output curve is copied from the input.  If the input curve is higher order, the output
+      // curve is a cubic bezier curve that will match the input curve in endpoint position and
+      // slopes.  This approximation is used because it is very simple and fast.  This curve may be
+      // a terrible approximation of the original curve, but through successive subdivision, a
+      // piecewise cubic approximation of any curve to any accuracy should be possible.
+      template<typename Derived1, typename Derived2>
+      void bezier_control_points_to_cubic(Eigen::MatrixBase<Derived1> &cp_out, const Eigen::MatrixBase<Derived2> &cp_in)
+      {
+        typedef typename Derived1::Index index_type;
+        typedef typename Derived1::Scalar data_type;
+
+        // do some dimension checks
+        assert(cp_out.rows() == 4);
+        assert(cp_out.cols() == cp_in.cols());
+
+        if( cp_in.rows() < 4 ) // Promote
+        {
+          bezier_promote_control_points_to(cp_out, cp_in);
+        }
+        else if( cp_in.rows() == 4 ) // Do nothing
+        {
+          index_type i;
+          for( i=0; i<4; ++i)
+            cp_out.row(i) = cp_in.row(i);
+        }
+        else // C1 Cubic demote
+        {
+          index_type n(cp_in.rows()-1);
+          data_type s = static_cast<data_type>(n)/static_cast<data_type>(3);
+
+          cp_out.row(0) = cp_in.row(0);
+          cp_out.row(1) = cp_in.row(0) + s * (cp_in.row(1)-cp_in.row(0));
+          cp_out.row(2) = cp_in.row(n) + s * (cp_in.row(n-1)-cp_in.row(n));
+          cp_out.row(3) = cp_in.row(n);
+        }
+      }
+
       // NOTE: Implements Eck's method: Matthias Eck. Least Squares Degree reduction of Bézier curves.
       //                                Computer-Aided Design. Volume 27, No. 11. (1995), 845-851
       // NOTE: This paper also provides an algorithm for creating a bezier spline order reduced
@@ -170,6 +236,56 @@ namespace eli
         // calculate new control points
         for (i=0; i<n; ++i)
           cp_out.row(i)=B_I.row(i)*(1-lambda(i))+B_II.row(i)*lambda(i);
+      }
+
+      // Calculate upper bound of equiparametric distance between bezier curves.
+      // This routine efficiently calculates an upper bound of the distance between
+      // equal parameter points on two bezier curves.  While not useful for
+      // calculating distances between arbitrary curves, this is just the ticket
+      // for judging the quality of one curve meant to approximate another.
+      // This algorithm requires that both curves have identical order, so the
+      // lower order curve is first promoted to match the higher order curve.
+      // Then, the control points of the curves are differenced, resulting in
+      // the control points of the curve that is the equiparametric difference
+      // between the curves.  Since the control points provide a convex hull of
+      // a curve, they represent the worst-case difference between curves.  The
+      // maximum distance between the origin and a control point of this curve
+      // is an upper bound of the equipmarametric distance between the input
+      // curves.
+      template<typename Derived1, typename Derived2>
+      void bezier_eqp_distance_bound(const Eigen::MatrixBase<Derived1> &cp_a, const Eigen::MatrixBase<Derived2> &cp_b, typename Derived1::Scalar &maxd)
+      {
+        typedef typename Derived1::Index index_type;
+        typedef typename Derived1::Scalar data_type;
+
+        // dimension check
+        assert(cp_a.cols()==cp_b.cols());
+
+        index_type na(cp_a.rows()-1), nb(cp_b.rows()-1), n;
+
+        // make working copies
+        Eigen::Matrix<data_type, Eigen::Dynamic, Eigen::Dynamic> cp_A(cp_a);
+        Eigen::Matrix<data_type, Eigen::Dynamic, Eigen::Dynamic> cp_B(cp_b);
+
+        if( na == nb )
+        {
+          n=na;
+        }
+        else if( na > nb )
+        {
+          n=na;
+          cp_B=cp_A; // Copy to allocate proper size
+          bezier_promote_control_points_to(cp_B, cp_b); // promote b to B
+        }
+        else
+        {
+          n=nb;
+          cp_A=cp_B; // Copy to allocate proper size
+          bezier_promote_control_points_to(cp_A, cp_a); // promote a to A
+        }
+
+        // calculate control point differences and track farthest from origin
+        maxd = (cp_B-cp_A).rowwise().norm().maxCoeff();
       }
 
       // get the coefficients for the split curves by constructing a de Casteljau triangle scheme.

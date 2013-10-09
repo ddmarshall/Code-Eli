@@ -321,6 +321,29 @@ namespace eli
 
           index_type number_segments() const {return static_cast<index_type>(segments.size());}
 
+          void degree(index_type &mind, index_type &maxd)
+          {
+            typename segment_collection_type::const_iterator it;
+
+            it=segments.begin();
+
+            index_type d = it->c.degree();
+            mind = d;
+            maxd = d;
+            ++it;
+
+            // cycle through all segments to get each bounding box to add
+            for (; it!=segments.end(); ++it)
+            {
+              index_type d = it->c.degree();
+
+              if(d<mind)
+                mind=d;
+              if(d>maxd)
+                maxd=d;
+            }
+          }
+
           void get_bounding_box(bounding_box_type &bb) const
           {
             typename segment_collection_type::const_iterator it;
@@ -762,19 +785,14 @@ namespace eli
               return INVALID_PARAM;
 
             // split the segment and replace
-            curve_type cl, cr;
-            segment_info stl, str;
-            it->c.split(cl, cr, tt);
-            stl.c=cl;
-            stl.delta_t=it->delta_t*tt;
-            str.c=cr;
-            str.delta_t=it->delta_t*(1-tt);
-            (*it)=str;
-            segments.insert(it, stl);
+            return split_seg(it, tt);
+          }
 
-            assert(check_continuity(eli::geom::general::C0));
-
-            return NO_ERROR;
+          void to_cubic(const data_type &ttol)
+          {
+            typename segment_collection_type::iterator it;
+            for (it=segments.begin(); it!=segments.end(); ++it)
+              segment_to_cubic(it, ttol);
           }
 
           void round(const data_type &rad)
@@ -1259,6 +1277,57 @@ namespace eli
           tolerance_type tol;
 
         private:
+          template<typename it__>
+          error_code split_seg(it__ it, const data_type &tt=0.5)
+          {
+            it__ itinsert;
+            return split_seg(it, itinsert, tt);
+          }
+
+          template<typename it__>
+          error_code split_seg(it__ it, it__ &itinsert, const data_type &tt=0.5)
+          {
+            // split the segment and replace
+            curve_type cl, cr;
+            segment_info stl, str;
+            it->c.split(cl, cr, tt);
+            stl.c=cl;
+            stl.delta_t=it->delta_t*tt;
+            str.c=cr;
+            str.delta_t=it->delta_t*(1-tt);
+            (*it)=str;
+            itinsert = segments.insert(it, stl);
+
+            assert(check_continuity(eli::geom::general::C0));
+
+            return NO_ERROR;
+          }
+
+          template<typename it__>
+          void segment_to_cubic(it__ it, const data_type &ttol)
+          {
+            curve_type c = it->c;
+            curve_type cc(c);
+            cc.degree_to_cubic();
+
+            data_type d = c.eqp_distance_bound(cc);
+
+            if(d<ttol)
+            {
+              // replace c with cc.
+              it->c = cc;
+            }
+            else
+            {
+              // split and recurse
+              it__ itl;
+              split_seg(it, itl);
+
+              segment_to_cubic(itl, ttol);
+              segment_to_cubic(it, ttol);
+            }
+          }
+
           bool check_continuity(const eli::geom::general::continuity &cont) const
           {
             typename segment_collection_type::const_iterator it(segments.begin()), itp(it);
