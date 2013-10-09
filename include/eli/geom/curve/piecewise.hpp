@@ -854,7 +854,7 @@ namespace eli
             }
 
             curve_type cim1, ci, arc, c, ctrim;
-            data_type dtim1, dti, r, lenim1, leni, tim1_split(-1), ti_split(-1);
+            data_type dtim1(0), dti(0), r, lenim1, leni, tim1_split(-1), ti_split(-1);
             point_type fim1, fi, fpim1, fpi;
             control_point_type cp[4];
 
