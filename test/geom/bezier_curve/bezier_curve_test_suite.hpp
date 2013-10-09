@@ -838,7 +838,7 @@ class bezier_curve_test_suite : public Test::Suite
       t=0;
       eval_out=bc4.fp(t);
       eval_ref=bc1.fp(t);
-      TEST_ASSERT(eval_out==eval_ref);
+      TEST_ASSERT((eval_out-eval_ref).norm()<20*eps);
       t=1;
       eval_out=bc4.fp(t);
       eval_ref=bc1.fp(t);
@@ -864,7 +864,7 @@ class bezier_curve_test_suite : public Test::Suite
       t=static_cast<data__>(0.45);
       eval_out=bc4.fpp(t);
       eval_ref=bc1.fpp(t);
-      TEST_ASSERT((eval_out-eval_ref).norm()<33*eps);
+      TEST_ASSERT((eval_out-eval_ref).norm()<35*eps);
 
       // test 3rd derivative at end points
       t=0;
@@ -1374,7 +1374,7 @@ class bezier_curve_test_suite : public Test::Suite
         t=0;
         eli::geom::curve::curvature(curv_out, bc2, t);
         eli::geom::curve::curvature(curv_ref, bc1, t);
-        TEST_ASSERT(curv_out==curv_ref);
+        TEST_ASSERT((curv_out-curv_ref)<10*eps);
         t=1;
         eli::geom::curve::curvature(curv_out, bc2, t);
         eli::geom::curve::curvature(curv_ref, bc1, t);
