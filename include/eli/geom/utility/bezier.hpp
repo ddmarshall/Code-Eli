@@ -114,7 +114,7 @@ namespace eli
         assert(cp_out.rows()>=cp_in.rows());
         assert(cp_out.cols()==cp_in.cols());
 
-        index_type i, j, ntarget(cp_out.rows()-1), nstart(cp_in.rows()-1);
+        index_type i, ntarget(cp_out.rows()-1), nstart(cp_in.rows()-1);
         index_type n(nstart);
 
         // Make in-place copy of control points.
@@ -261,25 +261,22 @@ namespace eli
         // dimension check
         assert(cp_a.cols()==cp_b.cols());
 
-        index_type na(cp_a.rows()-1), nb(cp_b.rows()-1), n;
+        index_type na(cp_a.rows()-1), nb(cp_b.rows()-1);
 
         // make working copies
         Eigen::Matrix<data_type, Eigen::Dynamic, Eigen::Dynamic> cp_A(cp_a);
         Eigen::Matrix<data_type, Eigen::Dynamic, Eigen::Dynamic> cp_B(cp_b);
 
-        if( na == nb )
+        if(na == nb)
         {
-          n=na;
         }
-        else if( na > nb )
+        else if(na > nb)
         {
-          n=na;
           cp_B=cp_A; // Copy to allocate proper size
           bezier_promote_control_points_to(cp_B, cp_b); // promote b to B
         }
         else
         {
-          n=nb;
           cp_A=cp_B; // Copy to allocate proper size
           bezier_promote_control_points_to(cp_A, cp_a); // promote a to A
         }
