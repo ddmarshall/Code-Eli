@@ -121,7 +121,7 @@ namespace eli
         for (i=0; i<n+1; ++i)
           cp_out.row(i)=cp_in.row(i);
 
-        for ( ; n<ntarget; n++)
+        for (; n<ntarget; n++)
         {
           // Assign final value, n'th value no longer needed and can be replaced.
           cp_out.row(n+1)=cp_out.row(n);
@@ -148,11 +148,11 @@ namespace eli
         assert(cp_out.rows() == 4);
         assert(cp_out.cols() == cp_in.cols());
 
-        if( cp_in.rows() < 4 ) // Promote
+        if(cp_in.rows() < 4) // Promote
         {
           bezier_promote_control_points_to(cp_out, cp_in);
         }
-        else if( cp_in.rows() == 4 ) // Do nothing
+        else if(cp_in.rows() == 4) // Do nothing
         {
           index_type i;
           for( i=0; i<4; ++i)

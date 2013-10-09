@@ -1176,7 +1176,8 @@ class piecewise_curve_test_suite : public Test::Suite
 
     void to_cubic_test()
     {
-      {  // Two-segment piecewise 4th order.
+      // Two-segment piecewise 4th order.
+      {
         piecewise_curve_type pwc0, pwc1;
         typename curve_type::control_point_type cntrl_in[5];
         typename piecewise_curve_type::error_code err;
@@ -1268,7 +1269,9 @@ class piecewise_curve_test_suite : public Test::Suite
         eval_ref=pwc1.f(t);
         TEST_ASSERT((eval_out-eval_ref).norm()<ttol);
       }
-      {  // One segment cubic, promoted.
+
+      // One segment cubic, promoted.
+      {
         piecewise_curve_type pwc0, pwc1;
         typename curve_type::control_point_type cntrl_in[4];
         typename piecewise_curve_type::error_code err;
@@ -1330,7 +1333,9 @@ class piecewise_curve_test_suite : public Test::Suite
         eval_ref=pwc1.f(t);
         TEST_ASSERT((eval_out-eval_ref).norm()<ttol);
       }
-      {  // One segment cubic, promoted and perturbed.
+
+      // One segment cubic, promoted and perturbed.
+      {
         piecewise_curve_type pwc0, pwc1, pwc2;
         typename curve_type::control_point_type cntrl_in[4];
         typename piecewise_curve_type::error_code err;
@@ -1399,7 +1404,9 @@ class piecewise_curve_test_suite : public Test::Suite
         eval_ref=pwc1.f(t);
         TEST_ASSERT((eval_out-eval_ref).norm()<ttol);
       }
-      {  // One segment cubic
+
+      // One segment cubic
+      {
         piecewise_curve_type pwc0, pwc1;
         typename curve_type::control_point_type cntrl_in[4];
         typename piecewise_curve_type::error_code err;
@@ -1458,7 +1465,9 @@ class piecewise_curve_test_suite : public Test::Suite
         eval_ref=pwc1.f(t);
         TEST_ASSERT((eval_out-eval_ref).norm()<ttol);
       }
-      {  // One segment quadratic
+
+      // One segment quadratic
+      {
         piecewise_curve_type pwc0, pwc1;
         typename curve_type::control_point_type cntrl_in[3];
         typename piecewise_curve_type::error_code err;
@@ -1516,7 +1525,9 @@ class piecewise_curve_test_suite : public Test::Suite
         eval_ref=pwc1.f(t);
         TEST_ASSERT((eval_out-eval_ref).norm()<ttol);
       }
-      {  // One segment linear
+
+      // One segment linear
+      {
         piecewise_curve_type pwc0, pwc1;
         typename curve_type::control_point_type cntrl_in[2];
         typename piecewise_curve_type::error_code err;

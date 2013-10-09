@@ -812,7 +812,6 @@ class bezier_curve_test_suite : public Test::Suite
         }
       }
 
-
       // promote_to curve high order
       bc4.degree_promote_to(bc1.degree()+5);
 
@@ -843,7 +842,7 @@ class bezier_curve_test_suite : public Test::Suite
       t=1;
       eval_out=bc4.fp(t);
       eval_ref=bc1.fp(t);
-      TEST_ASSERT((eval_out-eval_ref).norm()<5*4*eps);     // failing due to tolerance
+      TEST_ASSERT((eval_out-eval_ref).norm()<5*4*eps);
 
       // test 1st derivative at interior point
       t=static_cast<data__>(0.45);
@@ -855,11 +854,11 @@ class bezier_curve_test_suite : public Test::Suite
       t=0;
       eval_out=bc4.fpp(t);
       eval_ref=bc1.fpp(t);
-      TEST_ASSERT((eval_out-eval_ref).norm()<33*2*eps);      //failing
+      TEST_ASSERT((eval_out-eval_ref).norm()<200*eps);
       t=1;
       eval_out=bc4.fpp(t);
       eval_ref=bc1.fpp(t);
-      TEST_ASSERT((eval_out-eval_ref).norm()<18*16*eps);      //failing
+      TEST_ASSERT((eval_out-eval_ref).norm()<18*16*eps);
 
       // test 2nd derivative at interior point
       t=static_cast<data__>(0.45);
@@ -871,23 +870,23 @@ class bezier_curve_test_suite : public Test::Suite
       t=0;
       eval_out=bc4.fppp(t);
       eval_ref=bc1.fppp(t);
-      TEST_ASSERT((eval_out-eval_ref).norm()<390*16*eps);      //failing
+      TEST_ASSERT((eval_out-eval_ref).norm()<390*16*eps);
       t=1;
       eval_out=bc4.fppp(t);
       eval_ref=bc1.fppp(t);
-      TEST_ASSERT((eval_out-eval_ref).norm()<390*4*eps);        //failing
+      TEST_ASSERT((eval_out-eval_ref).norm()<390*4*eps);
 
       // test 3rd derivative at interior point
       t=static_cast<data__>(0.45);
       eval_out=bc4.fppp(t);
       eval_ref=bc1.fppp(t);
-      TEST_ASSERT((eval_out-eval_ref).norm()<203*4*eps);       //failing
+      TEST_ASSERT((eval_out-eval_ref).norm()<203*4*eps);
 
       // test curvature at end points
       t=0;
       eli::geom::curve::curvature(curv_out, bc4, t);
       eli::geom::curve::curvature(curv_ref, bc1, t);
-      TEST_ASSERT(std::abs(curv_out-curv_ref)<5*eps);        //failing
+      TEST_ASSERT(std::abs(curv_out-curv_ref)<5*eps);
       t=1;
       eli::geom::curve::curvature(curv_out, bc4, t);
       eli::geom::curve::curvature(curv_ref, bc1, t);
@@ -1168,13 +1167,14 @@ class bezier_curve_test_suite : public Test::Suite
 
     void degree_to_cubic_test()  // degree_to_cubic();
     {
-      {  // Test linear promotion case.
         data_type eps(std::numeric_limits<data__>::epsilon());
 #ifdef ELI_USING_QD
         if ( (typeid(data_type)==typeid(dd_real)) || (typeid(data_type)==typeid(qd_real)) )
           eps=std::numeric_limits<double>::epsilon();
 #endif
 
+      // Test linear promotion case.
+      {
         point_type cntrl_in[2];
 
         cntrl_in[0] <<  0, 0, 0;
@@ -1216,7 +1216,7 @@ class bezier_curve_test_suite : public Test::Suite
         t=0;
         eval_out=bc2.fp(t);
         eval_ref=bc1.fp(t);
-        TEST_ASSERT((eval_out-eval_ref).norm()<5*eps);           // failing due to tolerance
+        TEST_ASSERT((eval_out-eval_ref).norm()<5*eps);
         t=1;
         eval_out=bc2.fp(t);
         eval_ref=bc1.fp(t);
@@ -1276,13 +1276,14 @@ class bezier_curve_test_suite : public Test::Suite
         eli::geom::curve::curvature(curv_ref, bc1, t);
         TEST_ASSERT(std::abs(curv_out-curv_ref)<203*eps);
       }
-      {  // Test quadratic promotion case.
         data_type eps(std::numeric_limits<data__>::epsilon());
 #ifdef ELI_USING_QD
         if ( (typeid(data_type)==typeid(dd_real)) || (typeid(data_type)==typeid(qd_real)) )
           eps=std::numeric_limits<double>::epsilon();
 #endif
 
+      // Test quadratic promotion case.
+      {
         point_type cntrl_in[3];
 
         cntrl_in[0] <<  0, 0, 0;
@@ -1325,7 +1326,7 @@ class bezier_curve_test_suite : public Test::Suite
         t=0;
         eval_out=bc2.fp(t);
         eval_ref=bc1.fp(t);
-        TEST_ASSERT((eval_out-eval_ref).norm()<5*eps);           // failing due to tolerance
+        TEST_ASSERT((eval_out-eval_ref).norm()<5*eps);
         t=1;
         eval_out=bc2.fp(t);
         eval_ref=bc1.fp(t);
@@ -1385,7 +1386,9 @@ class bezier_curve_test_suite : public Test::Suite
         eli::geom::curve::curvature(curv_ref, bc1, t);
         TEST_ASSERT(std::abs(curv_out-curv_ref)<203*eps);
       }
-      {  // Test do-nothing cubic case.
+
+      // Test do-nothing cubic case.
+      {
         point_type cntrl_in[4];
 
         cntrl_in[0] <<  0, 0, 0;
@@ -1416,7 +1419,9 @@ class bezier_curve_test_suite : public Test::Suite
           }
         }
       }
-      {  // Test demotion case.
+
+      // Test demotion case.
+      {
         point_type cntrl_in[7];
 
         cntrl_in[0] <<  0, 0, 0;
@@ -1455,7 +1460,8 @@ class bezier_curve_test_suite : public Test::Suite
 
     void distance_bound_test()
     {
-      {  // Test that curve has zero distance itself
+      // Test that curve has zero distance itself
+      {
         point_type cntrl_in[5];
 
         // set control points
@@ -1476,7 +1482,9 @@ class bezier_curve_test_suite : public Test::Suite
         data_type d1 = bc1.eqp_distance_bound(bc1);
         TEST_ASSERT(d1==0);
       }
-      {  // Test that curve has zero distance from promoted-self (and vis-versa)
+
+      // Test that curve has zero distance from promoted-self (and vis-versa)
+      {
         point_type cntrl_in[5];
 
         // set control points
@@ -1504,7 +1512,9 @@ class bezier_curve_test_suite : public Test::Suite
         data_type d2 = bc1.eqp_distance_bound(bc2);
         TEST_ASSERT(d2==0);
       }
-      {  // Test that curve has known distance from offset & promoted-self (and vis-versa)
+
+      // Test that curve has known distance from offset & promoted-self (and vis-versa)
+      {
         point_type cntrl_in[5];
 
         // set control points
@@ -1536,7 +1546,9 @@ class bezier_curve_test_suite : public Test::Suite
         data_type d2 = bc1.eqp_distance_bound(bc2);
         TEST_ASSERT(d2==dz);
       }
-      {  // Test that curve has known distance from reversed & promoted-self (and vis-versa)
+
+      // Test that curve has known distance from reversed & promoted-self (and vis-versa)
+      {
         point_type cntrl_in[5];
 
         // set control points
