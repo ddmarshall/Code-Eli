@@ -127,7 +127,7 @@ namespace eli
           cp_out.row(n+1)=cp_out.row(n);
           // Work backwards, calculating in-place.
           for (i=n; i>0; --i)
-            cp_out.row(i)=(cp_out.row(i-1)-cp_out.row(i))*(static_cast<typename Derived1::Scalar>(i)/(n+1))+cp_out.row(i);
+            cp_out.row(i)=(cp_out.row(i-1)-cp_out.row(i))*(static_cast<data_type>(i)/(n+1))+cp_out.row(i);
         }
       }
 
