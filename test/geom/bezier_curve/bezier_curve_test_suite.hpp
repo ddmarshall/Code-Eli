@@ -1167,10 +1167,10 @@ class bezier_curve_test_suite : public Test::Suite
 
     void degree_to_cubic_test()  // degree_to_cubic();
     {
-        data_type eps(std::numeric_limits<data__>::epsilon());
+      data_type eps(std::numeric_limits<data__>::epsilon());
 #ifdef ELI_USING_QD
-        if ( (typeid(data_type)==typeid(dd_real)) || (typeid(data_type)==typeid(qd_real)) )
-          eps=std::numeric_limits<double>::epsilon();
+      if ( (typeid(data_type)==typeid(dd_real)) || (typeid(data_type)==typeid(qd_real)) )
+        eps=std::numeric_limits<double>::epsilon();
 #endif
 
       // Test linear promotion case.
@@ -1276,11 +1276,6 @@ class bezier_curve_test_suite : public Test::Suite
         eli::geom::curve::curvature(curv_ref, bc1, t);
         TEST_ASSERT(std::abs(curv_out-curv_ref)<203*eps);
       }
-        data_type eps(std::numeric_limits<data__>::epsilon());
-#ifdef ELI_USING_QD
-        if ( (typeid(data_type)==typeid(dd_real)) || (typeid(data_type)==typeid(qd_real)) )
-          eps=std::numeric_limits<double>::epsilon();
-#endif
 
       // Test quadratic promotion case.
       {
