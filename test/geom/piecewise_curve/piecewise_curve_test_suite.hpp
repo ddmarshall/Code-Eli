@@ -1681,11 +1681,6 @@ class piecewise_curve_test_suite : public Test::Suite
     void round_test()
     {
       // create closed piecewise curve
-      data_type eps(std::numeric_limits<data__>::epsilon());
-#ifdef ELI_USING_QD
-      if ( (typeid(data_type)==typeid(dd_real)) || (typeid(data_type)==typeid(qd_real)) )
-        eps=std::numeric_limits<double>::epsilon();
-#endif
       piecewise_curve_type pwc0, pwc1;
       typename curve_type::control_point_type cntrl_in[3];
       typename piecewise_curve_type::error_code err;
