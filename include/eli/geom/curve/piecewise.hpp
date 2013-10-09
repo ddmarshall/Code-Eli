@@ -1278,14 +1278,14 @@ namespace eli
 
         private:
           template<typename it__>
-          error_code split_seg(it__ it, const data_type &tt=0.5)
+          error_code split_seg(it__ it, const data_type &tt)
           {
             it__ itinsert;
             return split_seg(it, itinsert, tt);
           }
 
           template<typename it__>
-          error_code split_seg(it__ it, it__ &itinsert, const data_type &tt=0.5)
+          error_code split_seg(it__ it, it__ &itinsert, const data_type &tt)
           {
             // split the segment and replace
             curve_type cl, cr;
@@ -1321,7 +1321,7 @@ namespace eli
             {
               // split and recurse
               it__ itl;
-              split_seg(it, itl);
+              split_seg(it, itl, static_cast<data_type>(0.5));
 
               segment_to_cubic(itl, ttol);
               segment_to_cubic(it, ttol);
