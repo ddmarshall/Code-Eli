@@ -2132,7 +2132,7 @@ class bezier_surface_test_suite : public Test::Suite
 #endif
 
       index_type n(6), m(4);
-      point_type pt[6+1][4+1], pt_ref[5+1][4+1];
+      point_type pt[6+1][4+1];
 
       // create surface with specified control points
       pt[0][0] <<  0, 0, 15;
@@ -2283,7 +2283,7 @@ class bezier_surface_test_suite : public Test::Suite
   #endif
 
         index_type n(6), m(4);
-        point_type pt[6+1][4+1], pt_ref[5+1][4+1];
+        point_type pt[6+1][4+1];
 
         // create surface with specified control points
         pt[0][0] <<  0, 0, 15;
