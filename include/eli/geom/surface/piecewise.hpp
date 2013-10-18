@@ -134,16 +134,18 @@ namespace eli
             mind = d;
             maxd = d;
 
-            it++;
-
-            for ( ; it!=patches.end(); ++it)
+            for (it++; it!=patches.end(); ++it)
             {
               d = it->s.degree_u();
 
               if(d<mind)
+              {
                 mind = d;
+              }
               if(d>maxd)
+              {
                 maxd=d;
+              }
             }
           }
 
@@ -157,16 +159,18 @@ namespace eli
             mind = d;
             maxd = d;
 
-            it++;
-
-            for ( ; it!=patches.end(); ++it)
+            for (it++; it!=patches.end(); ++it)
             {
               d = it->s.degree_v();
 
               if(d<mind)
+              {
                 mind = d;
+              }
               if(d>maxd)
+              {
                 maxd=d;
+              }
             }
           }
 
@@ -739,7 +743,7 @@ namespace eli
             {
               assert(false);
               --it;
-          }
+            }
 
             return it->s.normal(uu, vv);
           }

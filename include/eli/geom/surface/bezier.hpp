@@ -929,7 +929,9 @@ namespace eli
 
               // copy the control rows
               for (i=0; i<=m; ++i)
+              {
                 current_row[i]=B_u[i];
+              }
 
               // resize current surface
               resize(target_degree, m);
@@ -953,7 +955,9 @@ namespace eli
 
             // copy the control cols
             for (i=0; i<=n; ++i)
+            {
               current_col[i]=B_v[i];
+            }
 
             // resize current surface
             resize(n, m+1);
@@ -977,7 +981,9 @@ namespace eli
 
             // copy the control cols
             for (i=0; i<=n; ++i)
+            {
               current_col[i]=B_v[i];
+            }
 
             // resize current surface
             resize(n, target_degree);
@@ -1101,7 +1107,9 @@ namespace eli
 
               // copy the control rows
               for (i=0; i<=m; ++i)
+              {
                 current_row[i]=B_u[i];
+              }
 
               // resize current surface
               resize(3, m);
@@ -1125,7 +1133,9 @@ namespace eli
 
             // copy the control rows
             for (i=0; i<=n; ++i)
+            {
               current_col[i]=B_v[i];
+            }
 
             // resize current surface
             resize(n, 3);
@@ -1201,11 +1211,15 @@ namespace eli
 
             // Find maximum common order.
             index_type n(bsa.degree_u()), m(bsa.degree_v());
-            if( bsb.degree_u() > n )
+            if(bsb.degree_u() > n)
+            {
               n = bsb.degree_u();
+            }
 
-            if( bsb.degree_v() > m )
+            if(bsb.degree_v() > m)
+            {
               m = bsb.degree_v();
+            }
 
             // Promote both to max common order.
             bsa.promote_u_to(n);
@@ -1223,7 +1237,9 @@ namespace eli
               {
                 d = (bsa.get_control_point(i, j) - bsb.get_control_point(i, j)).norm();
                 if(d > maxd)
+                {
                   maxd=d;
+                }
               }
             }
 
