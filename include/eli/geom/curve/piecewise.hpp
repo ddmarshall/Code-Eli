@@ -347,6 +347,22 @@ namespace eli
             tmax_out = tmax;
           }
 
+          void parameter_report()
+          {
+            printf("Parameter report:\n");
+            typename segment_collection_type::const_iterator it;
+
+            int i = 0;
+            // cycle through all segments to get each bounding box to add
+            for (it=segments.begin(); it!=segments.end(); ++it)
+            {
+              printf(" seg: %d \t t: %f\n", i, it->first);
+              ++i;
+            }
+            printf(" tmax: %f\n", tmax);
+            printf("End report\n");
+          }
+
           index_type number_segments() const {return static_cast<index_type>(segments.size());}
 
           void degree(index_type &mind, index_type &maxd)
