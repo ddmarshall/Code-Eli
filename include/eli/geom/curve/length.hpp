@@ -49,7 +49,7 @@ namespace eli
         data_type seg_len;
         for (len=0, it=pc.segments.begin(); it!=pc.segments.end(); ++it)
         {
-          length(seg_len, it->c, tol);
+          length(seg_len, it->second, tol);
           len+=seg_len;
         }
       }
@@ -78,19 +78,19 @@ namespace eli
         pc.find_segment(it1, tt1, t1);
         if (it0==it1)
         {
-          length(len, it0->c, tt0, tt1, tol);
+          length(len, it0->second, tt0, tt1, tol);
           return;
         }
-        length(seg_len, it0->c, tt0, 1, tol);
+        length(seg_len, it0->second, tt0, 1, tol);
         len=seg_len;
-        length(seg_len, it1->c, 0, tt1, tol);
+        length(seg_len, it1->second, 0, tt1, tol);
         len+=seg_len;
 
         // add the length of all of the complete segments between the start and end pieces
         it=it0;
         for (++it; it!=it1; ++it)
         {
-          length(seg_len, it->c, tol);
+          length(seg_len, it->second, tol);
           len+=seg_len;
         }
       }
