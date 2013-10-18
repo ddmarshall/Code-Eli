@@ -58,6 +58,7 @@ class piecewise_surface_test_suite : public Test::Suite
       TEST_ADD(piecewise_surface_test_suite<float>::transformation_test);
       TEST_ADD(piecewise_surface_test_suite<float>::evaluation_test);
       TEST_ADD(piecewise_surface_test_suite<float>::split_test);
+      TEST_ADD(piecewise_surface_test_suite<float>::to_cubic_test);
       TEST_ADD(piecewise_surface_test_suite<float>::area_test);
     }
     void AddTests(const double &)
@@ -71,6 +72,7 @@ class piecewise_surface_test_suite : public Test::Suite
       TEST_ADD(piecewise_surface_test_suite<double>::transformation_test);
       TEST_ADD(piecewise_surface_test_suite<double>::evaluation_test);
       TEST_ADD(piecewise_surface_test_suite<double>::split_test);
+      TEST_ADD(piecewise_surface_test_suite<double>::to_cubic_test);
       TEST_ADD(piecewise_surface_test_suite<double>::area_test);
     }
     void AddTests(const long double &)
@@ -84,6 +86,7 @@ class piecewise_surface_test_suite : public Test::Suite
       TEST_ADD(piecewise_surface_test_suite<long double>::transformation_test);
       TEST_ADD(piecewise_surface_test_suite<long double>::evaluation_test);
       TEST_ADD(piecewise_surface_test_suite<long double>::split_test);
+      TEST_ADD(piecewise_surface_test_suite<long double>::to_cubic_test);
       TEST_ADD(piecewise_surface_test_suite<long double>::area_test);
     }
 
@@ -99,6 +102,7 @@ class piecewise_surface_test_suite : public Test::Suite
       TEST_ADD(piecewise_surface_test_suite<dd_real>::transformation_test);
       TEST_ADD(piecewise_surface_test_suite<dd_real>::evaluation_test);
       TEST_ADD(piecewise_surface_test_suite<dd_real>::split_test);
+      TEST_ADD(piecewise_surface_test_suite<dd_real>::to_cubic_test);
       TEST_ADD(piecewise_surface_test_suite<dd_real>::area_test);
     }
 
@@ -113,6 +117,7 @@ class piecewise_surface_test_suite : public Test::Suite
       TEST_ADD(piecewise_surface_test_suite<qd_real>::transformation_test);
       TEST_ADD(piecewise_surface_test_suite<qd_real>::evaluation_test);
       TEST_ADD(piecewise_surface_test_suite<qd_real>::split_test);
+      TEST_ADD(piecewise_surface_test_suite<qd_real>::to_cubic_test);
       TEST_ADD(piecewise_surface_test_suite<qd_real>::area_test);
     }
 #endif
@@ -1022,6 +1027,153 @@ class piecewise_surface_test_suite : public Test::Suite
       TEST_ASSERT(tol.approximately_equal(ps1.f(u, v), ps2.f(u, v)));
       TEST_ASSERT(tol.approximately_equal(ps1.f_u(u, v), ps2.f_u(u, v)));
       TEST_ASSERT(tol.approximately_equal(ps1.f_v(u, v), ps2.f_v(u, v)));
+    }
+
+    void to_cubic_test()
+    {
+      piecewise_surface_type ps1, ps2;
+      data_type u, v;
+
+      // create 3x2 patches with unit spacing
+      ps1.resize(1,1);
+
+      // create piecewise surface
+      {
+        typename piecewise_surface_type::error_code err;
+        surface_type s;
+        index_type i, j, n(5), m(4);
+        point_type pt[5+1][4+1], pt_out;
+
+        // create surface with specified control points
+        pt[0][0] <<  0, 0, 15;
+        pt[1][0] <<  2, 6, 15;
+        pt[2][0] <<  3, 0, 15;
+        pt[3][0] <<  5, 4, 15;
+        pt[4][0] <<  7, 1, 15;
+        pt[5][0] <<  9, 1, 15;
+        pt[0][1] <<  0, 0, 11;
+        pt[1][1] <<  2, 6, 11;
+        pt[2][1] <<  3, 0, 11;
+        pt[3][1] <<  5, 4, 11;
+        pt[4][1] <<  7, 1, 11;
+        pt[5][1] <<  9, 1, 11;
+        pt[0][2] <<  0, 0,  3;
+        pt[1][2] <<  2, 6,  3;
+        pt[2][2] <<  3, 0,  3;
+        pt[3][2] <<  5, 4,  3;
+        pt[4][2] <<  7, 1,  3;
+        pt[5][2] <<  9, 1,  3;
+        pt[0][3] <<  0, 0,  0;
+        pt[1][3] <<  2, 6,  0;
+        pt[2][3] <<  3, 0,  0;
+        pt[3][3] <<  5, 4,  0;
+        pt[4][3] <<  7, 1,  0;
+        pt[5][3] <<  9, 1,  0;
+        pt[0][4] <<  0, 0, -5;
+        pt[1][4] <<  2, 6, -5;
+        pt[2][4] <<  3, 0, -5;
+        pt[3][4] <<  5, 4, -5;
+        pt[4][4] <<  7, 1, -5;
+        pt[5][4] <<  9, 1, -5;
+
+        s.resize(n, m);
+        for (i=0; i<=n; ++i)
+        {
+          for (j=0; j<=m; ++j)
+          {
+            s.set_control_point(pt[i][j], i, j);
+          }
+        }
+
+        err=ps1.set(s, 0, 0);
+        TEST_ASSERT(err==piecewise_surface_type::NO_ERROR);
+
+      }
+
+      data_type ttol = 1e-3;
+
+      // to_cubic u-direction
+      ps2=ps1;
+
+      ps2.to_cubic_u(ttol);
+
+      index_type mind, maxd;
+
+      ps2.degree_u(mind, maxd);
+
+      TEST_ASSERT(mind==3);
+      TEST_ASSERT(maxd==3);
+
+      // printf("nu: %d nv: %d\n", ps2.number_u_patches(), ps2.number_v_patches());
+
+      u=0.25;
+      v=0.5;
+      TEST_ASSERT((ps1.f(u, v)-ps2.f(u, v)).norm() < ttol);
+
+      u=0.25;
+      v=0.75;
+      TEST_ASSERT((ps1.f(u, v)-ps2.f(u, v)).norm() < ttol);
+
+      u=0.75;
+      v=0.75;
+      TEST_ASSERT((ps1.f(u, v)-ps2.f(u, v)).norm() < ttol);
+
+      u=0.25;
+      v=0.25;
+      TEST_ASSERT((ps1.f(u, v)-ps2.f(u, v)).norm() < ttol);
+
+      // to_cubic v-direction
+      ps2=ps1;
+
+      ps2.to_cubic_v(ttol);
+
+      ps2.degree_v(mind, maxd);
+
+      TEST_ASSERT(mind==3);
+      TEST_ASSERT(maxd==3);
+
+      // printf("nu: %d nv: %d\n", ps2.number_u_patches(), ps2.number_v_patches());
+
+      u=0.25;
+      v=0.5;
+      TEST_ASSERT((ps1.f(u, v)-ps2.f(u, v)).norm() < ttol);
+
+      u=0.25;
+      v=0.75;
+      TEST_ASSERT((ps1.f(u, v)-ps2.f(u, v)).norm() < ttol);
+
+      u=0.75;
+      v=0.75;
+      TEST_ASSERT((ps1.f(u, v)-ps2.f(u, v)).norm() < ttol);
+
+      // to_cubic u and v-direction
+      ps2=ps1;
+
+      ps2.to_cubic(ttol);
+
+      ps2.degree_u(mind, maxd);
+
+      TEST_ASSERT(mind==3);
+      TEST_ASSERT(maxd==3);
+
+      ps2.degree_v(mind, maxd);
+
+      TEST_ASSERT(mind==3);
+      TEST_ASSERT(maxd==3);
+
+      // printf("nu: %d nv: %d\n", ps2.number_u_patches(), ps2.number_v_patches());
+
+      u=0.25;
+      v=0.5;
+      TEST_ASSERT((ps1.f(u, v)-ps2.f(u, v)).norm() < ttol);
+
+      u=0.25;
+      v=0.75;
+      TEST_ASSERT((ps1.f(u, v)-ps2.f(u, v)).norm() < ttol);
+
+      u=0.75;
+      v=0.75;
+      TEST_ASSERT((ps1.f(u, v)-ps2.f(u, v)).norm() < ttol);
     }
 
     void area_test()

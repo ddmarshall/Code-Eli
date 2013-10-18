@@ -124,6 +124,56 @@ namespace eli
             }
           }
 
+          void degree_u(index_type &mind, index_type &maxd)
+          {
+            typename patch_collection_type::iterator it;
+
+            it=patches.begin();
+
+            index_type d = it->s.degree_u();
+            mind = d;
+            maxd = d;
+
+            for (it++; it!=patches.end(); ++it)
+            {
+              d = it->s.degree_u();
+
+              if(d<mind)
+              {
+                mind = d;
+              }
+              if(d>maxd)
+              {
+                maxd=d;
+              }
+            }
+          }
+
+          void degree_v(index_type &mind, index_type &maxd)
+          {
+            typename patch_collection_type::iterator it;
+
+            it=patches.begin();
+
+            index_type d = it->s.degree_v();
+            mind = d;
+            maxd = d;
+
+            for (it++; it!=patches.end(); ++it)
+            {
+              d = it->s.degree_v();
+
+              if(d<mind)
+              {
+                mind = d;
+              }
+              if(d>maxd)
+              {
+                maxd=d;
+              }
+            }
+          }
+
           void resize(const index_type &nu_in, const index_type &nv_in)
           {
             if ( (nu_in<=0) || (nv_in<=0) )
@@ -420,38 +470,9 @@ namespace eli
             if (it==patches.end())
               return INVALID_PARAM;
 
-            patch_collection_type old_patches(patches);
-            index_type i, j, isplit(std::distance(patches.begin(), it));
-            resize(nu+1, nv);
+            index_type isplit(std::distance(patches.begin(), it));
 
-            // copy over the pre-split patches
-            for (i=0; i<isplit; ++i)
-            {
-              for (j=0; j<nv; ++j)
-              {
-                patches[j*nv+i]=old_patches[j*nv+i];
-              }
-            }
-
-            // split the patch and replace
-            i=isplit;
-            for (j=0; j<nv; ++j)
-            {
-              old_patches[j*nv+i].s.split_u(patches[j*nv+i].s, patches[j*nv+i+1].s, uu);
-              patches[j*nv+i].delta_u=old_patches[j*nv+i].delta_u*uu;
-              patches[j*nv+i+1].delta_u=old_patches[j*nv+i].delta_u*(1-uu);
-            }
-
-            // copy over the post-split patches
-            for (i=isplit+2; i<nu; ++i)
-            {
-              for (j=0; j<nv; ++j)
-              {
-                patches[j*nv+i]=old_patches[j*nv+i-1];
-              }
-            }
-
-            return NO_ERROR;
+            return split_u(isplit, uu);
           }
 
           error_code split_v(const data_type &v_in)
@@ -464,38 +485,91 @@ namespace eli
             if (it==patches.end())
               return INVALID_PARAM;
 
-            patch_collection_type old_patches(patches);
-            index_type i, j, jsplit(std::distance(patches.begin(), it)/nu);
-            resize(nu, nv+1);
+            index_type jsplit(std::distance(patches.begin(), it)/nu);
 
-            // copy over the pre-split patches
-            for (j=0; j<jsplit; ++j)
+            return split_v(jsplit, vv);
+          }
+
+          void to_cubic_u(const data_type &ttol)
+          {
+            // First pass to split patches until cubic approximation is within tolerance.
+            for (index_type i=0; i<nu; ++i)
             {
-              for (i=0; i<nu; ++i)
+              for (index_type j=0; j<nv; ++j)
               {
-                patches[j*nv+i]=old_patches[j*nv+i];
+                surface_type s = patches[j*nu+i].s;
+                surface_type sc(s);
+
+                sc.to_cubic_u();
+
+                data_type d = s.eqp_distance_bound(sc);
+
+                while(d > ttol)
+                {
+                  split_u(i, 0.5);
+
+                  s = patches[j*nu+i].s;
+                  sc = s;
+
+                  sc.to_cubic_u();
+
+                  d = s.eqp_distance_bound(sc);
+                }
               }
             }
 
-            // split the patch and replace
-            j=jsplit;
-            for (i=0; i<nu; ++i)
+            // Second pass to convert all patches to cubic.
+            for (index_type i=0; i<nu; ++i)
             {
-              old_patches[j*nv+i].s.split_v(patches[j*nv+i].s, patches[(j+1)*nv+i].s, vv);
-              patches[j*nv+i].delta_v=old_patches[j*nv+i].delta_v*vv;
-              patches[(j+1)*nv+i].delta_v=old_patches[j*nv+i].delta_v*(1-vv);
-            }
-
-            // copy over the post-split patches
-            for (j=jsplit+2; j<nv; ++j)
-            {
-              for (i=0; i<nu; ++i)
+              for (index_type j=0; j<nv; ++j)
               {
-                patches[j*nv+i]=old_patches[(j-1)*nv+i];
+                patches[j*nu+i].s.to_cubic_u();
+              }
+            }
+          }
+
+          void to_cubic_v(const data_type &ttol)
+          {
+            // First pass to split patches until cubic approximation is within tolerance.
+            for (index_type i=0; i<nu; ++i)
+            {
+              for (index_type j=0; j<nv; ++j)
+              {
+                surface_type s = patches[j*nu+i].s;
+                surface_type sc(s);
+
+                sc.to_cubic_v();
+
+                data_type d = s.eqp_distance_bound(sc);
+
+                while(d > ttol)
+                {
+                  split_v(j, 0.5);
+
+                  s = patches[j*nu+i].s;
+                  sc = s;
+
+                  sc.to_cubic_v();
+
+                  d = s.eqp_distance_bound(sc);
+                }
               }
             }
 
-            return NO_ERROR;
+            // Second pass to convert all patches to cubic.
+            for (index_type i=0; i<nu; ++i)
+            {
+              for (index_type j=0; j<nv; ++j)
+              {
+                patches[j*nu+i].s.to_cubic_v();
+              }
+            }
+          }
+
+          void to_cubic(const data_type &ttol)
+          {
+            to_cubic_u(ttol);
+            to_cubic_v(ttol);
           }
 
           point_type f(const data_type &u, const data_type &v) const
@@ -701,6 +775,18 @@ namespace eli
             patch_info(const patch_info &si) : s(si.s), delta_u(si.delta_u), delta_v(si.delta_v) {}
             ~patch_info() {}
 
+            patch_info & operator=(const patch_info &si)
+            {
+              if (this!=&si)
+              {
+                s=si.s;
+                delta_u=si.delta_u;
+                delta_v=si.delta_v;
+              }
+
+              return (*this);
+            }
+
             bool operator==(const patch_info &si) const
             {
               if (this==&si)
@@ -842,6 +928,79 @@ namespace eli
               it=patches.end();
               return;
             }
+          }
+
+          error_code split_u(const index_type &isplit, const data_type &uu)
+          {
+            patch_collection_type old_patches(patches);
+            index_type i, j;
+
+            resize(nu+1, nv);
+
+            // copy over the pre-split patches
+            for (i=0; i<isplit; ++i)
+            {
+              for (j=0; j<nv; ++j)
+              {
+                patches[j*nu+i]=old_patches[j*nu+i];
+              }
+            }
+
+            // split the patch and replace
+            i=isplit;
+            for (j=0; j<nv; ++j)
+            {
+              old_patches[j*nu+i].s.split_u(patches[j*nu+i].s, patches[j*nu+i+1].s, uu);
+              patches[j*nu+i].delta_u=old_patches[j*nu+i].delta_u*uu;
+              patches[j*nu+i+1].delta_u=old_patches[j*nu+i].delta_u*(1-uu);
+            }
+
+            // copy over the post-split patches
+            for (i=isplit+2; i<nu; ++i)
+            {
+              for (j=0; j<nv; ++j)
+              {
+                patches[j*nu+i]=old_patches[j*nu+i-1];
+              }
+            }
+
+            return NO_ERROR;
+          }
+
+          error_code split_v(const index_type &jsplit, const data_type &vv)
+          {
+            patch_collection_type old_patches(patches);
+            index_type i, j;
+            resize(nu, nv+1);
+
+            // copy over the pre-split patches
+            for (j=0; j<jsplit; ++j)
+            {
+              for (i=0; i<nu; ++i)
+              {
+                patches[j*nu+i]=old_patches[j*nu+i];
+              }
+            }
+
+            // split the patch and replace
+            j=jsplit;
+            for (i=0; i<nu; ++i)
+            {
+              old_patches[j*nu+i].s.split_v(patches[j*nu+i].s, patches[(j+1)*nu+i].s, vv);
+              patches[j*nu+i].delta_v=old_patches[j*nu+i].delta_v*vv;
+              patches[(j+1)*nu+i].delta_v=old_patches[j*nu+i].delta_v*(1-vv);
+            }
+
+            // copy over the post-split patches
+            for (j=jsplit+2; j<nv; ++j)
+            {
+              for (i=0; i<nu; ++i)
+              {
+                patches[j*nu+i]=old_patches[(j-1)*nu+i];
+              }
+            }
+
+            return NO_ERROR;
           }
       };
     }
