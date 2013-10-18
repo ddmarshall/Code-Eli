@@ -1122,6 +1122,7 @@ class piecewise_surface_test_suite : public Test::Suite
       v=0.25;
       TEST_ASSERT((ps1.f(u, v)-ps2.f(u, v)).norm() < ttol);
 
+      // FIX: NEXT PART CAUSES CRASH?!?!?!?
       return;
 
       // to_cubic v-direction
