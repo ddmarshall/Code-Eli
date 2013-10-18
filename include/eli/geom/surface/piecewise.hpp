@@ -775,6 +775,18 @@ namespace eli
             patch_info(const patch_info &si) : s(si.s), delta_u(si.delta_u), delta_v(si.delta_v) {}
             ~patch_info() {}
 
+            patch_info & operator=(const patch_info &si)
+            {
+              if (this!=&si)
+              {
+                s=si.s;
+                delta_u=si.delta_u;
+                delta_v=si.delta_v;
+              }
+
+              return (*this);
+            }
+
             bool operator==(const patch_info &si) const
             {
               if (this==&si)
@@ -930,7 +942,7 @@ namespace eli
             {
               for (j=0; j<nv; ++j)
               {
-                patches[j*nv+i]=old_patches[j*nv+i];
+                patches[j*nu+i]=old_patches[j*nu+i];
               }
             }
 
@@ -938,9 +950,9 @@ namespace eli
             i=isplit;
             for (j=0; j<nv; ++j)
             {
-              old_patches[j*nv+i].s.split_u(patches[j*nv+i].s, patches[j*nv+i+1].s, uu);
-              patches[j*nv+i].delta_u=old_patches[j*nv+i].delta_u*uu;
-              patches[j*nv+i+1].delta_u=old_patches[j*nv+i].delta_u*(1-uu);
+              old_patches[j*nu+i].s.split_u(patches[j*nu+i].s, patches[j*nu+i+1].s, uu);
+              patches[j*nu+i].delta_u=old_patches[j*nu+i].delta_u*uu;
+              patches[j*nu+i+1].delta_u=old_patches[j*nu+i].delta_u*(1-uu);
             }
 
             // copy over the post-split patches
@@ -948,7 +960,7 @@ namespace eli
             {
               for (j=0; j<nv; ++j)
               {
-                patches[j*nv+i]=old_patches[j*nv+i-1];
+                patches[j*nu+i]=old_patches[j*nu+i-1];
               }
             }
 
@@ -966,7 +978,7 @@ namespace eli
             {
               for (i=0; i<nu; ++i)
               {
-                patches[j*nv+i]=old_patches[j*nv+i];
+                patches[j*nu+i]=old_patches[j*nu+i];
               }
             }
 
@@ -974,9 +986,9 @@ namespace eli
             j=jsplit;
             for (i=0; i<nu; ++i)
             {
-              old_patches[j*nv+i].s.split_v(patches[j*nv+i].s, patches[(j+1)*nv+i].s, vv);
-              patches[j*nv+i].delta_v=old_patches[j*nv+i].delta_v*vv;
-              patches[(j+1)*nv+i].delta_v=old_patches[j*nv+i].delta_v*(1-vv);
+              old_patches[j*nu+i].s.split_v(patches[j*nu+i].s, patches[(j+1)*nu+i].s, vv);
+              patches[j*nu+i].delta_v=old_patches[j*nu+i].delta_v*vv;
+              patches[(j+1)*nu+i].delta_v=old_patches[j*nu+i].delta_v*(1-vv);
             }
 
             // copy over the post-split patches
@@ -984,7 +996,7 @@ namespace eli
             {
               for (i=0; i<nu; ++i)
               {
-                patches[j*nv+i]=old_patches[(j-1)*nv+i];
+                patches[j*nu+i]=old_patches[(j-1)*nu+i];
               }
             }
 
