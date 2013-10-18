@@ -2276,12 +2276,6 @@ class bezier_surface_test_suite : public Test::Suite
 
     void distance_bound_test()
     {
-        data_type eps(std::numeric_limits<data__>::epsilon());
-  #ifdef ELI_USING_QD
-        if ( (typeid(data_type)==typeid(dd_real)) || (typeid(data_type)==typeid(qd_real)) )
-          eps=std::numeric_limits<double>::epsilon();
-  #endif
-
         index_type n(6), m(4);
         point_type pt[6+1][4+1];
 
