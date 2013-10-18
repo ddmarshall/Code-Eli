@@ -919,6 +919,30 @@ namespace eli
             }
           }
 
+          void promote_u_to(index_type target_degree)
+          {
+              typedef Eigen::Matrix<data_type, Eigen::Dynamic, dim__> control_row_type;
+              typedef std::vector<control_row_type, Eigen::aligned_allocator<control_row_type> > control_row_collection_type;
+
+              index_type i, n(degree_u()), m(degree_v());
+              control_row_collection_type current_row(m+1, control_row_type(n+1, dim__));
+
+              // copy the control rows
+              for (i=0; i<=m; ++i)
+                current_row[i]=B_u[i];
+
+              // resize current surface
+              resize(target_degree, m);
+
+              // set the new control points
+              control_row_type tmp_cp(target_degree+1, dim__);
+              for (i=0; i<=m; ++i)
+              {
+                eli::geom::utility::bezier_promote_control_points_to(tmp_cp, current_row[i]);
+                B_u[i]=tmp_cp;
+              }
+          }
+
           void promote_v()
           {
             typedef Eigen::Matrix<data_type, Eigen::Dynamic, dim__> control_col_type;
@@ -939,6 +963,30 @@ namespace eli
             for (i=0; i<=n; ++i)
             {
               eli::geom::utility::bezier_promote_control_points(tmp_cp, current_col[i]);
+              B_v[i]=tmp_cp;
+            }
+          }
+
+          void promote_v_to(index_type target_degree)
+          {
+            typedef Eigen::Matrix<data_type, Eigen::Dynamic, dim__> control_col_type;
+            typedef std::vector<control_col_type, Eigen::aligned_allocator<control_col_type> > control_col_collection_type;
+
+            index_type i, n(degree_u()), m(degree_v());
+            control_col_collection_type current_col(n+1, control_col_type(m+1, dim__));
+
+            // copy the control cols
+            for (i=0; i<=n; ++i)
+              current_col[i]=B_v[i];
+
+            // resize current surface
+            resize(n, target_degree);
+
+            // set the new control points
+            control_col_type tmp_cp(target_degree+1, dim__);
+            for (i=0; i<=n; ++i)
+            {
+              eli::geom::utility::bezier_promote_control_points_to(tmp_cp, current_col[i]);
               B_v[i]=tmp_cp;
             }
           }
@@ -1043,6 +1091,54 @@ namespace eli
             return true;
           }
 
+          void to_cubic_u()
+          {
+              typedef Eigen::Matrix<data_type, Eigen::Dynamic, dim__> control_row_type;
+              typedef std::vector<control_row_type, Eigen::aligned_allocator<control_row_type> > control_row_collection_type;
+
+              index_type i, n(degree_u()), m(degree_v());
+              control_row_collection_type current_row(m+1, control_row_type(n+1, dim__));
+
+              // copy the control rows
+              for (i=0; i<=m; ++i)
+                current_row[i]=B_u[i];
+
+              // resize current surface
+              resize(3, m);
+
+              // set the new control points
+              control_row_type tmp_cp(4, dim__);
+              for (i=0; i<=m; ++i)
+              {
+                eli::geom::utility::bezier_control_points_to_cubic(tmp_cp, current_row[i]);
+                B_u[i]=tmp_cp;
+              }
+          }
+
+          void to_cubic_v()
+          {
+            typedef Eigen::Matrix<data_type, Eigen::Dynamic, dim__> control_col_type;
+            typedef std::vector<control_col_type, Eigen::aligned_allocator<control_col_type> > control_col_collection_type;
+
+            index_type i, n(degree_u()), m(degree_v());
+            control_col_collection_type current_col(n+1, control_col_type(m+1, dim__));
+
+            // copy the control rows
+            for (i=0; i<=n; ++i)
+              current_col[i]=B_v[i];
+
+            // resize current surface
+            resize(n, 3);
+
+            // set the new control points
+            control_col_type tmp_cp(4, dim__);
+            for (i=0; i<=n; ++i)
+            {
+              eli::geom::utility::bezier_control_points_to_cubic(tmp_cp, current_col[i]);
+              B_v[i]=tmp_cp;
+            }
+          }
+
           void split_u(bezier<data_type, dim__, tol__> &bs_lo, bezier<data_type, dim__, tol__> &bs_hi, const data_type &u0) const
           {
             typedef Eigen::Matrix<data_type, Eigen::Dynamic, dim__> control_row_type;
@@ -1093,6 +1189,45 @@ namespace eli
                 bs_hi.set_control_point(cp_hi.row(j), i, j);
               }
             }
+          }
+
+          data_type eqp_distance_bound(const bezier<data_type, dim__, tol__> &bs) const
+          {
+            typedef bezier<data_type, dim__, tol__> surf_type;
+
+            // Make working copies of surfaces.
+            surf_type bsa(*this);
+            surf_type bsb(bs);
+
+            // Find maximum common order.
+            index_type n(bsa.degree_u()), m(bsa.degree_v());
+            if( bsb.degree_u() > n )
+              n = bsb.degree_u();
+
+            if( bsb.degree_v() > m )
+              m = bsb.degree_v();
+
+            // Promote both to max common order.
+            bsa.promote_u_to(n);
+            bsa.promote_v_to(m);
+
+            bsb.promote_u_to(n);
+            bsb.promote_v_to(m);
+
+            // Find maximum distance between control points.
+            index_type i, j;
+            data_type d, maxd(0);
+            for (i=0; i<=n; ++i)
+            {
+              for (j=0; j<=m; ++j)
+              {
+                d = (bsa.get_control_point(i, j) - bsb.get_control_point(i, j)).norm();
+                if(d > maxd)
+                  maxd=d;
+              }
+            }
+
+            return maxd;
           }
 
         private:
