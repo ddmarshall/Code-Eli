@@ -1017,15 +1017,18 @@ namespace eli
             {
               assert ( it != key.rend() );
 
-              typename keymap_type::reverse_iterator itprev = it;
-              itprev--;
-
               data_type delta_p;
 
               if( it != key.rbegin() )
+              {
+                typename keymap_type::reverse_iterator itprev = it;
+                itprev--;
                 delta_p = itprev->first - it->first;
+              }
               else
+              {
                 delta_p = pmax - it->first;
+              }
 
               return delta_p;
             }
@@ -1034,15 +1037,18 @@ namespace eli
             {
               assert ( it != key.rend() );
 
-              typename keymap_type::const_reverse_iterator itprev = it;
-              itprev--;
-
               data_type delta_p;
 
               if( it != key.rbegin() )
+              {
+                typename keymap_type::const_reverse_iterator itprev = it;
+                itprev--;
                 delta_p = itprev->first - it->first;
+              }
               else
+              {
                 delta_p = pmax - it->first;
+              }
 
               return delta_p;
             }
