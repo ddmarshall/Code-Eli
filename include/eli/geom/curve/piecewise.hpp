@@ -683,11 +683,10 @@ namespace eli
 
             data_type t = scit0->first;
 
-            typename segment_collection_type::iterator itguess(scit0);
-            --itguess;;
+            typename segment_collection_type::iterator itguess;
 
             // erase old segments
-            segments.erase(scit0, scit1);
+            itguess = segments.erase(scit0, scit1);
 
             segments.insert( itguess, std::make_pair( t, curve ) );
 
@@ -847,11 +846,10 @@ namespace eli
             data_type t = scit0->first;
             data_type dtp;
 
-            typename segment_collection_type::const_iterator it, itguess(scit0);
-            itguess--;
+            typename segment_collection_type::const_iterator it, itguess;
 
             // erase old segments
-            segments.erase(scit0, scit1);
+            itguess = segments.erase(scit0, scit1);
 
             for( it=p.segments.begin(); it != p.segments.end(); ++it )
             {
@@ -1481,15 +1479,18 @@ namespace eli
           {
             assert ( it != segments.rend() );
 
-            typename segment_collection_type::reverse_iterator itprev = it;
-            itprev--;
-
             data_type delta_t;
 
             if( it != segments.rbegin() )
+            {
+              typename segment_collection_type::reverse_iterator itprev = it;
+              itprev--;
               delta_t = itprev->first - it->first;
+            }
             else
+            {
               delta_t = tmax - it->first;
+            }
 
             return delta_t;
           }
@@ -1498,15 +1499,18 @@ namespace eli
           {
             assert ( it != segments.rend() );
 
-            typename segment_collection_type::reverse_iterator itprev = it;
-            itprev--;
-
             data_type delta_t;
 
             if( it != segments.rbegin() )
+            {
+              typename segment_collection_type::reverse_iterator itprev = it;
+              itprev--;
               delta_t = itprev->first - it->first;
+            }
             else
+            {
               delta_t = tmax - it->first;
+            }
 
             return delta_t;
           }
