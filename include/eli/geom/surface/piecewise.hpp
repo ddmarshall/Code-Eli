@@ -91,10 +91,10 @@ namespace eli
 
           static dimension_type dimension() {return dim__;}
 
-          const data_type & get_u0() const {return ukey.get_pmin();}
+          const data_type get_u0() const {return ukey.get_pmin();}
           void set_u0(const data_type &u0_in) {ukey.set_pmin(u0_in);}
 
-          const data_type & get_v0() const {return vkey.get_pmin();}
+          const data_type get_v0() const {return vkey.get_pmin();}
           void set_v0(const data_type &v0_in) {vkey.set_pmin(v0_in);}
 
           index_type number_u_patches() const {return nu;}
@@ -445,7 +445,6 @@ namespace eli
               return INVALID_INDEX;
 
             // advance to desired index
-            index_type i, j;
             typename surface_type::boundary_curve_type bc0, bc1;
             index_type uk, vk;
             typename keymap_type::const_iterator uit, vit;
@@ -1050,7 +1049,7 @@ namespace eli
 
             void find_segment( index_type &ikey, typename keymap_type::const_iterator &it, const index_type &index) const
             {
-              if( index >= key.size() || index < 0)
+              if( index >= (int) key.size() || index < 0)
               {
                 it=key.end();
                 ikey=-1;
@@ -1066,7 +1065,7 @@ namespace eli
 
             void find_segment( index_type &ikey, typename keymap_type::iterator &it, const index_type &index) const
             {
-              if( index >= key.size() || index < 0)
+              if( index >= (int) key.size() || index < 0)
               {
                 it=key.end();
                 ikey=-1;
