@@ -455,7 +455,7 @@ class piecewise_curve_test_suite : public Test::Suite
     {
       piecewise_curve_type c1, c1c, c2, c3;
       curve_type bc[3], bc2, bc_out;
-      data_type dt[3], dt2, dt_out;
+      data_type dt[3], dt_out;
       index_type i;
       typename curve_type::control_point_type cntrl1_in[4], cntrl2_in[5], cntrl3_in[3], cntrl2a_in[2];
       typename piecewise_curve_type::error_code err;
@@ -674,7 +674,6 @@ class piecewise_curve_test_suite : public Test::Suite
       c1=c1c;
       cntrl2a_in[0] << 4.5, 1.0, 0.0;
       cntrl2a_in[1] << 5.0, 0.5, 0.0;
-      dt2=1.25;
       bc2.resize(1);
       for (i=0; i<2; ++i)
       {
@@ -684,7 +683,6 @@ class piecewise_curve_test_suite : public Test::Suite
       TEST_ASSERT(err==piecewise_curve_type::SEGMENT_NOT_CONNECTED);
       cntrl2a_in[0] << 4.0, 1.0, 0.0;
       cntrl2a_in[1] << 5.5, 0.5, 0.0;
-      dt2=1.25;
       bc2.resize(1);
       for (i=0; i<2; ++i)
       {
