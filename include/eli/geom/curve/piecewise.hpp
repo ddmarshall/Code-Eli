@@ -318,13 +318,13 @@ namespace eli
                 segment_collection_type shiftseg;
                 for (typename segment_collection_type::iterator it=segments.begin(); it!=segments.end(); ++it)
                 {
-                  data_type delta_t = get_delta_t( it );
+                  data_type delta_t = get_delta_t(it);
 
                   shiftseg.insert( shiftseg.end(), std::make_pair(t, it->second) );
 
                   t+=delta_t;
                 }
-                segments.swap( shiftseg );
+                segments.swap(shiftseg);
                 tmax = t;
               }
             }
@@ -472,7 +472,7 @@ namespace eli
 
               itrguess = itr;
             }
-            segments.swap( rseg );
+            segments.swap(rseg);
 
             // Parametric length should stay the same.
             assert(t == tmax);
@@ -545,9 +545,10 @@ namespace eli
 
             // add segment
             data_type t0;
+            typename segment_collection_type::value_type val(std::make_pair(t0, curve));
             get_parameter_min(t0);
             t0 -= dt;
-            segments.insert( segments.begin(), std::make_pair( t0, curve ) );
+            segments.insert(segments.begin(), std::make_pair(t0, curve));
 
             assert(check_continuity(eli::geom::general::C0));
 
@@ -570,7 +571,7 @@ namespace eli
             }
 
             // add segment
-            segments.insert( segments.end(), std::make_pair(tmax, curve) );
+            segments.insert(segments.end(), std::make_pair(tmax, curve));
             tmax+=dt;
 
             assert(check_continuity(eli::geom::general::C0));
@@ -607,9 +608,9 @@ namespace eli
             typename segment_collection_type::iterator scit;
             data_type dt, dto;
 
-            find_segment( scit, index );
+            find_segment(scit, index);
 
-            dt = get_delta_t( scit );
+            dt = get_delta_t(scit);
 
             typename segment_collection_type::iterator scito;
 
@@ -618,7 +619,7 @@ namespace eli
             {
               scito=scit;
               --scito;
-              dto = get_delta_t( scito );
+              dto = get_delta_t(scito);
               if (!eli::geom::utility::check_point_continuity(scito->second, dto, curve, dt, eli::geom::general::C0, tol))
               {
                 return SEGMENT_NOT_CONNECTED;
@@ -628,7 +629,7 @@ namespace eli
             {
               scito=scit;
               ++scito;
-              dto = get_delta_t( scito );
+              dto = get_delta_t(scito);
               if (!eli::geom::utility::check_point_continuity(curve, dt, scito->second, dto, eli::geom::general::C0, tol))
               {
                 return SEGMENT_NOT_CONNECTED;
@@ -653,19 +654,19 @@ namespace eli
               return INVALID_INDEX;
 
             typename segment_collection_type::iterator scit0, scit1, scito;
-            find_segment( scit0, index0 );
-            find_segment( scit1, index1 );
+            find_segment(scit0, index0);
+            find_segment(scit1, index1);
 
             data_type dt0, dt1, dto;
-            dt0 = get_delta_t( scit0 );
-            dt1 = get_delta_t( scit1 );
+            dt0 = get_delta_t(scit0);
+            dt1 = get_delta_t(scit1);
 
             // check the connectivity on adjacent nodes (if available)
             if (index0>0)
             {
               scito=scit0;
               --scito;
-              dto = get_delta_t( scito );
+              dto = get_delta_t(scito);
               if (!eli::geom::utility::check_point_continuity(scito->second, dto, curve, dt0, eli::geom::general::C0, tol))
               {
                 return SEGMENT_NOT_CONNECTED;
@@ -674,7 +675,7 @@ namespace eli
             if ((index1+1)<number_segments())
             {
               scito=scit1;
-              dto = get_delta_t( scito );
+              dto = get_delta_t(scito);
               if (!eli::geom::utility::check_point_continuity(curve, dt1, scito->second, dto, eli::geom::general::C0, tol))
               {
                 return SEGMENT_NOT_CONNECTED;
@@ -688,7 +689,7 @@ namespace eli
             // erase old segments
             itguess = segments.erase(scit0, scit1);
 
-            segments.insert( itguess, std::make_pair( t, curve ) );
+            segments.insert(itguess, std::make_pair(t, curve));
 
             assert(check_continuity(eli::geom::general::C0));
 
@@ -701,12 +702,12 @@ namespace eli
               return INVALID_INDEX;
 
             typename segment_collection_type::iterator scit, scito;
-            find_segment( scit, index );
+            find_segment(scit, index);
 
             // Find parameter span to insert
             data_type pt0, ptmax, ptspan;
-            p.get_parameter_min( pt0 );
-            p.get_parameter_max( ptmax );
+            p.get_parameter_min(pt0);
+            p.get_parameter_max(ptmax);
             ptspan = ptmax - pt0;
 
             // get the first and last curve to insert
@@ -724,7 +725,7 @@ namespace eli
 
             // Find parameter span of segment to replace
             data_type dti, dto;
-            dti = get_delta_t( scit );
+            dti = get_delta_t(scit);
 
             // Ratio of parameter lengths, replace/insert
             data_type pratio = dti/ptspan;
@@ -763,7 +764,7 @@ namespace eli
 
             t += dtp*pratio;
 
-            for( ++it; it != p.segments.end(); ++it )
+            for(++it; it != p.segments.end(); ++it)
             {
               itguess = segments.insert( itguess, std::make_pair( t, it->second ) );
               dtp = p.get_delta_t(it);
@@ -789,13 +790,13 @@ namespace eli
               return INVALID_INDEX;
 
             typename segment_collection_type::iterator scit0, scit1, scito;
-            find_segment( scit0, index0 );
-            find_segment( scit1, index1 );
+            find_segment(scit0, index0);
+            find_segment(scit1, index1);
 
             // Find parameter span to insert
             data_type pt0, ptmax, ptspan;
-            p.get_parameter_min( pt0 );
-            p.get_parameter_max( ptmax );
+            p.get_parameter_min(pt0);
+            p.get_parameter_max(ptmax);
             ptspan = ptmax - pt0;
 
             // get the first and last curve to insert
@@ -814,7 +815,7 @@ namespace eli
             // Find parameter span of segment to replace
             data_type dti, dto;
 
-            if( scit1 != segments.end() )
+            if(scit1 != segments.end())
               dti = scit1->first - scit0->first;
             else
               dti = tmax - scit0->first;
@@ -851,9 +852,9 @@ namespace eli
             // erase old segments
             itguess = segments.erase(scit0, scit1);
 
-            for( it=p.segments.begin(); it != p.segments.end(); ++it )
+            for(it=p.segments.begin(); it != p.segments.end(); ++it)
             {
-              itguess = segments.insert( itguess, std::make_pair( t, it->second ) );
+              itguess = segments.insert(itguess, std::make_pair(t, it->second));
               dtp = p.get_delta_t(it);
               t += dtp*pratio;
             }
@@ -1385,7 +1386,7 @@ namespace eli
             it->second.split(cl, cr, tt);
             it->second = cl;
 
-            data_type delta_t = get_delta_t( it );
+            data_type delta_t = get_delta_t(it);
 
             tr = it->first + delta_t*tt;
 
@@ -1441,16 +1442,16 @@ namespace eli
             return true;
           }
 
-          data_type get_delta_t( const typename segment_collection_type::iterator &it ) const
+          data_type get_delta_t(const typename segment_collection_type::iterator &it) const
           {
-            assert ( it != segments.end() );
+            assert (it != segments.end());
 
             typename segment_collection_type::iterator itnext = it;
             itnext++;
 
             data_type delta_t;
 
-            if( itnext != segments.end() )
+            if(itnext != segments.end())
               delta_t = itnext->first - it->first;
             else
               delta_t = tmax - it->first;
@@ -1458,16 +1459,16 @@ namespace eli
             return delta_t;
           }
 
-          data_type get_delta_t( const typename segment_collection_type::const_iterator &it ) const
+          data_type get_delta_t(const typename segment_collection_type::const_iterator &it) const
           {
-            assert ( it != segments.end() );
+            assert (it != segments.end());
 
             typename segment_collection_type::const_iterator itnext = it;
             itnext++;
 
             data_type delta_t;
 
-            if( itnext != segments.end() )
+            if(itnext != segments.end())
               delta_t = itnext->first - it->first;
             else
               delta_t = tmax - it->first;
@@ -1475,13 +1476,13 @@ namespace eli
             return delta_t;
           }
 
-          data_type get_delta_t( const typename segment_collection_type::reverse_iterator &it ) const
+          data_type get_delta_t(const typename segment_collection_type::reverse_iterator &it) const
           {
-            assert ( it != segments.rend() );
+            assert (it != segments.rend());
 
             data_type delta_t;
 
-            if( it != segments.rbegin() )
+            if(it != segments.rbegin())
             {
               typename segment_collection_type::reverse_iterator itprev = it;
               itprev--;
@@ -1495,13 +1496,13 @@ namespace eli
             return delta_t;
           }
 
-          data_type get_delta_t( const typename segment_collection_type::const_reverse_iterator &it ) const
+          data_type get_delta_t(const typename segment_collection_type::const_reverse_iterator &it) const
           {
-            assert ( it != segments.rend() );
+            assert (it != segments.rend());
 
             data_type delta_t;
 
-            if( it != segments.rbegin() )
+            if(it != segments.rbegin())
             {
               typename segment_collection_type::reverse_iterator itprev = it;
               itprev--;

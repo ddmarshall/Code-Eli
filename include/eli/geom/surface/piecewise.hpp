@@ -120,51 +120,51 @@ namespace eli
             vkey.parameter_report();
           }
 
-          void init_u( const index_type &nsegu, const data_type &du = 1, const data_type &u0 = 0 )
+          void init_u(const index_type &nsegu, const data_type &du = 1, const data_type &u0 = 0)
           {
             patches.clear();
-            resize_store( nsegu, nv );
-            ukey.init( nsegu, du, u0 );
+            resize_store(nsegu, nv);
+            ukey.init(nsegu, du, u0);
           }
 
-          void init_v( const index_type &nsegv, const data_type &dv = 1, const data_type &v0 = 0 )
+          void init_v(const index_type &nsegv, const data_type &dv = 1, const data_type &v0 = 0)
           {
             patches.clear();
-            resize_store( nu, nsegv );
-            vkey.init( nsegv, dv, v0 );
+            resize_store(nu, nsegv);
+            vkey.init(nsegv, dv, v0);
           }
 
-          void init_uv( const index_type &nsegu, const index_type &nsegv, const data_type &du = 1, const data_type &dv = 1, const data_type &u0 = 0, const data_type &v0 = 0 )
+          void init_uv(const index_type &nsegu, const index_type &nsegv, const data_type &du = 1, const data_type &dv = 1, const data_type &u0 = 0, const data_type &v0 = 0)
           {
             patches.clear();
-            resize_store( nsegu, nsegv );
-            ukey.init( nsegu, du, u0 );
-            vkey.init( nsegv, dv, v0 );
-          }
-
-          template<typename it__>
-          void init_u( const it__ &dus, const it__ &due, const data_type &u0 = 0 )
-          {
-            patches.clear();
-            ukey.init( dus, due, u0 );
-            resize_store( ukey.key.size(), nv );
+            resize_store(nsegu, nsegv);
+            ukey.init(nsegu, du, u0);
+            vkey.init(nsegv, dv, v0);
           }
 
           template<typename it__>
-          void init_v( const it__ &dvs, const it__ &dve, const data_type &v0 = 0 )
+          void init_u(const it__ &dus, const it__ &due, const data_type &u0 = 0)
           {
             patches.clear();
-            vkey.init( dvs, dve, v0 );
-            resize_store( nu, vkey.key.size() );
+            ukey.init(dus, due, u0);
+            resize_store(ukey.key.size(), nv);
           }
 
           template<typename it__>
-          void init_uv( const it__ &dus, const it__ &due, const it__ &dvs, const it__ &dve, const data_type &u0 = 0, const data_type &v0 = 0 )
+          void init_v(const it__ &dvs, const it__ &dve, const data_type &v0 = 0)
           {
             patches.clear();
-            ukey.init( dus, due, u0 );
-            vkey.init( dvs, dve, v0 );
-            resize_store( ukey.key.size(), vkey.key.size() );
+            vkey.init(dvs, dve, v0);
+            resize_store(nu, vkey.key.size());
+          }
+
+          template<typename it__>
+          void init_uv(const it__ &dus, const it__ &due, const it__ &dvs, const it__ &dve, const data_type &u0 = 0, const data_type &v0 = 0)
+          {
+            patches.clear();
+            ukey.init(dus, due, u0);
+            vkey.init(dvs, dve, v0);
+            resize_store(ukey.key.size(), vkey.key.size());
           }
 
           void degree_u(index_type &mind, index_type &maxd)
@@ -410,15 +410,15 @@ namespace eli
 
           error_code get(surface_type &surf, data_type &du, data_type &dv, const index_type &ui, const index_type &vi) const
           {
-            if ( (ui>=number_u_patches()) || (vi>=number_v_patches()) )
+            if ((ui>=number_u_patches()) || (vi>=number_v_patches()))
               return INVALID_INDEX;
 
             index_type uk, vk;
             typename keymap_type::const_iterator uit, vit;
-            find_patch( uk, vk, uit, vit, ui, vi);
+            find_patch(uk, vk, uit, vit, ui, vi);
 
-            du = ukey.get_delta_parm( uit );
-            dv = vkey.get_delta_parm( vit );
+            du = ukey.get_delta_parm(uit);
+            dv = vkey.get_delta_parm(vit);
             surf = patches[uk][vk];
 
             return NO_ERROR;
@@ -426,12 +426,12 @@ namespace eli
 
           error_code set(const surface_type &surf, const index_type &ui, const index_type &vi)
           {
-            if ( (ui>=number_u_patches()) || (vi>=number_v_patches()) )
+            if ((ui>=number_u_patches()) || (vi>=number_v_patches()))
               return INVALID_INDEX;
 
             index_type uk, vk;
             typename keymap_type::const_iterator uit, vit;
-            find_patch( uk, vk, uit, vit, ui, vi);
+            find_patch(uk, vk, uit, vit, ui, vi);
 
             // set the new surf
             patches[uk][vk]=surf;
@@ -441,14 +441,14 @@ namespace eli
 
           error_code replace(const surface_type &surf, const index_type &ui, const index_type &vi)
           {
-            if ( (ui>=number_u_patches()) || (vi>=number_v_patches()) )
+            if ((ui>=number_u_patches()) || (vi>=number_v_patches()))
               return INVALID_INDEX;
 
             // advance to desired index
             typename surface_type::boundary_curve_type bc0, bc1;
             index_type uk, vk;
             typename keymap_type::const_iterator uit, vit;
-            find_patch( uk, vk, uit, vit, ui, vi);
+            find_patch(uk, vk, uit, vit, ui, vi);
 
             surface_type s = patches[uk][vk];
 
@@ -506,10 +506,10 @@ namespace eli
 
             find_patch(uk, vk, uit, vit, uu, vv, u_in, vmin);
 
-            if ( (uk == -1) || (vk == -1) )
+            if ((uk == -1) || (vk == -1))
               return INVALID_PARAM;
 
-            return split_u( uk, uit, u_in, uu );
+            return split_u(uk, uit, u_in, uu);
           }
 
           error_code split_v(const data_type &v_in)
@@ -521,10 +521,10 @@ namespace eli
 
             find_patch(uk, vk, uit, vit, uu, vv, umin, v_in);
 
-            if ( (uk == -1) || (vk == -1) )
+            if ((uk == -1) || (vk == -1))
               return INVALID_PARAM;
 
-            return split_v( vk, vit, v_in, vv );
+            return split_v(vk, vit, v_in, vv);
           }
 
           void to_cubic_u(const data_type &ttol)
@@ -532,9 +532,9 @@ namespace eli
             typename keymap_type::iterator uit, vit;
 
             // First pass to split patches until cubic approximation is within tolerance.
-            for( uit = ukey.key.begin(); uit != ukey.key.end(); ++uit )
+            for(uit = ukey.key.begin(); uit != ukey.key.end(); ++uit)
             {
-              for( vit = vkey.key.begin(); vit != vkey.key.end(); ++vit )
+              for(vit = vkey.key.begin(); vit != vkey.key.end(); ++vit)
               {
                 index_type uk = uit->second;
                 index_type vk = vit->second;
@@ -548,7 +548,7 @@ namespace eli
 
                 while(d > ttol)
                 {
-                  data_type delta_u = ukey.get_delta_parm( uit );
+                  data_type delta_u = ukey.get_delta_parm(uit);
                   data_type u_in = uit->first + 0.5 * delta_u;
 
                   split_u(uk, uit, u_in, 0.5);
@@ -578,9 +578,9 @@ namespace eli
             typename keymap_type::iterator uit, vit;
 
             // First pass to split patches until cubic approximation is within tolerance.
-            for( uit = ukey.key.begin(); uit != ukey.key.end(); ++uit )
+            for(uit = ukey.key.begin(); uit != ukey.key.end(); ++uit)
             {
-              for( vit = vkey.key.begin(); vit != vkey.key.end(); ++vit )
+              for(vit = vkey.key.begin(); vit != vkey.key.end(); ++vit)
               {
                 index_type uk = uit->second;
                 index_type vk = vit->second;
@@ -594,7 +594,7 @@ namespace eli
 
                 while(d > ttol)
                 {
-                  data_type delta_v = vkey.get_delta_parm( vit );
+                  data_type delta_v = vkey.get_delta_parm(vit);
                   data_type v_in = vit->first + 0.5 * delta_v;
 
                   split_v(vk, vit, v_in, 0.5);
@@ -633,7 +633,7 @@ namespace eli
 
             find_patch(uk, vk, uu, vv, u, v);
 
-            assert( (uk != -1) && (vk != -1) );
+            assert((uk != -1) && (vk != -1));
 
             return patches[uk][vk].f(uu, vv);
           }
@@ -647,9 +647,9 @@ namespace eli
 
             find_patch(uk, vk, uit, vit, uu, vv, u, v);
 
-            assert( (uk != -1) && (vk != -1) );
+            assert((uk != -1) && (vk != -1));
 
-            data_type delta_u = ukey.get_delta_parm( uit );
+            data_type delta_u = ukey.get_delta_parm(uit);
 
             return patches[uk][vk].f_u(uu, vv)/delta_u;
           }
@@ -663,9 +663,9 @@ namespace eli
 
             find_patch(uk, vk, uit, vit, uu, vv, u, v);
 
-            assert( (uk != -1) && (vk != -1) );
+            assert((uk != -1) && (vk != -1));
 
-            data_type delta_v = vkey.get_delta_parm( vit );
+            data_type delta_v = vkey.get_delta_parm(vit);
 
             return patches[uk][vk].f_v(uu, vv)/delta_v;
           }
@@ -679,9 +679,9 @@ namespace eli
 
             find_patch(uk, vk, uit, vit, uu, vv, u, v);
 
-            assert( (uk != -1) && (vk != -1) );
+            assert((uk != -1) && (vk != -1));
 
-            data_type delta_u = ukey.get_delta_parm( uit );
+            data_type delta_u = ukey.get_delta_parm(uit);
 
             return patches[uk][vk].f_uu(uu, vv)/(delta_u*delta_u);
           }
@@ -695,10 +695,10 @@ namespace eli
 
             find_patch(uk, vk, uit, vit, uu, vv, u, v);
 
-            assert( (uk != -1) && (vk != -1) );
+            assert((uk != -1) && (vk != -1));
 
-            data_type delta_u = ukey.get_delta_parm( uit );
-            data_type delta_v = vkey.get_delta_parm( vit );
+            data_type delta_u = ukey.get_delta_parm(uit);
+            data_type delta_v = vkey.get_delta_parm(vit);
 
             return patches[uk][vk].f_uv(uu, vv)/(delta_u*delta_v);
           }
@@ -712,9 +712,9 @@ namespace eli
 
             find_patch(uk, vk, uit, vit, uu, vv, u, v);
 
-            assert( (uk != -1) && (vk != -1) );
+            assert((uk != -1) && (vk != -1));
 
-            data_type delta_v = vkey.get_delta_parm( vit );
+            data_type delta_v = vkey.get_delta_parm(vit);
 
             return patches[uk][vk].f_vv(uu, vv)/(delta_v*delta_v);
           }
@@ -728,9 +728,9 @@ namespace eli
 
             find_patch(uk, vk, uit, vit, uu, vv, u, v);
 
-            assert( (uk != -1) && (vk != -1) );
+            assert((uk != -1) && (vk != -1));
 
-            data_type delta_u = ukey.get_delta_parm( uit );
+            data_type delta_u = ukey.get_delta_parm(uit);
 
             return patches[uk][vk].f_uuu(uu, vv)/(delta_u*delta_u*delta_u);
           }
@@ -744,10 +744,10 @@ namespace eli
 
             find_patch(uk, vk, uit, vit, uu, vv, u, v);
 
-            assert( (uk != -1) && (vk != -1) );
+            assert((uk != -1) && (vk != -1));
 
-            data_type delta_u = ukey.get_delta_parm( uit );
-            data_type delta_v = vkey.get_delta_parm( vit );
+            data_type delta_u = ukey.get_delta_parm(uit);
+            data_type delta_v = vkey.get_delta_parm(vit);
 
             return patches[uk][vk].f_uuv(uu, vv)/(delta_u*delta_u*delta_v);
           }
@@ -761,10 +761,10 @@ namespace eli
 
             find_patch(uk, vk, uit, vit, uu, vv, u, v);
 
-            assert( (uk != -1) && (vk != -1) );
+            assert((uk != -1) && (vk != -1));
 
-            data_type delta_u = ukey.get_delta_parm( uit );
-            data_type delta_v = vkey.get_delta_parm( vit );
+            data_type delta_u = ukey.get_delta_parm(uit);
+            data_type delta_v = vkey.get_delta_parm(vit);
 
             return patches[uk][vk].f_uvv(uu, vv)/(delta_u*delta_v*delta_v);
           }
@@ -778,10 +778,10 @@ namespace eli
 
             find_patch(uk, vk, uit, vit, uu, vv, u, v);
 
-            assert( (uk != -1) && (vk != -1) );
+            assert((uk != -1) && (vk != -1));
 
-            data_type delta_u = ukey.get_delta_parm( uit );
-            data_type delta_v = vkey.get_delta_parm( vit );
+            data_type delta_u = ukey.get_delta_parm(uit);
+            data_type delta_v = vkey.get_delta_parm(vit);
 
             return patches[uk][vk].f_vvv(uu, vv)/(delta_v*delta_v*delta_v);
           }
@@ -794,7 +794,7 @@ namespace eli
 
             find_patch(uk, vk, uu, vv, u, v);
 
-            assert( (uk != -1) && (vk != -1) );
+            assert((uk != -1) && (vk != -1));
 
             return patches[uk][vk].normal(uu, vv);
           }
@@ -858,13 +858,13 @@ namespace eli
 
             data_type get_pmin() const
             {
-              if( !key.empty() )
+              if(!key.empty())
                 return key.begin()->first;
               else
                 return pmax;
             }
 
-            void set_pmax( const data_type &pmax_in )
+            void set_pmax(const data_type &pmax_in)
             {
               pmax = pmax_in;
             }
@@ -879,13 +879,13 @@ namespace eli
                   keymap_type shiftkey;
                   for (typename keymap_type::iterator it=key.begin(); it!=key.end(); ++it)
                   {
-                    data_type delta_p = get_delta_parm( it );
+                    data_type delta_p = get_delta_parm(it);
 
-                    shiftkey.insert( shiftkey.end(), std::make_pair(p, it->second) );
+                    shiftkey.insert(shiftkey.end(), std::make_pair(p, it->second));
 
                     p+=delta_p;
                   }
-                  key.swap( shiftkey );
+                  key.swap(shiftkey);
                   pmax = p;
                 }
               }
@@ -895,21 +895,21 @@ namespace eli
               }
             }
 
-            void init( const index_type &nseg, const data_type &dp = 1, const data_type &p0 = 0 )
+            void init(const index_type &nseg, const data_type &dp = 1, const data_type &p0 = 0)
             {
               key.clear();
               pmax = p0;
-              append( nseg, dp );
+              append(nseg, dp);
             }
 
-            void append( const index_type &nseg, const data_type &dp = 1 )
+            void append(const index_type &nseg, const data_type &dp = 1)
             {
               typename keymap_type::iterator itguess = key.end();
               index_type j = key.size();
               data_type p = pmax;
-              for( index_type i = 0; i < nseg; ++i )
+              for(index_type i = 0; i < nseg; ++i)
               {
-                itguess = key.insert( itguess, std::make_pair(p, j) );
+                itguess = key.insert(itguess, std::make_pair(p, j));
                 p += dp;
                 ++j;
               }
@@ -917,22 +917,22 @@ namespace eli
             }
 
             template<typename it__>
-            void init( const it__ &dps, const it__ &dpe, const data_type &p0 = 0 )
+            void init(const it__ &dps, const it__ &dpe, const data_type &p0 = 0)
             {
               key.clear();
               pmax = p0;
-              append( dps, dpe );
+              append(dps, dpe);
             }
 
             template<typename it__>
-            void append( const it__ &dps, const it__ &dpe )
+            void append(const it__ &dps, const it__ &dpe)
             {
               typename keymap_type::iterator itguess = key.end();
               index_type j = key.size();
               data_type p = pmax;
-              for( it__ dp = dps; dp != dpe; ++dp )
+              for(it__ dp = dps; dp != dpe; ++dp)
               {
-                itguess = key.insert( itguess, std::make_pair(p, j) );
+                itguess = key.insert(itguess, std::make_pair(p, j));
                 p += (*dp);
                 ++j;
               }
@@ -965,30 +965,30 @@ namespace eli
 
               for (typename keymap_type::reverse_iterator it=key.rbegin(); it!=key.rend(); ++it)
               {
-                itr = rkey.insert( itrguess, std::make_pair( p, it->second ));
+                itr = rkey.insert(itrguess, std::make_pair(p, it->second));
 
                 data_type delta_p = get_delta_parm(it);
                 p += delta_p;
 
                 itrguess = itr;
               }
-              key.swap( rkey );
+              key.swap(rkey);
 
               // Parametric length should stay the same.
               assert(p == pmax);
             }
 
 
-            data_type get_delta_parm( const typename keymap_type::iterator &it ) const
+            data_type get_delta_parm(const typename keymap_type::iterator &it) const
             {
-              assert ( it != key.end() );
+              assert (it != key.end());
 
               typename keymap_type::iterator itnext = it;
               itnext++;
 
               data_type delta_p;
 
-              if( itnext != key.end() )
+              if(itnext != key.end())
                 delta_p = itnext->first - it->first;
               else
                 delta_p = pmax - it->first;
@@ -996,16 +996,16 @@ namespace eli
               return delta_p;
             }
 
-            data_type get_delta_parm( const typename keymap_type::const_iterator &it ) const
+            data_type get_delta_parm(const typename keymap_type::const_iterator &it) const
             {
-              assert ( it != key.end() );
+              assert (it != key.end());
 
               typename keymap_type::const_iterator itnext = it;
               itnext++;
 
               data_type delta_p;
 
-              if( itnext != key.end() )
+              if(itnext != key.end())
                 delta_p = itnext->first - it->first;
               else
                 delta_p = pmax - it->first;
@@ -1013,13 +1013,13 @@ namespace eli
               return delta_p;
             }
 
-            data_type get_delta_parm( const typename keymap_type::reverse_iterator &it ) const
+            data_type get_delta_parm(const typename keymap_type::reverse_iterator &it) const
             {
-              assert ( it != key.rend() );
+              assert (it != key.rend());
 
               data_type delta_p;
 
-              if( it != key.rbegin() )
+              if(it != key.rbegin())
               {
                 typename keymap_type::reverse_iterator itprev = it;
                 itprev--;
@@ -1033,13 +1033,13 @@ namespace eli
               return delta_p;
             }
 
-            data_type get_delta_parm( const typename keymap_type::const_reverse_iterator &it ) const
+            data_type get_delta_parm(const typename keymap_type::const_reverse_iterator &it) const
             {
-              assert ( it != key.rend() );
+              assert (it != key.rend());
 
               data_type delta_p;
 
-              if( it != key.rbegin() )
+              if(it != key.rbegin())
               {
                 typename keymap_type::const_reverse_iterator itprev = it;
                 itprev--;
@@ -1053,9 +1053,9 @@ namespace eli
               return delta_p;
             }
 
-            void find_segment( index_type &ikey, typename keymap_type::const_iterator &it, const index_type &index) const
+            void find_segment(index_type &ikey, typename keymap_type::const_iterator &it, const index_type &index) const
             {
-              if( index >= (int) key.size() || index < 0)
+              if(index >= (int) key.size() || index < 0)
               {
                 it=key.end();
                 ikey=-1;
@@ -1069,9 +1069,9 @@ namespace eli
               ikey=it->second;
             }
 
-            void find_segment( index_type &ikey, typename keymap_type::iterator &it, const index_type &index) const
+            void find_segment(index_type &ikey, typename keymap_type::iterator &it, const index_type &index) const
             {
-              if( index >= (int) key.size() || index < 0)
+              if(index >= (int) key.size() || index < 0)
               {
                 it=key.end();
                 ikey=-1;
@@ -1085,7 +1085,7 @@ namespace eli
               ikey=it->second;
             }
 
-            void find_segment( index_type &ikey, typename keymap_type::iterator &it, data_type &pp, const data_type &p_in) const
+            void find_segment(index_type &ikey, typename keymap_type::iterator &it, data_type &pp, const data_type &p_in) const
             {
               tol__ tol;
 
@@ -1140,7 +1140,7 @@ namespace eli
                 pp=static_cast<data_type>(0);
             }
 
-            void find_segment( index_type &ikey, typename keymap_type::const_iterator &it, data_type &pp, const data_type &p_in) const
+            void find_segment(index_type &ikey, typename keymap_type::const_iterator &it, data_type &pp, const data_type &p_in) const
             {
               tol__ tol;
 
@@ -1229,14 +1229,14 @@ namespace eli
 
           void resize_store(const index_type &nu_in, const index_type &nv_in)
           {
-            if ( (nu_in<=0) || (nv_in<=0) )
+            if ((nu_in<=0) || (nv_in<=0))
               return;
 
             patches.resize(nu_in);
             nu = nu_in;
 
             // Unconditionally do this to make sure newly added rows are properly sized.
-            for( index_type i = 0; i < nu_in; i++ )
+            for(index_type i = 0; i < nu_in; i++)
               patches[i].resize(nv_in);
 
             nv = nv_in;
@@ -1255,7 +1255,7 @@ namespace eli
             for (vk=0; vk<nv; ++vk)
             {
               surface_type s = patches[uk][vk];
-              s.split_u( patches[uk][vk], patches[ukr][vk], uu);
+              s.split_u(patches[uk][vk], patches[ukr][vk], uu);
             }
 
             return NO_ERROR;
@@ -1266,7 +1266,7 @@ namespace eli
             index_type uk, vkr;
             // Right half will be added at end of patch matrix.
             vkr=nv;
-            vkey.key.insert( vit, std::make_pair( v_in, vkr) );
+            vkey.key.insert(vit, std::make_pair(v_in, vkr));
 
             // Increase matrix size.
             resize_store(nu, nv+1);
@@ -1274,7 +1274,7 @@ namespace eli
             for (uk=0; uk<nu; ++uk)
             {
               surface_type s = patches[uk][vk];
-              s.split_v( patches[uk][vk], patches[uk][vkr], vv);
+              s.split_v(patches[uk][vk], patches[uk][vkr], vv);
             }
 
             return NO_ERROR;
@@ -1285,37 +1285,37 @@ namespace eli
                           typename keymap_type::iterator &uit, typename keymap_type::iterator &vit,
                           const index_type & ui, const index_type &vi) const
           {
-            ukey.find_segment( uk, uit, ui);
-            vkey.find_segment( vk, vit, vi);
+            ukey.find_segment(uk, uit, ui);
+            vkey.find_segment(vk, vit, vi);
           }
 
           void find_patch(typename keymap_type::iterator &uit, typename keymap_type::iterator &vit,
                           const index_type & ui, const index_type &vi) const
           {
             index_type uk, vk;
-            find_patch( uk, vk, uit, vit, ui, vi );
+            find_patch(uk, vk, uit, vit, ui, vi);
           }
 
           void find_patch(index_type &uk, index_type &vk,
                           typename keymap_type::const_iterator &uit, typename keymap_type::const_iterator &vit,
                           const index_type & ui, const index_type &vi) const
           {
-            ukey.find_segment( uk, uit, ui);
-            vkey.find_segment( vk, vit, vi);
+            ukey.find_segment(uk, uit, ui);
+            vkey.find_segment(vk, vit, vi);
           }
 
           void find_patch(typename keymap_type::const_iterator &uit, typename keymap_type::const_iterator &vit,
                           const index_type & ui, const index_type &vi) const
           {
             index_type uk, vk;
-            find_patch( uk, vk, uit, vit, ui, vi );
+            find_patch(uk, vk, uit, vit, ui, vi);
           }
 
           void find_patch(index_type &uk, index_type &vk,
                           const index_type & ui, const index_type &vi) const
           {
             typename keymap_type::const_iterator uit, vit;
-            find_patch( uk, vk, uit, vit, ui, vi );
+            find_patch(uk, vk, uit, vit, ui, vi);
           }
 
           // Lookup based on u_in, v_in.
@@ -1324,8 +1324,8 @@ namespace eli
                           data_type &uu, data_type &vv,
                           const data_type &u_in, const data_type &v_in) const
           {
-            ukey.find_segment( uk, uit, uu, u_in );
-            vkey.find_segment( vk, vit, vv, v_in );
+            ukey.find_segment(uk, uit, uu, u_in);
+            vkey.find_segment(vk, vit, vv, v_in);
           }
 
           void find_patch(typename keymap_type::iterator &uit, typename keymap_type::iterator &vit,
@@ -1333,7 +1333,7 @@ namespace eli
                           const data_type &u_in, const data_type &v_in) const
           {
             index_type uk, vk;
-            find_patch( uk, vk, uit, vit, uu, vv, u_in, v_in );
+            find_patch(uk, vk, uit, vit, uu, vv, u_in, v_in);
           }
 
           void find_patch(index_type &uk, index_type &vk,
@@ -1341,8 +1341,8 @@ namespace eli
                           data_type &uu, data_type &vv,
                           const data_type &u_in, const data_type &v_in) const
           {
-            ukey.find_segment( uk, uit, uu, u_in );
-            vkey.find_segment( vk, vit, vv, v_in );
+            ukey.find_segment(uk, uit, uu, u_in);
+            vkey.find_segment(vk, vit, vv, v_in);
           }
 
           void find_patch(typename keymap_type::const_iterator &uit, typename keymap_type::const_iterator &vit,
@@ -1350,7 +1350,7 @@ namespace eli
                           const data_type &u_in, const data_type &v_in) const
           {
             index_type uk, vk;
-            find_patch( uk, vk, uit, vit, uu, vv, u_in, v_in );
+            find_patch(uk, vk, uit, vit, uu, vv, u_in, v_in);
           }
 
           void find_patch(index_type &uk, index_type &vk,
@@ -1358,7 +1358,7 @@ namespace eli
                           const data_type &u_in, const data_type &v_in) const
           {
             typename keymap_type::const_iterator uit, vit;
-            find_patch( uk, vk, uit, vit, uu, vv, u_in, v_in );
+            find_patch(uk, vk, uit, vit, uu, vv, u_in, v_in);
           }
 
       };
