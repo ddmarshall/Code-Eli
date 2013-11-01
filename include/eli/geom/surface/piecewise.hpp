@@ -1247,7 +1247,7 @@ namespace eli
             index_type ukr, vk;
             // Right half will be added at end of patch matrix.
             ukr=nu;
-            ukey.key.insert( uit, std::make_pair( u_in, ukr) );
+            ukey.key.insert(uit, std::make_pair(u_in, ukr));
 
             // Increase matrix size.
             resize_store(nu+1, nv);
