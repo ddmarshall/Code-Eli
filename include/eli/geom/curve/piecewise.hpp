@@ -752,7 +752,7 @@ namespace eli
             }
 
             typename segment_collection_type::const_iterator it=itps;
-            typename segment_collection_type::const_iterator itguess = scit;
+            typename segment_collection_type::iterator itguess = scit;
 
             data_type dtp = dts;
 
@@ -846,7 +846,8 @@ namespace eli
             data_type t = scit0->first;
             data_type dtp;
 
-            typename segment_collection_type::const_iterator it, itguess;
+            typename segment_collection_type::const_iterator it;
+            typename segment_collection_type::iterator itguess;
 
             // erase old segments
             itguess = segments.erase(scit0, scit1);
