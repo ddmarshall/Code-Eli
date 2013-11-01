@@ -320,7 +320,7 @@ namespace eli
                 {
                   data_type delta_t = get_delta_t(it);
 
-                  shiftseg.insert( shiftseg.end(), std::make_pair(t, it->second) );
+                  shiftseg.insert(shiftseg.end(), std::make_pair(t, it->second));
 
                   t+=delta_t;
                 }
@@ -462,7 +462,7 @@ namespace eli
 
             for (typename segment_collection_type::reverse_iterator it=segments.rbegin(); it!=segments.rend(); ++it)
             {
-              itr = rseg.insert( itrguess, std::make_pair( t, it->second ));
+              itr = rseg.insert(itrguess, std::make_pair(t, it->second));
 
               // reverse each segment
               itr->second.reverse();
@@ -545,7 +545,6 @@ namespace eli
 
             // add segment
             data_type t0;
-            typename segment_collection_type::value_type val(std::make_pair(t0, curve));
             get_parameter_min(t0);
             t0 -= dt;
             segments.insert(segments.begin(), std::make_pair(t0, curve));
@@ -766,7 +765,7 @@ namespace eli
 
             for(++it; it != p.segments.end(); ++it)
             {
-              itguess = segments.insert( itguess, std::make_pair( t, it->second ) );
+              itguess = segments.insert(itguess, std::make_pair(t, it->second));
               dtp = p.get_delta_t(it);
               t += dtp*pratio;
             }
@@ -1390,7 +1389,7 @@ namespace eli
 
             tr = it->first + delta_t*tt;
 
-            itinsert = segments.insert( itnext, std::make_pair( tr, cr ));
+            itinsert = segments.insert(itnext, std::make_pair(tr, cr));
 
             assert(check_continuity(eli::geom::general::C0));
 
