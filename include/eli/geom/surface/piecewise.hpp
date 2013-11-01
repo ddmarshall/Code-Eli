@@ -500,7 +500,7 @@ namespace eli
           error_code split_u(const data_type &u_in)
           {
             index_type uk, vk;
-            typename keymap_type::const_iterator uit, vit;
+            typename keymap_type::iterator uit, vit;
             data_type uu(0), vv(0);
             data_type vmin = vkey.get_pmin();
 
@@ -515,7 +515,7 @@ namespace eli
           error_code split_v(const data_type &v_in)
           {
             index_type uk, vk;
-            typename keymap_type::const_iterator uit, vit;
+            typename keymap_type::iterator uit, vit;
             data_type uu(0), vv(0);
             data_type umin = ukey.get_pmin();
 
@@ -1085,7 +1085,7 @@ namespace eli
               ikey=it->second;
             }
 
-            void find_segment(index_type &ikey, typename keymap_type::iterator &it, data_type &pp, const data_type &p_in) const
+            void find_segment(index_type &ikey, typename keymap_type::iterator &it, data_type &pp, const data_type &p_in)
             {
               tol__ tol;
 
@@ -1242,7 +1242,7 @@ namespace eli
             nv = nv_in;
           }
 
-          error_code split_u(const index_type &uk, const typename keymap_type::const_iterator &uit, const data_type &u_in, const data_type &uu)
+          error_code split_u(const index_type &uk, const typename keymap_type::iterator &uit, const data_type &u_in, const data_type &uu)
           {
             index_type ukr, vk;
             // Right half will be added at end of patch matrix.
@@ -1261,7 +1261,7 @@ namespace eli
             return NO_ERROR;
           }
 
-          error_code split_v(const index_type &vk, const typename keymap_type::const_iterator &vit, const data_type &v_in, const data_type &vv)
+          error_code split_v(const index_type &vk, const typename keymap_type::iterator &vit, const data_type &v_in, const data_type &vv)
           {
             index_type uk, vkr;
             // Right half will be added at end of patch matrix.
@@ -1283,14 +1283,14 @@ namespace eli
           // Lookup based on i,j
           void find_patch(index_type &uk, index_type &vk,
                           typename keymap_type::iterator &uit, typename keymap_type::iterator &vit,
-                          const index_type & ui, const index_type &vi) const
+                          const index_type & ui, const index_type &vi)
           {
             ukey.find_segment(uk, uit, ui);
             vkey.find_segment(vk, vit, vi);
           }
 
           void find_patch(typename keymap_type::iterator &uit, typename keymap_type::iterator &vit,
-                          const index_type & ui, const index_type &vi) const
+                          const index_type & ui, const index_type &vi)
           {
             index_type uk, vk;
             find_patch(uk, vk, uit, vit, ui, vi);
@@ -1322,7 +1322,7 @@ namespace eli
           void find_patch(index_type &uk, index_type &vk,
                           typename keymap_type::iterator &uit, typename keymap_type::iterator &vit,
                           data_type &uu, data_type &vv,
-                          const data_type &u_in, const data_type &v_in) const
+                          const data_type &u_in, const data_type &v_in)
           {
             ukey.find_segment(uk, uit, uu, u_in);
             vkey.find_segment(vk, vit, vv, v_in);
@@ -1330,7 +1330,7 @@ namespace eli
 
           void find_patch(typename keymap_type::iterator &uit, typename keymap_type::iterator &vit,
                           data_type &uu, data_type &vv,
-                          const data_type &u_in, const data_type &v_in) const
+                          const data_type &u_in, const data_type &v_in)
           {
             index_type uk, vk;
             find_patch(uk, vk, uit, vit, uu, vv, u_in, v_in);
