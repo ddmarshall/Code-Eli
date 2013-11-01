@@ -58,7 +58,7 @@ namespace eli
         index_type i, j, pp, qq, nu=pc.number_segments(), nv=4, udim, vdim;
 
         // resize the surface
-        ps.resize(nu, nv);
+        ps.init_uv(nu, nv);
 
         // set the axis of rotation
         switch(axis)

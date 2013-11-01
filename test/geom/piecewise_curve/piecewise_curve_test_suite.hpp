@@ -438,7 +438,7 @@ class piecewise_curve_test_suite : public Test::Suite
       err=c1.set(bc, bc+3, dt);
       TEST_ASSERT(err==piecewise_curve_type::NO_ERROR);
 
-      c1=c2;
+      c2=c1;
       c2.reverse();
       for (i=0; i<c1.number_segments(); ++i)
       {
@@ -455,7 +455,7 @@ class piecewise_curve_test_suite : public Test::Suite
     {
       piecewise_curve_type c1, c1c, c2, c3;
       curve_type bc[3], bc2, bc_out;
-      data_type dt[3], dt2, dt_out;
+      data_type dt[3], dt_out;
       index_type i;
       typename curve_type::control_point_type cntrl1_in[4], cntrl2_in[5], cntrl3_in[3], cntrl2a_in[2];
       typename piecewise_curve_type::error_code err;
@@ -531,6 +531,7 @@ class piecewise_curve_test_suite : public Test::Suite
       err=c1.replace(bc2, 1);
       TEST_ASSERT(err==piecewise_curve_type::SEGMENT_NOT_CONNECTED);
 
+
       // replace one segment with several segments
       cntrl1_in[0] << 4.0, 1.0, 0.0;
       cntrl1_in[1] << 3.0, 1.5, 0.0;
@@ -547,7 +548,7 @@ class piecewise_curve_test_suite : public Test::Suite
       cntrl2_in[2] << 5.5, 2.0, 0.0;
       cntrl2_in[3] << 5.0, 2.0, 0.0;
       cntrl2_in[4] << 5.0, 0.5, 0.0;
-      dt[1]=1.0;
+      dt[1]=0.75;
       bc[1].resize(4);
       for (i=0; i<5; ++i)
       {
@@ -556,7 +557,7 @@ class piecewise_curve_test_suite : public Test::Suite
       cntrl3_in[0] << 5.0, 0.5, 0.0;
       cntrl3_in[1] << 5.5, 0.0, 0.0;
       cntrl3_in[2] << 6.5,-0.5, 0.0;
-      dt[2]=3.0;
+      dt[2]=1.0;
       bc[2].resize(2);
       for (i=0; i<3; ++i)
       {
@@ -618,11 +619,11 @@ class piecewise_curve_test_suite : public Test::Suite
       TEST_ASSERT(err==piecewise_curve_type::NO_ERROR);
       err=c1.replace(c2, 1);
       TEST_ASSERT(err==piecewise_curve_type::SEGMENT_NOT_CONNECTED);
+
       cntrl1_in[0] << 4.0, 1.0, 0.0;
       cntrl1_in[1] << 3.0, 1.5, 0.0;
       cntrl1_in[2] << 3.5, 2.0, 0.0;
       cntrl1_in[3] << 5.5, 2.5, 0.0;
-      dt[0]=0.25;
       bc[0].resize(3);
       for (i=0; i<4; ++i)
       {
@@ -633,7 +634,6 @@ class piecewise_curve_test_suite : public Test::Suite
       cntrl2_in[2] << 5.5, 2.0, 0.0;
       cntrl2_in[3] << 5.0, 2.0, 0.0;
       cntrl2_in[4] << 5.0, 0.5, 0.0;
-      dt[1]=1.0;
       bc[1].resize(4);
       for (i=0; i<5; ++i)
       {
@@ -642,7 +642,6 @@ class piecewise_curve_test_suite : public Test::Suite
       cntrl3_in[0] << 5.0, 0.5, 0.0;
       cntrl3_in[1] << 5.5, 0.0, 0.0;
       cntrl3_in[2] << 7.5,-0.5, 0.0;
-      dt[2]=3.0;
       bc[2].resize(2);
       for (i=0; i<3; ++i)
       {
@@ -658,42 +657,38 @@ class piecewise_curve_test_suite : public Test::Suite
       c1c=c1;
       cntrl2a_in[0] << 4.0, 1.0, 0.0;
       cntrl2a_in[1] << 5.0, 0.5, 0.0;
-      dt2=1.25;
       bc2.resize(1);
       for (i=0; i<2; ++i)
       {
         bc2.set_control_point(cntrl2a_in[i], i);
       }
-      err=c1.replace(bc2, dt2, 1, 3);
+      err=c1.replace(bc2, 1, 3);
       TEST_ASSERT(err==piecewise_curve_type::NO_ERROR);
       TEST_ASSERT(c1.number_segments()==4);
       err=c1.get(bc_out, dt_out, 1);
       TEST_ASSERT(err==piecewise_curve_type::NO_ERROR);
       TEST_ASSERT(bc2==bc_out);
-      TEST_ASSERT(dt2==dt_out);
       c3=c1;
 
       // replace segments with segment that doesn't connect to neighbor(s)
       c1=c1c;
       cntrl2a_in[0] << 4.5, 1.0, 0.0;
       cntrl2a_in[1] << 5.0, 0.5, 0.0;
-      dt2=1.25;
       bc2.resize(1);
       for (i=0; i<2; ++i)
       {
         bc2.set_control_point(cntrl2a_in[i], i);
       }
-      err=c1.replace(bc2, dt2, 1, 3);
+      err=c1.replace(bc2, 1, 3);
       TEST_ASSERT(err==piecewise_curve_type::SEGMENT_NOT_CONNECTED);
       cntrl2a_in[0] << 4.0, 1.0, 0.0;
       cntrl2a_in[1] << 5.5, 0.5, 0.0;
-      dt2=1.25;
       bc2.resize(1);
       for (i=0; i<2; ++i)
       {
         bc2.set_control_point(cntrl2a_in[i], i);
       }
-      err=c1.replace(bc2, dt2, 1, 3);
+      err=c1.replace(bc2, 1, 3);
       TEST_ASSERT(err==piecewise_curve_type::SEGMENT_NOT_CONNECTED);
 
       // replace several segments with several segments
@@ -714,7 +709,7 @@ class piecewise_curve_test_suite : public Test::Suite
       cntrl2_in[2] << 4.5, 2.0, 0.0;
       cntrl2_in[3] << 4.0, 2.0, 0.0;
       cntrl2_in[4] << 3.5, 0.5, 0.0;
-      dt[1]=1.0;
+      dt[1]=0.75;
       bc[1].resize(4);
       for (i=0; i<5; ++i)
       {
@@ -723,13 +718,14 @@ class piecewise_curve_test_suite : public Test::Suite
       cntrl3_in[0] << 3.5, 0.5, 0.0;
       cntrl3_in[1] << 4.5, 0.0, 0.0;
       cntrl3_in[2] << 6.5,-0.5, 0.0;
-      dt[2]=3.0;
+      dt[2]=1.0;
       bc[2].resize(2);
       for (i=0; i<3; ++i)
       {
         bc[2].set_control_point(cntrl3_in[i], i);
       }
       err=c2.set(bc, bc+3, dt);
+      c2.set_t0(0);
       TEST_ASSERT(err==piecewise_curve_type::NO_ERROR);
       err=c1.replace(c2, 1, 3);
       TEST_ASSERT(err==piecewise_curve_type::NO_ERROR);
@@ -818,6 +814,7 @@ class piecewise_curve_test_suite : public Test::Suite
       err=c1.replace(c2, 1, 3);
       TEST_ASSERT(err==piecewise_curve_type::SEGMENT_NOT_CONNECTED);
     }
+
 
     void transformation_test()
     {
@@ -1115,7 +1112,7 @@ class piecewise_curve_test_suite : public Test::Suite
         TEST_ASSERT(eval_out==eval_ref);
         eval_out=pwc0.fppp(t);
         eval_ref=pwc1.fppp(t);
-        TEST_ASSERT(eval_out==eval_ref);
+        TEST_ASSERT((eval_out-eval_ref).norm()<138*eps);
 
         t=1.25;
         eval_out=pwc0.f(t);
@@ -1159,10 +1156,9 @@ class piecewise_curve_test_suite : public Test::Suite
         eval_ref=pwc1.fppp(t);
         TEST_ASSERT((eval_out-eval_ref).norm()<142*eps);
 
-        t=2;
         eval_out=pwc0.f(t);
         eval_ref=pwc1.f(t);
-        TEST_ASSERT((eval_out-eval_ref).norm()<1*eps);
+        TEST_ASSERT((eval_out-eval_ref).norm()<2*eps);
         eval_out=pwc0.fp(t);
         eval_ref=pwc1.fp(t);
         TEST_ASSERT((eval_out-eval_ref).norm()<9*eps);

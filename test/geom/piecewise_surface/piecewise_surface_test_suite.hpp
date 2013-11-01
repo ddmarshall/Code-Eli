@@ -298,7 +298,7 @@ class piecewise_surface_test_suite : public Test::Suite
       typename piecewise_surface_type::error_code err;
 
       // create 3x2 patches with unit spacing
-      ps1.resize(3, 2);
+      ps1.init_uv(3, 2);
       TEST_ASSERT(ps1.number_u_patches()==3);
       TEST_ASSERT(ps1.number_v_patches()==2);
 
@@ -378,7 +378,7 @@ class piecewise_surface_test_suite : public Test::Suite
       typename piecewise_surface_type::error_code err;
 
       // create 3x2 patches with unit spacing
-      ps1.resize(3, 2);
+      ps1.init_uv(3, 2);
       TEST_ASSERT(ps1.number_u_patches()==3);
       TEST_ASSERT(ps1.number_v_patches()==2);
 
@@ -448,7 +448,7 @@ class piecewise_surface_test_suite : public Test::Suite
       data_type u, v, umax, vmax;
 
       // create 3x2 patches with unit spacing
-      ps1.resize(3, 2);
+      ps1.init_uv(3, 2);
 
       // create piecewise surface
       {
@@ -547,7 +547,9 @@ class piecewise_surface_test_suite : public Test::Suite
       data_type u, v;
 
       // create 3x2 patches with unit spacing
-      ps1.resize(3, 2);
+      ps1.init_uv(3, 2);
+      TEST_ASSERT(ps1.number_u_patches()==3);
+      TEST_ASSERT(ps1.number_v_patches()==2);
 
       // create piecewise surface
       {
@@ -606,6 +608,9 @@ class piecewise_surface_test_suite : public Test::Suite
       ps2=ps1;
       ps2.swap_uv();
 
+      TEST_ASSERT(ps2.number_u_patches()==2);
+      TEST_ASSERT(ps2.number_v_patches()==3);
+
       // test point
       u=1.25;
       v=0.75;
@@ -628,7 +633,7 @@ class piecewise_surface_test_suite : public Test::Suite
       data_type u, v;
 
       // create 3x2 patches with unit spacing
-      ps1.resize(3, 2);
+      ps1.init_uv(3, 2);
 
       // create piecewise surface
       {
@@ -715,7 +720,7 @@ class piecewise_surface_test_suite : public Test::Suite
       typename piecewise_surface_type::error_code err;
 
       // create 3x2 patches with unit spacing
-      ps1.resize(3, 2);
+      ps1.init_uv(3, 2);
 
       // create piecewise surface
       {
@@ -819,7 +824,7 @@ class piecewise_surface_test_suite : public Test::Suite
       typename piecewise_surface_type::error_code err;
 
       // create 3x2 patches with unit spacing
-      ps1.resize(3, 2);
+      ps1.init_uv(3, 2);
 
       // create piecewise surface
       {
@@ -916,7 +921,7 @@ class piecewise_surface_test_suite : public Test::Suite
       data_type u, v;
 
       // create 3x2 patches with unit spacing
-      ps1.resize(3, 2);
+      ps1.init_uv(3, 2);
 
       // create piecewise surface
       {
@@ -1035,7 +1040,7 @@ class piecewise_surface_test_suite : public Test::Suite
       data_type u, v;
 
       // create 3x2 patches with unit spacing
-      ps1.resize(1,1);
+      ps1.init_uv(1,1);
 
       // create piecewise surface
       {
