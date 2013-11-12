@@ -877,6 +877,11 @@ namespace eli
             if (it==segments.end())
               return INVALID_PARAM;
 
+            if (tol.approximately_equal(tt, 0))
+            	return NO_ERROR;
+            if (tol.approximately_equal(tt, 1))
+            	return NO_ERROR;
+
             // split the segment and replace
             return split_seg(it, tt);
           }
@@ -975,7 +980,7 @@ namespace eli
             if (leni<r)
             {
               tim1_split=-1;
-              ti_split=0;
+              ti_split=1;
               r=leni;
             }
 
