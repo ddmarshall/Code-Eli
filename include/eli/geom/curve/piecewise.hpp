@@ -985,16 +985,33 @@ namespace eli
             }
 
             // find coordinate that corresponds to location of radius on each curve
+            double small_t(1e-3);
             if (tim1_split<0)
             {
               // FIX: this is exact for straight lines and approximate for other curves
               tim1_split=1-r/lenim1;
+
+              // if resulting segment is too small then make entire edge the round
+              if (tim1_split<small_t)
+              {
+            	tim1_split=0;
+              }
             }
             if (ti_split<0)
             {
               // FIX: this is exact for straight lines and approximate for other curves
               ti_split=r/leni;
+
+              // if resulting segment is too small then make entire edge the round
+              if (ti_split>(1-small_t))
+              {
+            	ti_split=1;
+              }
             }
+
+            // if resulting round is too small compared then don't round
+            if ((tim1_split>(1-small_t)) || (ti_split<small_t))
+            	return false;
 
             // calculate the points & slopes for end of round
             fim1=cim1.f(tim1_split);
@@ -1015,8 +1032,14 @@ namespace eli
             arc.set_control_point(cp[3], 3);
 
             // split the two curves
-            cim1.split(c, ctrim, tim1_split); cim1=c;
-            ci.split(ctrim, c, ti_split); ci=c;
+            if (tim1_split>0)
+            {
+              cim1.split(c, ctrim, tim1_split); cim1=c;
+            }
+            if (ti_split<1)
+            {
+              ci.split(ctrim, c, ti_split); ci=c;
+            }
 
             // replace/add curves
             error_code ec;
@@ -1074,11 +1097,14 @@ namespace eli
             {
               piecewise<curve__, data_type, dim__> pct;
 
-              ec=pct.push_back(cim1, dtim1*tim1_split);
-              if (ec!=NO_ERROR)
+              if (tim1_split>0)
               {
-                assert(false);
-                return false;
+            	ec=pct.push_back(cim1, dtim1*tim1_split);
+                if (ec!=NO_ERROR)
+                {
+                  assert(false);
+                  return false;
+                }
               }
               ec=pct.push_back(arc, dtim1*(1-tim1_split)+dti*ti_split);
               if (ec!=NO_ERROR)
@@ -1086,11 +1112,14 @@ namespace eli
                 assert(false);
                 return false;
               }
-              ec=pct.push_back(ci, dti*(1-ti_split));
-              if (ec!=NO_ERROR)
+              if (ti_split<1)
               {
-                assert(false);
-                return false;
+            	ec=pct.push_back(ci, dti*(1-ti_split));
+                if (ec!=NO_ERROR)
+                {
+                  assert(false);
+                  return false;
+                }
               }
 
               // replace the two segments with the piecewise curve
