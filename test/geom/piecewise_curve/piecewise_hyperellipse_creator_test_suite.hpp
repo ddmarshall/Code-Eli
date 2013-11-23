@@ -126,23 +126,6 @@ class piecewise_hyperellipse_creator_test_suite : public Test::Suite
       }
       std::cout << "];" << std::endl;
 
-      std::cout << "cp_z=[";
-      for (pp=0; pp<ns; ++pp)
-      {
-        curve_type bez;
-        pc.get(bez, pp);
-        for (i=0; i<=bez.degree(); ++i)
-        {
-          std::cout << bez.get_control_point(i).z();
-          if (i<bez.degree())
-            std::cout << ", ";
-          else if (pp<ns-1)
-            std::cout << "; ";
-        }
-        std::cout << std::endl;
-      }
-      std::cout << "];" << std::endl;
-
       // initialize the t parameters
       std::vector<data__> t(129);
       for (i=0; i<static_cast<index_type>(t.size()); ++i)
@@ -150,8 +133,8 @@ class piecewise_hyperellipse_creator_test_suite : public Test::Suite
         t[i]=tmin+(tmax-tmin)*static_cast<data__>(i)/(t.size()-1);
       }
 
-      // set the surface points
-      std::cout << "surf_x=[";
+      // set the curve points
+      std::cout << "curve_x=[";
       for (i=0; i<static_cast<index_type>(t.size()); ++i)
       {
         std::cout << pc.f(t[i]).x();
@@ -160,7 +143,7 @@ class piecewise_hyperellipse_creator_test_suite : public Test::Suite
       }
       std::cout << "];" << std::endl;
 
-      std::cout << "surf_y=[";
+      std::cout << "curve_y=[";
       for (i=0; i<static_cast<index_type>(t.size()); ++i)
       {
         std::cout << pc.f(t[i]).y();
@@ -169,19 +152,10 @@ class piecewise_hyperellipse_creator_test_suite : public Test::Suite
       }
       std::cout << "];" << std::endl;
 
-      std::cout << "surf_z=[";
-      for (i=0; i<static_cast<index_type>(t.size()); ++i)
-      {
-        std::cout << pc.f(t[i]).z();
-        if (i<static_cast<index_type>(t.size()-1))
-          std::cout << ", ";
-      }
-      std::cout << "];" << std::endl;
-
       std::cout << "setenv('GNUTERM', 'x11');" << std::endl;
-      std::cout << "plot3(surf_x, surf_y, surf_z, '-k');" << std::endl;
+      std::cout << "plot(curve_x, curve_y, '-k');" << std::endl;
       std::cout << "hold on;" << std::endl;
-      std::cout << "plot3(cp_x', cp_y', cp_z', '-ok', 'MarkerFaceColor', [0 0 0]);" << std::endl;
+      std::cout << "plot(cp_x', cp_y', '-or', 'MarkerFaceColor', [0 0 0]);" << std::endl;
       std::cout << "hold off;" << std::endl;
     }
 
