@@ -73,8 +73,8 @@ namespace eli
 
           void set_exponents(const data_type &mm, const data_type &nn)
           {
-            set_m_axis(mm);
-            set_n_axis(nn);
+            set_m_exponent(mm);
+            set_n_exponent(nn);
           }
           void get_exponents(data_type &mm, data_type &nn) const
           {
@@ -89,16 +89,16 @@ namespace eli
               m=mm;
             }
           }
-          const data_type & get_m_axis() const {return m;}
+          const data_type & get_m_exponent() const {return m;}
 
-          void set_n_axis(const data_type &nn)
+          void set_n_exponent(const data_type &nn)
           {
             if (nn>0)
             {
               n=nn;
             }
           }
-          const data_type & get_n_axis() const {return n;}
+          const data_type & get_n_exponent() const {return n;}
 
           void set_max_degree(const index_type &md)
           {
