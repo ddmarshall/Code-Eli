@@ -46,28 +46,33 @@ class piecewise_hyperellipse_creator_test_suite : public Test::Suite
     {
       // add the tests
       TEST_ADD(piecewise_hyperellipse_creator_test_suite<float>::create_4seg3deg_test);
+      TEST_ADD(piecewise_hyperellipse_creator_test_suite<float>::create_4seg6deg_test);
     }
     void AddTests(const double &)
     {
       // add the tests
       TEST_ADD(piecewise_hyperellipse_creator_test_suite<double>::create_4seg3deg_test);
+      TEST_ADD(piecewise_hyperellipse_creator_test_suite<double>::create_4seg6deg_test);
     }
     void AddTests(const long double &)
     {
       // add the tests
       TEST_ADD(piecewise_hyperellipse_creator_test_suite<long double>::create_4seg3deg_test);
+      TEST_ADD(piecewise_hyperellipse_creator_test_suite<long double>::create_4seg6deg_test);
     }
 #ifdef ELI_USING_QD
     void AddTests(const dd_real &)
     {
       // add the tests
       TEST_ADD(piecewise_hyperellipse_creator_test_suite<dd_real>::create_4seg3deg_test);
+      TEST_ADD(piecewise_hyperellipse_creator_test_suite<dd_real>::create_4seg6deg_test);
     }
 
     void AddTests(const qd_real &)
     {
       // add the tests
       TEST_ADD(piecewise_hyperellipse_creator_test_suite<qd_real>::create_4seg3deg_test);
+      TEST_ADD(piecewise_hyperellipse_creator_test_suite<qd_real>::create_4seg6deg_test);
     }
 #endif
   public:
@@ -161,74 +166,248 @@ class piecewise_hyperellipse_creator_test_suite : public Test::Suite
 
     void create_4seg3deg_test()
     {
-#if 0
-      // create point with specified parameterization
+      hyperellipse_creator_type he_creator(4);
+      data_type dt0(3), dt1(2), dt2(3), dt3(2), t0(-1);
+      point_type f, fref;
+
+      // set the times
+      he_creator.set_t0(t0);
+      he_creator.set_segment_dt(dt0, 0);
+      he_creator.set_segment_dt(dt1, 1);
+      he_creator.set_segment_dt(dt2, 2);
+      he_creator.set_segment_dt(dt3, 3);
+
+      he_creator.set_axis(2, 3);
+      he_creator.set_max_degree(3);
+
+      // create an ellipse
       {
         piecewise_curve_type pc;
-        point_creator_type pt_creator(4);
-        data_type dt0(3), dt1(2), dt2(3), dt3(2), t0(-1), dt;
-        point_type p0, ptemp;
+        he_creator.set_exponents(2., 2.);
 
-        // set the point
-        p0 << 1, 2, 3;
-        pt_creator.set_point(p0);
+        TEST_ASSERT(he_creator.create(pc));
 
-        // set the times
-        pt_creator.set_t0(t0);
-        pt_creator.set_segment_dt(dt0, 0);
-        pt_creator.set_segment_dt(dt1, 1);
-        pt_creator.set_segment_dt(dt2, 2);
-        pt_creator.set_segment_dt(dt3, 3);
-
-        // test point setting
-        ptemp=pt_creator.get_point();
-        TEST_ASSERT(p0==ptemp);
-
-        // test time step settings
-        TEST_ASSERT(pt_creator.get_t0()==t0);
-        dt=pt_creator.get_segment_dt(0);
-        TEST_ASSERT(dt==dt0);
-        dt=pt_creator.get_segment_dt(1);
-        TEST_ASSERT(dt==dt1);
-        dt=pt_creator.get_segment_dt(2);
-        TEST_ASSERT(dt==dt2);
-        dt=pt_creator.get_segment_dt(3);
-        TEST_ASSERT(dt==dt3);
-
-        // create the polygon
-        TEST_ASSERT(pt_creator.create(pc));
+        fref << 1.54543, 1.91076, 0;
+        f=pc.f(t0+dt0/2);
+        TEST_ASSERT((f-fref).norm() < 5e-6);
+//         std::cout << "f=" << std::setprecision(12) << f << std::endl;
+//         std::cout << "diff=" << std::setprecision(12) << (f-fref).norm() << std::endl;
       }
 
-      // create point with default parameterization
+      // create a moderately concave
       {
         piecewise_curve_type pc;
-        point_creator_type pt_creator(4);
-        data_type dt;
-        point_type p0, ptemp;
+        he_creator.set_exponents(1./2., 1./2.);
 
-        // set the corners
-        p0 << 1, 0, 0;
-        pt_creator.set_point(p0);
+        TEST_ASSERT(he_creator.create(pc));
 
-        // test corner settings
-        ptemp=pt_creator.get_point();
-        TEST_ASSERT(p0==ptemp);
-
-        // test time step settings
-        TEST_ASSERT(pt_creator.get_t0()==0);
-        dt=pt_creator.get_segment_dt(0);
-        TEST_ASSERT(dt==1);
-        dt=pt_creator.get_segment_dt(1);
-        TEST_ASSERT(dt==1);
-        dt=pt_creator.get_segment_dt(2);
-        TEST_ASSERT(dt==1);
-        dt=pt_creator.get_segment_dt(3);
-        TEST_ASSERT(dt==1);
-
-        // create the polygon
-        TEST_ASSERT(pt_creator.create(pc));
+        fref << 0.390768, 1.00505, 0;
+        f=pc.f(t0+dt0/2);
+        TEST_ASSERT((f-fref).norm() < 5e-6);
+//         std::cout << "f=" << std::setprecision(12) << f << std::endl;
+//         std::cout << "diff=" << std::setprecision(12) << (f-fref).norm() << std::endl;
       }
-#endif
+
+      // create a severely concave
+      {
+        piecewise_curve_type pc;
+        he_creator.set_exponents(1./5., 1./5.);
+
+        TEST_ASSERT(he_creator.create(pc));
+
+        fref << 0.020186, 0.66746, 0;
+        f=pc.f(t0+dt0/2);
+        TEST_ASSERT((f-fref).norm() < 5e-6);
+//         std::cout << "f=" << std::setprecision(12) << f << std::endl;
+//         std::cout << "diff=" << std::setprecision(12) << (f-fref).norm() << std::endl;
+      }
+
+      // create a moderately convex
+      {
+        piecewise_curve_type pc;
+        he_creator.set_exponents(1.2, 1.2);
+
+        TEST_ASSERT(he_creator.create(pc));
+
+        fref << 1.1795355, 1.6218755, 0;
+        f=pc.f(t0+dt0/2);
+        TEST_ASSERT((f-fref).norm() < 5e-6);
+//         std::cout << "f=" << std::setprecision(12) << f << std::endl;
+//         std::cout << "diff=" << std::setprecision(12) << (f-fref).norm() << std::endl;
+      }
+
+      // create a severely convex
+      {
+        piecewise_curve_type pc;
+        he_creator.set_exponents(5., 5.);
+
+        TEST_ASSERT(he_creator.create(pc));
+
+        fref << 1.905055, 2.234862, 0;
+        f=pc.f(t0+dt0/2);
+        TEST_ASSERT((f-fref).norm() < 5e-6);
+//         std::cout << "f=" << std::setprecision(12) << f << std::endl;
+//         std::cout << "diff=" << std::setprecision(12) << (f-fref).norm() << std::endl;
+      }
+
+      // create a mixed concave-convex
+      {
+        piecewise_curve_type pc;
+        he_creator.set_exponents(1./3., 3.);
+
+        TEST_ASSERT(he_creator.create(pc));
+
+        fref << 1.219502, 1.657993, 0;
+        f=pc.f(t0+dt0/2);
+        TEST_ASSERT((f-fref).norm() < 5e-6);
+//         std::cout << "f=" << std::setprecision(12) << f << std::endl;
+//         std::cout << "diff=" << std::setprecision(12) << (f-fref).norm() << std::endl;
+      }
+
+      // create a mixed concave-convex
+      {
+        piecewise_curve_type pc;
+        he_creator.set_exponents(3., 1./3.);
+
+        TEST_ASSERT(he_creator.create(pc));
+
+        fref << 1.21118, 1.647418, 0;
+        f=pc.f(t0+dt0/2);
+        TEST_ASSERT((f-fref).norm() < 5e-6);
+//         std::cout << "f=" << std::setprecision(12) << f << std::endl;
+//         std::cout << "diff=" << std::setprecision(12) << (f-fref).norm() << std::endl;
+      }
+
+//         if (typeid(data_type)==typeid(double))
+//           octave_print(1, pc);
+    }
+
+    void create_4seg6deg_test()
+    {
+      hyperellipse_creator_type he_creator(4);
+      data_type dt0(3), dt1(2), dt2(3), dt3(2), t0(-1);
+      point_type f, fref;
+
+      // set the times
+      he_creator.set_t0(t0);
+      he_creator.set_segment_dt(dt0, 0);
+      he_creator.set_segment_dt(dt1, 1);
+      he_creator.set_segment_dt(dt2, 2);
+      he_creator.set_segment_dt(dt3, 3);
+
+      he_creator.set_axis(2, 3);
+      he_creator.set_max_degree(6);
+
+      // create an ellipse
+      {
+        piecewise_curve_type pc;
+        he_creator.set_exponents(2., 2.);
+
+        TEST_ASSERT(he_creator.create(pc));
+
+        fref << 1.5440357, 1.906499, 0;
+        f=pc.f(t0+dt0/2);
+        TEST_ASSERT((f-fref).norm() < 5e-6);
+//         std::cout << "f=" << std::setprecision(12) << f << std::endl;
+//         std::cout << "diff=" << std::setprecision(12) << (f-fref).norm() << std::endl;
+      }
+
+      // create a moderately concave
+      {
+        piecewise_curve_type pc;
+        he_creator.set_exponents(1./2., 1./2.);
+
+        TEST_ASSERT(he_creator.create(pc));
+
+        fref << 0.350574, 1.00775, 0;
+        f=pc.f(t0+dt0/2);
+        TEST_ASSERT((f-fref).norm() < 5e-6);
+//         std::cout << "f=" << std::setprecision(12) << f << std::endl;
+//         std::cout << "diff=" << std::setprecision(12) << (f-fref).norm() << std::endl;
+      }
+
+      // create a severely concave
+      {
+        piecewise_curve_type pc;
+        he_creator.set_exponents(1./5., 1./5.);
+
+        TEST_ASSERT(he_creator.create(pc));
+
+        fref << -0.04397, 0.52341, 0;
+        f=pc.f(t0+dt0/2);
+        TEST_ASSERT((f-fref).norm() < 5e-6);
+//         std::cout << "f=" << std::setprecision(12) << f << std::endl;
+//         std::cout << "diff=" << std::setprecision(12) << (f-fref).norm() << std::endl;
+      }
+
+      // create a moderately convex
+      {
+        piecewise_curve_type pc;
+        he_creator.set_exponents(1.2, 1.2);
+
+        TEST_ASSERT(he_creator.create(pc));
+
+        fref << 1.168494, 1.614415, 0;
+        f=pc.f(t0+dt0/2);
+        TEST_ASSERT((f-fref).norm() < 5e-6);
+//         std::cout << "f=" << std::setprecision(12) << f << std::endl;
+//         std::cout << "diff=" << std::setprecision(12) << (f-fref).norm() << std::endl;
+      }
+
+      // create a severely convex
+      {
+        piecewise_curve_type pc;
+        he_creator.set_exponents(5., 5.);
+
+        TEST_ASSERT(he_creator.create(pc));
+
+        fref << 1.89498, 2.2451515, 0;
+        f=pc.f(t0+dt0/2);
+        TEST_ASSERT((f-fref).norm() < 5e-6);
+//         std::cout << "f=" << std::setprecision(12) << f << std::endl;
+//         std::cout << "diff=" << std::setprecision(12) << (f-fref).norm() << std::endl;
+      }
+
+      // create a mixed concave-convex
+      {
+        piecewise_curve_type pc;
+        he_creator.set_exponents(1./3., 3.);
+
+        TEST_ASSERT(he_creator.create(pc));
+
+        fref << 1.083538, 1.6076799, 0;
+        f=pc.f(t0+dt0/2);
+        if(typeid(data_type)==typeid(float))
+        {
+          TEST_ASSERT((f-fref).norm() < 5e-4);
+        }
+        else
+        {
+          TEST_ASSERT((f-fref).norm() < 5e-6);
+        }
+//         std::cout << "f=" << std::setprecision(12) << f << std::endl;
+//         std::cout << "diff=" << std::setprecision(12) << (f-fref).norm() << std::endl;
+      }
+
+      // create a mixed concave-convex
+      {
+        piecewise_curve_type pc;
+        he_creator.set_exponents(3., 1./3.);
+
+        TEST_ASSERT(he_creator.create(pc));
+
+        fref << 0.928627, 1.545853, 0;
+        f=pc.f(t0+dt0/2);
+        TEST_ASSERT((f-fref).norm() < 5e-6);
+//         std::cout << "f=" << std::setprecision(12) << f << std::endl;
+//         std::cout << "diff=" << std::setprecision(12) << (f-fref).norm() << std::endl;
+
+//         if (typeid(data_type)==typeid(double))
+//         {
+//           std::cout << std::setprecision(6);
+//           octave_print(1, pc);
+//         }
+      }
     }
 };
 

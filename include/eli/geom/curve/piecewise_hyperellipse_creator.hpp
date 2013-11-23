@@ -120,16 +120,15 @@ namespace eli
             pc.clear();
 
             // TODO: should this be an adaptive thing instead of just start with max?
-            // TODO: should this use the slopes as well as the points to interpolate?
 
+            index_type i, nsegs(this->get_number_segments()), nsample_pts(max_degree+1);
             error_code err;
-            index_type i, nsegs(this->get_number_segments()), nsample_pts(max_degree-1);
 
             // set the start parameter
             pc.set_t0(this->get_t0());
 
             // TODO: REMOVE THIS AFTER TESTING
-            assert((max_degree==4) && (nsegs==4));
+            assert(nsegs==4);
 
             // only need to do one quarter and then mirror
             if (nsegs%4==0)
@@ -138,18 +137,29 @@ namespace eli
               data_type t;
               control_point_type cp;
               fit_container_type fcon;
-              std::vector<point_type> f(nsample_pts), fp(nsample_pts);
+              std::vector<point_type> f(nsample_pts);
+
               for (i=0; i<nsample_pts; ++i)
               {
                 t=(0.25*i)/(nsample_pts-1);
-                fun(f[i], fp[i], t);
+                fun(f[i], t);
               }
-              fcon.add_points(f.begin(), f.end());
-              fcon.add_start_C1_constraint(fp.front());
-              fcon.add_end_C1_constraint(fp.back());
+              f[0].x()=a;
+              f[0].y()=0;
+              f[nsample_pts-1].x()=0;
+              f[nsample_pts-1].y()=b;
+
+              fcon.set_points(f.begin(), f.end());
 
               c0.interpolate(fcon);
-              pc.push_back(c0, this->get_segment_dt(0));
+              err=pc.push_back(c0, this->get_segment_dt(0));
+              if (err!=piecewise_curve_type::NO_ERROR)
+              {
+                assert(false);
+                pc.clear();
+                pc.set_t0(0);
+                return false;
+              }
 
               // mirror c0 about y-axis
               for (i=0; i<=max_degree; ++i)
@@ -158,7 +168,16 @@ namespace eli
                 cp.x()=-cp.x();
                 c1.set_control_point(cp, i);
               }
-              pc.push_back(c1, this->get_segment_dt(1));
+              c1.reverse();
+              err=pc.push_back(c1, this->get_segment_dt(1));
+              if (err!=piecewise_curve_type::NO_ERROR)
+              {
+                std::cout << "error code=" << err << std::endl;
+                assert(false);
+                pc.clear();
+                pc.set_t0(0);
+                return false;
+              }
 
               // mirror c1 about x-axis
               for (i=0; i<=max_degree; ++i)
@@ -167,7 +186,16 @@ namespace eli
                 cp.y()=-cp.y();
                 c2.set_control_point(cp, i);
               }
-              pc.push_back(c2, this->get_segment_dt(2));
+              c2.reverse();
+              err=pc.push_back(c2, this->get_segment_dt(2));
+              if (err!=piecewise_curve_type::NO_ERROR)
+              {
+                std::cout << "error code=" << err << std::endl;
+                assert(false);
+                pc.clear();
+                pc.set_t0(0);
+                return false;
+              }
 
               // mirror c2 about y-axis
               for (i=0; i<=max_degree; ++i)
@@ -176,13 +204,60 @@ namespace eli
                 cp.x()=-cp.x();
                 c3.set_control_point(cp, i);
               }
-              pc.push_back(c3, this->get_segment_dt(3));
+              c3.reverse();
+              err=pc.push_back(c3, this->get_segment_dt(3));
+              if (err!=piecewise_curve_type::NO_ERROR)
+              {
+                std::cout << "error code=" << err << std::endl;
+                assert(false);
+                pc.clear();
+                pc.set_t0(0);
+                return false;
+              }
             }
             // only need to do one half and then mirror
             else if (nsegs%2==2)
             {
               // FIX: NOT IMPLEMENTED
               assert(false);
+#if 0
+              std::cout << "fx=[";
+              for (i=0; i<nsample_pts; ++i)
+              {
+                std::cout << f[i].x() << " ";
+              }
+              std::cout << "];" << std::endl;
+              std::cout << "fy=[";
+              for (i=0; i<nsample_pts; ++i)
+              {
+                std::cout << f[i].y() << " ";
+              }
+              std::cout << "];" << std::endl;
+              std::cout << "fz=[";
+              for (i=0; i<nsample_pts; ++i)
+              {
+                std::cout << f[i].z() << " ";
+              }
+              std::cout << "];" << std::endl;
+              std::cout << "fpx=[";
+              for (i=0; i<nsample_pts; ++i)
+              {
+                std::cout << fp[i].x() << " ";
+              }
+              std::cout << "];" << std::endl;
+              std::cout << "fpy=[";
+              for (i=0; i<nsample_pts; ++i)
+              {
+                std::cout << fp[i].y() << " ";
+              }
+              std::cout << "];" << std::endl;
+              std::cout << "fpz=[";
+              for (i=0; i<nsample_pts; ++i)
+              {
+                std::cout << fp[i].z() << " ";
+              }
+              std::cout << "];" << std::endl;
+#endif
             }
             // need to do the entire
             else
@@ -195,59 +270,45 @@ namespace eli
           }
 
         private:
-          void fun(point_type &f, point_type &fp, const data_type &t)
+          void fun(point_type &f, const data_type &t) const
           {
             // short circuit if given bad parameter
             if ((t<0) || (t>1))
               return;
 
+            // zero out the points
+            f.setZero();
+
             // determine the sign terms
             data_type sign_cos(1), sign_sin(1);
 
-            if (t>0.25)
+            if ((t>0.25) && (t<0.5))
             {
-
+              sign_cos=-1;
+            }
+            else if ((t>0.5) && (t>0.75))
+            {
+              sign_cos=-1;
+              sign_sin=-1;
+            }
+            else if (t>0.75)
+            {
+              sign_sin=-1;
             }
 
-            // calculate the function and its derivative
-            data_type max_vel(10);
             data_type theta(eli::constants::math<data__>::two_pi()*t);
             data_type abs_cos(std::abs(std::cos(theta)));
             data_type abs_sin(std::abs(std::sin(theta)));
-            tolerance_type tol;
 
+            // calculate the function
             f.x()=a*sign_cos*std::pow(abs_cos, 2/m);
             f.y()=b*sign_sin*std::pow(abs_sin, 2/n);
-            if ((m<2) && (tol.approximately_equal(abs_cos, 0)))
-            {
-              fp.x()=-sign_sin*max_vel;
-            }
-            else
-            {
-              fp.x()=(-2*eli::constants::math<data__>::two_pi()*a/m)*std::sin(theta)*std::pow(abs_cos, 2/m-1);
-              if (std::abs(fp.x())>max_vel)
-              {
-                if (fp.x()>0)
-                  fp.x()=max_vel;
-                else
-                  fp.x()=-max_vel;
-              }
-            }
-            if ((n<2) && (tol.approximately_equal(abs_sin, 0)))
-            {
-              fp.y()=sign_cos*max_vel;
-            }
-            else
-            {
-              fp.y()=(2*eli::constants::math<data__>::two_pi()*b/n)*std::cos(theta)*std::pow(abs_sin, 2/n-1);
-              if (std::abs(fp.y())>max_vel)
-              {
-                if (fp.y()>0)
-                  fp.y()=max_vel;
-                else
-                  fp.y()=-max_vel;
-              }
-            }
+
+#if 0
+            // calculate the 1st derivatives
+            fp.x()=(-2*eli::constants::math<data__>::two_pi()*a/m)*std::sin(theta)*std::pow(abs_cos, 2/m-1);
+            fp.y()=(2*eli::constants::math<data__>::two_pi()*b/n)*std::cos(theta)*std::pow(abs_sin, 2/n-1);
+#endif
           }
 
         private:
