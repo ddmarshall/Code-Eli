@@ -186,10 +186,10 @@ int main(int argc, char *argv[])
     ts.add(std::auto_ptr<Test::Suite>(new piecewise_hyperellipse_creator_test_suite<float>()));
     ts.add(std::auto_ptr<Test::Suite>(new piecewise_hyperellipse_creator_test_suite<double>()));
     ts.add(std::auto_ptr<Test::Suite>(new piecewise_hyperellipse_creator_test_suite<long double>()));
-#ifdef ELI_USING_QD
-    ts.add(std::auto_ptr<Test::Suite>(new piecewise_hyperellipse_creator_test_suite<dd_real>()));
-    ts.add(std::auto_ptr<Test::Suite>(new piecewise_hyperellipse_creator_test_suite<qd_real>()));
-#endif
+// #ifdef ELI_USING_QD
+//     ts.add(std::auto_ptr<Test::Suite>(new piecewise_hyperellipse_creator_test_suite<dd_real>()));
+//     ts.add(std::auto_ptr<Test::Suite>(new piecewise_hyperellipse_creator_test_suite<qd_real>()));
+// #endif
 
     //
     // NOTE: End of section that should be changed
