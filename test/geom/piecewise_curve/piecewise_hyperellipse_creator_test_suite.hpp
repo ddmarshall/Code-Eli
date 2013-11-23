@@ -37,7 +37,7 @@ class piecewise_hyperellipse_creator_test_suite : public Test::Suite
     typedef typename piecewise_curve_type::data_type data_type;
     typedef typename piecewise_curve_type::index_type index_type;
     typedef typename piecewise_curve_type::tolerance_type tolerance_type;
-    typedef eli::geom::curve::piecewise_point_creator<data__, 3, tolerance_type> point_creator_type;
+    typedef eli::geom::curve::piecewise_hyperellipse_creator<data__, 3, tolerance_type> hyperellipse_creator_type;
 
     tolerance_type tol;
 
