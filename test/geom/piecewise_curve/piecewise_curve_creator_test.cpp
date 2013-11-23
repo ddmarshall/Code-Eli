@@ -24,6 +24,7 @@
 #include "piecewise_polygon_creator_test_suite.hpp"       // piecewise_polygon_creator_test_suite
 #include "piecewise_circle_creator_test_suite.hpp"        // piecewise_circle_creator_test_suite
 #include "piecewise_cubic_spline_creator_test_suite.hpp"  // piecewise_cubic_spline_creator_test_suite
+#include "piecewise_hyperellipse_creator_test_suite.hpp"  // piecewise_hyperellipse_creator_test_suite
 
 enum TestType {testTypeText, testTypeCompiler, testTypeHTML};
 
@@ -181,6 +182,13 @@ int main(int argc, char *argv[])
 #ifdef ELI_USING_QD
     ts.add(std::auto_ptr<Test::Suite>(new piecewise_cubic_spline_creator_test_suite<dd_real>()));
     ts.add(std::auto_ptr<Test::Suite>(new piecewise_cubic_spline_creator_test_suite<qd_real>()));
+#endif
+    ts.add(std::auto_ptr<Test::Suite>(new piecewise_hyperellipse_creator_test_suite<float>()));
+    ts.add(std::auto_ptr<Test::Suite>(new piecewise_hyperellipse_creator_test_suite<double>()));
+    ts.add(std::auto_ptr<Test::Suite>(new piecewise_hyperellipse_creator_test_suite<long double>()));
+#ifdef ELI_USING_QD
+    ts.add(std::auto_ptr<Test::Suite>(new piecewise_hyperellipse_creator_test_suite<dd_real>()));
+    ts.add(std::auto_ptr<Test::Suite>(new piecewise_hyperellipse_creator_test_suite<qd_real>()));
 #endif
 
     //
