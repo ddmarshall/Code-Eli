@@ -14,6 +14,7 @@
 #define eli_geom_curve_piecewise_hyperellipse_creator_hpp
 
 #include <vector>
+#include <algorithm>
 
 #include "Eigen/Eigen"
 
@@ -134,14 +135,23 @@ namespace eli
             if (nsegs%4==0)
             {
               curve_type c0(max_degree), c1(max_degree), c2(max_degree), c3(max_degree);
-              data_type t;
+              data_type t, argx, argy;
               control_point_type cp;
               fit_container_type fcon;
               std::vector<point_type> f(nsample_pts);
 
               for (i=0; i<nsample_pts; ++i)
               {
-                t=(0.25*i)/(nsample_pts-1);
+                // to get the rapid parameterization variation, find the parameters that
+                // produce uniform spacing in x and y and then average the two
+                argx=std::pow(1-static_cast<data_type>(i)/(nsample_pts-1), m/2);
+                argx=std::min(argx, static_cast<data_type>(1));
+                argx=std::max(argx, static_cast<data_type>(0));
+                argy=std::pow(static_cast<data_type>(i)/(nsample_pts-1), n/2);
+                argy=std::min(argy, static_cast<data_type>(1));
+                argy=std::max(argy, static_cast<data_type>(0));
+                t=(std::acos(argx)+std::asin(argy))/(2*eli::constants::math<data__>::two_pi());
+
                 fun(f[i], t);
               }
               f[0].x()=a;
@@ -152,6 +162,42 @@ namespace eli
               fcon.set_points(f.begin(), f.end());
 
               c0.interpolate(fcon);
+
+              // make sure the second and second from last control points don't cross
+              // x-axis and y-axis, respectively
+              bool need_set(false);
+              cp=c0.get_control_point(1);
+              if (cp.y()<0)
+              {
+                cp.y()=0;
+                need_set=true;
+              }
+              if (cp.x()>a)
+              {
+                cp.x()=a;
+                need_set=true;
+              }
+              if (need_set)
+              {
+                c0.set_control_point(cp, 1);
+              }
+
+              need_set=false;
+              cp=c0.get_control_point(max_degree-1);
+              if (cp.x()<0)
+              {
+                cp.x()=0;
+                need_set=true;
+              }
+              if (cp.y()>b)
+              {
+                cp.y()=b;
+                need_set=true;
+              }
+              if (need_set)
+              {
+                c0.set_control_point(cp, max_degree-1);
+              }
               err=pc.push_back(c0, this->get_segment_dt(0));
               if (err!=piecewise_curve_type::NO_ERROR)
               {

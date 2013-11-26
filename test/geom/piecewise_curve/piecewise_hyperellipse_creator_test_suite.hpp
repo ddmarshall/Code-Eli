@@ -187,7 +187,7 @@ class piecewise_hyperellipse_creator_test_suite : public Test::Suite
 
         TEST_ASSERT(he_creator.create(pc));
 
-        fref << 1.54543, 1.91076, 0;
+        fref << 1.547913, 1.903984, 0;
         f=pc.f(t0+dt0/2);
         TEST_ASSERT((f-fref).norm() < 5e-6);
 //         std::cout << "f=" << std::setprecision(12) << f << std::endl;
@@ -201,7 +201,7 @@ class piecewise_hyperellipse_creator_test_suite : public Test::Suite
 
         TEST_ASSERT(he_creator.create(pc));
 
-        fref << 0.390768, 1.00505, 0;
+        fref << 0.397104, 1.058210, 0;
         f=pc.f(t0+dt0/2);
         TEST_ASSERT((f-fref).norm() < 5e-6);
 //         std::cout << "f=" << std::setprecision(12) << f << std::endl;
@@ -215,7 +215,7 @@ class piecewise_hyperellipse_creator_test_suite : public Test::Suite
 
         TEST_ASSERT(he_creator.create(pc));
 
-        fref << 0.020186, 0.66746, 0;
+        fref << 0.134030, 1.149813, 0;
         f=pc.f(t0+dt0/2);
         TEST_ASSERT((f-fref).norm() < 5e-6);
 //         std::cout << "f=" << std::setprecision(12) << f << std::endl;
@@ -229,7 +229,7 @@ class piecewise_hyperellipse_creator_test_suite : public Test::Suite
 
         TEST_ASSERT(he_creator.create(pc));
 
-        fref << 1.1795355, 1.6218755, 0;
+        fref << 1.173693, 1.617232, 0;
         f=pc.f(t0+dt0/2);
         TEST_ASSERT((f-fref).norm() < 5e-6);
 //         std::cout << "f=" << std::setprecision(12) << f << std::endl;
@@ -243,7 +243,7 @@ class piecewise_hyperellipse_creator_test_suite : public Test::Suite
 
         TEST_ASSERT(he_creator.create(pc));
 
-        fref << 1.905055, 2.234862, 0;
+        fref << 1.76445, 1.897658, 0;
         f=pc.f(t0+dt0/2);
         TEST_ASSERT((f-fref).norm() < 5e-6);
 //         std::cout << "f=" << std::setprecision(12) << f << std::endl;
@@ -257,7 +257,7 @@ class piecewise_hyperellipse_creator_test_suite : public Test::Suite
 
         TEST_ASSERT(he_creator.create(pc));
 
-        fref << 1.219502, 1.657993, 0;
+        fref << 1.1199889, 1.604568, 0;
         f=pc.f(t0+dt0/2);
         TEST_ASSERT((f-fref).norm() < 5e-6);
 //         std::cout << "f=" << std::setprecision(12) << f << std::endl;
@@ -271,7 +271,7 @@ class piecewise_hyperellipse_creator_test_suite : public Test::Suite
 
         TEST_ASSERT(he_creator.create(pc));
 
-        fref << 1.21118, 1.647418, 0;
+        fref << 1.149061, 1.645629, 0;
         f=pc.f(t0+dt0/2);
         TEST_ASSERT((f-fref).norm() < 5e-6);
 //         std::cout << "f=" << std::setprecision(12) << f << std::endl;
@@ -305,7 +305,7 @@ class piecewise_hyperellipse_creator_test_suite : public Test::Suite
 
         TEST_ASSERT(he_creator.create(pc));
 
-        fref << 1.5440357, 1.906499, 0;
+        fref << 1.544666, 1.904765, 0;
         f=pc.f(t0+dt0/2);
         TEST_ASSERT((f-fref).norm() < 5e-6);
 //         std::cout << "f=" << std::setprecision(12) << f << std::endl;
@@ -319,7 +319,7 @@ class piecewise_hyperellipse_creator_test_suite : public Test::Suite
 
         TEST_ASSERT(he_creator.create(pc));
 
-        fref << 0.350574, 1.00775, 0;
+        fref << 0.360349, 1.00602, 0;
         f=pc.f(t0+dt0/2);
         TEST_ASSERT((f-fref).norm() < 5e-6);
 //         std::cout << "f=" << std::setprecision(12) << f << std::endl;
@@ -333,7 +333,14 @@ class piecewise_hyperellipse_creator_test_suite : public Test::Suite
 
         TEST_ASSERT(he_creator.create(pc));
 
-        fref << -0.04397, 0.52341, 0;
+        if (typeid(data_type)==typeid(float))
+        {
+          fref << 47.022301, 3.482945, 0;
+        }
+        else
+        {
+          fref << 46.87239, 3.468185, 0;
+        }
         f=pc.f(t0+dt0/2);
         TEST_ASSERT((f-fref).norm() < 5e-6);
 //         std::cout << "f=" << std::setprecision(12) << f << std::endl;
@@ -347,7 +354,7 @@ class piecewise_hyperellipse_creator_test_suite : public Test::Suite
 
         TEST_ASSERT(he_creator.create(pc));
 
-        fref << 1.168494, 1.614415, 0;
+        fref << 1.168557, 1.614039, 0;
         f=pc.f(t0+dt0/2);
         TEST_ASSERT((f-fref).norm() < 5e-6);
 //         std::cout << "f=" << std::setprecision(12) << f << std::endl;
@@ -361,9 +368,16 @@ class piecewise_hyperellipse_creator_test_suite : public Test::Suite
 
         TEST_ASSERT(he_creator.create(pc));
 
-        fref << 1.89498, 2.2451515, 0;
+        if (typeid(data_type)==typeid(float))
+        {
+          fref << 1.351337, 2.2768044, 0;
+        }
+        else
+        {
+          fref << 1.349747, 2.277204, 0;
+        }
         f=pc.f(t0+dt0/2);
-        TEST_ASSERT((f-fref).norm() < 5e-6);
+        TEST_ASSERT((f-fref).norm() < 6e-6);
 //         std::cout << "f=" << std::setprecision(12) << f << std::endl;
 //         std::cout << "diff=" << std::setprecision(12) << (f-fref).norm() << std::endl;
       }
@@ -375,16 +389,9 @@ class piecewise_hyperellipse_creator_test_suite : public Test::Suite
 
         TEST_ASSERT(he_creator.create(pc));
 
-        fref << 1.083538, 1.6076799, 0;
+        fref << 1.203145, 1.619022, 0;
         f=pc.f(t0+dt0/2);
-        if(typeid(data_type)==typeid(float))
-        {
-          TEST_ASSERT((f-fref).norm() < 5e-4);
-        }
-        else
-        {
-          TEST_ASSERT((f-fref).norm() < 5e-6);
-        }
+        TEST_ASSERT((f-fref).norm() < 5e-6);
 //         std::cout << "f=" << std::setprecision(12) << f << std::endl;
 //         std::cout << "diff=" << std::setprecision(12) << (f-fref).norm() << std::endl;
       }
@@ -396,7 +403,7 @@ class piecewise_hyperellipse_creator_test_suite : public Test::Suite
 
         TEST_ASSERT(he_creator.create(pc));
 
-        fref << 0.928627, 1.545853, 0;
+        fref << 1.135717, 1.623672, 0;
         f=pc.f(t0+dt0/2);
         TEST_ASSERT((f-fref).norm() < 5e-6);
 //         std::cout << "f=" << std::setprecision(12) << f << std::endl;
