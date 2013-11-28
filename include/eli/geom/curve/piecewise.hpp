@@ -481,6 +481,57 @@ namespace eli
             assert(check_continuity(eli::geom::general::C0));
           }
 
+
+          void reflect_xy()
+          {
+            typename segment_collection_type::iterator it;
+
+            for (it=segments.begin(); it!=segments.end(); ++it)
+            {
+              it->second.reflect_xy();
+            }
+          }
+
+          void reflect_xz()
+          {
+            typename segment_collection_type::iterator it;
+
+            for (it=segments.begin(); it!=segments.end(); ++it)
+            {
+              it->second.reflect_xz();
+            }
+          }
+
+          void reflect_yz()
+          {
+            typename segment_collection_type::iterator it;
+
+            for (it=segments.begin(); it!=segments.end(); ++it)
+            {
+              it->second.reflect_yz();
+            }
+          }
+
+          void reflect(const point_type &normal)
+          {
+            typename segment_collection_type::iterator it;
+
+            for (it=segments.begin(); it!=segments.end(); ++it)
+            {
+              it->second.reflect(normal);
+            }
+          }
+
+          void reflect(const point_type &normal, const data_type &d)
+          {
+            typename segment_collection_type::iterator it;
+
+            for (it=segments.begin(); it!=segments.end(); ++it)
+            {
+              it->second.reflect(normal, d);
+            }
+          }
+
           void clear() {segments.clear();}
 
           template<typename it__>

@@ -54,6 +54,7 @@ class bezier_curve_test_suite : public Test::Suite
       TEST_ADD(bezier_curve_test_suite<float>::derivative_3_test);
       TEST_ADD(bezier_curve_test_suite<float>::frenet_serret_test);
       TEST_ADD(bezier_curve_test_suite<float>::reverse_test);
+      TEST_ADD(bezier_curve_test_suite<float>::reflection_test);
       TEST_ADD(bezier_curve_test_suite<float>::promotion_test);
       TEST_ADD(bezier_curve_test_suite<float>::promotion_to_test);
       TEST_ADD(bezier_curve_test_suite<float>::demotion_test);
@@ -74,6 +75,7 @@ class bezier_curve_test_suite : public Test::Suite
       TEST_ADD(bezier_curve_test_suite<double>::derivative_3_test);
       TEST_ADD(bezier_curve_test_suite<double>::frenet_serret_test);
       TEST_ADD(bezier_curve_test_suite<double>::reverse_test);
+      TEST_ADD(bezier_curve_test_suite<double>::reflection_test);
       TEST_ADD(bezier_curve_test_suite<double>::promotion_test);
       TEST_ADD(bezier_curve_test_suite<double>::promotion_to_test);
       TEST_ADD(bezier_curve_test_suite<double>::demotion_test);
@@ -94,6 +96,7 @@ class bezier_curve_test_suite : public Test::Suite
       TEST_ADD(bezier_curve_test_suite<long double>::derivative_3_test);
       TEST_ADD(bezier_curve_test_suite<long double>::frenet_serret_test);
       TEST_ADD(bezier_curve_test_suite<long double>::reverse_test);
+      TEST_ADD(bezier_curve_test_suite<long double>::reflection_test);
       TEST_ADD(bezier_curve_test_suite<long double>::promotion_test);
       TEST_ADD(bezier_curve_test_suite<long double>::promotion_to_test);
       TEST_ADD(bezier_curve_test_suite<long double>::demotion_test);
@@ -115,6 +118,7 @@ class bezier_curve_test_suite : public Test::Suite
       TEST_ADD(bezier_curve_test_suite<dd_real>::derivative_3_test);
       TEST_ADD(bezier_curve_test_suite<dd_real>::frenet_serret_test);
       TEST_ADD(bezier_curve_test_suite<dd_real>::reverse_test);
+      TEST_ADD(bezier_curve_test_suite<dd_real>::reflection_test);
       TEST_ADD(bezier_curve_test_suite<dd_real>::promotion_test);
       TEST_ADD(bezier_curve_test_suite<dd_real>::promotion_to_test);
       TEST_ADD(bezier_curve_test_suite<dd_real>::demotion_test);
@@ -135,6 +139,7 @@ class bezier_curve_test_suite : public Test::Suite
       TEST_ADD(bezier_curve_test_suite<qd_real>::derivative_2_test);
       TEST_ADD(bezier_curve_test_suite<qd_real>::derivative_3_test);
       TEST_ADD(bezier_curve_test_suite<qd_real>::frenet_serret_test);
+      TEST_ADD(bezier_curve_test_suite<qd_real>::reflection_test);
       TEST_ADD(bezier_curve_test_suite<qd_real>::reverse_test);
       TEST_ADD(bezier_curve_test_suite<qd_real>::promotion_test);
       TEST_ADD(bezier_curve_test_suite<qd_real>::promotion_to_test);
@@ -619,6 +624,127 @@ class bezier_curve_test_suite : public Test::Suite
       for (index_type i=0; i<4; ++i)
       {
         TEST_ASSERT(bc1.get_control_point(i)==cntrl_in[3-i]);
+      }
+    }
+
+    void reflection_test()
+    {
+      point_type cntrl_in[4], cntrl_out[4];
+      index_type i;
+
+      // set control points
+      cntrl_in[0] << 2.0, 2.0, 1.0;
+      cntrl_in[1] << 1.0, 1.5, 2.0;
+      cntrl_in[2] << 3.5, 0.0, 3.0;
+      cntrl_in[3] << 4.0, 1.0, 4.0;
+
+      bezier_type bc(3), bcc;
+
+      // set control points
+      for (index_type i=0; i<4; ++i)
+      {
+        bc.set_control_point(cntrl_in[i], i);
+      }
+      bcc=bc;
+
+      // reflect about xy-plane
+      {
+        bc.reflect_xy();
+        for (i=0; i<4; ++i)
+        {
+          cntrl_out[i].x()= cntrl_in[i].x();
+          cntrl_out[i].y()= cntrl_in[i].y();
+          cntrl_out[i].z()=-cntrl_in[i].z();
+        }
+
+        // check control points
+        for (i=0; i<4; ++i)
+        {
+          TEST_ASSERT(bc.get_control_point(i)==cntrl_out[i]);
+        }
+      }
+
+      // reflect about xz-plane
+      bc=bcc;
+      {
+        bc.reflect_xz();
+        for (i=0; i<4; ++i)
+        {
+          cntrl_out[i].x()= cntrl_in[i].x();
+          cntrl_out[i].y()=-cntrl_in[i].y();
+          cntrl_out[i].z()= cntrl_in[i].z();
+        }
+
+        // check control points
+        for (i=0; i<4; ++i)
+        {
+          TEST_ASSERT(bc.get_control_point(i)==cntrl_out[i]);
+        }
+      }
+
+      // reflect about yz-plane
+      bc=bcc;
+      {
+        bc.reflect_yz();
+        for (i=0; i<4; ++i)
+        {
+          cntrl_out[i].x()=-cntrl_in[i].x();
+          cntrl_out[i].y()= cntrl_in[i].y();
+          cntrl_out[i].z()= cntrl_in[i].z();
+        }
+
+        // check control points
+        for (i=0; i<4; ++i)
+        {
+          TEST_ASSERT(bc.get_control_point(i)==cntrl_out[i]);
+        }
+      }
+
+      // reflect about arbitrary plane
+      bc=bcc;
+      {
+        data_type eps(std::numeric_limits<data__>::epsilon());
+        point_type normal, n;
+
+        normal << 1, 2, 3;
+        n=normal;
+        n.normalize();
+
+        bc.reflect(normal);
+        for (i=0; i<4; ++i)
+        {
+          cntrl_out[i]=cntrl_in[i]-2*cntrl_in[i].dot(n)*n;
+        }
+
+        // check control points
+        for (i=0; i<4; ++i)
+        {
+          TEST_ASSERT((bc.get_control_point(i)-cntrl_out[i]).norm()<10*eps);
+        }
+      }
+
+      // reflect about arbitrary plane not through origin
+      bc=bcc;
+      {
+        data_type eps(std::numeric_limits<data__>::epsilon());
+        point_type normal, n;
+        data_type d(4);
+
+        normal << 1, 2, 3;
+        n=normal;
+        n.normalize();
+
+        bc.reflect(normal, d);
+        for (i=0; i<4; ++i)
+        {
+          cntrl_out[i]=cntrl_in[i]-2*(cntrl_in[i].dot(n)-d)*n;
+        }
+
+        // check control points
+        for (i=0; i<4; ++i)
+        {
+          TEST_ASSERT((bc.get_control_point(i)-cntrl_out[i]).norm()<10*eps);
+        }
       }
     }
 
