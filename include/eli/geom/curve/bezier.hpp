@@ -218,6 +218,37 @@ namespace eli
             return B.row(i);
           }
 
+          void reflect_xy()
+          {
+            B.col(2)=-B.col(2);
+          }
+
+          void reflect_xz()
+          {
+            B.col(1)=-B.col(1);
+          }
+
+          void reflect_yz()
+          {
+            B.col(0)=-B.col(0);
+          }
+
+          void reflect(const point_type &normal)
+          {
+            point_type n(normal);
+
+            n.normalize();
+            B=B-2*(B*n.transpose())*n;
+          }
+
+          void reflect(const point_type &normal, const data_type &d)
+          {
+            point_type n(normal);
+
+            n.normalize();
+            B=B-2*(B*n.transpose()-d*Eigen::Matrix<data_type, Eigen::Dynamic, 1>::Ones(degree()+1, 1))*n;
+          }
+
           void reverse()
           {
             index_type i, n(degree());
