@@ -18,5 +18,6 @@
 #include "eli/geom/curve/piecewise_linear_creator.hpp"
 #include "eli/geom/curve/piecewise_polygon_creator.hpp"
 #include "eli/geom/curve/piecewise_cubic_spline_creator.hpp"
+#include "eli/geom/curve/piecewise_hyperellipse_creator.hpp"
 
 #endif
