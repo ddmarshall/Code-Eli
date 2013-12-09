@@ -605,6 +605,23 @@ namespace eli
             return NO_ERROR;
           }
 
+          error_code push_front(const piecewise<curve__, data_type, dim__, tol__> &p)
+          {
+            typename segment_collection_type::const_reverse_iterator itp;
+            error_code err;
+
+            for (itp=p.segments.rbegin(); itp!=p.segments.rend(); ++itp)
+            {
+              err=push_front(itp->second, p.get_delta_t(itp));
+              if (err!=NO_ERROR)
+              {
+                return err;
+              }
+            }
+
+            return NO_ERROR;
+          }
+
           error_code push_back(const curve_type &curve, const data_type &dt=1.0)
           {
             if (dt<=0)
@@ -625,6 +642,23 @@ namespace eli
             tmax+=dt;
 
             assert(check_continuity(eli::geom::general::C0));
+
+            return NO_ERROR;
+          }
+
+          error_code push_back(const piecewise<curve__, data_type, dim__, tol__> &p)
+          {
+            typename segment_collection_type::const_iterator itp;
+            error_code err;
+
+            for (itp=p.segments.begin(); itp!=p.segments.end(); ++itp)
+            {
+              err=push_back(itp->second, p.get_delta_t(itp));
+              if (err!=NO_ERROR)
+              {
+                return err;
+              }
+            }
 
             return NO_ERROR;
           }
