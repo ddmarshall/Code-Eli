@@ -890,11 +890,11 @@ namespace eli
 
             itps = p.segments.begin();
             cs = itps->second;
-            dts = get_delta_t(itps);
+            dts = p.get_delta_t(itps);
 
             itpe = p.segments.end(); --itpe;
             ce = itpe->second;
-            dte = get_delta_t(itpe);
+            dte = p.get_delta_t(itpe);
 
             // Find parameter span of segment to replace
             data_type dti, dto;
@@ -912,7 +912,7 @@ namespace eli
             {
               scito=scit0;
               --scito;
-              dto = get_delta_t(scito);
+              dto = p.get_delta_t(scito);
               if (!eli::geom::utility::check_point_continuity(scito->second, dto, cs, dts*pratio, eli::geom::general::C0, tol))
               {
                 return SEGMENT_NOT_CONNECTED;
@@ -921,7 +921,7 @@ namespace eli
             if (index1<number_segments())
             {
               scito=scit1;
-              dto = get_delta_t(scito);
+              dto = p.get_delta_t(scito);
               if (!eli::geom::utility::check_point_continuity(ce, dte*pratio, scito->second, dto, eli::geom::general::C0, tol))
               {
                 return SEGMENT_NOT_CONNECTED;
