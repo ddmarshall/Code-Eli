@@ -10,8 +10,8 @@
 *    David D. Marshall - initial code and implementation
 ********************************************************************************/
 
-#ifndef eli_geom_curve_piecewise_hyperellipse_creator_hpp
-#define eli_geom_curve_piecewise_hyperellipse_creator_hpp
+#ifndef eli_geom_curve_piecewise_superellipse_creator_hpp
+#define eli_geom_curve_piecewise_superellipse_creator_hpp
 
 #include <vector>
 #include <algorithm>
@@ -29,7 +29,7 @@ namespace eli
     namespace curve
     {
       template<typename data__, unsigned short dim__, typename tol__>
-      class piecewise_hyperellipse_creator : public piecewise_creator_base<data__, dim__, tol__>
+      class piecewise_superellipse_creator : public piecewise_creator_base<data__, dim__, tol__>
       {
         public:
           typedef data__  data_type;
@@ -37,11 +37,11 @@ namespace eli
           typedef Eigen::Matrix<data_type, 1, dim__> point_type;
           typedef tol__ tolerance_type;
 
-          piecewise_hyperellipse_creator() : piecewise_creator_base<data_type, dim__, tolerance_type>(4, 0), a(1), b(1), m(2), n(2), max_degree(3) {}
-          piecewise_hyperellipse_creator(const index_type &ns) : piecewise_creator_base<data_type, dim__, tolerance_type>(ns, 0), a(1), b(1), m(2), n(2), max_degree(3) {}
-          piecewise_hyperellipse_creator(const piecewise_hyperellipse_creator<data_type, dim__, tolerance_type> &ppc)
+          piecewise_superellipse_creator() : piecewise_creator_base<data_type, dim__, tolerance_type>(4, 0), a(1), b(1), m(2), n(2), max_degree(3) {}
+          piecewise_superellipse_creator(const index_type &ns) : piecewise_creator_base<data_type, dim__, tolerance_type>(ns, 0), a(1), b(1), m(2), n(2), max_degree(3) {}
+          piecewise_superellipse_creator(const piecewise_superellipse_creator<data_type, dim__, tolerance_type> &ppc)
             : piecewise_creator_base<data_type, dim__, tolerance_type>(ppc), a(ppc.a), b(ppc.b), m(ppc.m), n(ppc.n), max_degree(ppc.max_degree) {}
-          ~piecewise_hyperellipse_creator() {}
+          ~piecewise_superellipse_creator() {}
 
           void set_axis(const data_type &aa, const data_type &bb)
           {

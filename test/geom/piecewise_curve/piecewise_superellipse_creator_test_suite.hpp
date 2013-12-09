@@ -10,14 +10,14 @@
 *    David D. Marshall - initial code and implementation
 ********************************************************************************/
 
-#ifndef piecewise_hyperellipse_creator_test_suite_hpp
-#define piecewise_hyperellipse_creator_test_suite_hpp
+#ifndef piecewise_superellipse_creator_test_suite_hpp
+#define piecewise_superellipse_creator_test_suite_hpp
 
 #include "eli/code_eli.hpp"
 
 #include "eli/constants/math.hpp"
 #include "eli/geom/curve/piecewise.hpp"
-#include "eli/geom/curve/piecewise_hyperellipse_creator.hpp"
+#include "eli/geom/curve/piecewise_superellipse_creator.hpp"
 
 #include <cassert>  // assert()
 
@@ -28,7 +28,7 @@
 #include <limits>   // std::numeric_limits
 
 template<typename data__>
-class piecewise_hyperellipse_creator_test_suite : public Test::Suite
+class piecewise_superellipse_creator_test_suite : public Test::Suite
 {
   private:
     typedef eli::geom::curve::piecewise<eli::geom::curve::bezier, data__, 3> piecewise_curve_type;
@@ -37,7 +37,7 @@ class piecewise_hyperellipse_creator_test_suite : public Test::Suite
     typedef typename piecewise_curve_type::data_type data_type;
     typedef typename piecewise_curve_type::index_type index_type;
     typedef typename piecewise_curve_type::tolerance_type tolerance_type;
-    typedef eli::geom::curve::piecewise_hyperellipse_creator<data__, 3, tolerance_type> hyperellipse_creator_type;
+    typedef eli::geom::curve::piecewise_superellipse_creator<data__, 3, tolerance_type> superellipse_creator_type;
 
     tolerance_type tol;
 
@@ -45,52 +45,52 @@ class piecewise_hyperellipse_creator_test_suite : public Test::Suite
     void AddTests(const float &)
     {
       // add the tests
-      TEST_ADD(piecewise_hyperellipse_creator_test_suite<float>::create_4seg3deg_test);
-      TEST_ADD(piecewise_hyperellipse_creator_test_suite<float>::create_4seg6deg_test);
-      TEST_ADD(piecewise_hyperellipse_creator_test_suite<float>::create_8seg3deg_test);
-      TEST_ADD(piecewise_hyperellipse_creator_test_suite<float>::create_8seg6deg_test);
+      TEST_ADD(piecewise_superellipse_creator_test_suite<float>::create_4seg3deg_test);
+      TEST_ADD(piecewise_superellipse_creator_test_suite<float>::create_4seg6deg_test);
+      TEST_ADD(piecewise_superellipse_creator_test_suite<float>::create_8seg3deg_test);
+      TEST_ADD(piecewise_superellipse_creator_test_suite<float>::create_8seg6deg_test);
     }
     void AddTests(const double &)
     {
       // add the tests
-      TEST_ADD(piecewise_hyperellipse_creator_test_suite<double>::create_4seg3deg_test);
-      TEST_ADD(piecewise_hyperellipse_creator_test_suite<double>::create_4seg6deg_test);
-      TEST_ADD(piecewise_hyperellipse_creator_test_suite<double>::create_8seg3deg_test);
-      TEST_ADD(piecewise_hyperellipse_creator_test_suite<double>::create_8seg6deg_test);
+      TEST_ADD(piecewise_superellipse_creator_test_suite<double>::create_4seg3deg_test);
+      TEST_ADD(piecewise_superellipse_creator_test_suite<double>::create_4seg6deg_test);
+      TEST_ADD(piecewise_superellipse_creator_test_suite<double>::create_8seg3deg_test);
+      TEST_ADD(piecewise_superellipse_creator_test_suite<double>::create_8seg6deg_test);
     }
     void AddTests(const long double &)
     {
       // add the tests
-      TEST_ADD(piecewise_hyperellipse_creator_test_suite<long double>::create_4seg3deg_test);
-      TEST_ADD(piecewise_hyperellipse_creator_test_suite<long double>::create_4seg6deg_test);
-      TEST_ADD(piecewise_hyperellipse_creator_test_suite<long double>::create_8seg3deg_test);
-      TEST_ADD(piecewise_hyperellipse_creator_test_suite<long double>::create_8seg6deg_test);
+      TEST_ADD(piecewise_superellipse_creator_test_suite<long double>::create_4seg3deg_test);
+      TEST_ADD(piecewise_superellipse_creator_test_suite<long double>::create_4seg6deg_test);
+      TEST_ADD(piecewise_superellipse_creator_test_suite<long double>::create_8seg3deg_test);
+      TEST_ADD(piecewise_superellipse_creator_test_suite<long double>::create_8seg6deg_test);
     }
 #ifdef ELI_USING_QD
     void AddTests(const dd_real &)
     {
       // add the tests
-      TEST_ADD(piecewise_hyperellipse_creator_test_suite<dd_real>::create_4seg3deg_test);
-      TEST_ADD(piecewise_hyperellipse_creator_test_suite<dd_real>::create_4seg6deg_test);
-      TEST_ADD(piecewise_hyperellipse_creator_test_suite<dd_real>::create_8seg3deg_test);
-      TEST_ADD(piecewise_hyperellipse_creator_test_suite<dd_real>::create_8seg6deg_test);
+      TEST_ADD(piecewise_superellipse_creator_test_suite<dd_real>::create_4seg3deg_test);
+      TEST_ADD(piecewise_superellipse_creator_test_suite<dd_real>::create_4seg6deg_test);
+      TEST_ADD(piecewise_superellipse_creator_test_suite<dd_real>::create_8seg3deg_test);
+      TEST_ADD(piecewise_superellipse_creator_test_suite<dd_real>::create_8seg6deg_test);
     }
 
     void AddTests(const qd_real &)
     {
       // add the tests
-      TEST_ADD(piecewise_hyperellipse_creator_test_suite<qd_real>::create_4seg3deg_test);
-      TEST_ADD(piecewise_hyperellipse_creator_test_suite<qd_real>::create_4seg6deg_test);
-      TEST_ADD(piecewise_hyperellipse_creator_test_suite<qd_real>::create_8seg3deg_test);
-      TEST_ADD(piecewise_hyperellipse_creator_test_suite<qd_real>::create_8seg6deg_test);
+      TEST_ADD(piecewise_superellipse_creator_test_suite<qd_real>::create_4seg3deg_test);
+      TEST_ADD(piecewise_superellipse_creator_test_suite<qd_real>::create_4seg6deg_test);
+      TEST_ADD(piecewise_superellipse_creator_test_suite<qd_real>::create_8seg3deg_test);
+      TEST_ADD(piecewise_superellipse_creator_test_suite<qd_real>::create_8seg6deg_test);
     }
 #endif
   public:
-    piecewise_hyperellipse_creator_test_suite() : tol()
+    piecewise_superellipse_creator_test_suite() : tol()
     {
       AddTests(data__());
     }
-    ~piecewise_hyperellipse_creator_test_suite()
+    ~piecewise_superellipse_creator_test_suite()
     {
     }
 
@@ -176,7 +176,7 @@ class piecewise_hyperellipse_creator_test_suite : public Test::Suite
 
     void create_4seg3deg_test()
     {
-      hyperellipse_creator_type he_creator(4);
+      superellipse_creator_type he_creator(4);
       data_type dt0(3), dt1(2), dt2(3), dt3(2), t0(-1);
       point_type f, fref;
 
@@ -294,7 +294,7 @@ class piecewise_hyperellipse_creator_test_suite : public Test::Suite
 
     void create_4seg6deg_test()
     {
-      hyperellipse_creator_type he_creator(4);
+      superellipse_creator_type he_creator(4);
       data_type dt0(3), dt1(2), dt2(3), dt3(2), t0(-1);
       point_type f, fref;
 
@@ -429,7 +429,7 @@ class piecewise_hyperellipse_creator_test_suite : public Test::Suite
 
     void create_8seg3deg_test()
     {
-      hyperellipse_creator_type he_creator(8);
+      superellipse_creator_type he_creator(8);
       data_type dt0(3), dt1(2), dt2(3), dt3(2), dt4(2), dt5(1), dt6(2), dt7(1), t0(-1);
       point_type f, fref;
 
@@ -551,7 +551,7 @@ class piecewise_hyperellipse_creator_test_suite : public Test::Suite
 
     void create_8seg6deg_test()
     {
-      hyperellipse_creator_type he_creator(8);
+      superellipse_creator_type he_creator(8);
       data_type dt0(3), dt1(2), dt2(3), dt3(2), dt4(2), dt5(1), dt6(2), dt7(1), t0(-1);
       point_type f, fref;
 
