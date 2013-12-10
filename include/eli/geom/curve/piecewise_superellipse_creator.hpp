@@ -187,14 +187,15 @@ namespace eli
                 // create rest of sample points
                 for (index_type i=1; i<(nsample_pts-1); ++i)
                 {
-                  data_type t, argx, argy;
+                  data_type t, argx, argy, tmp;
 
                   // to get the rapid parameterization variation, find the parameters that
                   // produce uniform spacing in x and y and then average the two
-                  argx=std::pow(1-static_cast<data_type>(i)/(nsample_pts-1), m/2);
+                  tmp=static_cast<data_type>(i)/(nsample_pts-1);
+                  argx=std::pow(1-tmp, m/2);
                   argx=std::min(argx, static_cast<data_type>(1));
                   argx=std::max(argx, static_cast<data_type>(0));
-                  argy=std::pow(static_cast<data_type>(i)/(nsample_pts-1), n/2);
+                  argy=std::pow(tmp, n/2);
                   argy=std::min(argy, static_cast<data_type>(1));
                   argy=std::max(argy, static_cast<data_type>(0));
 
