@@ -309,14 +309,20 @@ namespace eli
 //                   assert(false);
 
                 // push back left side
-                err=pc.push_back(pc_left);
-                if (err!=piecewise_curve_type::NO_ERROR)
+                curve_type c;
+                index_type rnseg(pc.number_segments());
+                for (iseg=0; iseg<pc_left.number_segments(); ++iseg)
                 {
-                  std::cout << "error number: " << err << std::endl;
-                  assert(false);
-                  pc.clear();
-                  pc.set_t0(0);
-                  return false;
+                  pc_left.get(c, iseg);
+                  err=pc.push_back(c, this->get_segment_dt(rnseg+iseg));
+                  if (err!=piecewise_curve_type::NO_ERROR)
+                  {
+                    std::cout << "error number: " << err << std::endl;
+                    assert(false);
+                    pc.clear();
+                    pc.set_t0(0);
+                    return false;
+                  }
                 }
               }
               // else create entire top half
@@ -332,14 +338,20 @@ namespace eli
               pc_bottom.reverse();
 
               // push back the bottom curve
-              err=pc.push_back(pc_bottom);
-              if (err!=piecewise_curve_type::NO_ERROR)
+              curve_type c;
+              index_type rtseg(pc.number_segments());
+              for (iseg=0; iseg<pc_bottom.number_segments(); ++iseg)
               {
-                std::cout << "error number: " << err << std::endl;
-                assert(false);
-                pc.clear();
-                pc.set_t0(0);
-                return false;
+                pc_bottom.get(c, iseg);
+                err=pc.push_back(c, this->get_segment_dt(rtseg+iseg));
+                if (err!=piecewise_curve_type::NO_ERROR)
+                {
+                  std::cout << "error number: " << err << std::endl;
+                  assert(false);
+                  pc.clear();
+                  pc.set_t0(0);
+                  return false;
+                }
               }
             }
             // else odd number of segments
