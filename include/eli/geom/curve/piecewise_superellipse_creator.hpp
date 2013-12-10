@@ -89,7 +89,7 @@ namespace eli
 
           void set_a_axis(const data_type &aa)
           {
-            if (aa>0)
+            if (aa>=0)
             {
               a=aa;
             }
@@ -98,7 +98,7 @@ namespace eli
 
           void set_b_axis(const data_type &bb)
           {
-            if (bb>0)
+            if (bb>=0)
             {
               b=bb;
             }

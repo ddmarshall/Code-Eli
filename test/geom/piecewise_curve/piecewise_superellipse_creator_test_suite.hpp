@@ -45,6 +45,7 @@ class piecewise_superellipse_creator_test_suite : public Test::Suite
     void AddTests(const float &)
     {
       // add the tests
+      TEST_ADD(piecewise_superellipse_creator_test_suite<float>::create_degenerate_test);
       TEST_ADD(piecewise_superellipse_creator_test_suite<float>::create_4seg3deg_test);
       TEST_ADD(piecewise_superellipse_creator_test_suite<float>::create_4seg6deg_test);
       TEST_ADD(piecewise_superellipse_creator_test_suite<float>::create_8seg3deg_test);
@@ -53,6 +54,7 @@ class piecewise_superellipse_creator_test_suite : public Test::Suite
     void AddTests(const double &)
     {
       // add the tests
+      TEST_ADD(piecewise_superellipse_creator_test_suite<double>::create_degenerate_test);
       TEST_ADD(piecewise_superellipse_creator_test_suite<double>::create_4seg3deg_test);
       TEST_ADD(piecewise_superellipse_creator_test_suite<double>::create_4seg6deg_test);
       TEST_ADD(piecewise_superellipse_creator_test_suite<double>::create_8seg3deg_test);
@@ -61,6 +63,7 @@ class piecewise_superellipse_creator_test_suite : public Test::Suite
     void AddTests(const long double &)
     {
       // add the tests
+      TEST_ADD(piecewise_superellipse_creator_test_suite<long double>::create_degenerate_test);
       TEST_ADD(piecewise_superellipse_creator_test_suite<long double>::create_4seg3deg_test);
       TEST_ADD(piecewise_superellipse_creator_test_suite<long double>::create_4seg6deg_test);
       TEST_ADD(piecewise_superellipse_creator_test_suite<long double>::create_8seg3deg_test);
@@ -70,6 +73,7 @@ class piecewise_superellipse_creator_test_suite : public Test::Suite
     void AddTests(const dd_real &)
     {
       // add the tests
+      TEST_ADD(piecewise_superellipse_creator_test_suite<dd_real>::create_degenerate_test);
       TEST_ADD(piecewise_superellipse_creator_test_suite<dd_real>::create_4seg3deg_test);
       TEST_ADD(piecewise_superellipse_creator_test_suite<dd_real>::create_4seg6deg_test);
       TEST_ADD(piecewise_superellipse_creator_test_suite<dd_real>::create_8seg3deg_test);
@@ -79,6 +83,7 @@ class piecewise_superellipse_creator_test_suite : public Test::Suite
     void AddTests(const qd_real &)
     {
       // add the tests
+      TEST_ADD(piecewise_superellipse_creator_test_suite<qd_real>::create_degenerate_test);
       TEST_ADD(piecewise_superellipse_creator_test_suite<qd_real>::create_4seg3deg_test);
       TEST_ADD(piecewise_superellipse_creator_test_suite<qd_real>::create_4seg6deg_test);
       TEST_ADD(piecewise_superellipse_creator_test_suite<qd_real>::create_8seg3deg_test);
@@ -172,6 +177,71 @@ class piecewise_superellipse_creator_test_suite : public Test::Suite
       std::cout << "hold on;" << std::endl;
       std::cout << "plot(cp_x', cp_y', '-or', 'MarkerFaceColor', [0 0 0]);" << std::endl;
       std::cout << "hold off;" << std::endl;
+    }
+
+    void create_degenerate_test()
+    {
+      superellipse_creator_type he_creator(4);
+      data_type dt0(3), dt1(2), dt2(3), dt3(2), t0(-1);
+      point_type f, fref;
+
+      // set the times
+      he_creator.set_t0(t0);
+      he_creator.set_segment_dt(dt0, 0);
+      he_creator.set_segment_dt(dt1, 1);
+      he_creator.set_segment_dt(dt2, 2);
+      he_creator.set_segment_dt(dt3, 3);
+
+      he_creator.set_exponents(2., 2.);
+      he_creator.set_max_degree(3);
+
+      // create an x-degenerate ellipse
+      {
+        piecewise_curve_type pc;
+
+        he_creator.set_axis(0, 3);
+        TEST_ASSERT(he_creator.create(pc));
+
+        fref << 0, 1.5, 0;
+        f=pc.f(t0+dt0/2);
+        TEST_ASSERT((f-fref).norm() < 5e-6);
+//         std::cout << "f=" << std::setprecision(12) << f << std::endl;
+//         std::cout << "diff=" << std::setprecision(12) << (f-fref).norm() << std::endl;
+//         if (typeid(data_type)==typeid(double))
+//           octave_print(1, pc);
+      }
+
+      // create an y-degenerate ellipse
+      {
+        piecewise_curve_type pc;
+
+        he_creator.set_axis(2, 0);
+        TEST_ASSERT(he_creator.create(pc));
+
+        fref << 1, 0, 0;
+        f=pc.f(t0+dt0/2);
+        TEST_ASSERT((f-fref).norm() < 5e-6);
+//         std::cout << "f=" << std::setprecision(12) << f << std::endl;
+//         std::cout << "diff=" << std::setprecision(12) << (f-fref).norm() << std::endl;
+//         if (typeid(data_type)==typeid(double))
+//           octave_print(1, pc);
+      }
+
+      // create an x- and y-degenerate ellipse
+      {
+        piecewise_curve_type pc;
+
+        he_creator.set_axis(0, 0);
+        TEST_ASSERT(he_creator.create(pc));
+
+        fref << 0, 0, 0;
+        f=pc.f(t0+dt0/2);
+        TEST_ASSERT((f-fref).norm() < 5e-6);
+//         std::cout << "f=" << std::setprecision(12) << f << std::endl;
+//         std::cout << "diff=" << std::setprecision(12) << (f-fref).norm() << std::endl;
+//         if (typeid(data_type)==typeid(double))
+//           octave_print(1, pc);
+      }
     }
 
     void create_4seg3deg_test()
