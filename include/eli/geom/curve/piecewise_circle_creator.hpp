@@ -64,9 +64,17 @@ namespace eli
           typedef tol__ tolerance_type;
 
         public:
-          piecewise_ellipse_creator_base() : piecewise_creator_base<data_type, dim__, tolerance_type>(4, 0), xradius(1), yradius(1) {}
+          piecewise_ellipse_creator_base() : piecewise_creator_base<data_type, dim__, tolerance_type>(4, 0), xradius(1), yradius(1)
+          {
+            x.setZero(); x.x()=1;
+            y.setZero(); y.y()=1;
+          }
           piecewise_ellipse_creator_base(const index_type &ns, const data_type &xr, const data_type &yr)
-            : piecewise_creator_base<data_type, dim__, tolerance_type>(ns, 0), xradius(xr), yradius(yr) {}
+            : piecewise_creator_base<data_type, dim__, tolerance_type>(ns, 0), xradius(xr), yradius(yr)
+          {
+            x.setZero(); x.x()=1;
+            y.setZero(); y.y()=1;
+          }
           piecewise_ellipse_creator_base(const piecewise_ellipse_creator_base<data_type, dim__, tolerance_type> &pcc)
             : piecewise_creator_base<data_type, dim__, tolerance_type>(pcc), xradius(pcc.xradius), yradius(pcc.yradius), x(pcc.x), y(pcc.y) {}
           virtual ~piecewise_ellipse_creator_base() {};

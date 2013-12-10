@@ -29,7 +29,7 @@ namespace eli
     namespace curve
     {
       template<typename data__, unsigned short dim__, typename tol__>
-      class piecewise_superellipse_creator : public piecewise_creator_base<data__, dim__, tol__>
+      class piecewise_2d_curve_creator : public piecewise_creator_base<data__, dim__, tol__>
       {
         public:
           typedef data__  data_type;
@@ -37,10 +37,43 @@ namespace eli
           typedef Eigen::Matrix<data_type, 1, dim__> point_type;
           typedef tol__ tolerance_type;
 
-          piecewise_superellipse_creator() : piecewise_creator_base<data_type, dim__, tolerance_type>(4, 0), a(1), b(1), m(2), n(2), max_degree(3) {}
-          piecewise_superellipse_creator(const index_type &ns) : piecewise_creator_base<data_type, dim__, tolerance_type>(ns, 0), a(1), b(1), m(2), n(2), max_degree(3) {}
+          piecewise_2d_curve_creator() : piecewise_creator_base<data_type, dim__, tolerance_type>(4, 0)
+          {
+            origin.setZero();
+          }
+          piecewise_2d_curve_creator(const index_type &ns, const data_type &tt0) : piecewise_creator_base<data_type, dim__, tolerance_type>(ns, tt0)
+          {
+            origin.setZero();
+          }
+          piecewise_2d_curve_creator(const piecewise_2d_curve_creator<data_type, dim__, tolerance_type> &p2dc)
+            : piecewise_creator_base<data_type, dim__, tolerance_type>(p2dc), origin(p2dc.origin) {}
+          ~piecewise_2d_curve_creator() {}
+
+          void set_origin(const point_type &orig) {origin=orig;}
+          point_type get_origin() const {return origin;}
+
+        protected:
+          virtual void fun(point_type &f, const data_type &t) const = 0;
+          virtual void fun(point_type &f, point_type &fp, const data_type &t) const = 0;
+
+        private:
+          point_type origin;
+      };
+
+
+      template<typename data__, unsigned short dim__, typename tol__>
+      class piecewise_superellipse_creator : public piecewise_2d_curve_creator<data__, dim__, tol__>
+      {
+        public:
+          typedef typename piecewise_2d_curve_creator<data__, dim__, tol__>::data_type data_type;
+          typedef typename piecewise_2d_curve_creator<data__, dim__, tol__>::index_type index_type;
+          typedef typename piecewise_2d_curve_creator<data__, dim__, tol__>::point_type point_type;
+          typedef typename piecewise_2d_curve_creator<data__, dim__, tol__>::tolerance_type tolerance_type;
+
+          piecewise_superellipse_creator() : piecewise_2d_curve_creator<data_type, dim__, tolerance_type>(4, 0), a(1), b(1), m(2), n(2), max_degree(3) {}
+          piecewise_superellipse_creator(const index_type &ns) : piecewise_2d_curve_creator<data_type, dim__, tolerance_type>(ns, 0), a(1), b(1), m(2), n(2), max_degree(3) {}
           piecewise_superellipse_creator(const piecewise_superellipse_creator<data_type, dim__, tolerance_type> &ppc)
-            : piecewise_creator_base<data_type, dim__, tolerance_type>(ppc), a(ppc.a), b(ppc.b), m(ppc.m), n(ppc.n), max_degree(ppc.max_degree) {}
+            : piecewise_2d_curve_creator<data_type, dim__, tolerance_type>(ppc), a(ppc.a), b(ppc.b), m(ppc.m), n(ppc.n), max_degree(ppc.max_degree) {}
           ~piecewise_superellipse_creator() {}
 
           void set_axis(const data_type &aa, const data_type &bb)
@@ -316,160 +349,44 @@ namespace eli
             }
 
             return true;
-#if 0
-            // only need to do one quarter and then mirror
-            if (nsegs%4==0)
-            {
-              curve_type c0(max_degree), c1(max_degree), c2(max_degree), c3(max_degree);
-              data_type t, argx, argy;
-              control_point_type cp;
-              fit_container_type fcon;
-              std::vector<point_type> f(nsample_pts);
-
-              for (i=0; i<nsample_pts; ++i)
-              {
-                // to get the rapid parameterization variation, find the parameters that
-                // produce uniform spacing in x and y and then average the two
-                argx=std::pow(1-static_cast<data_type>(i)/(nsample_pts-1), m/2);
-                argx=std::min(argx, static_cast<data_type>(1));
-                argx=std::max(argx, static_cast<data_type>(0));
-                argy=std::pow(static_cast<data_type>(i)/(nsample_pts-1), n/2);
-                argy=std::min(argy, static_cast<data_type>(1));
-                argy=std::max(argy, static_cast<data_type>(0));
-                t=(std::acos(argx)+std::asin(argy))/(2*eli::constants::math<data__>::two_pi());
-
-                fun(f[i], t);
-              }
-              f[0].x()=a;
-              f[0].y()=0;
-              f[nsample_pts-1].x()=0;
-              f[nsample_pts-1].y()=b;
-
-              fcon.set_points(f.begin(), f.end());
-
-              c0.interpolate(fcon);
-
-              // make sure the second and second from last control points don't cross
-              // x-axis and y-axis, respectively
-              bool need_set(false);
-              cp=c0.get_control_point(1);
-              if (cp.y()<0)
-              {
-                cp.y()=0;
-                need_set=true;
-              }
-              if (cp.x()>a)
-              {
-                cp.x()=a;
-                need_set=true;
-              }
-              if (need_set)
-              {
-                c0.set_control_point(cp, 1);
-              }
-
-              need_set=false;
-              cp=c0.get_control_point(max_degree-1);
-              if (cp.x()<0)
-              {
-                cp.x()=0;
-                need_set=true;
-              }
-              if (cp.y()>b)
-              {
-                cp.y()=b;
-                need_set=true;
-              }
-              if (need_set)
-              {
-                c0.set_control_point(cp, max_degree-1);
-              }
-              err=pc.push_back(c0, this->get_segment_dt(0));
-              if (err!=piecewise_curve_type::NO_ERROR)
-              {
-                assert(false);
-                pc.clear();
-                pc.set_t0(0);
-                return false;
-              }
-
-              // mirror c0 about y-axis
-              for (i=0; i<=max_degree; ++i)
-              {
-                cp=c0.get_control_point(i);
-                cp.x()=-cp.x();
-                c1.set_control_point(cp, i);
-              }
-              c1.reverse();
-              err=pc.push_back(c1, this->get_segment_dt(1));
-              if (err!=piecewise_curve_type::NO_ERROR)
-              {
-                std::cout << "error code=" << err << std::endl;
-                assert(false);
-                pc.clear();
-                pc.set_t0(0);
-                return false;
-              }
-
-              // mirror c1 about x-axis
-              for (i=0; i<=max_degree; ++i)
-              {
-                cp=c1.get_control_point(i);
-                cp.y()=-cp.y();
-                c2.set_control_point(cp, i);
-              }
-              c2.reverse();
-              err=pc.push_back(c2, this->get_segment_dt(2));
-              if (err!=piecewise_curve_type::NO_ERROR)
-              {
-                std::cout << "error code=" << err << std::endl;
-                assert(false);
-                pc.clear();
-                pc.set_t0(0);
-                return false;
-              }
-
-              // mirror c2 about y-axis
-              for (i=0; i<=max_degree; ++i)
-              {
-                cp=c2.get_control_point(i);
-                cp.x()=-cp.x();
-                c3.set_control_point(cp, i);
-              }
-              c3.reverse();
-              err=pc.push_back(c3, this->get_segment_dt(3));
-              if (err!=piecewise_curve_type::NO_ERROR)
-              {
-                std::cout << "error code=" << err << std::endl;
-                assert(false);
-                pc.clear();
-                pc.set_t0(0);
-                return false;
-              }
-            }
-            // only need to do one half and then mirror
-            else if (nsegs%2==2)
-            {
-              // FIX: NOT IMPLEMENTED
-              assert(false);
-            }
-            // need to do the entire
-            else
-            {
-              // FIX: NOT IMPLEMENTED
-              assert(false);
-            }
-#endif
           }
 
-        private:
-          void fun(point_type &f, const data_type &t) const
+        protected:
+          // TODO: These should be in the base class that is shared with circle, ellipse, and other 2D curves
+          void set_x_radius(const data_type &xr)
+          {
+            if(xr>=0)
+            {
+              xradius=xr;
+            }
+            else
+            {
+              assert(false);
+            }
+          }
+          const data_type & get_x_radius() const {return xradius;}
+          void set_y_radius(const data_type &yr)
+          {
+            if (yr>=0)
+            {
+              yradius=yr;
+            }
+            else
+            {
+              assert(false);
+            }
+          }
+          const data_type & get_y_radius() const {return yradius;}
+          // TODO: end note
+
+        protected:
+          virtual void fun(point_type &f, const data_type &t) const
           {
             // short circuit if given bad parameter
             if ((t<0) || (t>1))
               return;
 
-            // zero out the points
+            // zero out point
             f.setZero();
 
             // determine the sign terms
@@ -496,15 +413,51 @@ namespace eli
             // calculate the function
             f.x()=a*sign_cos*std::pow(abs_cos, 2/m);
             f.y()=b*sign_sin*std::pow(abs_sin, 2/n);
+          }
 
-#if 0
+          virtual void fun(point_type &f, point_type &fp, const data_type &t) const
+          {
+            // short circuit if given bad parameter
+            if ((t<0) || (t>1))
+              return;
+
+            // zero out point
+            f.setZero();
+            fp.setZero();
+
+            // determine the sign terms
+            data_type sign_cos(1), sign_sin(1);
+
+            if ((t>0.25) && (t<0.5))
+            {
+              sign_cos=-1;
+            }
+            else if ((t>0.5) && (t>0.75))
+            {
+              sign_cos=-1;
+              sign_sin=-1;
+            }
+            else if (t>0.75)
+            {
+              sign_sin=-1;
+            }
+
+            data_type theta(eli::constants::math<data__>::two_pi()*t);
+            data_type abs_cos(std::abs(std::cos(theta)));
+            data_type abs_sin(std::abs(std::sin(theta)));
+
+            // calculate the function
+            f.x()=a*sign_cos*std::pow(abs_cos, 2/m);
+            f.y()=b*sign_sin*std::pow(abs_sin, 2/n);
+
             // calculate the 1st derivatives
             fp.x()=(-2*eli::constants::math<data__>::two_pi()*a/m)*std::sin(theta)*std::pow(abs_cos, 2/m-1);
             fp.y()=(2*eli::constants::math<data__>::two_pi()*b/n)*std::cos(theta)*std::pow(abs_sin, 2/n-1);
-#endif
           }
 
         private:
+          data_type xradius, yradius;
+
           data_type a, b, m, n;
           index_type max_degree;
       };
