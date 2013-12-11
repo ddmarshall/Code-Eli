@@ -163,7 +163,7 @@ namespace eli
             pc.set_t0(this->get_t0());
 
             // TODO: REMOVE THIS AFTER TESTING
-            assert(nsegs%4==0);
+            assert(nsegs%2==0);
 
             // if even number of segments then can create top half
             if (nsegs%2==0)
@@ -204,31 +204,6 @@ namespace eli
 
                   fun(f[i], t);
                 }
-#if 0
-                if (nsegs==8)
-                {
-                  int i;
-                  std::cout << "fx=[";
-                  for (i=0; i<nsample_pts; ++i)
-                  {
-                    std::cout << f[i].x() << " ";
-                  }
-                  std::cout << "];" << std::endl;
-                  std::cout << "fy=[";
-                  for (i=0; i<nsample_pts; ++i)
-                  {
-                    std::cout << f[i].y() << " ";
-                  }
-                  std::cout << "];" << std::endl;
-                  std::cout << "fz=[";
-                  for (i=0; i<nsample_pts; ++i)
-                  {
-                    std::cout << f[i].z() << " ";
-                  }
-                  std::cout << "];" << std::endl;
-//                   assert(false);
-                }
-#endif
 
                 // create first quarter
                 for (iseg=0; iseg<nseg_first; ++iseg)
@@ -263,7 +238,7 @@ namespace eli
                     }
                   }
 
-                  // check the first slope to make sure it is reasonable
+                  // check the last slope to make sure it is reasonable
                   if (iseg==(nseg_first-1))
                   {
                     bool need_set(false);
@@ -328,8 +303,116 @@ namespace eli
               // else create entire top half
               else
               {
-                assert(false);
-                return false;
+                index_type nsample_pts(nseg_top*(max_degree)+1), nhalf(nsample_pts/2);
+                std::vector<point_type> f(nsample_pts);
+
+                // ensure that the first and last points are set appropriately
+                f[0].setZero();
+                f[0].x()=a;
+                f[nsample_pts-1].setZero();
+                f[nsample_pts-1].x()=-a;
+                if (nsample_pts%2==1)
+                {
+                  f[nhalf].setZero();
+                  f[nhalf].y()=b;
+                }
+
+                // create rest of sample points
+                for (index_type i=1; i<nhalf; ++i)
+                {
+                  data_type t, argx, argy, tmp;
+
+                  // to get the rapid parameterization variation, find the parameters that
+                  // produce uniform spacing in x and y and then average the two
+                  tmp=static_cast<data_type>(i)/(nhalf);
+                  argx=std::pow(1-tmp, m/2);
+                  argx=std::min(argx, static_cast<data_type>(1));
+                  argx=std::max(argx, static_cast<data_type>(0));
+                  argy=std::pow(tmp, n/2);
+                  argy=std::min(argy, static_cast<data_type>(1));
+                  argy=std::max(argy, static_cast<data_type>(0));
+
+                  // TODO: Fix this to get the parameter that better captures extreme n and m cases
+                  t=(std::acos(argx)+std::asin(argy))/(2*eli::constants::math<data__>::two_pi());
+//                     std::cout << "argx=" << argx << "\targy=" << argy << "\tt=" << t << std::endl;
+
+                  fun(f[i], t);
+                  fun(f[nsample_pts-i-1], 0.5-t);
+                }
+
+//                 if (max_degree==6)
+//                 {
+//                   for (index_type i=0; i<nsample_pts; ++i)
+//                   {
+//                     std::cout << "f[" << i << "] = " << f[i] << std::endl;
+//                   }
+//                 }
+
+                // create first quarter
+                for (iseg=0; iseg<nseg_top; ++iseg)
+                {
+                  control_point_type cp;
+                  fit_container_type fcon;
+                  crv.clear();
+
+                  fcon.set_points(f.begin()+(iseg*max_degree), f.begin()+((iseg+1)*max_degree+1));
+
+                  crv.interpolate(fcon);
+
+                  // check the first slope to make sure it is reasonable
+                  if (iseg==0)
+                  {
+                    bool need_set(false);
+                    control_point_type cp(crv.get_control_point(1));
+
+                    if (cp.y()<0)
+                    {
+                      cp.y()=0;
+                      need_set=true;
+                    }
+                    if (cp.x()>a)
+                    {
+                      cp.x()=a;
+                      need_set=true;
+                    }
+                    if (need_set)
+                    {
+                      crv.set_control_point(cp, 1);
+                    }
+                  }
+
+                  // check the last slope to make sure it is reasonable
+                  if (iseg==(nseg_top-1))
+                  {
+                    bool need_set(false);
+                    control_point_type cp(crv.get_control_point(max_degree-1));
+
+                    if (cp.y()<0)
+                    {
+                      cp.y()=0;
+                      need_set=true;
+                    }
+                    if (cp.x()<-a)
+                    {
+                      cp.x()=-a;
+                      need_set=true;
+                    }
+                    if (need_set)
+                    {
+                      crv.set_control_point(cp, max_degree-1);
+                    }
+                  }
+
+                  err=pc.push_back(crv, this->get_segment_dt(iseg));
+                  if (err!=piecewise_curve_type::NO_ERROR)
+                  {
+                    std::cout << "error number: " << err << std::endl;
+                    assert(false);
+                    pc.clear();
+                    pc.set_t0(0);
+                    return false;
+                  }
+                }
               }
 
               // mirror for bottom half

@@ -48,6 +48,8 @@ class piecewise_superellipse_creator_test_suite : public Test::Suite
       TEST_ADD(piecewise_superellipse_creator_test_suite<float>::create_degenerate_test);
       TEST_ADD(piecewise_superellipse_creator_test_suite<float>::create_4seg3deg_test);
       TEST_ADD(piecewise_superellipse_creator_test_suite<float>::create_4seg6deg_test);
+      TEST_ADD(piecewise_superellipse_creator_test_suite<float>::create_6seg3deg_test);
+      TEST_ADD(piecewise_superellipse_creator_test_suite<float>::create_6seg6deg_test);
       TEST_ADD(piecewise_superellipse_creator_test_suite<float>::create_8seg3deg_test);
       TEST_ADD(piecewise_superellipse_creator_test_suite<float>::create_8seg6deg_test);
     }
@@ -57,6 +59,8 @@ class piecewise_superellipse_creator_test_suite : public Test::Suite
       TEST_ADD(piecewise_superellipse_creator_test_suite<double>::create_degenerate_test);
       TEST_ADD(piecewise_superellipse_creator_test_suite<double>::create_4seg3deg_test);
       TEST_ADD(piecewise_superellipse_creator_test_suite<double>::create_4seg6deg_test);
+      TEST_ADD(piecewise_superellipse_creator_test_suite<double>::create_6seg3deg_test);
+      TEST_ADD(piecewise_superellipse_creator_test_suite<double>::create_6seg6deg_test);
       TEST_ADD(piecewise_superellipse_creator_test_suite<double>::create_8seg3deg_test);
       TEST_ADD(piecewise_superellipse_creator_test_suite<double>::create_8seg6deg_test);
     }
@@ -66,6 +70,8 @@ class piecewise_superellipse_creator_test_suite : public Test::Suite
       TEST_ADD(piecewise_superellipse_creator_test_suite<long double>::create_degenerate_test);
       TEST_ADD(piecewise_superellipse_creator_test_suite<long double>::create_4seg3deg_test);
       TEST_ADD(piecewise_superellipse_creator_test_suite<long double>::create_4seg6deg_test);
+      TEST_ADD(piecewise_superellipse_creator_test_suite<long double>::create_6seg3deg_test);
+      TEST_ADD(piecewise_superellipse_creator_test_suite<long double>::create_6seg6deg_test);
       TEST_ADD(piecewise_superellipse_creator_test_suite<long double>::create_8seg3deg_test);
       TEST_ADD(piecewise_superellipse_creator_test_suite<long double>::create_8seg6deg_test);
     }
@@ -76,6 +82,8 @@ class piecewise_superellipse_creator_test_suite : public Test::Suite
       TEST_ADD(piecewise_superellipse_creator_test_suite<dd_real>::create_degenerate_test);
       TEST_ADD(piecewise_superellipse_creator_test_suite<dd_real>::create_4seg3deg_test);
       TEST_ADD(piecewise_superellipse_creator_test_suite<dd_real>::create_4seg6deg_test);
+      TEST_ADD(piecewise_superellipse_creator_test_suite<dd_real>::create_6seg3deg_test);
+      TEST_ADD(piecewise_superellipse_creator_test_suite<dd_real>::create_6seg6deg_test);
       TEST_ADD(piecewise_superellipse_creator_test_suite<dd_real>::create_8seg3deg_test);
       TEST_ADD(piecewise_superellipse_creator_test_suite<dd_real>::create_8seg6deg_test);
     }
@@ -86,6 +94,8 @@ class piecewise_superellipse_creator_test_suite : public Test::Suite
       TEST_ADD(piecewise_superellipse_creator_test_suite<qd_real>::create_degenerate_test);
       TEST_ADD(piecewise_superellipse_creator_test_suite<qd_real>::create_4seg3deg_test);
       TEST_ADD(piecewise_superellipse_creator_test_suite<qd_real>::create_4seg6deg_test);
+      TEST_ADD(piecewise_superellipse_creator_test_suite<qd_real>::create_6seg3deg_test);
+      TEST_ADD(piecewise_superellipse_creator_test_suite<qd_real>::create_6seg6deg_test);
       TEST_ADD(piecewise_superellipse_creator_test_suite<qd_real>::create_8seg3deg_test);
       TEST_ADD(piecewise_superellipse_creator_test_suite<qd_real>::create_8seg6deg_test);
     }
@@ -489,6 +499,303 @@ class piecewise_superellipse_creator_test_suite : public Test::Suite
 //         std::cout << "f=" << std::setprecision(12) << f << std::endl;
 //         std::cout << "diff=" << std::setprecision(12) << (f-fref).norm() << std::endl;
 
+//         if (typeid(data_type)==typeid(double))
+//         {
+//           std::cout << std::setprecision(6);
+//           octave_print(1, pc);
+//         }
+      }
+    }
+
+    void create_6seg3deg_test()
+    {
+      superellipse_creator_type he_creator(6);
+      data_type dt0(3), dt1(2), dt2(3), dt3(2), dt4(3), dt5(2), t0(-1);
+      point_type f, fref;
+
+      // set the times
+      he_creator.set_t0(t0);
+      he_creator.set_segment_dt(dt0, 0);
+      he_creator.set_segment_dt(dt1, 1);
+      he_creator.set_segment_dt(dt2, 2);
+      he_creator.set_segment_dt(dt3, 3);
+      he_creator.set_segment_dt(dt4, 4);
+      he_creator.set_segment_dt(dt5, 5);
+
+      he_creator.set_axis(2, 3);
+      he_creator.set_max_degree(3);
+
+      // create an ellipse
+      {
+        piecewise_curve_type pc;
+        he_creator.set_exponents(2., 2.);
+
+        TEST_ASSERT(he_creator.create(pc));
+
+        fref << 1.819996, 1.243964, 0;
+        f=pc.f(t0+dt0/2);
+        TEST_ASSERT((f-fref).norm() < 5e-6);
+//         std::cout << "f=" << std::setprecision(12) << f << std::endl;
+//         std::cout << "diff=" << std::setprecision(12) << (f-fref).norm() << std::endl;
+//         if (typeid(data_type)==typeid(double))
+//           octave_print(1, pc);
+      }
+
+      // create a moderately concave
+      {
+        piecewise_curve_type pc;
+        he_creator.set_exponents(1./2., 1./2.);
+
+        TEST_ASSERT(he_creator.create(pc));
+
+        fref << 1.019236, 0.267005, 0;
+        f=pc.f(t0+dt0/2);
+        TEST_ASSERT((f-fref).norm() < 5e-6);
+//         std::cout << "f=" << std::setprecision(12) << f << std::endl;
+//         std::cout << "diff=" << std::setprecision(12) << (f-fref).norm() << std::endl;
+//         if (typeid(data_type)==typeid(double))
+//           octave_print(1, pc);
+      }
+
+      // create a severely concave
+      {
+        piecewise_curve_type pc;
+        he_creator.set_exponents(1./5., 1./5.);
+
+        TEST_ASSERT(he_creator.create(pc));
+
+        fref << 1.108429, 0.525021, 0;
+        f=pc.f(t0+dt0/2);
+        TEST_ASSERT((f-fref).norm() < 5e-6);
+//         std::cout << "f=" << std::setprecision(12) << f << std::endl;
+//         std::cout << "diff=" << std::setprecision(12) << (f-fref).norm() << std::endl;
+//         if (typeid(data_type)==typeid(double))
+//           octave_print(1, pc);
+      }
+
+      // create a moderately convex
+      {
+        piecewise_curve_type pc;
+        he_creator.set_exponents(1.2, 1.2);
+
+        TEST_ASSERT(he_creator.create(pc));
+
+        fref << 1.530603, 1.024579, 0;
+        f=pc.f(t0+dt0/2);
+        TEST_ASSERT((f-fref).norm() < 5e-6);
+//         std::cout << "f=" << std::setprecision(12) << f << std::endl;
+//         std::cout << "diff=" << std::setprecision(12) << (f-fref).norm() << std::endl;
+//         if (typeid(data_type)==typeid(double))
+//           octave_print(1, pc);
+      }
+
+      // create a severely convex
+      {
+        piecewise_curve_type pc;
+        he_creator.set_exponents(5., 5.);
+
+        TEST_ASSERT(he_creator.create(pc));
+
+        fref << 1.926631, 1.313695, 0;
+        f=pc.f(t0+dt0/2);
+        TEST_ASSERT((f-fref).norm() < 5e-6);
+//         std::cout << "f=" << std::setprecision(12) << f << std::endl;
+//         std::cout << "diff=" << std::setprecision(12) << (f-fref).norm() << std::endl;
+//         if (typeid(data_type)==typeid(double))
+//           octave_print(1, pc);
+      }
+
+      // create a mixed concave-convex
+      {
+        piecewise_curve_type pc;
+        he_creator.set_exponents(1./3., 3.);
+
+        TEST_ASSERT(he_creator.create(pc));
+
+        fref << 1.664021, 1.092592, 0;
+        f=pc.f(t0+dt0/2);
+        TEST_ASSERT((f-fref).norm() < 5e-6);
+//         std::cout << "f=" << std::setprecision(12) << f << std::endl;
+//         std::cout << "diff=" << std::setprecision(12) << (f-fref).norm() << std::endl;
+//         if (typeid(data_type)==typeid(double))
+//           octave_print(1, pc);
+      }
+
+      // create a mixed concave-convex
+      {
+        piecewise_curve_type pc;
+        he_creator.set_exponents(3., 1./3.);
+
+        TEST_ASSERT(he_creator.create(pc));
+
+        fref << 1.333809, 0.985460, 0;
+        f=pc.f(t0+dt0/2);
+        TEST_ASSERT((f-fref).norm() < 5e-6);
+//         std::cout << "f=" << std::setprecision(12) << f << std::endl;
+//         std::cout << "diff=" << std::setprecision(12) << (f-fref).norm() << std::endl;
+//         if (typeid(data_type)==typeid(double))
+//           octave_print(1, pc);
+      }
+    }
+
+    void create_6seg6deg_test()
+    {
+      superellipse_creator_type he_creator(6);
+      data_type dt0(3), dt1(2), dt2(3), dt3(2), dt4(3), dt5(2), t0(-1);
+      point_type f, fref;
+
+      // set the times
+      he_creator.set_t0(t0);
+      he_creator.set_segment_dt(dt0, 0);
+      he_creator.set_segment_dt(dt1, 1);
+      he_creator.set_segment_dt(dt2, 2);
+      he_creator.set_segment_dt(dt3, 3);
+      he_creator.set_segment_dt(dt4, 4);
+      he_creator.set_segment_dt(dt5, 5);
+
+      he_creator.set_axis(2, 3);
+      he_creator.set_max_degree(6);
+
+      // create an ellipse
+      {
+        piecewise_curve_type pc;
+        he_creator.set_exponents(2., 2.);
+
+        TEST_ASSERT(he_creator.create(pc));
+
+        fref << 1.791588, 1.333412, 0;
+        f=pc.f(t0+dt0/2);
+        TEST_ASSERT((f-fref).norm() < 5e-6);
+//         std::cout << "f=" << std::setprecision(12) << f << std::endl;
+//         std::cout << "diff=" << std::setprecision(12) << (f-fref).norm() << std::endl;
+//         if (typeid(data_type)==typeid(float))
+//         {
+//           std::cout << std::setprecision(6);
+//           octave_print(1, pc);
+//         }
+      }
+
+      // create a moderately concave
+      {
+        piecewise_curve_type pc;
+        he_creator.set_exponents(1./2., 1./2.);
+
+        TEST_ASSERT(he_creator.create(pc));
+
+        fref << 0.931743, 0.302345, 0;
+        f=pc.f(t0+dt0/2);
+        TEST_ASSERT((f-fref).norm() < 5e-6);
+//         std::cout << "f=" << std::setprecision(12) << f << std::endl;
+//         std::cout << "diff=" << std::setprecision(12) << (f-fref).norm() << std::endl;
+//         if (typeid(data_type)==typeid(double))
+//         {
+//           std::cout << std::setprecision(6);
+//           octave_print(1, pc);
+//         }
+      }
+
+      // create a severely concave
+      {
+        piecewise_curve_type pc;
+        he_creator.set_exponents(1./5., 1./5.);
+
+        TEST_ASSERT(he_creator.create(pc));
+
+        if (typeid(data_type)==typeid(float))
+        {
+          fref << -19.968788, 9.096475, 0;
+        }
+        else
+        {
+          fref << -14.07074, 6.209714, 0;
+        }
+        f=pc.f(t0+dt0/2);
+        TEST_ASSERT((f-fref).norm() < 5e-6);
+//         std::cout << "f=" << std::setprecision(12) << f << std::endl;
+//         std::cout << "diff=" << std::setprecision(12) << (f-fref).norm() << std::endl;
+//         if (typeid(data_type)==typeid(double))
+//         {
+//           std::cout << std::setprecision(6);
+//           octave_print(1, pc);
+//         }
+      }
+
+      // create a moderately convex
+      {
+        piecewise_curve_type pc;
+        he_creator.set_exponents(1.2, 1.2);
+
+        TEST_ASSERT(he_creator.create(pc));
+
+        fref << 1.471385, 1.124692, 0;
+        f=pc.f(t0+dt0/2);
+        TEST_ASSERT((f-fref).norm() < 5e-6);
+//         std::cout << "f=" << std::setprecision(12) << f << std::endl;
+//         std::cout << "diff=" << std::setprecision(12) << (f-fref).norm() << std::endl;
+//         if (typeid(data_type)==typeid(double))
+//         {
+//           std::cout << std::setprecision(6);
+//           octave_print(1, pc);
+//         }
+      }
+
+      // create a severely convex
+      {
+        piecewise_curve_type pc;
+        he_creator.set_exponents(5., 5.);
+
+        TEST_ASSERT(he_creator.create(pc));
+
+        if (typeid(data_type)==typeid(float))
+        {
+          fref << 1.928891, 1.436470, 0;
+        }
+        else
+        {
+          fref << 1.935626, 1.432817, 0;
+        }
+        f=pc.f(t0+dt0/2);
+        TEST_ASSERT((f-fref).norm() < 6e-6);
+//         std::cout << "f=" << std::setprecision(12) << f << std::endl;
+//         std::cout << "diff=" << std::setprecision(12) << (f-fref).norm() << std::endl;
+//         if (typeid(data_type)==typeid(double))
+//         {
+//           std::cout << std::setprecision(6);
+//           octave_print(1, pc);
+//         }
+      }
+
+      // create a mixed concave-convex
+      {
+        piecewise_curve_type pc;
+        he_creator.set_exponents(1./3., 3.);
+
+        TEST_ASSERT(he_creator.create(pc));
+
+        fref << 1.647633, 1.190923, 0;
+        f=pc.f(t0+dt0/2);
+        TEST_ASSERT((f-fref).norm() < 5e-6);
+//         std::cout << "f=" << std::setprecision(12) << f << std::endl;
+//         std::cout << "diff=" << std::setprecision(12) << (f-fref).norm() << std::endl;
+//         if (typeid(data_type)==typeid(double))
+//         {
+//           std::cout << std::setprecision(6);
+//           octave_print(1, pc);
+//         }
+      }
+
+      // create a mixed concave-convex
+      {
+        piecewise_curve_type pc;
+        he_creator.set_exponents(3., 1./3.);
+
+        TEST_ASSERT(he_creator.create(pc));
+
+        fref << 1.314240, 1.100464, 0;
+        f=pc.f(t0+dt0/2);
+        TEST_ASSERT((f-fref).norm() < 5e-6);
+//         std::cout << "f=" << std::setprecision(12) << f << std::endl;
+//         std::cout << "diff=" << std::setprecision(12) << (f-fref).norm() << std::endl;
 //         if (typeid(data_type)==typeid(double))
 //         {
 //           std::cout << std::setprecision(6);
