@@ -182,6 +182,8 @@ namespace eli
             return d;
           }
 
+          void clear() {resize(0);}
+
           void resize(const index_type &t_dim)
           {
             B.resize(t_dim+1, dim__);

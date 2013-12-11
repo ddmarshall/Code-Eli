@@ -605,6 +605,23 @@ namespace eli
             return NO_ERROR;
           }
 
+          error_code push_front(const piecewise<curve__, data_type, dim__, tol__> &p)
+          {
+            typename segment_collection_type::const_reverse_iterator itp;
+            error_code err;
+
+            for (itp=p.segments.rbegin(); itp!=p.segments.rend(); ++itp)
+            {
+              err=push_front(itp->second, p.get_delta_t(itp));
+              if (err!=NO_ERROR)
+              {
+                return err;
+              }
+            }
+
+            return NO_ERROR;
+          }
+
           error_code push_back(const curve_type &curve, const data_type &dt=1.0)
           {
             if (dt<=0)
@@ -625,6 +642,23 @@ namespace eli
             tmax+=dt;
 
             assert(check_continuity(eli::geom::general::C0));
+
+            return NO_ERROR;
+          }
+
+          error_code push_back(const piecewise<curve__, data_type, dim__, tol__> &p)
+          {
+            typename segment_collection_type::const_iterator itp;
+            error_code err;
+
+            for (itp=p.segments.begin(); itp!=p.segments.end(); ++itp)
+            {
+              err=push_back(itp->second, p.get_delta_t(itp));
+              if (err!=NO_ERROR)
+              {
+                return err;
+              }
+            }
 
             return NO_ERROR;
           }
@@ -856,11 +890,11 @@ namespace eli
 
             itps = p.segments.begin();
             cs = itps->second;
-            dts = get_delta_t(itps);
+            dts = p.get_delta_t(itps);
 
             itpe = p.segments.end(); --itpe;
             ce = itpe->second;
-            dte = get_delta_t(itpe);
+            dte = p.get_delta_t(itpe);
 
             // Find parameter span of segment to replace
             data_type dti, dto;
@@ -878,7 +912,7 @@ namespace eli
             {
               scito=scit0;
               --scito;
-              dto = get_delta_t(scito);
+              dto = p.get_delta_t(scito);
               if (!eli::geom::utility::check_point_continuity(scito->second, dto, cs, dts*pratio, eli::geom::general::C0, tol))
               {
                 return SEGMENT_NOT_CONNECTED;
@@ -887,7 +921,7 @@ namespace eli
             if (index1<number_segments())
             {
               scito=scit1;
-              dto = get_delta_t(scito);
+              dto = p.get_delta_t(scito);
               if (!eli::geom::utility::check_point_continuity(ce, dte*pratio, scito->second, dto, eli::geom::general::C0, tol))
               {
                 return SEGMENT_NOT_CONNECTED;
