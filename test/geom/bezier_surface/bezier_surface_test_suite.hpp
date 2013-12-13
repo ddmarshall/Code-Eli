@@ -1868,7 +1868,7 @@ class bezier_surface_test_suite : public Test::Suite
               TEST_ASSERT_DELTA(d[2],  1,      1e-6);
               TEST_ASSERT_DELTA(d[3],  0,      std::numeric_limits<data_type>::epsilon());
               TEST_ASSERT_DELTA(d[4],  0,      std::numeric_limits<data_type>::epsilon());
-              TEST_ASSERT_DELTA(d[5],  4,      1e-6);
+              TEST_ASSERT_DELTA(d[5],  4,      2e-6);
             }
           }
         }
