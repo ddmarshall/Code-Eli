@@ -71,27 +71,7 @@ class piecewise_circle_creator_test_suite : public Test::Suite
       TEST_ADD(piecewise_circle_creator_test_suite<long double>::create_circle_3_point_test);
       TEST_ADD(piecewise_circle_creator_test_suite<long double>::create_ellipse_primative_test);
     }
-#ifdef ELI_USING_QD
-    void AddTests(const dd_real &)
-    {
-      // add the tests
-      TEST_ADD(piecewise_circle_creator_test_suite<dd_real>::create_circle_primative_test);
-      TEST_ADD(piecewise_circle_creator_test_suite<dd_real>::create_circle_start_origin_test);
-      TEST_ADD(piecewise_circle_creator_test_suite<dd_real>::create_circle_start_origin_normal_test);
-      TEST_ADD(piecewise_circle_creator_test_suite<dd_real>::create_circle_3_point_test);
-      TEST_ADD(piecewise_circle_creator_test_suite<dd_real>::create_ellipse_primative_test);
-    }
 
-    void AddTests(const qd_real &)
-    {
-      // add the tests
-      TEST_ADD(piecewise_circle_creator_test_suite<qd_real>::create_circle_primative_test);
-      TEST_ADD(piecewise_circle_creator_test_suite<qd_real>::create_circle_start_origin_test);
-      TEST_ADD(piecewise_circle_creator_test_suite<qd_real>::create_circle_start_origin_normal_test);
-      TEST_ADD(piecewise_circle_creator_test_suite<qd_real>::create_circle_3_point_test);
-      TEST_ADD(piecewise_circle_creator_test_suite<qd_real>::create_ellipse_primative_test);
-    }
-#endif
   public:
     piecewise_circle_creator_test_suite() : tol()
     {
@@ -326,7 +306,6 @@ class piecewise_circle_creator_test_suite : public Test::Suite
       // test 2D
       {
         typedef eli::geom::curve::piecewise<eli::geom::curve::bezier, data_type, 2> piecewise_curve2_type;
-        typedef typename piecewise_curve2_type::curve_type curve2_type;
         typedef typename piecewise_curve2_type::point_type point2_type;
         typedef eli::geom::curve::piecewise_circle_creator<data__, 2, tolerance_type> circle_creator2_type;
 

@@ -84,37 +84,7 @@ class piecewise_curve_test_suite : public Test::Suite
       TEST_ADD(piecewise_curve_test_suite<long double>::length_test);
       TEST_ADD(piecewise_curve_test_suite<long double>::round_test);
     }
-#ifdef ELI_USING_QD
-    void AddTests(const dd_real &)
-    {
-      // add the tests
-      TEST_ADD(piecewise_curve_test_suite<dd_real>::creation_test);
-      TEST_ADD(piecewise_curve_test_suite<dd_real>::bounding_box_test);
-      TEST_ADD(piecewise_curve_test_suite<dd_real>::reverse_test);
-      TEST_ADD(piecewise_curve_test_suite<dd_real>::replace_test);
-      TEST_ADD(piecewise_curve_test_suite<dd_real>::transformation_test);
-      TEST_ADD(piecewise_curve_test_suite<dd_real>::evaluation_test);
-      TEST_ADD(piecewise_curve_test_suite<dd_real>::split_test);
-      TEST_ADD(piecewise_curve_test_suite<dd_real>::to_cubic_test);
-      TEST_ADD(piecewise_curve_test_suite<dd_real>::length_test);
-      TEST_ADD(piecewise_curve_test_suite<dd_real>::round_test);
-    }
 
-    void AddTests(const qd_real &)
-    {
-      // add the tests
-      TEST_ADD(piecewise_curve_test_suite<qd_real>::creation_test);
-      TEST_ADD(piecewise_curve_test_suite<qd_real>::bounding_box_test);
-      TEST_ADD(piecewise_curve_test_suite<qd_real>::reverse_test);
-      TEST_ADD(piecewise_curve_test_suite<qd_real>::replace_test);
-      TEST_ADD(piecewise_curve_test_suite<qd_real>::transformation_test);
-      TEST_ADD(piecewise_curve_test_suite<qd_real>::evaluation_test);
-      TEST_ADD(piecewise_curve_test_suite<qd_real>::split_test);
-      TEST_ADD(piecewise_curve_test_suite<qd_real>::to_cubic_test);
-      TEST_ADD(piecewise_curve_test_suite<qd_real>::length_test);
-      TEST_ADD(piecewise_curve_test_suite<qd_real>::round_test);
-    }
-#endif
   public:
     piecewise_curve_test_suite()
     {
@@ -819,10 +789,6 @@ class piecewise_curve_test_suite : public Test::Suite
     void transformation_test()
     {
       data_type eps(std::numeric_limits<data__>::epsilon());
-#ifdef ELI_USING_QD
-      if ( (typeid(data_type)==typeid(dd_real)) || (typeid(data_type)==typeid(qd_real)) )
-        eps=std::numeric_limits<double>::epsilon();
-#endif
 
       piecewise_curve_type pwc, pwc2;
       typename curve_type::control_point_type cntrl_in[4];
@@ -904,10 +870,6 @@ class piecewise_curve_test_suite : public Test::Suite
     void evaluation_test()
     {
       data_type eps(std::numeric_limits<data__>::epsilon());
-#ifdef ELI_USING_QD
-      if ( (typeid(data_type)==typeid(dd_real)) || (typeid(data_type)==typeid(qd_real)) )
-        eps=std::numeric_limits<double>::epsilon();
-#endif
 
       // test two curves with delta t=1
       {
@@ -1029,145 +991,141 @@ class piecewise_curve_test_suite : public Test::Suite
     void split_test()
     {
       data_type eps(std::numeric_limits<data__>::epsilon());
-#ifdef ELI_USING_QD
-      if ( (typeid(data_type)==typeid(dd_real)) || (typeid(data_type)==typeid(qd_real)) )
-        eps=std::numeric_limits<double>::epsilon();
-#endif
-        piecewise_curve_type pwc0, pwc1;
-        typename curve_type::control_point_type cntrl_in[4];
-        typename piecewise_curve_type::error_code err;
-        curve_type bc;
-        point_type eval_out, eval_ref;
-        data_type ts, t;
-        ts=static_cast<data__>(1.56);
+      piecewise_curve_type pwc0, pwc1;
+      typename curve_type::control_point_type cntrl_in[4];
+      typename piecewise_curve_type::error_code err;
+      curve_type bc;
+      point_type eval_out, eval_ref;
+      data_type ts, t;
+      ts=static_cast<data__>(1.56);
 
-        // build piecewise curve
-        cntrl_in[0] << 0, 0, 0;
-        cntrl_in[1] << 0, 2, 0;
-        cntrl_in[2] << 8, 2, 0;
-        cntrl_in[3] << 4, 0, 0;
-        bc.resize(3);
-        for (index_type i=0; i<4; ++i)
-        {
-          bc.set_control_point(cntrl_in[i], i);
-        }
-        err=pwc0.push_back(bc);
-        TEST_ASSERT(err==piecewise_curve_type::NO_ERROR);
-        cntrl_in[0] << 4,  0,   0;
-        cntrl_in[1] << 3, -0.5, 0;
-        cntrl_in[2] << 2, -1,   0;
-        cntrl_in[3] << 1, -1,   0;
-        bc.resize(3);
-        for (index_type i=0; i<4; ++i)
-        {
-          bc.set_control_point(cntrl_in[i], i);
-        }
-        err=pwc0.push_back(bc);
-        TEST_ASSERT(err==piecewise_curve_type::NO_ERROR);
-        TEST_ASSERT(pwc0.number_segments()==2);
+      // build piecewise curve
+      cntrl_in[0] << 0, 0, 0;
+      cntrl_in[1] << 0, 2, 0;
+      cntrl_in[2] << 8, 2, 0;
+      cntrl_in[3] << 4, 0, 0;
+      bc.resize(3);
+      for (index_type i=0; i<4; ++i)
+      {
+        bc.set_control_point(cntrl_in[i], i);
+      }
+      err=pwc0.push_back(bc);
+      TEST_ASSERT(err==piecewise_curve_type::NO_ERROR);
+      cntrl_in[0] << 4,  0,   0;
+      cntrl_in[1] << 3, -0.5, 0;
+      cntrl_in[2] << 2, -1,   0;
+      cntrl_in[3] << 1, -1,   0;
+      bc.resize(3);
+      for (index_type i=0; i<4; ++i)
+      {
+        bc.set_control_point(cntrl_in[i], i);
+      }
+      err=pwc0.push_back(bc);
+      TEST_ASSERT(err==piecewise_curve_type::NO_ERROR);
+      TEST_ASSERT(pwc0.number_segments()==2);
 
-        // split curve and create piecewise
-        pwc1=pwc0;
-        err=pwc0.split(ts);
-        TEST_ASSERT(err==piecewise_curve_type::NO_ERROR);
-        TEST_ASSERT(pwc0.number_segments()==pwc1.number_segments()+1);
+      // split curve and create piecewise
+      pwc1=pwc0;
+      err=pwc0.split(ts);
+      TEST_ASSERT(err==piecewise_curve_type::NO_ERROR);
+      TEST_ASSERT(pwc0.number_segments()==pwc1.number_segments()+1);
 
-        t=0;
-        eval_out=pwc0.f(t);
-        eval_ref=pwc1.f(t);
-        TEST_ASSERT(eval_out==eval_ref);
-        eval_out=pwc0.fp(t);
-        eval_ref=pwc1.fp(t);
-        TEST_ASSERT(eval_out==eval_ref);
-        eval_out=pwc0.fpp(t);
-        eval_ref=pwc1.fpp(t);
-        TEST_ASSERT(eval_out==eval_ref);
-        eval_out=pwc0.fppp(t);
-        eval_ref=pwc1.fppp(t);
-        TEST_ASSERT(eval_out==eval_ref);
+      t=0;
+      eval_out=pwc0.f(t);
+      eval_ref=pwc1.f(t);
+      TEST_ASSERT(eval_out==eval_ref);
+      eval_out=pwc0.fp(t);
+      eval_ref=pwc1.fp(t);
+      TEST_ASSERT(eval_out==eval_ref);
+      eval_out=pwc0.fpp(t);
+      eval_ref=pwc1.fpp(t);
+      TEST_ASSERT(eval_out==eval_ref);
+      eval_out=pwc0.fppp(t);
+      eval_ref=pwc1.fppp(t);
+      TEST_ASSERT(eval_out==eval_ref);
 
-        t=0.5;
-        eval_out=pwc0.f(t);
-        eval_ref=pwc1.f(t);
-        TEST_ASSERT(eval_out==eval_ref);
-        eval_out=pwc0.fp(t);
-        eval_ref=pwc1.fp(t);
-        TEST_ASSERT(eval_out==eval_ref);
-        eval_out=pwc0.fpp(t);
-        eval_ref=pwc1.fpp(t);
-        TEST_ASSERT(eval_out==eval_ref);
-        eval_out=pwc0.fppp(t);
-        eval_ref=pwc1.fppp(t);
-        TEST_ASSERT(eval_out==eval_ref);
+      t=0.5;
+      eval_out=pwc0.f(t);
+      eval_ref=pwc1.f(t);
+      TEST_ASSERT(eval_out==eval_ref);
+      eval_out=pwc0.fp(t);
+      eval_ref=pwc1.fp(t);
+      TEST_ASSERT(eval_out==eval_ref);
+      eval_out=pwc0.fpp(t);
+      eval_ref=pwc1.fpp(t);
+      TEST_ASSERT(eval_out==eval_ref);
+      eval_out=pwc0.fppp(t);
+      eval_ref=pwc1.fppp(t);
+      TEST_ASSERT(eval_out==eval_ref);
 
-        t=1;
-        eval_out=pwc0.f(t);
-        eval_ref=pwc1.f(t);
-        TEST_ASSERT(eval_out==eval_ref);
-        eval_out=pwc0.fp(t);
-        eval_ref=pwc1.fp(t);
-        TEST_ASSERT(eval_out==eval_ref);
-        eval_out=pwc0.fpp(t);
-        eval_ref=pwc1.fpp(t);
-        TEST_ASSERT(eval_out==eval_ref);
-        eval_out=pwc0.fppp(t);
-        eval_ref=pwc1.fppp(t);
-        TEST_ASSERT((eval_out-eval_ref).norm()<138*eps);
+      t=1;
+      eval_out=pwc0.f(t);
+      eval_ref=pwc1.f(t);
+      TEST_ASSERT(eval_out==eval_ref);
+      eval_out=pwc0.fp(t);
+      eval_ref=pwc1.fp(t);
+      TEST_ASSERT(eval_out==eval_ref);
+      eval_out=pwc0.fpp(t);
+      eval_ref=pwc1.fpp(t);
+      TEST_ASSERT(eval_out==eval_ref);
+      eval_out=pwc0.fppp(t);
+      eval_ref=pwc1.fppp(t);
+      TEST_ASSERT((eval_out-eval_ref).norm()<138*eps);
 
-        t=1.25;
-        eval_out=pwc0.f(t);
-        eval_ref=pwc1.f(t);
-        TEST_ASSERT((eval_out-eval_ref).norm()<3*eps);
-        eval_out=pwc0.fp(t);
-        eval_ref=pwc1.fp(t);
-        TEST_ASSERT((eval_out-eval_ref).norm()<3*eps);
-        eval_out=pwc0.fpp(t);
-        eval_ref=pwc1.fpp(t);
-        TEST_ASSERT((eval_out-eval_ref).norm()<18*eps);
-        eval_out=pwc0.fppp(t);
-        eval_ref=pwc1.fppp(t);
-        TEST_ASSERT((eval_out-eval_ref).norm()<138*eps);
+      t=1.25;
+      eval_out=pwc0.f(t);
+      eval_ref=pwc1.f(t);
+      TEST_ASSERT((eval_out-eval_ref).norm()<3*eps);
+      eval_out=pwc0.fp(t);
+      eval_ref=pwc1.fp(t);
+      TEST_ASSERT((eval_out-eval_ref).norm()<3*eps);
+      eval_out=pwc0.fpp(t);
+      eval_ref=pwc1.fpp(t);
+      TEST_ASSERT((eval_out-eval_ref).norm()<18*eps);
+      eval_out=pwc0.fppp(t);
+      eval_ref=pwc1.fppp(t);
+      TEST_ASSERT((eval_out-eval_ref).norm()<138*eps);
 
-        t=1.5;
-        eval_out=pwc0.f(t);
-        eval_ref=pwc1.f(t);
-        TEST_ASSERT((eval_out-eval_ref).norm()<3*eps);
-        eval_out=pwc0.fp(t);
-        eval_ref=pwc1.fp(t);
-        TEST_ASSERT((eval_out-eval_ref).norm()<7*eps);
-        eval_out=pwc0.fpp(t);
-        eval_ref=pwc1.fpp(t);
-        TEST_ASSERT((eval_out-eval_ref).norm()<35*eps);
-        eval_out=pwc0.fppp(t);
-        eval_ref=pwc1.fppp(t);
-        TEST_ASSERT((eval_out-eval_ref).norm()<138*eps);
+      t=1.5;
+      eval_out=pwc0.f(t);
+      eval_ref=pwc1.f(t);
+      TEST_ASSERT((eval_out-eval_ref).norm()<3*eps);
+      eval_out=pwc0.fp(t);
+      eval_ref=pwc1.fp(t);
+      TEST_ASSERT((eval_out-eval_ref).norm()<7*eps);
+      eval_out=pwc0.fpp(t);
+      eval_ref=pwc1.fpp(t);
+      TEST_ASSERT((eval_out-eval_ref).norm()<35*eps);
+      eval_out=pwc0.fppp(t);
+      eval_ref=pwc1.fppp(t);
+      TEST_ASSERT((eval_out-eval_ref).norm()<138*eps);
 
-        t=1.75;
-        eval_out=pwc0.f(t);
-        eval_ref=pwc1.f(t);
-        TEST_ASSERT((eval_out-eval_ref).norm()<2*eps);
-        eval_out=pwc0.fp(t);
-        eval_ref=pwc1.fp(t);
-        TEST_ASSERT((eval_out-eval_ref).norm()<3*eps);
-        eval_out=pwc0.fpp(t);
-        eval_ref=pwc1.fpp(t);
-        TEST_ASSERT((eval_out-eval_ref).norm()<28*eps);
-        eval_out=pwc0.fppp(t);
-        eval_ref=pwc1.fppp(t);
-        TEST_ASSERT((eval_out-eval_ref).norm()<142*eps);
+      t=1.75;
+      eval_out=pwc0.f(t);
+      eval_ref=pwc1.f(t);
+      TEST_ASSERT((eval_out-eval_ref).norm()<2*eps);
+      eval_out=pwc0.fp(t);
+      eval_ref=pwc1.fp(t);
+      TEST_ASSERT((eval_out-eval_ref).norm()<3*eps);
+      eval_out=pwc0.fpp(t);
+      eval_ref=pwc1.fpp(t);
+      TEST_ASSERT((eval_out-eval_ref).norm()<28*eps);
+      eval_out=pwc0.fppp(t);
+      eval_ref=pwc1.fppp(t);
+      TEST_ASSERT((eval_out-eval_ref).norm()<142*eps);
 
-        eval_out=pwc0.f(t);
-        eval_ref=pwc1.f(t);
-        TEST_ASSERT((eval_out-eval_ref).norm()<2*eps);
-        eval_out=pwc0.fp(t);
-        eval_ref=pwc1.fp(t);
-        TEST_ASSERT((eval_out-eval_ref).norm()<9*eps);
-        eval_out=pwc0.fpp(t);
-        eval_ref=pwc1.fpp(t);
-        TEST_ASSERT((eval_out-eval_ref).norm()<63*eps);
-        eval_out=pwc0.fppp(t);
-        eval_ref=pwc1.fppp(t);
-        TEST_ASSERT((eval_out-eval_ref).norm()<142*eps);
+      eval_out=pwc0.f(t);
+      eval_ref=pwc1.f(t);
+      TEST_ASSERT((eval_out-eval_ref).norm()<2*eps);
+      eval_out=pwc0.fp(t);
+      eval_ref=pwc1.fp(t);
+      TEST_ASSERT((eval_out-eval_ref).norm()<9*eps);
+      eval_out=pwc0.fpp(t);
+      eval_ref=pwc1.fpp(t);
+      TEST_ASSERT((eval_out-eval_ref).norm()<63*eps);
+      eval_out=pwc0.fppp(t);
+      eval_ref=pwc1.fppp(t);
+      TEST_ASSERT((eval_out-eval_ref).norm()<142*eps);
     }
 
     void to_cubic_test()
@@ -1585,10 +1543,6 @@ class piecewise_curve_test_suite : public Test::Suite
     void length_test()
     {
       data_type eps(std::numeric_limits<data__>::epsilon());
-#ifdef ELI_USING_QD
-      if ( (typeid(data_type)==typeid(dd_real)) || (typeid(data_type)==typeid(qd_real)) )
-        eps=std::numeric_limits<double>::epsilon();
-#endif
       piecewise_curve_type c1;
       curve_type bc[3];
       data_type dt[3], len, bc_len[3], ref_len, t0, t1, temp0, temp1;
@@ -1637,16 +1591,7 @@ class piecewise_curve_test_suite : public Test::Suite
       // create two segment curve calc length of each segment to compare
       eli::geom::curve::length(len, c1, tol);
       ref_len=bc_len[0]+bc_len[1]+bc_len[2];
-#ifdef ELI_USING_QD
-      if ( (typeid(data_type)==typeid(dd_real)) || (typeid(data_type)==typeid(qd_real)) )
-      {
-        TEST_ASSERT(std::abs(len-ref_len)<3*eps);
-      }
-      else
-#endif
-      {
-        TEST_ASSERT(len==ref_len);
-      }
+      TEST_ASSERT(len==ref_len);
 
       // choose part of first segment to calc length and compare
       t0=0.125;

@@ -121,69 +121,6 @@ namespace eli
         static long double sqrt_two()        {return 1.4142135623730950488L;}
         static long double sqrt_two_by_two() {return 0.7071067811865475244L;}
     };
-
-#ifdef ELI_USING_QD
-    template<>
-    class math <dd_real>
-    {
-      public:
-        static dd_real exp()     {return dd_real::_e;}
-        static dd_real ln_two()  {return dd_real(0.6931471805599453, 2.3190468138462999e-17);}
-        static dd_real log_exp() {return dd_real(0.4342944819032518, 1.0983196502167658e-17);}
-
-        static dd_real pi()             {return dd_real::_pi;}
-        static dd_real two_pi()         {return dd_real::_2pi;}
-        static dd_real pi_by_two()      {return dd_real::_pi2;}
-        static dd_real pi_by_four()     {return dd_real::_pi4;}
-        static dd_real pi_squared()     {return dd_real(9.8696044010893586,  6.265295508739711e-16);}
-        static dd_real pi_cubed()       {return dd_real(31.006276680299820,  4.1641946985288283e-16);}
-        static dd_real sqrt_pi()        {return dd_real(1.7724538509055161, -7.666586499825800e-17);}
-        static dd_real cbrt_pi()        {return dd_real(1.4645918875615234, -1.0150473108658175e-16);}
-        static dd_real one_by_pi()      {return dd_real(0.31830988618379067,-1.9678676675182486e-17);}
-        static dd_real two_by_pi()      {return dd_real(0.63661977236758134,-3.9357353350364972e-17);}
-        static dd_real one_by_sqrt_pi() {return dd_real(0.56418958354775629, 7.6677298065829422e-18);}
-        static dd_real two_by_sqrt_pi() {return dd_real(1.1283791670955126,  1.5335459613165884e-17);}
-
-        static dd_real sqrt_two()        {return dd_real(1.41421356237309504, -9.667293313452916e-17);}
-        static dd_real sqrt_two_by_two() {return dd_real(0.70710678118654752, -4.833646656726458e-17);}
-    };
-
-    template<>
-    class math <qd_real>
-    {
-      public:
-        static qd_real exp()     {return qd_real::_e;}
-        static qd_real ln_two()  {return qd_real::_log2;}
-        static qd_real log_exp() {return qd_real(0.4342944819032518,     1.0983196502167651e-17,
-                                                 3.7171812331109590e-34, 7.7344843465042927e-51);}
-
-        static qd_real pi()             {return qd_real::_pi;}
-        static qd_real two_pi()         {return qd_real::_2pi;}
-        static qd_real pi_by_two()      {return qd_real::_pi2;}
-        static qd_real pi_by_four()     {return qd_real::_pi4;}
-        static qd_real pi_squared()     {return qd_real(9.8696044010893586,     6.265295508739711e-16,
-                                                        3.730017701459809e-32, -1.3336037774250846e-48);}
-        static qd_real pi_cubed()       {return qd_real(31.006276680299820,     4.1641946985288347e-16,
-                                                        2.1094349902320112e-32, 9.749332643144236e-49);}
-        static qd_real sqrt_pi()        {return qd_real(1.7724538509055161,    -7.666586499825799e-17,
-                                                       -1.3058334907945429e-33,-2.6110142087827117e-50);}
-        static qd_real cbrt_pi()        {return qd_real(1.4645918875615234,    -1.0150473108658177e-16,
-                                                       -1.3864695806293404e-33, 1.8314339704237657e-50);}
-        static qd_real one_by_pi()      {return qd_real(0.31830988618379067,   -1.9678676675182486e-17,
-                                                       -1.0721436282893004e-33, 8.0535639265941101e-50);}
-        static qd_real two_by_pi()      {return qd_real(0.63661977236758134,   -3.9357353350364972e-17,
-                                                       -2.1442872565786008e-33, 1.6107127853188220e-49);}
-        static qd_real one_by_sqrt_pi() {return qd_real(0.56418958354775629,    7.6677298065829406e-18,
-                                                       -2.3828422983468431e-34,-1.0038973308276328e-50);}
-        static qd_real two_by_sqrt_pi() {return qd_real(1.1283791670955126,     1.5335459613165881e-17,
-                                                       -4.7656845966936863e-34,-2.0077946616552656e-50);}
-
-        static qd_real sqrt_two()        {return qd_real(1.41421356237309504,   -9.667293313452913e-17,
-                                                         4.1386753086994136e-33, 4.935546991468351e-50);}
-        static qd_real sqrt_two_by_two() {return qd_real(0.70710678118654752,   -4.833646656726457e-17,
-                                                         2.0693376543497068e-33, 2.4677734957341755e-50);}
-    };
-#endif
   }
 }
 

@@ -75,31 +75,7 @@ class piecewise_superellipse_creator_test_suite : public Test::Suite
       TEST_ADD(piecewise_superellipse_creator_test_suite<long double>::create_8seg3deg_test);
       TEST_ADD(piecewise_superellipse_creator_test_suite<long double>::create_8seg6deg_test);
     }
-#ifdef ELI_USING_QD
-    void AddTests(const dd_real &)
-    {
-      // add the tests
-      TEST_ADD(piecewise_superellipse_creator_test_suite<dd_real>::create_degenerate_test);
-      TEST_ADD(piecewise_superellipse_creator_test_suite<dd_real>::create_4seg3deg_test);
-      TEST_ADD(piecewise_superellipse_creator_test_suite<dd_real>::create_4seg6deg_test);
-      TEST_ADD(piecewise_superellipse_creator_test_suite<dd_real>::create_6seg3deg_test);
-      TEST_ADD(piecewise_superellipse_creator_test_suite<dd_real>::create_6seg6deg_test);
-      TEST_ADD(piecewise_superellipse_creator_test_suite<dd_real>::create_8seg3deg_test);
-      TEST_ADD(piecewise_superellipse_creator_test_suite<dd_real>::create_8seg6deg_test);
-    }
 
-    void AddTests(const qd_real &)
-    {
-      // add the tests
-      TEST_ADD(piecewise_superellipse_creator_test_suite<qd_real>::create_degenerate_test);
-      TEST_ADD(piecewise_superellipse_creator_test_suite<qd_real>::create_4seg3deg_test);
-      TEST_ADD(piecewise_superellipse_creator_test_suite<qd_real>::create_4seg6deg_test);
-      TEST_ADD(piecewise_superellipse_creator_test_suite<qd_real>::create_6seg3deg_test);
-      TEST_ADD(piecewise_superellipse_creator_test_suite<qd_real>::create_6seg6deg_test);
-      TEST_ADD(piecewise_superellipse_creator_test_suite<qd_real>::create_8seg3deg_test);
-      TEST_ADD(piecewise_superellipse_creator_test_suite<qd_real>::create_8seg6deg_test);
-    }
-#endif
   public:
     piecewise_superellipse_creator_test_suite() : tol()
     {

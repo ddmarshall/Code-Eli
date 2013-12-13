@@ -159,46 +159,21 @@ int main(int argc, char *argv[])
     ts.add(std::auto_ptr<Test::Suite>(new minimum_distance_point_test_suite<float>()));
     ts.add(std::auto_ptr<Test::Suite>(new minimum_distance_point_test_suite<double>()));
     ts.add(std::auto_ptr<Test::Suite>(new minimum_distance_point_test_suite<long double>()));
-#ifdef ELI_USING_QD
-    ts.add(std::auto_ptr<Test::Suite>(new minimum_distance_point_test_suite<dd_real>()));
-    ts.add(std::auto_ptr<Test::Suite>(new minimum_distance_point_test_suite<qd_real>()));
-#endif
     ts.add(std::auto_ptr<Test::Suite>(new minimum_distance_bounding_box_test_suite<float>()));
     ts.add(std::auto_ptr<Test::Suite>(new minimum_distance_bounding_box_test_suite<double>()));
     ts.add(std::auto_ptr<Test::Suite>(new minimum_distance_bounding_box_test_suite<long double>()));
-#ifdef ELI_USING_QD
-    ts.add(std::auto_ptr<Test::Suite>(new minimum_distance_bounding_box_test_suite<dd_real>()));
-    ts.add(std::auto_ptr<Test::Suite>(new minimum_distance_bounding_box_test_suite<qd_real>()));
-#endif
     ts.add(std::auto_ptr<Test::Suite>(new minimum_distance_line_test_suite<float>()));
     ts.add(std::auto_ptr<Test::Suite>(new minimum_distance_line_test_suite<double>()));
     ts.add(std::auto_ptr<Test::Suite>(new minimum_distance_line_test_suite<long double>()));
-#ifdef ELI_USING_QD
-    ts.add(std::auto_ptr<Test::Suite>(new minimum_distance_line_test_suite<dd_real>()));
-    ts.add(std::auto_ptr<Test::Suite>(new minimum_distance_line_test_suite<qd_real>()));
-#endif
     ts.add(std::auto_ptr<Test::Suite>(new minimum_distance_plane_test_suite<float>()));
     ts.add(std::auto_ptr<Test::Suite>(new minimum_distance_plane_test_suite<double>()));
     ts.add(std::auto_ptr<Test::Suite>(new minimum_distance_plane_test_suite<long double>()));
-#ifdef ELI_USING_QD
-    ts.add(std::auto_ptr<Test::Suite>(new minimum_distance_plane_test_suite<dd_real>()));
-    ts.add(std::auto_ptr<Test::Suite>(new minimum_distance_plane_test_suite<qd_real>()));
-#endif
     ts.add(std::auto_ptr<Test::Suite>(new minimum_distance_curve_test_suite<float>()));
     ts.add(std::auto_ptr<Test::Suite>(new minimum_distance_curve_test_suite<double>()));
     ts.add(std::auto_ptr<Test::Suite>(new minimum_distance_curve_test_suite<long double>()));
-#ifdef ELI_USING_QD
-    ts.add(std::auto_ptr<Test::Suite>(new minimum_distance_curve_test_suite<dd_real>()));
-    ts.add(std::auto_ptr<Test::Suite>(new minimum_distance_curve_test_suite<qd_real>()));
-#endif
     ts.add(std::auto_ptr<Test::Suite>(new minimum_distance_surface_test_suite<float>()));
     ts.add(std::auto_ptr<Test::Suite>(new minimum_distance_surface_test_suite<double>()));
     ts.add(std::auto_ptr<Test::Suite>(new minimum_distance_surface_test_suite<long double>()));
-#ifdef ELI_USING_QD
-    ts.add(std::auto_ptr<Test::Suite>(new minimum_distance_surface_test_suite<dd_real>()));
-    ts.add(std::auto_ptr<Test::Suite>(new minimum_distance_surface_test_suite<qd_real>()));
-#endif
-
 
     //
     // NOTE: End of section that should be changed

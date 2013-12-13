@@ -39,17 +39,6 @@ class traits_test_suite : public Test::Suite
     {
       TEST_ADD(traits_test_suite<long double>::cast_test);
     }
-#ifdef ELI_USING_QD
-    void AddTests(const dd_real &)
-    {
-      TEST_ADD(traits_test_suite<dd_real>::cast_test);
-    }
-
-    void AddTests(const qd_real &)
-    {
-      TEST_ADD(traits_test_suite<qd_real>::cast_test);
-    }
-#endif
 
   public:
     traits_test_suite()

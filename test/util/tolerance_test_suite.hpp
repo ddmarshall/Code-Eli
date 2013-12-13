@@ -45,21 +45,6 @@ class tolerance_test_suite : public Test::Suite
       TEST_ADD(tolerance_test_suite<long double>::approximately_equal_test);
       TEST_ADD(tolerance_test_suite<long double>::approximately_less_than_test);
     }
-#ifdef ELI_USING_QD
-    void AddTests(const dd_real &)
-    {
-      TEST_ADD(tolerance_test_suite<dd_real>::exactly_equal_test);
-      TEST_ADD(tolerance_test_suite<dd_real>::approximately_equal_test);
-      TEST_ADD(tolerance_test_suite<dd_real>::approximately_less_than_test);
-    }
-
-    void AddTests(const qd_real &)
-    {
-      TEST_ADD(tolerance_test_suite<qd_real>::exactly_equal_test);
-      TEST_ADD(tolerance_test_suite<qd_real>::approximately_equal_test);
-      TEST_ADD(tolerance_test_suite<qd_real>::approximately_less_than_test);
-    }
-#endif
 
   public:
     tolerance_test_suite()

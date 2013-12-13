@@ -75,29 +75,6 @@ class bezier_curve_fit_test_suite : public Test::Suite
       TEST_ADD(bezier_curve_fit_test_suite<long double>::fit_closed_test);
       TEST_ADD(bezier_curve_fit_test_suite<long double>::interpolate_test);
     }
-#ifdef ELI_USING_QD
-    void AddTests(const dd_real &)
-    {
-      // add the tests
-      TEST_ADD(bezier_curve_fit_test_suite<dd_real>::fit_free_ends_test);
-      TEST_ADD(bezier_curve_fit_test_suite<dd_real>::fit_C0_ends_test);
-      TEST_ADD(bezier_curve_fit_test_suite<dd_real>::fit_C1_ends_test);
-      TEST_ADD(bezier_curve_fit_test_suite<dd_real>::fit_C2_ends_test);
-      TEST_ADD(bezier_curve_fit_test_suite<dd_real>::fit_closed_test);
-      TEST_ADD(bezier_curve_fit_test_suite<dd_real>::interpolate_test);
-    }
-
-    void AddTests(const qd_real &)
-    {
-      // add the tests
-      TEST_ADD(bezier_curve_fit_test_suite<qd_real>::fit_free_ends_test);
-      TEST_ADD(bezier_curve_fit_test_suite<qd_real>::fit_C0_ends_test);
-      TEST_ADD(bezier_curve_fit_test_suite<qd_real>::fit_C1_ends_test);
-      TEST_ADD(bezier_curve_fit_test_suite<qd_real>::fit_C2_ends_test);
-      TEST_ADD(bezier_curve_fit_test_suite<qd_real>::fit_closed_test);
-      TEST_ADD(bezier_curve_fit_test_suite<qd_real>::interpolate_test);
-    }
-#endif
 
   public:
     bezier_curve_fit_test_suite()
@@ -231,10 +208,6 @@ class bezier_curve_fit_test_suite : public Test::Suite
     void fit_C0_ends_test()
     {
       data_type eps(std::numeric_limits<data__>::epsilon());
-#ifdef ELI_USING_QD
-      if ( (typeid(data_type)==typeid(dd_real)) || (typeid(data_type)==typeid(qd_real)) )
-        eps=std::numeric_limits<double>::epsilon();
-#endif
 
       // open curve
       {
@@ -991,10 +964,6 @@ class bezier_curve_fit_test_suite : public Test::Suite
     void interpolate_test()
     {
       data_type eps(std::numeric_limits<data__>::epsilon());
-#ifdef ELI_USING_QD
-      if ( (typeid(data_type)==typeid(dd_real)) || (typeid(data_type)==typeid(qd_real)) )
-        eps=std::numeric_limits<double>::epsilon();
-#endif
 
       // interpolate through all points open
       {

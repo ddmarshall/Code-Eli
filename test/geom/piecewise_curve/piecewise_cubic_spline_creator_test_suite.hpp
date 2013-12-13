@@ -100,47 +100,7 @@ class piecewise_cubic_spline_creator_test_suite : public Test::Suite
       TEST_ADD(piecewise_cubic_spline_creator_test_suite<long double>::create_periodic_cubic_spline_test);
       TEST_ADD(piecewise_cubic_spline_creator_test_suite<long double>::create_closed_cubic_spline_test);
     }
-#ifdef ELI_USING_QD
-    void AddTests(const dd_real &)
-    {
-      // add the tests
-      TEST_ADD(piecewise_cubic_spline_creator_test_suite<dd_real>::create_control_points_test);
-      TEST_ADD(piecewise_cubic_spline_creator_test_suite<dd_real>::create_points_slopes_test);
-      TEST_ADD(piecewise_cubic_spline_creator_test_suite<dd_real>::create_piecewise_chip_test);
-      TEST_ADD(piecewise_cubic_spline_creator_test_suite<dd_real>::create_closed_piecewise_chip_test);
-      TEST_ADD(piecewise_cubic_spline_creator_test_suite<dd_real>::create_piecewise_cardinal_spline_test);
-      TEST_ADD(piecewise_cubic_spline_creator_test_suite<dd_real>::create_closed_piecewise_cardinal_spline_test);
-      TEST_ADD(piecewise_cubic_spline_creator_test_suite<dd_real>::create_piecewise_catmull_rom_spline_test);
-      TEST_ADD(piecewise_cubic_spline_creator_test_suite<dd_real>::create_closed_piecewise_catmull_rom_spline_test);
-      TEST_ADD(piecewise_cubic_spline_creator_test_suite<dd_real>::create_piecewise_kochanek_bartels_spline_test);
-      TEST_ADD(piecewise_cubic_spline_creator_test_suite<dd_real>::create_closed_piecewise_kochanek_bartels_spline_test);
-      TEST_ADD(piecewise_cubic_spline_creator_test_suite<dd_real>::create_cubic_spline_test);
-      TEST_ADD(piecewise_cubic_spline_creator_test_suite<dd_real>::create_clamped_cubic_spline_test);
-      TEST_ADD(piecewise_cubic_spline_creator_test_suite<dd_real>::create_natural_cubic_spline_test);
-      TEST_ADD(piecewise_cubic_spline_creator_test_suite<dd_real>::create_periodic_cubic_spline_test);
-      TEST_ADD(piecewise_cubic_spline_creator_test_suite<dd_real>::create_closed_cubic_spline_test);
-    }
 
-    void AddTests(const qd_real &)
-    {
-      // add the tests
-      TEST_ADD(piecewise_cubic_spline_creator_test_suite<qd_real>::create_control_points_test);
-      TEST_ADD(piecewise_cubic_spline_creator_test_suite<qd_real>::create_points_slopes_test);
-      TEST_ADD(piecewise_cubic_spline_creator_test_suite<qd_real>::create_piecewise_chip_test);
-      TEST_ADD(piecewise_cubic_spline_creator_test_suite<qd_real>::create_closed_piecewise_chip_test);
-      TEST_ADD(piecewise_cubic_spline_creator_test_suite<qd_real>::create_piecewise_cardinal_spline_test);
-      TEST_ADD(piecewise_cubic_spline_creator_test_suite<qd_real>::create_closed_piecewise_cardinal_spline_test);
-      TEST_ADD(piecewise_cubic_spline_creator_test_suite<qd_real>::create_piecewise_catmull_rom_spline_test);
-      TEST_ADD(piecewise_cubic_spline_creator_test_suite<qd_real>::create_closed_piecewise_catmull_rom_spline_test);
-      TEST_ADD(piecewise_cubic_spline_creator_test_suite<qd_real>::create_piecewise_kochanek_bartels_spline_test);
-      TEST_ADD(piecewise_cubic_spline_creator_test_suite<qd_real>::create_closed_piecewise_kochanek_bartels_spline_test);
-      TEST_ADD(piecewise_cubic_spline_creator_test_suite<qd_real>::create_cubic_spline_test);
-      TEST_ADD(piecewise_cubic_spline_creator_test_suite<qd_real>::create_clamped_cubic_spline_test);
-      TEST_ADD(piecewise_cubic_spline_creator_test_suite<qd_real>::create_natural_cubic_spline_test);
-      TEST_ADD(piecewise_cubic_spline_creator_test_suite<qd_real>::create_periodic_cubic_spline_test);
-      TEST_ADD(piecewise_cubic_spline_creator_test_suite<qd_real>::create_closed_cubic_spline_test);
-    }
-#endif
   public:
     piecewise_cubic_spline_creator_test_suite() : tol()
     {

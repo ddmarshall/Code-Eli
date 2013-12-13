@@ -57,21 +57,7 @@ class minimum_distance_surface_test_suite : public Test::Suite
       TEST_ADD(minimum_distance_surface_test_suite<long double>::point_smooth_test);
       TEST_ADD(minimum_distance_surface_test_suite<long double>::point_closed_test);
     }
-#ifdef ELI_USING_QD
-    void AddTests(const dd_real &)
-    {
-      // add the tests
-      TEST_ADD(minimum_distance_surface_test_suite<dd_real>::point_smooth_test);
-      TEST_ADD(minimum_distance_surface_test_suite<dd_real>::point_closed_test);
-    }
 
-    void AddTests(const qd_real &)
-    {
-      // add the tests
-      TEST_ADD(minimum_distance_surface_test_suite<qd_real>::point_smooth_test);
-      TEST_ADD(minimum_distance_surface_test_suite<qd_real>::point_closed_test);
-    }
-#endif
   public:
     minimum_distance_surface_test_suite()
     {

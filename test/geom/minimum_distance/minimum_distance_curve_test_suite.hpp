@@ -68,25 +68,7 @@ class minimum_distance_curve_test_suite : public Test::Suite
       TEST_ADD(minimum_distance_curve_test_suite<long double>::point_smooth_3d_test);
       TEST_ADD(minimum_distance_curve_test_suite<long double>::point_closed_3d_test);
     }
-#ifdef ELI_USING_QD
-    void AddTests(const dd_real &)
-    {
-      // add the tests
-      TEST_ADD(minimum_distance_curve_test_suite<dd_real>::point_smooth_2d_test);
-      TEST_ADD(minimum_distance_curve_test_suite<dd_real>::point_closed_2d_test);
-      TEST_ADD(minimum_distance_curve_test_suite<dd_real>::point_smooth_3d_test);
-      TEST_ADD(minimum_distance_curve_test_suite<dd_real>::point_closed_3d_test);
-    }
 
-    void AddTests(const qd_real &)
-    {
-      // add the tests
-      TEST_ADD(minimum_distance_curve_test_suite<qd_real>::point_smooth_2d_test);
-      TEST_ADD(minimum_distance_curve_test_suite<qd_real>::point_closed_2d_test);
-      TEST_ADD(minimum_distance_curve_test_suite<qd_real>::point_smooth_3d_test);
-      TEST_ADD(minimum_distance_curve_test_suite<qd_real>::point_closed_3d_test);
-    }
-#endif
   public:
     minimum_distance_curve_test_suite()
     {
@@ -193,7 +175,6 @@ class minimum_distance_curve_test_suite : public Test::Suite
 
     void point_smooth_2d_test()
     {
-#if 1
       point_type2 cntrl_in[4];
 
       // set control points
@@ -317,12 +298,10 @@ class minimum_distance_curve_test_suite : public Test::Suite
       dist=eli::geom::intersect::minimum_distance(t, c, pt);
       TEST_ASSERT(tol.approximately_equal(t, t_ref));
       TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
-#endif
     }
 
     void point_closed_2d_test()
     {
-#if 1
       point_type2 cntrl_in[13];
 
       // set control points
@@ -449,12 +428,10 @@ class minimum_distance_curve_test_suite : public Test::Suite
       dist=eli::geom::intersect::minimum_distance(t, c, pt);
       TEST_ASSERT(tol.approximately_equal(t, t_ref));
       TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
-#endif
     }
 
     void point_smooth_3d_test()
     {
-#if 1
       point_type3 cntrl_in[4];
 
       // set control points
@@ -587,12 +564,10 @@ class minimum_distance_curve_test_suite : public Test::Suite
       dist=eli::geom::intersect::minimum_distance(t, c, pt);
       TEST_ASSERT(tol.approximately_equal(t, t_ref));
       TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
-#endif
     }
 
     void point_closed_3d_test()
     {
-#if 1
       point_type3 cntrl_in[13];
 
       // set control points
@@ -739,7 +714,6 @@ class minimum_distance_curve_test_suite : public Test::Suite
 //         vec[1]=c.f(t);
 //         octave_print(1, vec, c);
 //       }
-#endif
     }
 };
 

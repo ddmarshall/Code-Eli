@@ -66,32 +66,6 @@ class poly_root_test_suite : public Test::Suite
       TEST_ADD(poly_root_test_suite<long double>::root_finder_test);
     }
 
-#ifdef ELI_USING_QD
-    void AddTests(const dd_real &)
-    {
-      TEST_ADD(poly_root_test_suite<dd_real>::descartes_test);
-      TEST_ADD(poly_root_test_suite<dd_real>::sturm_test);
-      TEST_ADD(poly_root_test_suite<dd_real>::closed_form_root_test_0);
-      TEST_ADD(poly_root_test_suite<dd_real>::closed_form_root_test_1);
-      TEST_ADD(poly_root_test_suite<dd_real>::closed_form_root_test_2);
-      TEST_ADD(poly_root_test_suite<dd_real>::closed_form_root_test_3);
-      TEST_ADD(poly_root_test_suite<dd_real>::closed_form_root_test_4);
-      TEST_ADD(poly_root_test_suite<dd_real>::root_finder_test);
-    }
-
-    void AddTests(const qd_real &)
-    {
-      TEST_ADD(poly_root_test_suite<qd_real>::descartes_test);
-      TEST_ADD(poly_root_test_suite<qd_real>::sturm_test);
-      TEST_ADD(poly_root_test_suite<qd_real>::closed_form_root_test_0);
-      TEST_ADD(poly_root_test_suite<qd_real>::closed_form_root_test_1);
-      TEST_ADD(poly_root_test_suite<qd_real>::closed_form_root_test_2);
-      TEST_ADD(poly_root_test_suite<qd_real>::closed_form_root_test_3);
-      TEST_ADD(poly_root_test_suite<qd_real>::closed_form_root_test_4);
-      TEST_ADD(poly_root_test_suite<qd_real>::root_finder_test);
-    }
-#endif
-
   public:
     poly_root_test_suite()
     {
@@ -632,20 +606,9 @@ class poly_root_test_suite : public Test::Suite
       TEST_ASSERT(root.size()==3);
       if (root.size()==3)
       {
-#ifdef ELI_USING_QD
-        if ((typeid(data__)==typeid(dd_real)) || (typeid(data__)==typeid(qd_real)))
-        {
-          TEST_ASSERT_DELTA(root[0], root_val[0], 2*std::numeric_limits<data__>::epsilon());
-          TEST_ASSERT_DELTA(root[1], root_val[1], 2*std::numeric_limits<data__>::epsilon());
-          TEST_ASSERT_DELTA(root[2], root_val[2], 2*std::numeric_limits<data__>::epsilon());
-        }
-        else
-#endif
-        {
-          TEST_ASSERT(root[0]==root_val[0]);
-          TEST_ASSERT(root[1]==root_val[1]);
-          TEST_ASSERT(root[2]==root_val[2]);
-        }
+        TEST_ASSERT(root[0]==root_val[0]);
+        TEST_ASSERT(root[1]==root_val[1]);
+        TEST_ASSERT(root[2]==root_val[2]);
       }
       root.resize(0);
 
@@ -792,13 +755,6 @@ class poly_root_test_suite : public Test::Suite
           TEST_ASSERT_DELTA(root[0], root_val[0], 17*std::numeric_limits<data__>::epsilon());
           TEST_ASSERT_DELTA(root[1], root_val[1], 17*std::numeric_limits<data__>::epsilon());
         }
-#ifdef ELI_USING_QD
-        else if (typeid(data__)==typeid(dd_real))
-        {
-          TEST_ASSERT_DELTA(root[0], root_val[0], std::numeric_limits<data__>::epsilon());
-          TEST_ASSERT_DELTA(root[1], root_val[1], std::numeric_limits<data__>::epsilon());
-        }
-#endif
         else
         {
           TEST_ASSERT(root[0]==root_val[0]);
@@ -866,22 +822,10 @@ class poly_root_test_suite : public Test::Suite
       TEST_ASSERT(root.size()==4);
       if (root.size()==4)
       {
-#ifdef ELI_USING_QD
-        if ((typeid(data__)==typeid(dd_real)) || (typeid(data__)==typeid(qd_real)))
-        {
-          TEST_ASSERT_DELTA(root[0], root_val[0], std::numeric_limits<data__>::epsilon());
-          TEST_ASSERT_DELTA(root[1], root_val[1], std::numeric_limits<data__>::epsilon());
-          TEST_ASSERT_DELTA(root[2], root_val[2], std::numeric_limits<data__>::epsilon());
-          TEST_ASSERT_DELTA(root[3], root_val[3], std::numeric_limits<data__>::epsilon());
-        }
-        else
-#endif
-        {
-          TEST_ASSERT(root[0]==root_val[0]);
-          TEST_ASSERT(root[1]==root_val[1]);
-          TEST_ASSERT(root[2]==root_val[2]);
-          TEST_ASSERT(root[3]==root_val[3]);
-        }
+        TEST_ASSERT(root[0]==root_val[0]);
+        TEST_ASSERT(root[1]==root_val[1]);
+        TEST_ASSERT(root[2]==root_val[2]);
+        TEST_ASSERT(root[3]==root_val[3]);
       }
       root.resize(0);
 
@@ -904,15 +848,6 @@ class poly_root_test_suite : public Test::Suite
           TEST_ASSERT_DELTA(root[2], root_val[2], std::numeric_limits<data__>::epsilon());
           TEST_ASSERT(root[3]==root_val[3]);
         }
-#ifdef ELI_USING_QD
-        else if ((typeid(data__)==typeid(dd_real)) || (typeid(data__)==typeid(qd_real)))
-        {
-          TEST_ASSERT_DELTA(root[0], root_val[0], std::numeric_limits<data__>::epsilon());
-          TEST_ASSERT_DELTA(root[1], root_val[1], std::numeric_limits<data__>::epsilon());
-          TEST_ASSERT_DELTA(root[2], root_val[2], std::numeric_limits<data__>::epsilon());
-          TEST_ASSERT_DELTA(root[3], root_val[3], std::numeric_limits<data__>::epsilon());
-        }
-#endif
         else
         {
           TEST_ASSERT(root[0]==root_val[0]);
@@ -942,15 +877,6 @@ class poly_root_test_suite : public Test::Suite
           TEST_ASSERT(root[2]==root_val[1]);
           TEST_ASSERT(root[3]==root_val[3]);
         }
-#ifdef ELI_USING_QD
-        else if ((typeid(data__)==typeid(dd_real)) || (typeid(data__)==typeid(qd_real)))
-        {
-          TEST_ASSERT_DELTA(root[0], root_val[0], std::numeric_limits<data__>::epsilon());
-          TEST_ASSERT_DELTA(root[1], root_val[2], std::numeric_limits<data__>::epsilon());
-          TEST_ASSERT_DELTA(root[2], root_val[1], std::numeric_limits<data__>::epsilon());
-          TEST_ASSERT_DELTA(root[3], root_val[3], std::numeric_limits<data__>::epsilon());
-        }
-#endif
         else
         {
           TEST_ASSERT(root[0]==root_val[0]);
@@ -998,18 +924,8 @@ class poly_root_test_suite : public Test::Suite
       TEST_ASSERT(root.size()==2);
       if (root.size()==2)
       {
-#ifdef ELI_USING_QD
-        if ((typeid(data__)==typeid(dd_real)) || (typeid(data__)==typeid(qd_real)))
-        {
-          TEST_ASSERT_DELTA(root[0], root_val[1], std::numeric_limits<data__>::epsilon());
-          TEST_ASSERT_DELTA(root[1], root_val[0], std::numeric_limits<data__>::epsilon());
-        }
-        else
-#endif
-        {
-          TEST_ASSERT(root[0]==root_val[1]);
-          TEST_ASSERT(root[1]==root_val[0]);
-        }
+        TEST_ASSERT(root[0]==root_val[1]);
+        TEST_ASSERT(root[1]==root_val[0]);
       }
       root.resize(0);
 
