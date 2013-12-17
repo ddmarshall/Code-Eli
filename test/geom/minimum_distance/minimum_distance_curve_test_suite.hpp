@@ -340,7 +340,7 @@ class minimum_distance_curve_test_suite : public Test::Suite
       TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
 
       // test point near curve
-      dist_ref=0.1;
+      dist_ref=static_cast<data_type>(0.1);
       t_ref=0.25;
       norm << -c.fp(t_ref).y(), c.fp(t_ref).x();
       norm.normalize();
@@ -350,7 +350,7 @@ class minimum_distance_curve_test_suite : public Test::Suite
       TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
 
       // test point near center
-      dist_ref=0.77;
+      dist_ref=static_cast<data_type>(0.77);
       t_ref=0.25;
       norm << -c.fp(t_ref).y(), c.fp(t_ref).x();
       norm.normalize();
@@ -360,8 +360,8 @@ class minimum_distance_curve_test_suite : public Test::Suite
       TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
 
       // test point near and outside curve
-      dist_ref=0.1;
-      t_ref=0.7;
+      dist_ref=static_cast<data_type>(0.1);
+      t_ref=static_cast<data_type>(0.7);
       norm << c.fp(t_ref).y(), -c.fp(t_ref).x();
       norm.normalize();
       pt=c.f(t_ref)+dist_ref*norm;
@@ -371,7 +371,7 @@ class minimum_distance_curve_test_suite : public Test::Suite
 
       // test point far and outside curve
       dist_ref=3;
-      t_ref=0.7;
+      t_ref=static_cast<data_type>(0.7);
       norm << c.fp(t_ref).y(), -c.fp(t_ref).x();
       norm.normalize();
       pt=c.f(t_ref)+dist_ref*norm;
@@ -380,8 +380,8 @@ class minimum_distance_curve_test_suite : public Test::Suite
       TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
 
       // test point near end of curve
-      dist_ref=0.1;
-      t_ref=0.999;
+      dist_ref=static_cast<data_type>(0.1);
+      t_ref=static_cast<data_type>(0.999);
       norm << -c.fp(t_ref).y(), c.fp(t_ref).x();
       norm.normalize();
       pt=c.f(t_ref)+dist_ref*norm;
@@ -390,8 +390,8 @@ class minimum_distance_curve_test_suite : public Test::Suite
       TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
 
       // test point near end of and outside curve
-      dist_ref=0.1;
-      t_ref=0.999;
+      dist_ref=static_cast<data_type>(0.1);
+      t_ref=static_cast<data_type>(0.999);
       norm << c.fp(t_ref).y(), -c.fp(t_ref).x();
       norm.normalize();
       pt=c.f(t_ref)+dist_ref*norm;
@@ -400,8 +400,8 @@ class minimum_distance_curve_test_suite : public Test::Suite
       TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
 
       // test point near start of curve
-      dist_ref=0.1;
-      t_ref=0.001;
+      dist_ref=static_cast<data_type>(0.1);
+      t_ref=static_cast<data_type>(0.001);
       norm << -c.fp(t_ref).y(), c.fp(t_ref).x();
       norm.normalize();
       pt=c.f(t_ref)+dist_ref*norm;
@@ -410,8 +410,8 @@ class minimum_distance_curve_test_suite : public Test::Suite
       TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
 
       // test point near start of and outside curve
-      dist_ref=0.1;
-      t_ref=0.001;
+      dist_ref=static_cast<data_type>(0.1);
+      t_ref=static_cast<data_type>(0.001);
       norm << c.fp(t_ref).y(), -c.fp(t_ref).x();
       norm.normalize();
       pt=c.f(t_ref)+dist_ref*norm;
@@ -421,7 +421,7 @@ class minimum_distance_curve_test_suite : public Test::Suite
 
       // test point near start of and far outside curve
       dist_ref=3;
-      t_ref=0.001;
+      t_ref=static_cast<data_type>(0.001);
       norm << c.fp(t_ref).y(), -c.fp(t_ref).x();
       norm.normalize();
       pt=c.f(t_ref)+dist_ref*norm;
@@ -607,7 +607,7 @@ class minimum_distance_curve_test_suite : public Test::Suite
       TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
 
       // test point near curve
-      dist_ref=0.1;
+      dist_ref=static_cast<data_type>(0.1);
       t_ref=0.25;
       fp=c.fp(t_ref);
       norm << fp.z(), -fp.z(), -fp.x()+fp.y();
@@ -618,7 +618,7 @@ class minimum_distance_curve_test_suite : public Test::Suite
       TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
 
       // test point near center
-      dist_ref=0.77;
+      dist_ref=static_cast<data_type>(0.77);
       t_ref=0.25;
       fp=c.fp(t_ref);
       norm << fp.z(), -fp.z(), -fp.x()+fp.y();
@@ -629,8 +629,8 @@ class minimum_distance_curve_test_suite : public Test::Suite
       TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
 
       // test point near and outside curve
-      dist_ref=0.1;
-      t_ref=0.7;
+      dist_ref=static_cast<data_type>(0.1);
+      t_ref=static_cast<data_type>(0.7);
       fp=c.fp(t_ref);
       norm << fp.z(), -fp.z(), -fp.x()+fp.y();
       norm.normalize();
@@ -641,7 +641,7 @@ class minimum_distance_curve_test_suite : public Test::Suite
 
       // test point far and outside curve
       dist_ref=3;
-      t_ref=0.7;
+      t_ref=static_cast<data_type>(0.7);
       fp=c.fp(t_ref);
       norm << fp.z(), -fp.z(), -fp.x()+fp.y();
       norm.normalize();
@@ -651,8 +651,8 @@ class minimum_distance_curve_test_suite : public Test::Suite
       TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
 
       // test point near end of curve
-      dist_ref=0.1;
-      t_ref=0.999;
+      dist_ref=static_cast<data_type>(0.1);
+      t_ref=static_cast<data_type>(0.999);
       fp=c.fp(t_ref);
       norm << fp.z(), -fp.z(), -fp.x()+fp.y();
       norm.normalize();
@@ -662,8 +662,8 @@ class minimum_distance_curve_test_suite : public Test::Suite
       TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
 
       // test point near end of and outside curve
-      dist_ref=0.1;
-      t_ref=0.999;
+      dist_ref=static_cast<data_type>(0.1);
+      t_ref=static_cast<data_type>(0.999);
       fp=c.fp(t_ref);
       norm << -fp.z(), fp.z(), fp.x()-fp.y();
       norm.normalize();
@@ -673,8 +673,8 @@ class minimum_distance_curve_test_suite : public Test::Suite
       TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
 
       // test point near start of curve
-      dist_ref=0.1;
-      t_ref=0.001;
+      dist_ref=static_cast<data_type>(0.1);
+      t_ref=static_cast<data_type>(0.001);
       fp=c.fp(t_ref);
       norm << fp.z(), -fp.z(), -fp.x()+fp.y();
       norm.normalize();
@@ -684,8 +684,8 @@ class minimum_distance_curve_test_suite : public Test::Suite
       TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
 
       // test point near start of and outside curve
-      dist_ref=0.1;
-      t_ref=0.001;
+      dist_ref=static_cast<data_type>(0.1);
+      t_ref=static_cast<data_type>(0.001);
       fp=c.fp(t_ref);
       norm << -fp.z(), fp.z(), fp.x()-fp.y();
       norm.normalize();
@@ -696,7 +696,7 @@ class minimum_distance_curve_test_suite : public Test::Suite
 
       // test point near start of and far outside curve
       dist_ref=3;
-      t_ref=0.001;
+      t_ref=static_cast<data_type>(0.001);
       fp=c.fp(t_ref);
       norm << -fp.z(), fp.z(), fp.x()-fp.y();
       norm.normalize();

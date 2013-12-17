@@ -337,7 +337,7 @@ namespace eli
 //                     std::cout << "argx=" << argx << "\targy=" << argy << "\tt=" << t << std::endl;
 
                   fun(f[i], t);
-                  fun(f[nsample_pts-i-1], 0.5-t);
+                  fun(f[nsample_pts-i-1], static_cast<data_type>(0.5)-t);
                 }
 
 //                 if (max_degree==6)

@@ -71,15 +71,15 @@ namespace eli
               g.pt=pt;
               if (t>=1)
               {
-                rtn=(g(1)-g(0.99))/(0.01);
+                rtn=(g(1)-g(static_cast<typename curve__::data_type>(0.99)))/static_cast<typename curve__::data_type>(0.01);
               }
               else if (t<=0)
               {
-                rtn=(g(0.01)-g(0))/(0.01);
+                rtn=(g(static_cast<typename curve__::data_type>(0.01))-g(0))/static_cast<typename curve__::data_type>(0.01);
               }
               else
               {
-                rtn=(g(t+0.01)-g(t))/(0.01);
+                rtn=(g(t+static_cast<typename curve__::data_type>(0.01))-g(t))/static_cast<typename curve__::data_type>(0.01);
               }
             }
 

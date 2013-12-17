@@ -247,7 +247,7 @@ class minimum_distance_surface_test_suite : public Test::Suite
       TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
 
       // test point very near surface
-      dist_ref=0.01;
+      dist_ref=static_cast<data_type>(0.01);
       u_ref=0.25;
       v_ref=0.25;
       norm=s.normal(u_ref, v_ref);
@@ -258,7 +258,7 @@ class minimum_distance_surface_test_suite : public Test::Suite
       TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
 
       // test point near surface
-      dist_ref=0.1;
+      dist_ref=static_cast<data_type>(0.1);
       u_ref=0.25;
       v_ref=0.25;
       norm=s.normal(u_ref, v_ref);
@@ -269,7 +269,7 @@ class minimum_distance_surface_test_suite : public Test::Suite
       TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
 
       // test point near and on concave side of surface
-      dist_ref=0.1;
+      dist_ref=static_cast<data_type>(0.1);
       u_ref=0.25;
       v_ref=0.25;
       norm=-s.normal(u_ref, v_ref);
@@ -280,7 +280,7 @@ class minimum_distance_surface_test_suite : public Test::Suite
       TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
 
       // test point far surface
-      dist_ref=1.1;
+      dist_ref=static_cast<data_type>(1.1);
       u_ref=0.25;
       v_ref=0.25;
       norm=s.normal(u_ref, v_ref);
@@ -292,8 +292,8 @@ class minimum_distance_surface_test_suite : public Test::Suite
 
       // test point on surface
       dist_ref=0;
-      u_ref=0.64;
-      v_ref=0.32;
+      u_ref=static_cast<data_type>(0.64);
+      v_ref=static_cast<data_type>(0.32);
       norm=s.normal(u_ref, v_ref);
       pt=s.f(u_ref, v_ref)+dist_ref*norm;
       dist=eli::geom::intersect::minimum_distance(u, v, s, pt);
@@ -302,9 +302,9 @@ class minimum_distance_surface_test_suite : public Test::Suite
       TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
 
       // test point very near surface
-      dist_ref=0.01;
-      u_ref=0.64;
-      v_ref=0.32;
+      dist_ref=static_cast<data_type>(0.01);
+      u_ref=static_cast<data_type>(0.64);
+      v_ref=static_cast<data_type>(0.32);
       norm=s.normal(u_ref, v_ref);
       pt=s.f(u_ref, v_ref)+dist_ref*norm;
       dist=eli::geom::intersect::minimum_distance(u, v, s, pt);
@@ -313,9 +313,9 @@ class minimum_distance_surface_test_suite : public Test::Suite
       TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
 
       // test point near surface
-      dist_ref=0.1;
-      u_ref=0.64;
-      v_ref=0.32;
+      dist_ref=static_cast<data_type>(0.1);
+      u_ref=static_cast<data_type>(0.64);
+      v_ref=static_cast<data_type>(0.32);
       norm=s.normal(u_ref, v_ref);
       pt=s.f(u_ref, v_ref)+dist_ref*norm;
       dist=eli::geom::intersect::minimum_distance(u, v, s, pt);
@@ -324,9 +324,9 @@ class minimum_distance_surface_test_suite : public Test::Suite
       TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
 
       // test point near and on concave side of surface
-      dist_ref=0.1;
-      u_ref=0.64;
-      v_ref=0.32;
+      dist_ref=static_cast<data_type>(0.1);
+      u_ref=static_cast<data_type>(0.64);
+      v_ref=static_cast<data_type>(0.32);
       norm=-s.normal(u_ref, v_ref);
       pt=s.f(u_ref, v_ref)+dist_ref*norm;
       dist=eli::geom::intersect::minimum_distance(u, v, s, pt);
@@ -335,9 +335,9 @@ class minimum_distance_surface_test_suite : public Test::Suite
       TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
 
       // test point near surface
-      dist_ref=1.1;
-      u_ref=0.64;
-      v_ref=0.32;
+      dist_ref=static_cast<data_type>(1.1);
+      u_ref=static_cast<data_type>(0.64);
+      v_ref=static_cast<data_type>(0.32);
       norm=s.normal(u_ref, v_ref);
       pt=s.f(u_ref, v_ref)+dist_ref*norm;
       dist=eli::geom::intersect::minimum_distance(u, v, s, pt);
@@ -346,9 +346,9 @@ class minimum_distance_surface_test_suite : public Test::Suite
       TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
 
       // test point near corner of surface
-      dist_ref=0.1;
-      u_ref=0.01;
-      v_ref=0.01;
+      dist_ref=static_cast<data_type>(0.1);
+      u_ref=static_cast<data_type>(0.01);
+      v_ref=static_cast<data_type>(0.01);
       norm=s.normal(u_ref, v_ref);
       pt=s.f(u_ref, v_ref)+dist_ref*norm;
       dist=eli::geom::intersect::minimum_distance(u, v, s, pt);
@@ -357,9 +357,9 @@ class minimum_distance_surface_test_suite : public Test::Suite
       TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
 
       // test point near corner of surface
-      dist_ref=0.1;
-      u_ref=0.99;
-      v_ref=0.01;
+      dist_ref=static_cast<data_type>(0.1);
+      u_ref=static_cast<data_type>(0.99);
+      v_ref=static_cast<data_type>(0.01);
       norm=s.normal(u_ref, v_ref);
       pt=s.f(u_ref, v_ref)+dist_ref*norm;
       dist=eli::geom::intersect::minimum_distance(u, v, s, pt);
@@ -368,9 +368,9 @@ class minimum_distance_surface_test_suite : public Test::Suite
       TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
 
       // test point near corner of surface
-      dist_ref=0.1;
-      u_ref=0.01;
-      v_ref=0.999;
+      dist_ref=static_cast<data_type>(0.1);
+      u_ref=static_cast<data_type>(0.01);
+      v_ref=static_cast<data_type>(0.999);
       norm=s.normal(u_ref, v_ref);
       pt=s.f(u_ref, v_ref)+dist_ref*norm;
       dist=eli::geom::intersect::minimum_distance(u, v, s, pt);
@@ -379,9 +379,9 @@ class minimum_distance_surface_test_suite : public Test::Suite
       TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
 
       // test point near corner of surface
-      dist_ref=0.1;
-      u_ref=0.999;
-      v_ref=0.999;
+      dist_ref=static_cast<data_type>(0.1);
+      u_ref=static_cast<data_type>(0.999);
+      v_ref=static_cast<data_type>(0.999);
       norm=s.normal(u_ref, v_ref);
       pt=s.f(u_ref, v_ref)+dist_ref*norm;
       dist=eli::geom::intersect::minimum_distance(u, v, s, pt);
@@ -390,13 +390,13 @@ class minimum_distance_surface_test_suite : public Test::Suite
       TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
 
       // test point beyond edge of surface
-      dist_ref=0.1;
-      u_ref=1;
-      v_ref=0.4;
+      dist_ref=static_cast<data_type>(0.1);
+      u_ref=static_cast<data_type>(1);
+      v_ref=static_cast<data_type>(0.4);
       norm=s.normal(u_ref, v_ref);
       u_contra=-norm.cross(s.f_v(u_ref, v_ref));
       u_contra.normalize();
-      pt=0.01*u_contra+s.f(u_ref, v_ref)+dist_ref*norm;
+      pt=static_cast<data_type>(0.01)*u_contra+s.f(u_ref, v_ref)+dist_ref*norm;
       dist_ref=eli::geom::point::distance(pt, s.f(u_ref, v_ref));
       dist=eli::geom::intersect::minimum_distance(u, v, s, pt);
       TEST_ASSERT(tol.approximately_equal(u, u_ref));
@@ -404,13 +404,13 @@ class minimum_distance_surface_test_suite : public Test::Suite
       TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
 
       // test point beyond edge of surface
-      dist_ref=0.1;
-      u_ref=0.6;
-      v_ref=1;
+      dist_ref=static_cast<data_type>(0.1);
+      u_ref=static_cast<data_type>(0.6);
+      v_ref=static_cast<data_type>(1);
       norm=s.normal(u_ref, v_ref);
       v_contra=norm.cross(s.f_u(u_ref, v_ref));
       v_contra.normalize();
-      pt=0.01*v_contra+s.f(u_ref, v_ref)+dist_ref*norm;
+      pt=static_cast<data_type>(0.01)*v_contra+s.f(u_ref, v_ref)+dist_ref*norm;
       dist_ref=eli::geom::point::distance(pt, s.f(u_ref, v_ref));
       dist=eli::geom::intersect::minimum_distance(u, v, s, pt);
       TEST_ASSERT(tol.approximately_equal(u, u_ref));
@@ -418,13 +418,13 @@ class minimum_distance_surface_test_suite : public Test::Suite
       TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
 
       // test point beyond edge of surface
-      dist_ref=0.5;
-      u_ref=0;
-      v_ref=0.2;
+      dist_ref=static_cast<data_type>(0.5);
+      u_ref=static_cast<data_type>(0);
+      v_ref=static_cast<data_type>(0.2);
       norm=s.normal(u_ref, v_ref);
       u_contra=-norm.cross(s.f_v(u_ref, v_ref));
       u_contra.normalize();
-      pt=0.1*u_contra+s.f(u_ref, v_ref)+dist_ref*norm;
+      pt=static_cast<data_type>(0.1)*u_contra+s.f(u_ref, v_ref)+dist_ref*norm;
       dist_ref=eli::geom::point::distance(pt, s.f(u_ref, v_ref));
       dist=eli::geom::intersect::minimum_distance(u, v, s, pt);
       TEST_ASSERT(tol.approximately_equal(u, u_ref));
@@ -432,13 +432,13 @@ class minimum_distance_surface_test_suite : public Test::Suite
       TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
 
       // test point beyond edge of surface
-      dist_ref=0.5;
-      u_ref=0.2;
-      v_ref=0;
+      dist_ref=static_cast<data_type>(0.5);
+      u_ref=static_cast<data_type>(0.2);
+      v_ref=static_cast<data_type>(0);
       norm=s.normal(u_ref, v_ref);
       v_contra=norm.cross(s.f_u(u_ref, v_ref));
       v_contra.normalize();
-      pt=0.1*v_contra+s.f(u_ref, v_ref)+dist_ref*norm;
+      pt=static_cast<data_type>(0.1)*v_contra+s.f(u_ref, v_ref)+dist_ref*norm;
       dist_ref=eli::geom::point::distance(pt, s.f(u_ref, v_ref));
       dist=eli::geom::intersect::minimum_distance(u, v, s, pt);
       TEST_ASSERT(tol.approximately_equal(u, u_ref));
@@ -492,8 +492,8 @@ class minimum_distance_surface_test_suite : public Test::Suite
 
       // test point on surface
       dist_ref=0;
-      u_ref=0.35;
-      v_ref=0.35;
+      u_ref=static_cast<data_type>(0.35);
+      v_ref=static_cast<data_type>(0.35);
       norm=s.normal(u_ref, v_ref);
       pt=s.f(u_ref, v_ref)+dist_ref*norm;
       dist=eli::geom::intersect::minimum_distance(u, v, s, pt);
@@ -502,9 +502,9 @@ class minimum_distance_surface_test_suite : public Test::Suite
       TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
 
       // test point very near surface
-      dist_ref=0.01;
-      u_ref=0.35;
-      v_ref=0.35;
+      dist_ref=static_cast<data_type>(0.01);
+      u_ref=static_cast<data_type>(0.35);
+      v_ref=static_cast<data_type>(0.35);
       norm=-s.normal(u_ref, v_ref);
       pt=s.f(u_ref, v_ref)+dist_ref*norm;
       dist=eli::geom::intersect::minimum_distance(u, v, s, pt);
@@ -513,9 +513,9 @@ class minimum_distance_surface_test_suite : public Test::Suite
       TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
 
       // test point near surface
-      dist_ref=0.1;
-      u_ref=0.35;
-      v_ref=0.35;
+      dist_ref=static_cast<data_type>(0.1);
+      u_ref=static_cast<data_type>(0.35);
+      v_ref=static_cast<data_type>(0.35);
       norm=-s.normal(u_ref, v_ref);
       pt=s.f(u_ref, v_ref)+dist_ref*norm;
       dist=eli::geom::intersect::minimum_distance(u, v, s, pt);
@@ -524,9 +524,9 @@ class minimum_distance_surface_test_suite : public Test::Suite
       TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
 
       // test point near center surface
-      dist_ref=0.72;
-      u_ref=0.35;
-      v_ref=0.35;
+      dist_ref=static_cast<data_type>(0.72);
+      u_ref=static_cast<data_type>(0.35);
+      v_ref=static_cast<data_type>(0.35);
       norm=-s.normal(u_ref, v_ref);
       pt=s.f(u_ref, v_ref)+dist_ref*norm;
       dist=eli::geom::intersect::minimum_distance(u, v, s, pt);
@@ -535,9 +535,9 @@ class minimum_distance_surface_test_suite : public Test::Suite
       TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
 
       // test point near and outside surface
-      dist_ref=0.1;
-      u_ref=0.35;
-      v_ref=0.35;
+      dist_ref=static_cast<data_type>(0.1);
+      u_ref=static_cast<data_type>(0.35);
+      v_ref=static_cast<data_type>(0.35);
       norm=s.normal(u_ref, v_ref);
       pt=s.f(u_ref, v_ref)+dist_ref*norm;
       dist=eli::geom::intersect::minimum_distance(u, v, s, pt);
@@ -547,8 +547,8 @@ class minimum_distance_surface_test_suite : public Test::Suite
 
       // test point far and outside surface
       dist_ref=3;
-      u_ref=0.25;
-      v_ref=0.7;
+      u_ref=static_cast<data_type>(0.25);
+      v_ref=static_cast<data_type>(0.7);
       norm=s.normal(u_ref, v_ref);
       pt=s.f(u_ref, v_ref)+dist_ref*norm;
       dist=eli::geom::intersect::minimum_distance(u, v, s, pt);
@@ -557,9 +557,9 @@ class minimum_distance_surface_test_suite : public Test::Suite
       TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
 
       // test point near end of surface
-      dist_ref=0.1;
-      u_ref=0.25;
-      v_ref=0.999;
+      dist_ref=static_cast<data_type>(0.1);
+      u_ref=static_cast<data_type>(0.25);
+      v_ref=static_cast<data_type>(0.999);
       norm=-s.normal(u_ref, v_ref);
       pt=s.f(u_ref, v_ref)+dist_ref*norm;
       dist=eli::geom::intersect::minimum_distance(u, v, s, pt);
@@ -568,9 +568,9 @@ class minimum_distance_surface_test_suite : public Test::Suite
       TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
 
       // test point near end and outside of surface
-      dist_ref=0.1;
-      u_ref=0.25;
-      v_ref=0.999;
+      dist_ref=static_cast<data_type>(0.1);
+      u_ref=static_cast<data_type>(0.25);
+      v_ref=static_cast<data_type>(0.999);
       norm=s.normal(u_ref, v_ref);
       pt=s.f(u_ref, v_ref)+dist_ref*norm;
       dist=eli::geom::intersect::minimum_distance(u, v, s, pt);
@@ -579,9 +579,9 @@ class minimum_distance_surface_test_suite : public Test::Suite
       TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
 
       // test point near end of surface
-      dist_ref=0.1;
-      u_ref=0.25;
-      v_ref=0.001;
+      dist_ref=static_cast<data_type>(0.1);
+      u_ref=static_cast<data_type>(0.25);
+      v_ref=static_cast<data_type>(0.001);
       norm=-s.normal(u_ref, v_ref);
       pt=s.f(u_ref, v_ref)+dist_ref*norm;
       dist=eli::geom::intersect::minimum_distance(u, v, s, pt);
@@ -590,9 +590,9 @@ class minimum_distance_surface_test_suite : public Test::Suite
       TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
 
       // test point near end and outside of surface
-      dist_ref=0.1;
-      u_ref=0.25;
-      v_ref=0.001;
+      dist_ref=static_cast<data_type>(0.1);
+      u_ref=static_cast<data_type>(0.25);
+      v_ref=static_cast<data_type>(0.001);
       norm=s.normal(u_ref, v_ref);
       pt=s.f(u_ref, v_ref)+dist_ref*norm;
       dist=eli::geom::intersect::minimum_distance(u, v, s, pt);
@@ -601,9 +601,9 @@ class minimum_distance_surface_test_suite : public Test::Suite
       TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
 
       // test point near closed portion of surface
-      dist_ref=0.1;
-      u_ref=0.001;
-      v_ref=0.3;
+      dist_ref=static_cast<data_type>(0.1);
+      u_ref=static_cast<data_type>(0.001);
+      v_ref=static_cast<data_type>(0.3);
       norm=-s.normal(u_ref, v_ref);
       pt=s.f(u_ref, v_ref)+dist_ref*norm;
       dist=eli::geom::intersect::minimum_distance(u, v, s, pt);
@@ -612,9 +612,9 @@ class minimum_distance_surface_test_suite : public Test::Suite
       TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
 
       // test point near closed portion and outside of surface
-      dist_ref=0.1;
-      u_ref=0.001;
-      v_ref=0.3;
+      dist_ref=static_cast<data_type>(0.1);
+      u_ref=static_cast<data_type>(0.001);
+      v_ref=static_cast<data_type>(0.3);
       norm=s.normal(u_ref, v_ref);
       pt=s.f(u_ref, v_ref)+dist_ref*norm;
       dist=eli::geom::intersect::minimum_distance(u, v, s, pt);
@@ -623,9 +623,9 @@ class minimum_distance_surface_test_suite : public Test::Suite
       TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
 
       // test point near closed portion of surface
-      dist_ref=0.1;
-      u_ref=0.999;
-      v_ref=0.3;
+      dist_ref=static_cast<data_type>(0.1);
+      u_ref=static_cast<data_type>(0.999);
+      v_ref=static_cast<data_type>(0.3);
       norm=-s.normal(u_ref, v_ref);
       pt=s.f(u_ref, v_ref)+dist_ref*norm;
       dist=eli::geom::intersect::minimum_distance(u, v, s, pt);
@@ -634,9 +634,9 @@ class minimum_distance_surface_test_suite : public Test::Suite
       TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
 
       // test point near closed portion and outside of surface
-      dist_ref=0.1;
-      u_ref=0.999;
-      v_ref=0.3;
+      dist_ref=static_cast<data_type>(0.1);
+      u_ref=static_cast<data_type>(0.999);
+      v_ref=static_cast<data_type>(0.3);
       norm=s.normal(u_ref, v_ref);
       pt=s.f(u_ref, v_ref)+dist_ref*norm;
       dist=eli::geom::intersect::minimum_distance(u, v, s, pt);

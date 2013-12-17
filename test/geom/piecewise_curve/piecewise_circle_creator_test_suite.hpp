@@ -350,12 +350,12 @@ class piecewise_circle_creator_test_suite : public Test::Suite
         start  << radius*std::cos(alpha1), radius*std::sin(alpha1), 0;
         middle << radius*std::cos(alpha2), radius*std::sin(alpha2), 0;
         end    << radius*std::cos(alpha3), radius*std::sin(alpha3), 0;
-        rotx << 1,             0,              0,
-                0, std::cos(0.5), -std::sin(0.5),
-                0, std::sin(0.5),  std::cos(0.5);
-        roty << std::cos(0.25), 0, std::sin(0.25),
-                             0, 1,              0,
-               -std::sin(0.25), 0, std::cos(0.25);
+        rotx << 1, 0,                                     0,
+                0, std::cos(static_cast<data_type>(0.5)), -std::sin(static_cast<data_type>(0.5)),
+                0, std::sin(static_cast<data_type>(0.5)),  std::cos(static_cast<data_type>(0.5));
+        roty << std::cos(static_cast<data_type>(0.25)), 0, std::sin(static_cast<data_type>(0.25)),
+                0,                                      1, 0,
+               -std::sin(static_cast<data_type>(0.25)), 0, std::cos(static_cast<data_type>(0.25));
         start=start*rotx*roty+origin;
         middle=middle*rotx*roty+origin;
         end=end*rotx*roty+origin;

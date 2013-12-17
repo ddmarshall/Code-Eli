@@ -673,7 +673,7 @@ class piecewise_surface_test_suite : public Test::Suite
 
       // test adding invalid patch
       point_type nudge;
-      nudge << 0, 0.01, 0;
+      nudge << 0, static_cast<data_type>(0.01), 0;
       ps2=ps1;
       ps2.get(s, 2, 1);
       s.set_control_point(s.get_control_point(0, 0)+nudge, 0, 0);
@@ -760,10 +760,11 @@ class piecewise_surface_test_suite : public Test::Suite
         typename piecewise_surface_type::rotation_matrix_type rmat;
 
         // set up rotation and apply
+        data_type one(1);
         ps2=ps1;
-        rmat << cos(1), 0, -sin(1),
-                     0, 1,       0,
-                sin(1), 0,  cos(1);
+        rmat << std::cos(one), 0,  -std::sin(one),
+                0,             one, 0,
+                std::sin(one), 0,   std::cos(one);
         ps2.rotate(rmat);
         TEST_ASSERT(tol.approximately_equal(ps2.f(u, v), ps1.f(u, v)*rmat.transpose()));
       }
@@ -774,11 +775,12 @@ class piecewise_surface_test_suite : public Test::Suite
         point_type rorig;
 
         // set up rotation and apply
+        data_type one(1);
         ps2=ps1;
         rorig << 2, 1, 3;
-        rmat << cos(1), 0, -sin(1),
-                     0, 1,       0,
-                sin(1), 0,  cos(1);
+        rmat << std::cos(one), 0,  -std::sin(one),
+                0,             one, 0,
+                std::sin(one), 0,   std::cos(one);
         ps2.rotate(rmat, rorig);
         TEST_ASSERT(tol.approximately_equal(ps2.f(u, v), rorig+(ps1.f(u, v)-rorig)*rmat.transpose()));
       }
@@ -1063,7 +1065,7 @@ class piecewise_surface_test_suite : public Test::Suite
 
       }
 
-      data_type ttol = 1e-3;
+      data_type ttol = static_cast<data_type>(1e-3);
 
       // to_cubic u-direction
       ps2=ps1;

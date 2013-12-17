@@ -835,10 +835,11 @@ class piecewise_curve_test_suite : public Test::Suite
         typename piecewise_curve_type::rotation_matrix_type rmat;
 
         // set up rotation and apply
+        data_type one(1);
         pwc2=pwc;
-        rmat << cos(1), 0, -sin(1),
-                     0, 1,       0,
-                sin(1), 0,  cos(1);
+        rmat << std::cos(one), 0,  -std::sin(one),
+                0,             one, 0,
+                std::sin(one), 0,   std::cos(one);
         pwc2.rotate(rmat);
 
         // check the left curve
@@ -853,11 +854,12 @@ class piecewise_curve_test_suite : public Test::Suite
         point_type rorig;
 
         // set up rotation and apply
+        data_type one(1);
         pwc2=pwc;
         rorig << 2, 1, 3;
-        rmat << cos(1), 0, -sin(1),
-                     0, 1,       0,
-                sin(1), 0,  cos(1);
+        rmat << std::cos(one), 0,  -std::sin(one),
+                0,             one, 0,
+                std::sin(one), 0,   std::cos(one);
         pwc2.rotate(rmat, rorig);
 
         // check the left curve
@@ -1177,7 +1179,7 @@ class piecewise_curve_test_suite : public Test::Suite
 
         pwc1=pwc0;
 
-        data_type ttol = 0.0001;
+        data_type ttol = static_cast<data_type>(0.0001);
         pwc1.to_cubic(ttol);
 
 //        std::cout << pwc1.number_segments() << std::endl;
@@ -1259,7 +1261,7 @@ class piecewise_curve_test_suite : public Test::Suite
 
         pwc1=pwc0;
 
-        data_type ttol = 0.0001;
+        data_type ttol = static_cast<data_type>(0.0001);
         pwc1.to_cubic(ttol);
 
 //        std::cout << pwc1.number_segments() << std::endl;
@@ -1277,7 +1279,7 @@ class piecewise_curve_test_suite : public Test::Suite
         eval_ref=pwc1.f(t);
         TEST_ASSERT((eval_out-eval_ref).norm()<ttol);
 
-        t=0.235;
+        t=static_cast<data_type>(0.235);
         eval_out=pwc0.f(t);
         eval_ref=pwc1.f(t);
         TEST_ASSERT((eval_out-eval_ref).norm()<ttol);
@@ -1331,7 +1333,7 @@ class piecewise_curve_test_suite : public Test::Suite
 
         pwc1=pwc0;
 
-        data_type ttol = 0.0001;
+        data_type ttol = static_cast<data_type>(0.0001);
         pwc1.to_cubic(ttol);
 
 //        std::cout << pwc1.number_segments() << std::endl;
@@ -1348,7 +1350,7 @@ class piecewise_curve_test_suite : public Test::Suite
         eval_ref=pwc1.f(t);
         TEST_ASSERT((eval_out-eval_ref).norm()<ttol);
 
-        t=0.235;
+        t=static_cast<data_type>(0.235);
         eval_out=pwc0.f(t);
         eval_ref=pwc1.f(t);
         TEST_ASSERT((eval_out-eval_ref).norm()<ttol);
@@ -1391,7 +1393,7 @@ class piecewise_curve_test_suite : public Test::Suite
 
         pwc1=pwc0;
 
-        data_type ttol = 0.0001;
+        data_type ttol = static_cast<data_type>(0.0001);
         pwc1.to_cubic(ttol);
 
 //        std::cout << pwc1.number_segments() << std::endl;
@@ -1409,7 +1411,7 @@ class piecewise_curve_test_suite : public Test::Suite
         eval_ref=pwc1.f(t);
         TEST_ASSERT((eval_out-eval_ref).norm()<ttol);
 
-        t=0.235;
+        t=static_cast<data_type>(0.235);
         eval_out=pwc0.f(t);
         eval_ref=pwc1.f(t);
         TEST_ASSERT((eval_out-eval_ref).norm()<ttol);
@@ -1451,7 +1453,7 @@ class piecewise_curve_test_suite : public Test::Suite
 
         pwc1=pwc0;
 
-        data_type ttol = 0.0001;
+        data_type ttol = static_cast<data_type>(0.0001);
         pwc1.to_cubic(ttol);
 
 //        std::cout << pwc1.number_segments() << std::endl;
@@ -1469,7 +1471,7 @@ class piecewise_curve_test_suite : public Test::Suite
         eval_ref=pwc1.f(t);
         TEST_ASSERT((eval_out-eval_ref).norm()<ttol);
 
-        t=0.235;
+        t=static_cast<data_type>(0.235);
         eval_out=pwc0.f(t);
         eval_ref=pwc1.f(t);
         TEST_ASSERT((eval_out-eval_ref).norm()<ttol);
@@ -1491,7 +1493,7 @@ class piecewise_curve_test_suite : public Test::Suite
 
         // build piecewise curve
         cntrl_in[0] << 0, 0, 0;
-        cntrl_in[1] << 1.4, 2, 0;
+        cntrl_in[1] << static_cast<data_type>(1.4), 2, 0;
         bc.resize(1);
         for (index_type i=0; i<2; ++i)
           {
@@ -1510,7 +1512,7 @@ class piecewise_curve_test_suite : public Test::Suite
 
         pwc1=pwc0;
 
-        data_type ttol = 0.0001;
+        data_type ttol = static_cast<data_type>(0.0001);
         pwc1.to_cubic(ttol);
 
 //        std::cout << pwc1.number_segments() << std::endl;
@@ -1528,7 +1530,7 @@ class piecewise_curve_test_suite : public Test::Suite
         eval_ref=pwc1.f(t);
         TEST_ASSERT((eval_out-eval_ref).norm()<ttol);
 
-        t=0.235;
+        t=static_cast<data_type>(0.235);
         eval_out=pwc0.f(t);
         eval_ref=pwc1.f(t);
         TEST_ASSERT((eval_out-eval_ref).norm()<ttol);
@@ -1627,7 +1629,7 @@ class piecewise_curve_test_suite : public Test::Suite
       typename piecewise_curve_type::error_code err;
       curve_type bc;
       point_type pt0, pt1, ptref;
-      data_type t[4], rad(0.2);
+      data_type t[4], rad(static_cast<data_type>(0.2));
       index_type i, ip1;
 
       // build piecewise curve
@@ -1666,7 +1668,7 @@ class piecewise_curve_test_suite : public Test::Suite
       TEST_ASSERT(pwc0.number_segments()==4);
       pt0=pwc0.f(t[1]);
       pt1=pwc1.f(t[1]);
-      ptref << 0.0291414, 1.89247, 0;
+      ptref << static_cast<data_type>(0.0291414), static_cast<data_type>(1.89247), 0;
       TEST_ASSERT(pt0!=pt1);
       TEST_ASSERT((pt0-ptref).norm()<1e-4);
 
@@ -1675,7 +1677,7 @@ class piecewise_curve_test_suite : public Test::Suite
       TEST_ASSERT(pwc0.round(rad, 0));
       pt0=pwc0.f(t[0]);
       pt1=pwc1.f(t[0]);
-      ptref << 0.0414214, 0.1, 0;
+      ptref << static_cast<data_type>(0.0414214), static_cast<data_type>(0.1), 0;
       data_type v; pwc0.get_parameter_max(v);
       TEST_ASSERT(pt0!=pt1);
       TEST_ASSERT((pt0-ptref).norm()<1e-4);
@@ -1685,7 +1687,7 @@ class piecewise_curve_test_suite : public Test::Suite
       TEST_ASSERT(pwc0.round(rad, 3));
       pt0=pwc0.f(t[3]);
       pt1=pwc1.f(t[3]);
-      ptref << 0.0414214, 0.1, 0;
+      ptref << static_cast<data_type>(0.0414214), static_cast<data_type>(0.1), 0;
       TEST_ASSERT(pt0!=pt1);
       TEST_ASSERT((pt0-ptref).norm()<1e-4);
 
@@ -1694,22 +1696,22 @@ class piecewise_curve_test_suite : public Test::Suite
       pwc0.round(rad);
       pt0=pwc0.f(t[0]);
       pt1=pwc1.f(t[0]);
-      ptref << 0.0414214, 0.1, 0;
+      ptref << static_cast<data_type>(0.0414214), static_cast<data_type>(0.1), 0;
       TEST_ASSERT(pt0!=pt1);
       TEST_ASSERT((pt0-ptref).norm()<1e-4);
       pt0=pwc0.f(t[1]);
       pt1=pwc1.f(t[1]);
-      ptref << 0.0291414, 1.89247, 0;
+      ptref << static_cast<data_type>(0.0291414), static_cast<data_type>(1.89247), 0;
       TEST_ASSERT(pt0!=pt1);
       TEST_ASSERT((pt0-ptref).norm()<1e-4);
       pt0=pwc0.f(t[2]);
       pt1=pwc1.f(t[2]);
-      ptref << 0.9171573, 1, 0;
+      ptref << static_cast<data_type>(0.9171573), static_cast<data_type>(1), 0;
       TEST_ASSERT(pt0!=pt1);
       TEST_ASSERT((pt0-ptref).norm()<1e-4);
       pt0=pwc0.f(t[3]);
       pt1=pwc1.f(t[3]);
-      ptref << 0.0414214, 0.1, 0;
+      ptref << static_cast<data_type>(0.0414214), static_cast<data_type>(0.1), 0;
       TEST_ASSERT(pt0!=pt1);
       TEST_ASSERT((pt0-ptref).norm()<1e-4);
     }

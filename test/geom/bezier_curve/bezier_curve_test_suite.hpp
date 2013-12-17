@@ -280,10 +280,11 @@ class bezier_curve_test_suite : public Test::Suite
         typename bezier_type::rotation_matrix_type rmat;
 
         // set up rotation and apply
+        data_type one(1);
         bc2=bc1;
-        rmat << cos(1), 0, -sin(1),
-                     0, 1,       0,
-                sin(1), 0,  cos(1);
+        rmat << std::cos(one), 0,  -std::sin(one),
+                0,             one, 0,
+                std::sin(one), 0,   std::cos(one);
         bc2.rotate(rmat);
 
         // test evaluations
@@ -310,11 +311,12 @@ class bezier_curve_test_suite : public Test::Suite
         typename bezier_type::rotation_matrix_type rmat;
 
         // set up rotation and apply
+        data_type one(1);
         bc2=bc1;
         rorig << 2, 1, 3;
-        rmat << cos(1), 0, -sin(1),
-                     0, 1,       0,
-                sin(1), 0,  cos(1);
+        rmat << std::cos(one), 0,  -std::sin(one),
+                0,             one, 0,
+                std::sin(one), 0,   std::cos(one);
         bc2.rotate(rmat, rorig);
 
         // test evaluations
@@ -526,7 +528,7 @@ class bezier_curve_test_suite : public Test::Suite
 
       t=0.5;
       t_dir=bc.tangent(t);
-      t_dir_ref << 0.874157, -0.485643, 0;
+      t_dir_ref << static_cast<data_type>(0.874157), static_cast<data_type>(-0.485643), 0;
       TEST_ASSERT((t_dir-t_dir_ref).norm()<1e-5);
 
       bc.frenet_serret_frame(t_dir, n_dir, b_dir, t);
