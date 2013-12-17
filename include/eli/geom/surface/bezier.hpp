@@ -1253,13 +1253,21 @@ namespace eli
             B_u.resize(m+1, control_point_matrix_type(nullptr, m+1, dim__, Eigen::Stride<1, dim__>()));
             for (index_type j=0; j<=m; ++j)
             {
+#ifdef ELI_NO_VECTOR_DATA
+              new (&(B_u.at(0))+j) control_point_matrix_type(&(point_data.at(0))+j*(n+1)*dim__, n+1, dim__, Eigen::Stride<1, dim__>());
+#else
               new (B_u.data()+j) control_point_matrix_type(point_data.data()+j*(n+1)*dim__, n+1, dim__, Eigen::Stride<1, dim__>());
+#endif
             }
 
             B_v.resize(n+1, v_dir_control_point_matrix_type(nullptr, n+1, dim__, Eigen::Stride<1, Eigen::Dynamic>(1, (n+1)*dim__)));
             for (index_type i=0; i<=n; ++i)
             {
+#ifdef ELI_NO_VECTOR_DATA
+              new (&(B_v.at(0))+i) v_dir_control_point_matrix_type(&(point_data.at(0))+i*dim__, m+1, dim__, Eigen::Stride<1, Eigen::Dynamic>(1, (n+1)*dim__));
+#else
               new (B_v.data()+i) v_dir_control_point_matrix_type(point_data.data()+i*dim__, m+1, dim__, Eigen::Stride<1, Eigen::Dynamic>(1, (n+1)*dim__));
+#endif
             }
           }
       };
