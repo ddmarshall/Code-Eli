@@ -106,51 +106,6 @@ class bezier_surface_test_suite : public Test::Suite
       TEST_ADD(bezier_surface_test_suite<long double>::split_test);
       TEST_ADD(bezier_surface_test_suite<long double>::normal_test);
     }
-#ifdef ELI_USING_QD
-    void AddTests(const dd_real &)
-    {
-      // add the tests
-      TEST_ADD(bezier_surface_test_suite<dd_real>::assignment_test);
-      TEST_ADD(bezier_surface_test_suite<dd_real>::bounding_box_test);
-      TEST_ADD(bezier_surface_test_suite<dd_real>::reverse_test);
-      TEST_ADD(bezier_surface_test_suite<dd_real>::swap_test);
-      TEST_ADD(bezier_surface_test_suite<dd_real>::transformation_test);
-      TEST_ADD(bezier_surface_test_suite<dd_real>::evaluation_test);
-      TEST_ADD(bezier_surface_test_suite<dd_real>::derivative_1_test);
-      TEST_ADD(bezier_surface_test_suite<dd_real>::derivative_2_test);
-      TEST_ADD(bezier_surface_test_suite<dd_real>::derivative_3_test);
-      TEST_ADD(bezier_surface_test_suite<dd_real>::curvature_test);
-      TEST_ADD(bezier_surface_test_suite<dd_real>::promotion_test);
-      TEST_ADD(bezier_surface_test_suite<dd_real>::promotion_to_test);
-      TEST_ADD(bezier_surface_test_suite<dd_real>::demotion_test);
-      TEST_ADD(bezier_surface_test_suite<dd_real>::to_cubic_test);
-      TEST_ADD(bezier_surface_test_suite<dd_real>::distance_bound_test);
-      TEST_ADD(bezier_surface_test_suite<dd_real>::split_test);
-      TEST_ADD(bezier_surface_test_suite<dd_real>::normal_test);
-    }
-
-    void AddTests(const qd_real &)
-    {
-      // add the tests
-      TEST_ADD(bezier_surface_test_suite<qd_real>::assignment_test);
-      TEST_ADD(bezier_surface_test_suite<qd_real>::bounding_box_test);
-      TEST_ADD(bezier_surface_test_suite<qd_real>::reverse_test);
-      TEST_ADD(bezier_surface_test_suite<qd_real>::swap_test);
-      TEST_ADD(bezier_surface_test_suite<qd_real>::transformation_test);
-      TEST_ADD(bezier_surface_test_suite<qd_real>::evaluation_test);
-      TEST_ADD(bezier_surface_test_suite<qd_real>::derivative_1_test);
-      TEST_ADD(bezier_surface_test_suite<qd_real>::derivative_2_test);
-      TEST_ADD(bezier_surface_test_suite<qd_real>::derivative_3_test);
-      TEST_ADD(bezier_surface_test_suite<qd_real>::curvature_test);
-      TEST_ADD(bezier_surface_test_suite<qd_real>::promotion_test);
-      TEST_ADD(bezier_surface_test_suite<qd_real>::promotion_to_test);
-      TEST_ADD(bezier_surface_test_suite<qd_real>::demotion_test);
-      TEST_ADD(bezier_surface_test_suite<qd_real>::to_cubic_test);
-      TEST_ADD(bezier_surface_test_suite<qd_real>::distance_bound_test);
-      TEST_ADD(bezier_surface_test_suite<qd_real>::split_test);
-      TEST_ADD(bezier_surface_test_suite<qd_real>::normal_test);
-    }
-#endif
 
   public:
     bezier_surface_test_suite()
@@ -1913,7 +1868,7 @@ class bezier_surface_test_suite : public Test::Suite
               TEST_ASSERT_DELTA(d[2],  1,      1e-6);
               TEST_ASSERT_DELTA(d[3],  0,      std::numeric_limits<data_type>::epsilon());
               TEST_ASSERT_DELTA(d[4],  0,      std::numeric_limits<data_type>::epsilon());
-              TEST_ASSERT_DELTA(d[5],  4,      1e-6);
+              TEST_ASSERT_DELTA(d[5],  4,      2e-6);
             }
           }
         }
@@ -2126,11 +2081,6 @@ class bezier_surface_test_suite : public Test::Suite
     void to_cubic_test()
     {
       data_type eps(std::numeric_limits<data__>::epsilon());
-#ifdef ELI_USING_QD
-      if ( (typeid(data_type)==typeid(dd_real)) || (typeid(data_type)==typeid(qd_real)) )
-        eps=std::numeric_limits<double>::epsilon();
-#endif
-
       index_type n(6), m(4);
       point_type pt[6+1][4+1];
 

@@ -61,21 +61,7 @@ class piecewise_polygon_creator_test_suite : public Test::Suite
       TEST_ADD(piecewise_polygon_creator_test_suite<long double>::create_triangle_test);
       TEST_ADD(piecewise_polygon_creator_test_suite<long double>::create_box_test);
     }
-#ifdef ELI_USING_QD
-    void AddTests(const dd_real &)
-    {
-      // add the tests
-      TEST_ADD(piecewise_polygon_creator_test_suite<dd_real>::create_triangle_test);
-      TEST_ADD(piecewise_polygon_creator_test_suite<dd_real>::create_box_test);
-    }
 
-    void AddTests(const qd_real &)
-    {
-      // add the tests
-      TEST_ADD(piecewise_polygon_creator_test_suite<qd_real>::create_triangle_test);
-      TEST_ADD(piecewise_polygon_creator_test_suite<qd_real>::create_box_test);
-    }
-#endif
   public:
     piecewise_polygon_creator_test_suite() : tol()
     {

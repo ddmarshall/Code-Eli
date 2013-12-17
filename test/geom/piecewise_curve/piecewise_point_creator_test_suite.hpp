@@ -58,19 +58,7 @@ class piecewise_point_creator_test_suite : public Test::Suite
       // add the tests
       TEST_ADD(piecewise_point_creator_test_suite<long double>::create_point_test);
     }
-#ifdef ELI_USING_QD
-    void AddTests(const dd_real &)
-    {
-      // add the tests
-      TEST_ADD(piecewise_point_creator_test_suite<dd_real>::create_point_test);
-    }
 
-    void AddTests(const qd_real &)
-    {
-      // add the tests
-      TEST_ADD(piecewise_point_creator_test_suite<qd_real>::create_point_test);
-    }
-#endif
   public:
     piecewise_point_creator_test_suite() : tol()
     {

@@ -55,11 +55,6 @@ include(CTest)
 # find the cpptest library
 find_package(CPPTest REQUIRED)
 find_package(Eigen3 3.0.0 REQUIRED)
-find_package(QD 2.3.13)
-if (QD_FOUND)
-  set(ELI_QD_FOUND 1)
-  set(DOC_ELI_QD_FOUND "ELI_QD_FOUND")
-endif ()
 find_package(Doxygen)
 if (DOXYGEN_FOUND)
   configure_file(${ELI_SOURCE_DIR}/cmake/Doxyfile.in ${ELI_BINARY_DIR}/Doxyfile @ONLY)
@@ -80,10 +75,6 @@ include_directories(${ELI_BINARY_DIR}/include
                     ${CPPTEST_INCLUDE_DIRS}
                     ${EIGEN3_INCLUDE_DIR})
 link_directories(${CPPTEST_LIBRARY_DIRS})
-if (QD_FOUND)
-  include_directories(${QD_INCLUDE_DIRS})
-  link_directories(${QD_LIBRARY_DIRS})
-endif()
 
 # add subdirectories of project
 add_subdirectory(test)

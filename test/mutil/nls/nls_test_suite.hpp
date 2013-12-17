@@ -231,27 +231,6 @@ class nls_test_suite : public Test::Suite
       TEST_ADD(nls_test_suite<long double>::newton_raphson_system_method_test);
       TEST_ADD(nls_test_suite<long double>::newton_raphson_constrained_system_method_test);
     }
-#ifdef ELI_USING_QD
-    void AddTests(const dd_real &)
-    {
-      TEST_ADD(nls_test_suite<dd_real>::bisection_method_test);
-      TEST_ADD(nls_test_suite<dd_real>::newton_raphson_method_test);
-      TEST_ADD(nls_test_suite<dd_real>::secant_method_test);
-      TEST_ADD(nls_test_suite<dd_real>::newton_raphson_constrained_method_test);
-      TEST_ADD(nls_test_suite<dd_real>::newton_raphson_system_method_test);
-      TEST_ADD(nls_test_suite<dd_real>::newton_raphson_constrained_system_method_test);
-    }
-
-    void AddTests(const qd_real &)
-    {
-      TEST_ADD(nls_test_suite<qd_real>::bisection_method_test);
-      TEST_ADD(nls_test_suite<qd_real>::newton_raphson_method_test);
-      TEST_ADD(nls_test_suite<qd_real>::secant_method_test);
-      TEST_ADD(nls_test_suite<qd_real>::newton_raphson_constrained_method_test);
-      TEST_ADD(nls_test_suite<qd_real>::newton_raphson_system_method_test);
-      TEST_ADD(nls_test_suite<qd_real>::newton_raphson_constrained_system_method_test);
-    }
-#endif
 
   public:
     nls_test_suite()
@@ -387,14 +366,8 @@ class nls_test_suite : public Test::Suite
       data__ rhs2(cos(eli::constants::math<data__>::pi()+static_cast<data__>(0.001)));
       nrcm.set_initial_guess(eli::constants::math<data__>::pi());
       nrcm.set_periodic_condition(eli::constants::math<data__>::pi(), eli::constants::math<data__>::pi()*3);
-#ifdef ELI_USING_QD
-      // QD math fails for this case :(
-      if ( (typeid(data__)!=typeid(dd_real)) && (typeid(data__)!=typeid(qd_real)) )
-#endif
-      {
-        stat = nrcm.find_root(root, std::ptr_fun(my_function<data__>), std::ptr_fun(my_function_derivative<data__>), rhs2);
-        TEST_ASSERT(stat==nrcm_type::converged);
-      }
+      stat = nrcm.find_root(root, std::ptr_fun(my_function<data__>), std::ptr_fun(my_function_derivative<data__>), rhs2);
+      TEST_ASSERT(stat==nrcm_type::converged);
 
       // test using functor
       nrcm.set_absolute_tolerance(delta);

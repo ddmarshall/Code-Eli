@@ -72,33 +72,7 @@ class fit_container_test_suite : public Test::Suite
       TEST_ADD(fit_container_test_suite<long double>::list_constraints_test);
       TEST_ADD(fit_container_test_suite<long double>::closed_constraints_test);
     }
-#ifdef ELI_USING_QD
-    void AddTests(const dd_real &)
-    {
-      // add the tests
-      TEST_ADD(fit_container_test_suite<dd_real>::construction_test);
-      TEST_ADD(fit_container_test_suite<dd_real>::add_C0_constraints_test);
-      TEST_ADD(fit_container_test_suite<dd_real>::add_C1_constraints_test);
-      TEST_ADD(fit_container_test_suite<dd_real>::add_C2_constraints_test);
-      TEST_ADD(fit_container_test_suite<dd_real>::add_end_constraints_test);
-      TEST_ADD(fit_container_test_suite<dd_real>::remove_constraints_test);
-      TEST_ADD(fit_container_test_suite<dd_real>::list_constraints_test);
-      TEST_ADD(fit_container_test_suite<dd_real>::closed_constraints_test);
-    }
 
-    void AddTests(const qd_real &)
-    {
-      // add the tests
-      TEST_ADD(fit_container_test_suite<qd_real>::construction_test);
-      TEST_ADD(fit_container_test_suite<qd_real>::add_C0_constraints_test);
-      TEST_ADD(fit_container_test_suite<qd_real>::add_C1_constraints_test);
-      TEST_ADD(fit_container_test_suite<qd_real>::add_C2_constraints_test);
-      TEST_ADD(fit_container_test_suite<qd_real>::add_end_constraints_test);
-      TEST_ADD(fit_container_test_suite<qd_real>::remove_constraints_test);
-      TEST_ADD(fit_container_test_suite<qd_real>::list_constraints_test);
-      TEST_ADD(fit_container_test_suite<qd_real>::closed_constraints_test);
-    }
-#endif
   public:
     fit_container_test_suite()
     {

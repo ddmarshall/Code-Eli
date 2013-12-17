@@ -105,51 +105,6 @@ class bezier_curve_test_suite : public Test::Suite
       TEST_ADD(bezier_curve_test_suite<long double>::split_test);
       TEST_ADD(bezier_curve_test_suite<long double>::length_test);
     }
-#ifdef ELI_USING_QD
-    void AddTests(const dd_real &)
-    {
-      // add the tests
-      TEST_ADD(bezier_curve_test_suite<dd_real>::assignment_test);
-      TEST_ADD(bezier_curve_test_suite<dd_real>::bounding_box_test);
-      TEST_ADD(bezier_curve_test_suite<dd_real>::transformation_test);
-      TEST_ADD(bezier_curve_test_suite<dd_real>::evaluation_test);
-      TEST_ADD(bezier_curve_test_suite<dd_real>::derivative_1_test);
-      TEST_ADD(bezier_curve_test_suite<dd_real>::derivative_2_test);
-      TEST_ADD(bezier_curve_test_suite<dd_real>::derivative_3_test);
-      TEST_ADD(bezier_curve_test_suite<dd_real>::frenet_serret_test);
-      TEST_ADD(bezier_curve_test_suite<dd_real>::reverse_test);
-      TEST_ADD(bezier_curve_test_suite<dd_real>::reflection_test);
-      TEST_ADD(bezier_curve_test_suite<dd_real>::promotion_test);
-      TEST_ADD(bezier_curve_test_suite<dd_real>::promotion_to_test);
-      TEST_ADD(bezier_curve_test_suite<dd_real>::demotion_test);
-      TEST_ADD(bezier_curve_test_suite<dd_real>::degree_to_cubic_test);
-      TEST_ADD(bezier_curve_test_suite<dd_real>::distance_bound_test);
-      TEST_ADD(bezier_curve_test_suite<dd_real>::split_test);
-      TEST_ADD(bezier_curve_test_suite<dd_real>::length_test);
-    }
-
-    void AddTests(const qd_real &)
-    {
-      // add the tests
-      TEST_ADD(bezier_curve_test_suite<qd_real>::assignment_test);
-      TEST_ADD(bezier_curve_test_suite<qd_real>::bounding_box_test);
-      TEST_ADD(bezier_curve_test_suite<qd_real>::transformation_test);
-      TEST_ADD(bezier_curve_test_suite<qd_real>::evaluation_test);
-      TEST_ADD(bezier_curve_test_suite<qd_real>::derivative_1_test);
-      TEST_ADD(bezier_curve_test_suite<qd_real>::derivative_2_test);
-      TEST_ADD(bezier_curve_test_suite<qd_real>::derivative_3_test);
-      TEST_ADD(bezier_curve_test_suite<qd_real>::frenet_serret_test);
-      TEST_ADD(bezier_curve_test_suite<qd_real>::reflection_test);
-      TEST_ADD(bezier_curve_test_suite<qd_real>::reverse_test);
-      TEST_ADD(bezier_curve_test_suite<qd_real>::promotion_test);
-      TEST_ADD(bezier_curve_test_suite<qd_real>::promotion_to_test);
-      TEST_ADD(bezier_curve_test_suite<qd_real>::demotion_test);
-      TEST_ADD(bezier_curve_test_suite<qd_real>::degree_to_cubic_test);
-      TEST_ADD(bezier_curve_test_suite<qd_real>::distance_bound_test);
-      TEST_ADD(bezier_curve_test_suite<qd_real>::split_test);
-      TEST_ADD(bezier_curve_test_suite<qd_real>::length_test);
-    }
-#endif
 
   public:
     bezier_curve_test_suite()
@@ -276,10 +231,6 @@ class bezier_curve_test_suite : public Test::Suite
     {
       point_type cntrl_in[4];
       data_type eps(std::numeric_limits<data__>::epsilon());
-#ifdef ELI_USING_QD
-      if ( (typeid(data_type)==typeid(dd_real)) || (typeid(data_type)==typeid(qd_real)) )
-        eps=std::numeric_limits<double>::epsilon();
-#endif
 
       // set control points
       cntrl_in[0] << 2.0, 2.0, 0.0;
@@ -389,10 +340,6 @@ class bezier_curve_test_suite : public Test::Suite
     {
       point_type cntrl_in[4];
       data_type eps(std::numeric_limits<data__>::epsilon());
-#ifdef ELI_USING_QD
-      if ( (typeid(data_type)==typeid(dd_real)) || (typeid(data_type)==typeid(qd_real)) )
-        eps=std::numeric_limits<double>::epsilon();
-#endif
 
       // set control points
       cntrl_in[0] << 2.0, 2.0, 0.0;
@@ -429,10 +376,7 @@ class bezier_curve_test_suite : public Test::Suite
     {
       point_type cntrl_in[4];
       data_type eps(std::numeric_limits<data__>::epsilon());
-#ifdef ELI_USING_QD
-      if ( (typeid(data_type)==typeid(dd_real)) || (typeid(data_type)==typeid(qd_real)) )
-        eps=std::numeric_limits<double>::epsilon();
-#endif
+
       // set control points
       cntrl_in[0] << 2.0, 2.0, 0.0;
       cntrl_in[1] << 1.0, 1.5, 0.0;
@@ -470,10 +414,7 @@ class bezier_curve_test_suite : public Test::Suite
     {
       point_type cntrl_in[4];
       data_type eps(std::numeric_limits<data__>::epsilon());
-#ifdef ELI_USING_QD
-      if ( (typeid(data_type)==typeid(dd_real)) || (typeid(data_type)==typeid(qd_real)) )
-        eps=std::numeric_limits<double>::epsilon();
-#endif
+
       // set control points
       cntrl_in[0] << 2.0, 2.0, 0.0;
       cntrl_in[1] << 1.0, 1.5, 0.0;
@@ -511,10 +452,7 @@ class bezier_curve_test_suite : public Test::Suite
     {
       point_type cntrl_in[4];
       data_type eps(std::numeric_limits<data__>::epsilon());
-#ifdef ELI_USING_QD
-      if ( (typeid(data_type)==typeid(dd_real)) || (typeid(data_type)==typeid(qd_real)) )
-        eps=std::numeric_limits<double>::epsilon();
-#endif
+
       // set control points
       cntrl_in[0] << 2.0, 2.0, 0.0;
       cntrl_in[1] << 1.0, 1.5, 0.0;
@@ -569,10 +507,6 @@ class bezier_curve_test_suite : public Test::Suite
     {
       point_type cntrl_in[4];
       data_type eps(std::numeric_limits<data__>::epsilon());
-#ifdef ELI_USING_QD
-      if ( (typeid(data_type)==typeid(dd_real)) || (typeid(data_type)==typeid(qd_real)) )
-        eps=std::numeric_limits<double>::epsilon();
-#endif
 
       // set control points
       cntrl_in[0] << 2.0, 2.0, 0.0;
@@ -752,10 +686,6 @@ class bezier_curve_test_suite : public Test::Suite
     {
       point_type cntrl_in[5];
       data_type eps(std::numeric_limits<data__>::epsilon());
-#ifdef ELI_USING_QD
-      if ( (typeid(data_type)==typeid(dd_real)) || (typeid(data_type)==typeid(qd_real)) )
-        eps=std::numeric_limits<double>::epsilon();
-#endif
 
       // set control points
       cntrl_in[0] << 0,   0, 0;
@@ -798,12 +728,6 @@ class bezier_curve_test_suite : public Test::Suite
           {
             TEST_ASSERT((bc2.get_control_point(i)-cntrl_ref[i]).norm()<std::sqrt(eps));
           }
-#ifdef ELI_USING_QD
-          else if ( (typeid(data__)==typeid(dd_real)) || (typeid(data__)==typeid(qd_real)) )
-          {
-            TEST_ASSERT((bc2.get_control_point(i)-cntrl_ref[i]).norm()<2.0*eps);
-          }
-#endif
           else
           {
             TEST_ASSERT(bc2.get_control_point(i)==cntrl_ref[i]);
@@ -896,10 +820,6 @@ class bezier_curve_test_suite : public Test::Suite
     {
       point_type cntrl_in[5];
       data_type eps(std::numeric_limits<data__>::epsilon());
-#ifdef ELI_USING_QD
-      if ( (typeid(data_type)==typeid(dd_real)) || (typeid(data_type)==typeid(qd_real)) )
-        eps=std::numeric_limits<double>::epsilon();
-#endif
 
       // set control points
       cntrl_in[0] << 0,   0, 0;
@@ -1028,10 +948,6 @@ class bezier_curve_test_suite : public Test::Suite
     void demotion_test()
     {
       data_type eps(std::numeric_limits<data__>::epsilon());
-#ifdef ELI_USING_QD
-      if ( (typeid(data_type)==typeid(dd_real)) || (typeid(data_type)==typeid(qd_real)) )
-        eps=std::numeric_limits<double>::epsilon();
-#endif
 
       {
         // hand checked with "Degree Reduction of Bezier Curves" by Dave Morgan
@@ -1294,10 +1210,6 @@ class bezier_curve_test_suite : public Test::Suite
     void degree_to_cubic_test()  // degree_to_cubic();
     {
       data_type eps(std::numeric_limits<data__>::epsilon());
-#ifdef ELI_USING_QD
-      if ( (typeid(data_type)==typeid(dd_real)) || (typeid(data_type)==typeid(qd_real)) )
-        eps=std::numeric_limits<double>::epsilon();
-#endif
 
       // Test linear promotion case.
       {
@@ -1708,10 +1620,6 @@ class bezier_curve_test_suite : public Test::Suite
     {
       point_type cntrl_in[4], cntrl_ref[4];
       data_type eps(std::numeric_limits<data__>::epsilon());
-#ifdef ELI_USING_QD
-      if ( (typeid(data_type)==typeid(dd_real)) || (typeid(data_type)==typeid(qd_real)) )
-        eps=std::numeric_limits<double>::epsilon();
-#endif
 
       // set control points
       cntrl_in[0] << 0, 0, 0;
@@ -1792,10 +1700,6 @@ class bezier_curve_test_suite : public Test::Suite
     {
       point_type  cntrl_in[4];
       data_type eps(std::numeric_limits<data__>::epsilon());
-#ifdef ELI_USING_QD
-      if ( (typeid(data_type)==typeid(dd_real)) || (typeid(data_type)==typeid(qd_real)) )
-        eps=std::numeric_limits<double>::epsilon();
-#endif
 
       // set control points
       cntrl_in[0] << 0, 0, 0;

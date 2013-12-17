@@ -68,6 +68,8 @@ namespace eli
               constraint_info() : use_fp(NOT_USED), use_fpp(NOT_USED) {}
               constraint_info(const constraint_info &ci) : fp(ci.fp), fpp(ci.fpp), use_fp(ci.use_fp), use_fpp(ci.use_fpp) {}
               ~constraint_info() {}
+            public:
+              EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
               constraint_info & operator=(const constraint_info &ci)
               {
@@ -118,7 +120,7 @@ namespace eli
         private:
           eli::geom::general::continuity end_continuity;
           std::vector<point_type, Eigen::aligned_allocator<point_type> > points;
-          typedef std::map<index_type, constraint_info, std::less<index_type>, Eigen::aligned_allocator<std::pair<const index_type, point_type> > > constraint_collection;
+          typedef std::map<index_type, constraint_info> constraint_collection;
 
           constraint_collection constraints;
 

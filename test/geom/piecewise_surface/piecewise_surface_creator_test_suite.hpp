@@ -61,19 +61,7 @@ class piecewise_surface_creator_test_suite : public Test::Suite
       // add the tests
       TEST_ADD(piecewise_surface_creator_test_suite<long double>::create_body_of_revolution_test);
     }
-#ifdef ELI_USING_QD
-    void AddTests(const dd_real &)
-    {
-      // add the tests
-      TEST_ADD(piecewise_surface_creator_test_suite<dd_real>::create_body_of_revolution_test);
-    }
 
-    void AddTests(const qd_real &)
-    {
-      // add the tests
-      TEST_ADD(piecewise_surface_creator_test_suite<qd_real>::create_body_of_revolution_test);
-    }
-#endif
   public:
     piecewise_surface_creator_test_suite() : tol()
     {

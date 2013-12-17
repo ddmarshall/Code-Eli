@@ -47,22 +47,6 @@ class least_squares_test_suite : public Test::Suite
       TEST_ADD(least_squares_test_suite<long double>::least_squares_ineqcon_test);
     }
 
-#ifdef ELI_USING_QD
-    void AddTests(const dd_real &)
-    {
-      TEST_ADD(least_squares_test_suite<dd_real>::least_squares_unc_test);
-      TEST_ADD(least_squares_test_suite<dd_real>::least_squares_eqcon_test);
-      TEST_ADD(least_squares_test_suite<dd_real>::least_squares_ineqcon_test);
-    }
-
-    void AddTests(const qd_real &)
-    {
-      TEST_ADD(least_squares_test_suite<qd_real>::least_squares_unc_test);
-      TEST_ADD(least_squares_test_suite<qd_real>::least_squares_eqcon_test);
-      TEST_ADD(least_squares_test_suite<qd_real>::least_squares_ineqcon_test);
-    }
-#endif
-
   public:
     least_squares_test_suite()
     {

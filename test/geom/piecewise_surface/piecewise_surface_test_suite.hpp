@@ -90,38 +90,6 @@ class piecewise_surface_test_suite : public Test::Suite
       TEST_ADD(piecewise_surface_test_suite<long double>::area_test);
     }
 
-#ifdef ELI_USING_QD
-    void AddTests(const dd_real &)
-    {
-      // add the tests
-      TEST_ADD(piecewise_surface_test_suite<dd_real>::creation_test);
-      TEST_ADD(piecewise_surface_test_suite<dd_real>::bounding_box_test);
-      TEST_ADD(piecewise_surface_test_suite<dd_real>::reverse_test);
-      TEST_ADD(piecewise_surface_test_suite<dd_real>::swap_test);
-      TEST_ADD(piecewise_surface_test_suite<dd_real>::replace_test);
-      TEST_ADD(piecewise_surface_test_suite<dd_real>::transformation_test);
-      TEST_ADD(piecewise_surface_test_suite<dd_real>::evaluation_test);
-      TEST_ADD(piecewise_surface_test_suite<dd_real>::split_test);
-      TEST_ADD(piecewise_surface_test_suite<dd_real>::to_cubic_test);
-      TEST_ADD(piecewise_surface_test_suite<dd_real>::area_test);
-    }
-
-    void AddTests(const qd_real &)
-    {
-      // add the tests
-      TEST_ADD(piecewise_surface_test_suite<qd_real>::creation_test);
-      TEST_ADD(piecewise_surface_test_suite<qd_real>::bounding_box_test);
-      TEST_ADD(piecewise_surface_test_suite<qd_real>::reverse_test);
-      TEST_ADD(piecewise_surface_test_suite<qd_real>::swap_test);
-      TEST_ADD(piecewise_surface_test_suite<qd_real>::replace_test);
-      TEST_ADD(piecewise_surface_test_suite<qd_real>::transformation_test);
-      TEST_ADD(piecewise_surface_test_suite<qd_real>::evaluation_test);
-      TEST_ADD(piecewise_surface_test_suite<qd_real>::split_test);
-      TEST_ADD(piecewise_surface_test_suite<qd_real>::to_cubic_test);
-      TEST_ADD(piecewise_surface_test_suite<qd_real>::area_test);
-    }
-#endif
-
   public:
     piecewise_surface_test_suite()
     {
@@ -1185,10 +1153,6 @@ class piecewise_surface_test_suite : public Test::Suite
     {
 #if 0
       data_type eps(std::numeric_limits<data__>::epsilon());
-#ifdef ELI_USING_QD
-      if ( (typeid(data_type)==typeid(dd_real)) || (typeid(data_type)==typeid(qd_real)) )
-        eps=std::numeric_limits<double>::epsilon();
-#endif
       piecewise_surface_type c1;
       curve_type bc[3];
       data_type dt[3], len, bc_len[3], ref_len, t0, t1, temp0, temp1;
@@ -1237,16 +1201,7 @@ class piecewise_surface_test_suite : public Test::Suite
       // create two segment curve calc length of each segment to compare
       eli::geom::curve::length(len, c1, tol);
       ref_len=bc_len[0]+bc_len[1]+bc_len[2];
-#ifdef ELI_USING_QD
-      if ( (typeid(data_type)==typeid(dd_real)) || (typeid(data_type)==typeid(qd_real)) )
-      {
-        TEST_ASSERT(std::abs(len-ref_len)<3*eps);
-      }
-      else
-#endif
-      {
-        TEST_ASSERT(len==ref_len);
-      }
+      TEST_ASSERT(len==ref_len);
 
       // choose part of first segment to calc length and compare
       t0=0.125;

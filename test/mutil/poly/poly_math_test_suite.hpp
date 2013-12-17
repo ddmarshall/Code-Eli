@@ -67,28 +67,6 @@ class poly_math_test_suite : public Test::Suite
       TEST_ADD(poly_math_test_suite<long double>::derivative_test);
     }
 
-#ifdef ELI_USING_QD
-    void AddTests(const dd_real &)
-    {
-      TEST_ADD(poly_math_test_suite<dd_real>::add_test);
-      TEST_ADD(poly_math_test_suite<dd_real>::subtract_test);
-      TEST_ADD(poly_math_test_suite<dd_real>::multiply_test);
-      TEST_ADD(poly_math_test_suite<dd_real>::divide_test);
-      TEST_ADD(poly_math_test_suite<dd_real>::creation_test);
-      TEST_ADD(poly_math_test_suite<dd_real>::derivative_test);
-    }
-
-    void AddTests(const qd_real &)
-    {
-      TEST_ADD(poly_math_test_suite<qd_real>::add_test);
-      TEST_ADD(poly_math_test_suite<qd_real>::subtract_test);
-      TEST_ADD(poly_math_test_suite<qd_real>::multiply_test);
-      TEST_ADD(poly_math_test_suite<qd_real>::divide_test);
-      TEST_ADD(poly_math_test_suite<qd_real>::creation_test);
-      TEST_ADD(poly_math_test_suite<qd_real>::derivative_test);
-    }
-#endif
-
   public:
     poly_math_test_suite()
     {
@@ -459,12 +437,6 @@ class poly_math_test_suite : public Test::Suite
           nr=9;
         else if (typeid(data__)==typeid(int)) // for computational time reasons this is limited
           nr=9;                               //  but it worked for 30 and took 12 minutes :(
-#ifdef ELI_USING_QD
-        else if (typeid(data__)==typeid(dd_real))
-          nr=11;
-        else if (typeid(data__)==typeid(qd_real))
-          nr=13;
-#endif
         else
           nr=15;
 
