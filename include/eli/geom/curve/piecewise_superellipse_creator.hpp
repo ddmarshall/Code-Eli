@@ -32,10 +32,11 @@ namespace eli
       class piecewise_2d_curve_creator : public piecewise_creator_base<data__, dim__, tol__>
       {
         public:
-          typedef data__  data_type;
-          typedef int index_type;
-          typedef Eigen::Matrix<data_type, 1, dim__> point_type;
-          typedef tol__ tolerance_type;
+          typedef piecewise_creator_base<data__, dim__, tol__> base_class_type;
+          typedef typename base_class_type::data_type data_type;
+          typedef typename base_class_type::point_type point_type;
+          typedef typename base_class_type::index_type index_type;
+          typedef typename base_class_type::tolerance_type tolerance_type;
 
           piecewise_2d_curve_creator() : piecewise_creator_base<data_type, dim__, tolerance_type>(4, 0)
           {

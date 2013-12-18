@@ -58,10 +58,11 @@ namespace eli
       class piecewise_ellipse_creator_base : public piecewise_creator_base<data__, dim__, tol__>
       {
         public:
-          typedef data__  data_type;
-          typedef int index_type;
-          typedef Eigen::Matrix<data_type, 1, dim__> point_type;
-          typedef tol__ tolerance_type;
+          typedef piecewise_creator_base<data__, dim__, tol__> base_class_type;
+          typedef typename base_class_type::data_type data_type;
+          typedef typename base_class_type::point_type point_type;
+          typedef typename base_class_type::index_type index_type;
+          typedef typename base_class_type::tolerance_type tolerance_type;
 
         public:
           piecewise_ellipse_creator_base() : piecewise_creator_base<data_type, dim__, tolerance_type>(4, 0), xradius(1), yradius(1)
