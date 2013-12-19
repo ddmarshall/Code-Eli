@@ -530,10 +530,8 @@ class minimum_distance_surface_test_suite : public Test::Suite
       norm=-s.normal(u_ref, v_ref);
       pt=s.f(u_ref, v_ref)+dist_ref*norm;
       dist=eli::geom::intersect::minimum_distance(u, v, s, pt);
-#ifdef _MSC_VER
       if (typeid(data_type)==typeid(float))
         u_ref=static_cast<data_type>(0.348769);
-#endif
       TEST_ASSERT(tol.approximately_equal(u, u_ref));
       TEST_ASSERT(tol.approximately_equal(v, v_ref));
       TEST_ASSERT(tol.approximately_equal(dist, dist_ref));

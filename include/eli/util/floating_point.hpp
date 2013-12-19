@@ -167,6 +167,9 @@ namespace eli
     template<>
     float increment_ulp<float>(const float &f, const int &n_ulp)
     {
+#if defined(__GNUC__) && defined(NDEBUG) && !defined(__clang__) && (__GNUC__==4) && (__GNUC_MINOR__==5)
+      volatile
+#endif
       int32_t *pi;
       float fr(f);
 
@@ -178,6 +181,9 @@ namespace eli
     template<>
     double increment_ulp<double>(const double &f, const int &n_ulp)
     {
+#if defined(__GNUC__) && defined(NDEBUG) && !defined(__clang__) && (__GNUC__==4) && (__GNUC_MINOR__==5)
+      volatile
+#endif
       int64_t *pi;
       double fr(f);
 
@@ -198,7 +204,13 @@ namespace eli
       return fr;
 #else
       int32_t orig_integer_bit;
+#if defined(__GNUC__) && defined(NDEBUG) && !defined(__clang__) && (__GNUC__==4) && (__GNUC_MINOR__==5)
+      volatile
+#endif
       int64_t *pi;
+#if defined(__GNUC__) && defined(NDEBUG) && !defined(__clang__) && (__GNUC__==4) && (__GNUC_MINOR__==5)
+      volatile
+#endif
       long_double_type *pft;
       long double fr(f);
 
