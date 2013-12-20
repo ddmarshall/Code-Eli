@@ -902,6 +902,16 @@ std::ostream & operator<<(std::ostream &ostr, const eli::mutil::ad::dual<data__,
 }
 
 template <typename data__, bool comp_real_only>
+std::ostream & operator<<(std::ostream &ostr, const eli::mutil::ad::dual_number::expression<data__, comp_real_only> &e)
+{
+  typedef typename eli::mutil::ad::dual_number::expression<data__, comp_real_only>::data_type data_type;
+
+  eli::mutil::ad::dual<data_type, comp_real_only> d(e.real(), e.nonreal());
+  d.print(ostr);
+  return ostr;
+}
+
+template <typename data__, bool comp_real_only>
 std::istream & operator>>(std::istream &istr, eli::mutil::ad::dual<data__, comp_real_only> &d)
 {
   d.input(istr);
