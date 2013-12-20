@@ -1004,7 +1004,7 @@ class bezier_curve_test_suite : public Test::Suite
         cntrl_in[3] << 2,   3, 0;
         cntrl_in[4] << 1.5, 3, 0;
 
-        bezier_type bc1(5), bc2;
+        bezier_type bc1(4), bc2;
 
         // set control points
         for (index_type i=0; i<5; ++i)
