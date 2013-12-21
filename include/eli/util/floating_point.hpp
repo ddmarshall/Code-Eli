@@ -21,26 +21,52 @@ namespace eli
 {
   namespace util
   {
-    struct float_type
+    union float_type
     {
-      uint64_t mantissa : 23;
-      uint32_t exponent : 8;
-      uint32_t sign : 1;
+      typedef uint32_t integer_type;
+      integer_type i;
+      struct
+      {
+        uint64_t mantissa : 23;
+        uint32_t exponent : 8;
+        uint32_t sign : 1;
+      } parts;
     };
 
     struct double_type
     {
-      uint64_t mantissa : 52;
-      uint32_t exponent : 11;
-      uint32_t sign : 1;
+      typedef uint64_t integer_type;
+      integer_type i;
+      struct
+      {
+        uint64_t mantissa : 52;
+        uint32_t exponent : 11;
+        uint32_t sign : 1;
+      } parts;
     };
 
-    struct long_double_type
+    union long_double_type
     {
-      uint64_t mantissa : 63;
-      uint32_t integer_bit : 1;
-      uint32_t exponent : 15;
-      uint32_t sign : 1;
+#if defined(_WIN32)
+      typedef uint64_t integer_type;
+      integer_type i;
+      struct
+      {
+        uint64_t mantissa : 52;
+        uint32_t exponent : 11;
+        uint32_t sign : 1;
+      } parts;
+#else
+      typedef uint64_t integer_type;
+      integer_type i[2];
+      struct
+      {
+        uint64_t mantissa : 63;
+        uint32_t integer_bit : 1;
+        uint32_t exponent : 15;
+        uint32_t sign : 1;
+      } parts;
+#endif
     };
 
     const float_type * set_floating_point_type(const float * pcf)
@@ -75,23 +101,61 @@ namespace eli
 
     std::ostream & operator<<(std::ostream &ostr, const float_type &ft)
     {
-      ostr << std::hex << "0x" << ft.sign << " 0x" << ft.mantissa << " 0x" << ft.exponent << std::dec;
+      float_type::integer_type sign_shift(31);
+      float_type::integer_type mantissa_mask(1); mantissa_mask=(mantissa_mask<<23) - 1;
+      float_type::integer_type exponent_shift(23);
+      float_type::integer_type exponent_mask(0xff);
+
+      ostr << std::hex << "0x"  << (ft.i >> sign_shift)
+                       << " 0x" << (ft.i & mantissa_mask)
+                       << " 0x" << ((ft.i >> exponent_shift) & exponent_mask)
+           << std::dec;
 
       return ostr;
     }
 
     std::ostream & operator<<(std::ostream &ostr, const double_type &ft)
     {
-      ostr << std::hex << "0x" << ft.sign << " 0x" << ft.mantissa << " 0x" << ft.exponent << std::dec;
+      double_type::integer_type sign_shift(63);
+      double_type::integer_type mantissa_mask(1); mantissa_mask=(mantissa_mask<<52) - 1;
+      double_type::integer_type exponent_shift(52);
+      double_type::integer_type exponent_mask(0x7ffb);
+
+      ostr << std::hex << "0x"  << (ft.i >> sign_shift)
+                       << " 0x" << (ft.i & mantissa_mask)
+                       << " 0x" << ((ft.i >> exponent_shift) & exponent_mask)
+           << std::dec;
 
       return ostr;
     }
 
     std::ostream & operator<<(std::ostream &ostr, const long_double_type &ft)
     {
-      ostr << std::hex << "0x" << ft.sign << " 0x" << ft.integer_bit << " 0x" << ft.mantissa << " 0x" << ft.exponent << std::dec;
+#if defined(_WIN32)
+      double_type::integer_type sign_shift(63);
+      double_type::integer_type mantissa_mask(1); mantissa_mask=(mantissa_mask<<52) - 1;
+      double_type::integer_type exponent_shift(52);
+      double_type::integer_type exponent_mask(0x7ffb);
+
+      ostr << std::hex << "0x"  << (ft.i >> sign_shift)
+                       << " 0x" << (ft.i & mantissa_mask)
+                       << " 0x" << ((ft.i >> exponent_shift) & exponent_mask)
+           << std::dec;
 
       return ostr;
+#else
+      double_type::integer_type mantissa_mask(1); mantissa_mask=0x7FFFFFFFFFFFFFFF;
+      double_type::integer_type exponent_shift(0);
+      double_type::integer_type exponent_mask(0x7fff);
+
+      ostr << std::hex << "0x"  << ft.parts.sign
+                       << "0x"  << ft.parts.integer_bit
+                       << " 0x" << (ft.i[0] & mantissa_mask)
+                       << " 0x" << ((ft.i[1] >> exponent_shift) & exponent_mask)
+           << std::dec;
+
+      return ostr;
+#endif
     }
 
     template<typename data__>
@@ -125,6 +189,14 @@ namespace eli
     template<>
     long double increment_ulp<long double>(const long double &f, const int &n_ulp)
     {
+#if defined(_WIN32)
+      int64_t *pi;
+      double fr(f);
+
+      pi=static_cast<int64_t *>(static_cast<void *>(&fr));
+      (*pi)+=n_ulp;
+      return fr;
+#else
       int32_t orig_integer_bit;
       int64_t *pi;
       long_double_type *pft;
@@ -133,23 +205,24 @@ namespace eli
       pi=static_cast<int64_t *>(static_cast<void *>(&fr));
       pft=static_cast<long_double_type *>(static_cast<void *>(&fr));
 
-      orig_integer_bit=pft->integer_bit;
+      orig_integer_bit=pft->parts.integer_bit;
       pi[0]+=n_ulp;
 
       // check if wrapped mantissa and correct
-      if ((pft->integer_bit!=orig_integer_bit) && (orig_integer_bit==1))
+      if ((pft->parts.integer_bit!=orig_integer_bit) && (orig_integer_bit==1))
       {
-        pft->integer_bit=1;
+        pft->parts.integer_bit=1;
         if (n_ulp>0)
         {
-          ++(pft->exponent);
+          ++(pft->parts.exponent);
         }
         else
         {
-          --(pft->exponent);
+          --(pft->parts.exponent);
         }
       }
       return fr;
+#endif
     }
   }
 }

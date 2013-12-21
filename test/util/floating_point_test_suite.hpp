@@ -77,9 +77,11 @@ class floating_point_test_suite : public Test::Suite
       ref="0x0 0x0 0x80";
       ostr << (*pft);
       TEST_ASSERT(ostr.str()==ref);
+      std::cout << "ref=" << ref << "ostr=" << ostr.str() << std::endl;
       ostr.str("");
       ostr << (*pcft);
       TEST_ASSERT(ostr.str()==ref);
+      std::cout << "ref=" << ref << "ostr=" << ostr.str() << std::endl;
       ostr.str("");
     }
 
@@ -110,7 +112,11 @@ class floating_point_test_suite : public Test::Suite
       std::stringstream ostr;
       std::string ref;
 
+#if defined(_WIN32)
+      ref="0x0 0x0 0x400";
+#else
       ref="0x0 0x1 0x0 0x4000";
+#endif
       ostr << (*pft);
       TEST_ASSERT(ostr.str()==ref);
       ostr.str("");
