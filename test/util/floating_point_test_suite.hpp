@@ -77,11 +77,9 @@ class floating_point_test_suite : public Test::Suite
       ref="0x0 0x0 0x80";
       ostr << (*pft);
       TEST_ASSERT(ostr.str()==ref);
-      std::cout << "ref=" << ref << "ostr=" << ostr.str() << std::endl;
       ostr.str("");
       ostr << (*pcft);
       TEST_ASSERT(ostr.str()==ref);
-      std::cout << "ref=" << ref << "ostr=" << ostr.str() << std::endl;
       ostr.str("");
     }
 
