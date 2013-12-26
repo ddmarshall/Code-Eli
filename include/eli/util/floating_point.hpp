@@ -149,7 +149,7 @@ namespace eli
       double_type::integer_type exponent_mask(0x7fff);
 
       ostr << std::hex << "0x"  << ft.parts.sign
-                       << "0x"  << ft.parts.integer_bit
+                       << " 0x" << ft.parts.integer_bit
                        << " 0x" << (ft.i[0] & mantissa_mask)
                        << " 0x" << ((ft.i[1] >> exponent_shift) & exponent_mask)
            << std::dec;
