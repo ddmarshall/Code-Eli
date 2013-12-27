@@ -63,7 +63,7 @@ class tolerance_test_suite : public Test::Suite
   private:
     void exactly_equal_test()
     {
-      eli::util::tolerance<data_type> tol(1e-6, 1e-3);
+      eli::util::tolerance<data_type> tol(static_cast<data_type>(1e-6), static_cast<data_type>(1e-3));
       data__ rel_tol(tol.get_relative_tolerance());
 
       // test same type comparisons
@@ -106,7 +106,7 @@ class tolerance_test_suite : public Test::Suite
 
     void approximately_equal_test()
     {
-      eli::util::tolerance<data_type> tol(1e-6, 1e-3);
+      eli::util::tolerance<data_type> tol(static_cast<data_type>(1e-6), static_cast<data_type>(1e-3));
       data__ rel_tol(tol.get_relative_tolerance()), abs_tol(tol.get_absolute_tolerance());
 
       // test same type comparisons
@@ -187,7 +187,7 @@ class tolerance_test_suite : public Test::Suite
 
     void approximately_less_than_test()
     {
-      eli::util::tolerance<data_type> tol(1e-6, 1e-3);
+      eli::util::tolerance<data_type> tol(static_cast<data_type>(1e-6), static_cast<data_type>(1e-3));
       data__ rel_tol(tol.get_relative_tolerance());
 
       // test same type comparisons

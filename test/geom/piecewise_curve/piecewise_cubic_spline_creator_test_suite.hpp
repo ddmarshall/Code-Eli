@@ -517,9 +517,9 @@ class piecewise_cubic_spline_creator_test_suite : public Test::Suite
         // test the curve
         data_type small(std::numeric_limits<data_type>::epsilon());
         i=0;
-        pt_a=pc.f(i);
+        pt_a=pc.f(static_cast<data_type>(i));
         TEST_ASSERT(tol.approximately_equal(pt_a, pt[i]));
-        pt_b=pc.fp(i);
+        pt_b=pc.fp(static_cast<data_type>(i));
         TEST_ASSERT(tol.approximately_equal(pt_b, m0[i]));
         for (i=1; i<nseg-1; ++i)
         {
@@ -533,9 +533,9 @@ class piecewise_cubic_spline_creator_test_suite : public Test::Suite
 // FIX: Need method to obtain the derivatives on both sides of point
 //           TEST_ASSERT(tol.approximately_equal(pt_b, m0[i]));
         }
-        pt_a=pc.f(i+1);
+        pt_a=pc.f(static_cast<data_type>(i+1));
         TEST_ASSERT(tol.approximately_equal(pt_a, pt[i+1]));
-        pt_b=pc.fp(i+1);
+        pt_b=pc.fp(static_cast<data_type>(i+1));
         TEST_ASSERT(tol.approximately_equal(pt_b, m1[i]));
       }
     }
@@ -642,7 +642,7 @@ class piecewise_cubic_spline_creator_test_suite : public Test::Suite
         // check the continuity at each point
         for (i=1; i<nseg; ++i)
         {
-          cont=pc.continuity(i);
+          cont=pc.continuity(static_cast<data_type>(i));
           TEST_ASSERT(cont==eli::geom::general::C1);
         }
       }
@@ -844,14 +844,14 @@ class piecewise_cubic_spline_creator_test_suite : public Test::Suite
         // check the continuity at each point
         for (i=1; i<(nseg-1); ++i)
         {
-          cont=pc.continuity(i);
+          cont=pc.continuity(static_cast<data_type>(i));
           TEST_ASSERT(cont==eli::geom::general::C1);
         }
 
         // test the end conditions
         cont=pc.continuity(0);
         TEST_ASSERT(cont==eli::geom::general::C0);
-        cont=pc.continuity(nseg);
+        cont=pc.continuity(static_cast<data_type>(nseg));
         TEST_ASSERT(cont==eli::geom::general::C0);
       }
 
@@ -905,14 +905,14 @@ class piecewise_cubic_spline_creator_test_suite : public Test::Suite
         // check the continuity at each point
         for (i=1; i<(nseg-1); ++i)
         {
-          cont=pc.continuity(i);
+          cont=pc.continuity(static_cast<data_type>(i));
           TEST_ASSERT(cont==eli::geom::general::C1);
         }
 
         // test the end conditions
         cont=pc.continuity(0);
         TEST_ASSERT(cont==eli::geom::general::C1);
-        cont=pc.continuity(nseg);
+        cont=pc.continuity(static_cast<data_type>(nseg));
         TEST_ASSERT(cont==eli::geom::general::C1);
       }
     }
@@ -1019,7 +1019,7 @@ class piecewise_cubic_spline_creator_test_suite : public Test::Suite
         // check the continuity at each point
         for (i=1; i<nseg; ++i)
         {
-          cont=pc.continuity(i);
+          cont=pc.continuity(static_cast<data_type>(i));
           TEST_ASSERT(cont==eli::geom::general::C1);
         }
       }
@@ -1221,14 +1221,14 @@ class piecewise_cubic_spline_creator_test_suite : public Test::Suite
         // check the continuity at each point
         for (i=1; i<(nseg-1); ++i)
         {
-          cont=pc.continuity(i);
+          cont=pc.continuity(static_cast<data_type>(i));
           TEST_ASSERT(cont==eli::geom::general::C1);
         }
 
         // test the end conditions
         cont=pc.continuity(0);
         TEST_ASSERT(cont==eli::geom::general::C0);
-        cont=pc.continuity(nseg);
+        cont=pc.continuity(static_cast<data_type>(nseg));
         TEST_ASSERT(cont==eli::geom::general::C0);
       }
 
@@ -1282,14 +1282,14 @@ class piecewise_cubic_spline_creator_test_suite : public Test::Suite
         // check the continuity at each point
         for (i=1; i<(nseg-1); ++i)
         {
-          cont=pc.continuity(i);
+          cont=pc.continuity(static_cast<data_type>(i));
           TEST_ASSERT(cont==eli::geom::general::C1);
         }
 
         // test the end conditions
         cont=pc.continuity(0);
         TEST_ASSERT(cont==eli::geom::general::C1);
-        cont=pc.continuity(nseg);
+        cont=pc.continuity(static_cast<data_type>(nseg));
         TEST_ASSERT(cont==eli::geom::general::C1);
       }
     }
@@ -1396,7 +1396,7 @@ class piecewise_cubic_spline_creator_test_suite : public Test::Suite
         // check the continuity at each point
         for (i=1; i<nseg; ++i)
         {
-          cont=pc.continuity(i);
+          cont=pc.continuity(static_cast<data_type>(i));
           TEST_ASSERT(cont==eli::geom::general::C1);
         }
       }
@@ -1597,14 +1597,14 @@ class piecewise_cubic_spline_creator_test_suite : public Test::Suite
         // check the continuity at each point
         for (i=1; i<(nseg-1); ++i)
         {
-          cont=pc.continuity(i);
+          cont=pc.continuity(static_cast<data_type>(i));
           TEST_ASSERT(cont==eli::geom::general::C1);
         }
 
         // test the end conditions
         cont=pc.continuity(0);
         TEST_ASSERT(cont==eli::geom::general::C0);
-        cont=pc.continuity(nseg);
+        cont=pc.continuity(static_cast<data_type>(nseg));
         TEST_ASSERT(cont==eli::geom::general::C0);
       }
 
@@ -1658,14 +1658,14 @@ class piecewise_cubic_spline_creator_test_suite : public Test::Suite
         // check the continuity at each point
         for (i=1; i<(nseg-1); ++i)
         {
-          cont=pc.continuity(i);
+          cont=pc.continuity(static_cast<data_type>(i));
           TEST_ASSERT(cont==eli::geom::general::C1);
         }
 
         // test the end conditions
         cont=pc.continuity(0);
         TEST_ASSERT(cont==eli::geom::general::C1);
-        cont=pc.continuity(nseg);
+        cont=pc.continuity(static_cast<data_type>(nseg));
       }
     }
 
@@ -1771,7 +1771,7 @@ class piecewise_cubic_spline_creator_test_suite : public Test::Suite
         // check the continuity at each point
         for (i=1; i<nseg; ++i)
         {
-          cont=pc.continuity(i);
+          cont=pc.continuity(static_cast<data_type>(i));
           TEST_ASSERT(cont==eli::geom::general::C1);
         }
       }
@@ -1969,7 +1969,7 @@ class piecewise_cubic_spline_creator_test_suite : public Test::Suite
         // check the continuity at each point
         for (i=1; i<(nseg-1); ++i)
         {
-          cont=pc.continuity(i);
+          cont=pc.continuity(static_cast<data_type>(i));
           TEST_ASSERT(cont==eli::geom::general::C1);
         }
 
@@ -2028,7 +2028,7 @@ class piecewise_cubic_spline_creator_test_suite : public Test::Suite
         // check the continuity at each point
         for (i=1; i<(nseg-1); ++i)
         {
-          cont=pc.continuity(i);
+          cont=pc.continuity(static_cast<data_type>(i));
           TEST_ASSERT(cont==eli::geom::general::C1);
         }
 
@@ -2157,7 +2157,7 @@ class piecewise_cubic_spline_creator_test_suite : public Test::Suite
         // check the continuity at each point
         for (i=1; i<nseg; ++i)
         {
-          cont=pc.continuity(i);
+          cont=pc.continuity(static_cast<data_type>(i));
           if ((i==1) || (i==3))
           {
             TEST_ASSERT(cont==eli::geom::general::C3);
@@ -2292,7 +2292,7 @@ class piecewise_cubic_spline_creator_test_suite : public Test::Suite
         // check the continuity at each point
         for (i=1; i<nseg; ++i)
         {
-          cont=pc.continuity(i);
+          cont=pc.continuity(static_cast<data_type>(i));
           TEST_ASSERT(cont==eli::geom::general::C2);
         }
 
@@ -2417,7 +2417,7 @@ class piecewise_cubic_spline_creator_test_suite : public Test::Suite
         // check the continuity at each point
         for (i=1; i<nseg; ++i)
         {
-          cont=pc.continuity(i);
+          cont=pc.continuity(static_cast<data_type>(i));
           TEST_ASSERT(cont==eli::geom::general::C2);
         }
 
@@ -2542,7 +2542,7 @@ class piecewise_cubic_spline_creator_test_suite : public Test::Suite
         // check the continuity at each point
         for (i=1; i<nseg; ++i)
         {
-          cont=pc.continuity(i);
+          cont=pc.continuity(static_cast<data_type>(i));
           TEST_ASSERT(cont==eli::geom::general::C2);
         }
 
@@ -2671,7 +2671,7 @@ class piecewise_cubic_spline_creator_test_suite : public Test::Suite
         // check the continuity at each point
         for (i=1; i<nseg; ++i)
         {
-          cont=pc.continuity(i);
+          cont=pc.continuity(static_cast<data_type>(i));
           TEST_ASSERT(cont==eli::geom::general::C2);
         }
 

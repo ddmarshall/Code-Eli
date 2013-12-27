@@ -154,7 +154,7 @@ class minimum_distance_line_test_suite : public Test::Suite
       pt << 1, 2, 2;
       dist=eli::geom::intersect::minimum_distance(t, a0, a1, pt);
       t_ref=1;
-      dist_ref=std::sqrt(8);
+      dist_ref=std::sqrt(static_cast<data_type>(8));
       TEST_ASSERT(tol.approximately_equal(t, t_ref));
       TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
 
@@ -164,7 +164,7 @@ class minimum_distance_line_test_suite : public Test::Suite
       pt << 3, 4, -1;
       dist=eli::geom::intersect::minimum_distance(t, a0, a1, pt);
       t_ref=2;
-      dist_ref=std::sqrt(9+1);
+      dist_ref=std::sqrt(static_cast<data_type>(9+1));
       TEST_ASSERT(tol.approximately_equal(t, t_ref));
       TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
 

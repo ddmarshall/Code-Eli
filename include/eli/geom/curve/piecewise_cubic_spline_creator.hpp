@@ -33,10 +33,11 @@ namespace eli
       class piecewise_cubic_spline_creator : public piecewise_creator_base<data__, dim__, tol__>
       {
         public:
-          typedef data__  data_type;
-          typedef int index_type;
-          typedef Eigen::Matrix<data_type, 1, dim__> point_type;
-          typedef tol__ tolerance_type;
+          typedef piecewise_creator_base<data__, dim__, tol__> base_class_type;
+          typedef typename base_class_type::data_type data_type;
+          typedef typename base_class_type::point_type point_type;
+          typedef typename base_class_type::index_type index_type;
+          typedef typename base_class_type::tolerance_type tolerance_type;
 
           piecewise_cubic_spline_creator() : piecewise_creator_base<data_type, dim__, tolerance_type>(0, 0), control_point(0) {}
           piecewise_cubic_spline_creator(const index_type &ns)
@@ -665,8 +666,8 @@ namespace eli
                 --item1;
 
                 // set the parameter values
-                m[0]=0.5*(1-tension)*(1+bias)*(1+continuity)*((*itm1)-(*item1))/this->get_segment_dt(nsegs-1)
-                    +0.5*(1-tension)*(1-bias)*(1-continuity)*((*it)-(*itm1))/this->get_segment_dt(0);
+                m[0]=static_cast<data_type>(0.5)*(1-tension)*(1+bias)*(1+continuity)*((*itm1)-(*item1))/this->get_segment_dt(nsegs-1)
+                    +static_cast<data_type>(0.5)*(1-tension)*(1-bias)*(1-continuity)*((*it)-(*itm1))/this->get_segment_dt(0);
 
                 break;
               }
@@ -678,8 +679,8 @@ namespace eli
             }
 
             // calculate the slope at end of first segment
-            m[1]=0.5*(1-tension)*(1+bias)*(1-continuity)*((*it)-(*itm1))/this->get_segment_dt(i)
-                +0.5*(1-tension)*(1-bias)*(1+continuity)*((*itp1)-(*it))/this->get_segment_dt(i+1);
+            m[1]=static_cast<data_type>(0.5)*(1-tension)*(1+bias)*(1-continuity)*((*it)-(*itm1))/this->get_segment_dt(i)
+                +static_cast<data_type>(0.5)*(1-tension)*(1-bias)*(1+continuity)*((*itp1)-(*it))/this->get_segment_dt(i+1);
 
             // calculate the first set of control points
             dt=this->get_segment_dt(i);
@@ -693,10 +694,10 @@ namespace eli
             for (i=1; i<npts-2; ++i, ++itm1, ++it, ++itp1, ++itp2)
             {
               dt=this->get_segment_dt(i);
-              m[0]=0.5*(1-tension)*(1+bias)*(1+continuity)*((*it)-(*itm1))/this->get_segment_dt(i-1)
-                  +0.5*(1-tension)*(1-bias)*(1-continuity)*((*itp1)-(*it))/dt;
-              m[1]=0.5*(1-tension)*(1+bias)*(1-continuity)*((*itp1)-(*it))/dt
-                  +0.5*(1-tension)*(1-bias)*(1+continuity)*((*itp2)-(*itp1))/this->get_segment_dt(i+1);
+              m[0]=static_cast<data_type>(0.5)*(1-tension)*(1+bias)*(1+continuity)*((*it)-(*itm1))/this->get_segment_dt(i-1)
+                  +static_cast<data_type>(0.5)*(1-tension)*(1-bias)*(1-continuity)*((*itp1)-(*it))/dt;
+              m[1]=static_cast<data_type>(0.5)*(1-tension)*(1+bias)*(1-continuity)*((*itp1)-(*it))/dt
+                  +static_cast<data_type>(0.5)*(1-tension)*(1-bias)*(1+continuity)*((*itp2)-(*itp1))/this->get_segment_dt(i+1);
 
               set_segment_control_points(*it, (*it)+dt*m[0]/3, (*itp1)-dt*m[1]/3, *itp1, i);
             }
@@ -712,8 +713,8 @@ namespace eli
               case(eli::geom::general::NOT_CONNECTED):
               {
                 // last regular segment
-                m[0]=0.5*(1-tension)*(1+bias)*(1+continuity)*((*it)-(*itm1))/this->get_segment_dt(nsegs-2)
-                    +0.5*(1-tension)*(1-bias)*(1-continuity)*((*itp1)-(*it))/this->get_segment_dt(nsegs-1);
+                m[0]=static_cast<data_type>(0.5)*(1-tension)*(1+bias)*(1+continuity)*((*it)-(*itm1))/this->get_segment_dt(nsegs-2)
+                    +static_cast<data_type>(0.5)*(1-tension)*(1-bias)*(1-continuity)*((*itp1)-(*it))/this->get_segment_dt(nsegs-1);
                 m[1]=(1-tension)*(1+bias)*(1-continuity)*((*itp1)-(*it))/this->get_segment_dt(nsegs-1);
 
                 set_segment_control_points(*it, (*it)+dt*m[0]/3, (*itp1)-dt*m[1]/3, *itp1, i);
@@ -724,17 +725,17 @@ namespace eli
               case(eli::geom::general::G1):
               {
                 // need to do last regular segment separately
-                m[0]=0.5*(1-tension)*(1+bias)*(1+continuity)*((*it)-(*itm1))/this->get_segment_dt(nsegs-3)
-                    +0.5*(1-tension)*(1-bias)*(1-continuity)*((*itp1)-(*it))/this->get_segment_dt(nsegs-2);
-                m[1]=0.5*(1-tension)*(1+bias)*(1-continuity)*((*itp1)-(*it))/this->get_segment_dt(nsegs-2)
-                    +0.5*(1-tension)*(1-bias)*(1+continuity)*((*itb)-(*itp1))/this->get_segment_dt(nsegs-1);
+                m[0]=static_cast<data_type>(0.5)*(1-tension)*(1+bias)*(1+continuity)*((*it)-(*itm1))/this->get_segment_dt(nsegs-3)
+                    +static_cast<data_type>(0.5)*(1-tension)*(1-bias)*(1-continuity)*((*itp1)-(*it))/this->get_segment_dt(nsegs-2);
+                m[1]=static_cast<data_type>(0.5)*(1-tension)*(1+bias)*(1-continuity)*((*itp1)-(*it))/this->get_segment_dt(nsegs-2)
+                    +static_cast<data_type>(0.5)*(1-tension)*(1-bias)*(1+continuity)*((*itb)-(*itp1))/this->get_segment_dt(nsegs-1);
 
                 set_segment_control_points(*it, (*it)+dt*m[0]/3, (*itp1)-dt*m[1]/3, *itp1, i);
 
                 // need to do closing segment separately
                 dt=this->get_segment_dt(i+1);
-                m[0]=0.5*(1-tension)*(1+bias)*(1+continuity)*((*itp1)-(*it))/this->get_segment_dt(nsegs-2)
-                    +0.5*(1-tension)*(1-bias)*(1-continuity)*((*itb)-(*itp1))/this->get_segment_dt(nsegs-1);
+                m[0]=static_cast<data_type>(0.5)*(1-tension)*(1+bias)*(1+continuity)*((*itp1)-(*it))/this->get_segment_dt(nsegs-2)
+                    +static_cast<data_type>(0.5)*(1-tension)*(1-bias)*(1-continuity)*((*itb)-(*itp1))/this->get_segment_dt(nsegs-1);
                 if (end_cont==eli::geom::general::C0)
                 {
                   m[1]=(1-tension)*(1+bias)*(1-continuity)*((*itb)-(*itp1))/this->get_segment_dt(nsegs-1);
@@ -744,8 +745,8 @@ namespace eli
                   point_it__ it2(itb);
                   ++it2;
 
-                  m[1]=0.5*(1-tension)*(1+bias)*(1-continuity)*((*itb)-(*itp1))/this->get_segment_dt(nsegs-1)
-                      +0.5*(1-tension)*(1-bias)*(1+continuity)*((*it2)-(*itb))/this->get_segment_dt(0);
+                  m[1]=static_cast<data_type>(0.5)*(1-tension)*(1+bias)*(1-continuity)*((*itb)-(*itp1))/this->get_segment_dt(nsegs-1)
+                      +static_cast<data_type>(0.5)*(1-tension)*(1-bias)*(1+continuity)*((*it2)-(*itb))/this->get_segment_dt(0);
                 }
 
                 set_segment_control_points(*itp1, (*itp1)+dt*m[0]/3, (*itb)-dt*m[1]/3, *itb, i+1);

@@ -55,7 +55,7 @@ namespace eli
 
         for (i=0; i<n; ++i)
         {
-          cp_p.row(i)=n*(cp.row(i+1)-cp.row(i));
+          cp_p.row(i)=static_cast<typename Derived2::Scalar>(n)*(cp.row(i+1)-cp.row(i));
         }
       }
 
@@ -70,7 +70,7 @@ namespace eli
 
         for (i=0; i<n-1; ++i)
         {
-          cp_pp.row(i)=n*(n-1)*(cp.row(i+2)-2*cp.row(i+1)+cp.row(i));
+          cp_pp.row(i)=static_cast<typename Derived2::Scalar>(n)*(n-1)*(cp.row(i+2)-2*cp.row(i+1)+cp.row(i));
         }
       }
 
@@ -85,7 +85,7 @@ namespace eli
 
         for (i=0; i<n-2; ++i)
         {
-          cp_ppp.row(i)=n*(n-1)*(n-2)*(cp.row(i+3)-3*cp.row(i+2)+3*cp.row(i+1)-cp.row(i));
+          cp_ppp.row(i)=static_cast<typename Derived2::Scalar>(n)*(n-1)*(n-2)*(cp.row(i+3)-3*cp.row(i+2)+3*cp.row(i+1)-cp.row(i));
         }
       }
 

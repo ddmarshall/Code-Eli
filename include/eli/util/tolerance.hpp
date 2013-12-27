@@ -26,7 +26,7 @@ namespace eli
     class tolerance
     {
       public:
-        tolerance() : abs_tol(1000*std::numeric_limits<data__>::epsilon()),
+        tolerance() : abs_tol(10000*std::numeric_limits<data__>::epsilon()),
                       rel_tol(std::sqrt(std::numeric_limits<data__>::epsilon()))
         {
         }

@@ -549,7 +549,7 @@ namespace eli
                 while(d > ttol)
                 {
                   data_type delta_u = ukey.get_delta_parm(uit);
-                  data_type u_in = uit->first + 0.5 * delta_u;
+                  data_type u_in = uit->first + static_cast<data_type>(0.5) * delta_u;
 
                   split_u(uk, uit, u_in, 0.5);
 
@@ -595,7 +595,7 @@ namespace eli
                 while(d > ttol)
                 {
                   data_type delta_v = vkey.get_delta_parm(vit);
-                  data_type v_in = vit->first + 0.5 * delta_v;
+                  data_type v_in = vit->first + static_cast<data_type>(0.5) * delta_v;
 
                   split_v(vk, vit, v_in, 0.5);
 

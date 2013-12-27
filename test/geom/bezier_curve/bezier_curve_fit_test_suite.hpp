@@ -1126,7 +1126,7 @@ class bezier_curve_fit_test_suite : public Test::Suite
         TEST_ASSERT((bez.f(t[1])-pts[1]).norm()<9*eps);
         TEST_ASSERT((bez.f(t[2])-pts[2]).norm()<84*eps);
         TEST_ASSERT((bez.f(t[3])-pts[3]).norm()<2*eps);
-        TEST_ASSERT((bez.fp(t[1])-fp1).norm()<77*eps);
+        TEST_ASSERT((bez.fp(t[1])-fp1).norm()<130*eps);
         TEST_ASSERT((bez.fpp(t[1])-fpp1).norm()<353*eps);
 
 //         octave_print(22, pts, bez);

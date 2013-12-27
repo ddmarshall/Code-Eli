@@ -1187,7 +1187,11 @@ class ad_dual_test_suite : public Test::Suite
       dref.set_real(std::sinh(d4.real()));
       dref.set_nonreal(d4.nonreal()*std::cosh(d4.real()));
       d0=std::sinh(std::sinh(d1+d2));
+#if defined(_MSC_VER) && defined(NDEBUG) && !defined(_WIN64)
+      TEST_ASSERT(d0.nearly(dref, static_cast<data__>(1e-2)));
+#else
       TEST_ASSERT(d0.nearly(dref, tol));
+#endif
 
       // cosh(dual) test
       d3=d1;
@@ -1210,7 +1214,11 @@ class ad_dual_test_suite : public Test::Suite
       dref.set_real(std::cosh(d4.real()));
       dref.set_nonreal(d4.nonreal()*std::sinh(d4.real()));
       d0=std::cosh(std::cosh(d1+d2));
+#if defined(_MSC_VER) && defined(NDEBUG) && !defined(_WIN64)
+      TEST_ASSERT(d0.nearly(dref, static_cast<data__>(1e-4)));
+#else
       TEST_ASSERT(d0.nearly(dref, tol));
+#endif
 
       // tanh(dual) test
       d3=d1;
@@ -1322,7 +1330,11 @@ class ad_dual_test_suite : public Test::Suite
       dref.set_real(sinh(d4.real()));
       dref.set_nonreal(d4.nonreal()*cosh(d4.real()));
       d0=sinh(sinh(d1+d2));
+#if defined(_MSC_VER) && defined(NDEBUG) && !defined(_WIN64)
+      TEST_ASSERT(d0.nearly(dref, static_cast<data__>(1e-2)));
+#else
       TEST_ASSERT(d0.nearly(dref, tol));
+#endif
 
       // cosh(dual) test
       d3=d1;
@@ -1345,7 +1357,11 @@ class ad_dual_test_suite : public Test::Suite
       dref.set_real(cosh(d4.real()));
       dref.set_nonreal(d4.nonreal()*sinh(d4.real()));
       d0=cosh(cosh(d1+d2));
+#if defined(_MSC_VER) && defined(NDEBUG) && !defined(_WIN64)
+      TEST_ASSERT(d0.nearly(dref, static_cast<data__>(1e-4)));
+#else
       TEST_ASSERT(d0.nearly(dref, tol));
+#endif
 
       // tanh(dual) test
       d3=d1;

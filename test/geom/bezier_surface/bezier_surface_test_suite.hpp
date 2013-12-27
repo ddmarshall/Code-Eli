@@ -575,10 +575,11 @@ class bezier_surface_test_suite : public Test::Suite
         typename bezier_type::rotation_matrix_type rmat;
 
         // set up rotation and apply
+        data_type one(1);
         bez2=bez;
-        rmat << cos(1), 0, -sin(1),
-                     0, 1,       0,
-                sin(1), 0,  cos(1);
+        rmat << std::cos(one), 0,  -std::sin(one),
+                0,             one, 0,
+                std::sin(one), 0,   std::cos(one);
         bez2.rotate(rmat);
 
         // test evaluation at corners
@@ -620,11 +621,12 @@ class bezier_surface_test_suite : public Test::Suite
         typename bezier_type::rotation_matrix_type rmat;
 
         // set up rotation and apply
+        data_type one(1);
         bez2=bez;
         rorig << 2, 1, 3;
-        rmat << cos(1), 0, -sin(1),
-                     0, 1,       0,
-                sin(1), 0,  cos(1);
+        rmat << std::cos(one), 0,  -std::sin(one),
+                0,             one, 0,
+                std::sin(one), 0,   std::cos(one);
         bez2.rotate(rmat, rorig);
 
         // test evaluation at corners
@@ -639,7 +641,14 @@ class bezier_surface_test_suite : public Test::Suite
         u=0; v=1;
         pt_out=bez2.f(u, v);
         pt_ref=rorig+(pt[0][m]-rorig)*rmat.transpose();
-        TEST_ASSERT(pt_out==pt_ref);
+        if (typeid(data_type)==typeid(float))
+        {
+          TEST_ASSERT(tol.approximately_equal(pt_out, pt_ref));
+        }
+        else
+        {
+          TEST_ASSERT(pt_out==pt_ref);
+        }
         u=1; v=1;
         pt_out=bez2.f(u, v);
         pt_ref=rorig+(pt[n][m]-rorig)*rmat.transpose();
@@ -761,24 +770,24 @@ class bezier_surface_test_suite : public Test::Suite
       // test evaluation at corners
       u=0; v=0;
       pt_out=bez.f_u(u, v);
-      TEST_ASSERT(pt_out==n*(pt[1][0]-pt[0][0]));
+      TEST_ASSERT(pt_out==static_cast<data_type>(n)*(pt[1][0]-pt[0][0]));
       pt_out=bez.f_v(u, v);
-      TEST_ASSERT(pt_out==m*(pt[0][1]-pt[0][0]));
+      TEST_ASSERT(pt_out==static_cast<data_type>(m)*(pt[0][1]-pt[0][0]));
       u=1; v=0;
       pt_out=bez.f_u(u, v);
-      TEST_ASSERT(pt_out==n*(pt[3][0]-pt[2][0]));
+      TEST_ASSERT(pt_out==static_cast<data_type>(n)*(pt[3][0]-pt[2][0]));
       pt_out=bez.f_v(u, v);
-      TEST_ASSERT(pt_out==m*(pt[3][1]-pt[3][0]));
+      TEST_ASSERT(pt_out==static_cast<data_type>(m)*(pt[3][1]-pt[3][0]));
       u=0; v=1;
       pt_out=bez.f_u(u, v);
-      TEST_ASSERT(pt_out==n*(pt[1][3]-pt[0][3]));
+      TEST_ASSERT(pt_out==static_cast<data_type>(n)*(pt[1][3]-pt[0][3]));
       pt_out=bez.f_v(u, v);
-      TEST_ASSERT(pt_out==m*(pt[0][3]-pt[0][2]));
+      TEST_ASSERT(pt_out==static_cast<data_type>(m)*(pt[0][3]-pt[0][2]));
       u=1; v=1;
       pt_out=bez.f_u(u, v);
-      TEST_ASSERT(pt_out==n*(pt[3][3]-pt[2][3]));
+      TEST_ASSERT(pt_out==static_cast<data_type>(n)*(pt[3][3]-pt[2][3]));
       pt_out=bez.f_v(u, v);
-      TEST_ASSERT(pt_out==m*(pt[3][3]-pt[3][2]));
+      TEST_ASSERT(pt_out==static_cast<data_type>(m)*(pt[3][3]-pt[3][2]));
 
       // test evaluation at interior point u=v=1/2
       u=0.5; v=0.5;
@@ -837,32 +846,32 @@ class bezier_surface_test_suite : public Test::Suite
       // test evaluation at corners
       u=0; v=0;
       pt_out=bez.f_uu(u, v);
-      TEST_ASSERT(pt_out==n*(n-1)*(pt[2][0]-2*pt[1][0]+pt[0][0]));
+      TEST_ASSERT(pt_out==static_cast<data_type>(n)*(n-1)*(pt[2][0]-2*pt[1][0]+pt[0][0]));
       pt_out=bez.f_uv(u, v);
-      TEST_ASSERT(pt_out==n*m*(pt[1][1]-pt[1][0]-pt[0][1]+pt[0][0]));
+      TEST_ASSERT(pt_out==static_cast<data_type>(n)*m*(pt[1][1]-pt[1][0]-pt[0][1]+pt[0][0]));
       pt_out=bez.f_vv(u, v);
-      TEST_ASSERT(pt_out==m*(m-1)*(pt[0][2]-2*pt[0][1]+pt[0][0]));
+      TEST_ASSERT(pt_out==static_cast<data_type>(m)*(m-1)*(pt[0][2]-2*pt[0][1]+pt[0][0]));
       u=1; v=0;
       pt_out=bez.f_uu(u, v);
-      TEST_ASSERT(pt_out==n*(n-1)*(pt[3][0]-2*pt[2][0]+pt[1][0]));
+      TEST_ASSERT(pt_out==static_cast<data_type>(n)*(n-1)*(pt[3][0]-2*pt[2][0]+pt[1][0]));
       pt_out=bez.f_uv(u, v);
-      TEST_ASSERT(pt_out==n*m*(pt[3][1]-pt[3][0]-pt[2][1]+pt[2][0]));
+      TEST_ASSERT(pt_out==static_cast<data_type>(n)*m*(pt[3][1]-pt[3][0]-pt[2][1]+pt[2][0]));
       pt_out=bez.f_vv(u, v);
-      TEST_ASSERT(pt_out==m*(m-1)*(pt[3][2]-2*pt[3][1]+pt[3][0]));
+      TEST_ASSERT(pt_out==static_cast<data_type>(m)*(m-1)*(pt[3][2]-2*pt[3][1]+pt[3][0]));
       u=0; v=1;
       pt_out=bez.f_uu(u, v);
-      TEST_ASSERT(pt_out==n*(n-1)*(pt[2][3]-2*pt[1][3]+pt[0][3]));
+      TEST_ASSERT(pt_out==static_cast<data_type>(n)*(n-1)*(pt[2][3]-2*pt[1][3]+pt[0][3]));
       pt_out=bez.f_uv(u, v);
-      TEST_ASSERT(pt_out==n*m*(pt[1][3]-pt[1][2]-pt[0][3]+pt[0][2]));
+      TEST_ASSERT(pt_out==static_cast<data_type>(n)*m*(pt[1][3]-pt[1][2]-pt[0][3]+pt[0][2]));
       pt_out=bez.f_vv(u, v);
-      TEST_ASSERT(pt_out==m*(m-1)*(pt[0][3]-2*pt[0][2]+pt[0][1]));
+      TEST_ASSERT(pt_out==static_cast<data_type>(m)*(m-1)*(pt[0][3]-2*pt[0][2]+pt[0][1]));
       u=1; v=1;
       pt_out=bez.f_uu(u, v);
-      TEST_ASSERT(pt_out==n*(n-1)*(pt[3][3]-2*pt[2][3]+pt[1][3]));
+      TEST_ASSERT(pt_out==static_cast<data_type>(n)*(n-1)*(pt[3][3]-2*pt[2][3]+pt[1][3]));
       pt_out=bez.f_uv(u, v);
-      TEST_ASSERT(pt_out==n*m*(pt[3][3]-pt[3][2]-pt[2][3]+pt[2][2]));
+      TEST_ASSERT(pt_out==static_cast<data_type>(n)*m*(pt[3][3]-pt[3][2]-pt[2][3]+pt[2][2]));
       pt_out=bez.f_vv(u, v);
-      TEST_ASSERT(pt_out==m*(m-1)*(pt[3][3]-2*pt[3][2]+pt[3][1]));
+      TEST_ASSERT(pt_out==static_cast<data_type>(m)*(m-1)*(pt[3][3]-2*pt[3][2]+pt[3][1]));
 
       // test evaluation at interior point u=v=1/2
       u=0.5; v=0.5;
@@ -927,40 +936,40 @@ class bezier_surface_test_suite : public Test::Suite
       // test evaluation at corners
       u=0; v=0;
       pt_out=bez.f_uuu(u, v);
-      TEST_ASSERT(pt_out==n*(n-1)*(n-2)*(pt[3][0]-3*pt[2][0]+3*pt[1][0]-pt[0][0]));
+      TEST_ASSERT(pt_out==static_cast<data_type>(n)*(n-1)*(n-2)*(pt[3][0]-3*pt[2][0]+3*pt[1][0]-pt[0][0]));
       pt_out=bez.f_uuv(u, v);
-      TEST_ASSERT(pt_out==n*(n-1)*m*((pt[2][1]-pt[2][0])-2*(pt[1][1]-pt[1][0])+(pt[0][1]-pt[0][0])));
+      TEST_ASSERT(pt_out==static_cast<data_type>(n)*(n-1)*m*((pt[2][1]-pt[2][0])-2*(pt[1][1]-pt[1][0])+(pt[0][1]-pt[0][0])));
       pt_out=bez.f_uvv(u, v);
-      TEST_ASSERT(pt_out==n*m*(m-1)*((pt[1][2]-pt[0][2])-2*(pt[1][1]-pt[0][1])+(pt[1][0]-pt[0][0])));
+      TEST_ASSERT(pt_out==static_cast<data_type>(n)*m*(m-1)*((pt[1][2]-pt[0][2])-2*(pt[1][1]-pt[0][1])+(pt[1][0]-pt[0][0])));
       pt_out=bez.f_vvv(u, v);
-      TEST_ASSERT(pt_out==m*(m-1)*(m-2)*(pt[0][3]-3*pt[0][2]+3*pt[0][1]-pt[0][0]));
+      TEST_ASSERT(pt_out==static_cast<data_type>(m)*(m-1)*(m-2)*(pt[0][3]-3*pt[0][2]+3*pt[0][1]-pt[0][0]));
       u=1; v=0;
       pt_out=bez.f_uuu(u, v);
-      TEST_ASSERT(pt_out==n*(n-1)*(n-2)*(pt[3][0]-3*pt[2][0]+3*pt[1][0]-pt[0][0]));
+      TEST_ASSERT(pt_out==static_cast<data_type>(n)*(n-1)*(n-2)*(pt[3][0]-3*pt[2][0]+3*pt[1][0]-pt[0][0]));
       pt_out=bez.f_uuv(u, v);
-      TEST_ASSERT(pt_out==n*(n-1)*m*((pt[3][1]-pt[3][0])-2*(pt[2][1]-pt[2][0])+(pt[1][1]-pt[1][0])));
+      TEST_ASSERT(pt_out==static_cast<data_type>(n)*(n-1)*m*((pt[3][1]-pt[3][0])-2*(pt[2][1]-pt[2][0])+(pt[1][1]-pt[1][0])));
       pt_out=bez.f_uvv(u, v);
-      TEST_ASSERT(pt_out==n*m*(m-1)*((pt[3][2]-pt[2][2])-2*(pt[3][1]-pt[2][1])+(pt[3][0]-pt[2][0])));
+      TEST_ASSERT(pt_out==static_cast<data_type>(n)*m*(m-1)*((pt[3][2]-pt[2][2])-2*(pt[3][1]-pt[2][1])+(pt[3][0]-pt[2][0])));
       pt_out=bez.f_vvv(u, v);
-      TEST_ASSERT(pt_out==m*(m-1)*(m-2)*(pt[3][3]-3*pt[3][2]+3*pt[3][1]-pt[3][0]));
+      TEST_ASSERT(pt_out==static_cast<data_type>(m)*(m-1)*(m-2)*(pt[3][3]-3*pt[3][2]+3*pt[3][1]-pt[3][0]));
       u=0; v=1;
       pt_out=bez.f_uuu(u, v);
-      TEST_ASSERT(pt_out==n*(n-1)*(n-2)*(pt[3][3]-3*pt[2][3]+3*pt[1][3]-pt[0][3]));
+      TEST_ASSERT(pt_out==static_cast<data_type>(n)*(n-1)*(n-2)*(pt[3][3]-3*pt[2][3]+3*pt[1][3]-pt[0][3]));
       pt_out=bez.f_uuv(u, v);
-      TEST_ASSERT(pt_out==n*(n-1)*m*((pt[2][3]-pt[2][2])-2*(pt[1][3]-pt[1][2])+(pt[0][3]-pt[0][2])));
+      TEST_ASSERT(pt_out==static_cast<data_type>(n)*(n-1)*m*((pt[2][3]-pt[2][2])-2*(pt[1][3]-pt[1][2])+(pt[0][3]-pt[0][2])));
       pt_out=bez.f_uvv(u, v);
-      TEST_ASSERT(pt_out==n*m*(m-1)*((pt[1][3]-pt[0][3])-2*(pt[1][2]-pt[0][2])+(pt[1][1]-pt[0][1])));
+      TEST_ASSERT(pt_out==static_cast<data_type>(n)*m*(m-1)*((pt[1][3]-pt[0][3])-2*(pt[1][2]-pt[0][2])+(pt[1][1]-pt[0][1])));
       pt_out=bez.f_vvv(u, v);
-      TEST_ASSERT(pt_out==m*(m-1)*(m-2)*(pt[0][3]-3*pt[0][2]+3*pt[0][1]-pt[0][0]));
+      TEST_ASSERT(pt_out==static_cast<data_type>(m)*(m-1)*(m-2)*(pt[0][3]-3*pt[0][2]+3*pt[0][1]-pt[0][0]));
       u=1; v=1;
       pt_out=bez.f_uuu(u, v);
-      TEST_ASSERT(pt_out==n*(n-1)*(n-2)*(pt[3][3]-3*pt[2][3]+3*pt[1][3]-pt[0][3]));
+      TEST_ASSERT(pt_out==static_cast<data_type>(n)*(n-1)*(n-2)*(pt[3][3]-3*pt[2][3]+3*pt[1][3]-pt[0][3]));
       pt_out=bez.f_uuv(u, v);
-      TEST_ASSERT(pt_out==n*(n-1)*m*((pt[3][3]-pt[3][2])-2*(pt[2][3]-pt[2][2])+(pt[1][3]-pt[1][2])));
+      TEST_ASSERT(pt_out==static_cast<data_type>(n)*(n-1)*m*((pt[3][3]-pt[3][2])-2*(pt[2][3]-pt[2][2])+(pt[1][3]-pt[1][2])));
       pt_out=bez.f_uvv(u, v);
-      TEST_ASSERT(pt_out==n*m*(m-1)*((pt[3][3]-pt[2][3])-2*(pt[3][2]-pt[2][2])+(pt[3][1]-pt[2][1])));
+      TEST_ASSERT(pt_out==static_cast<data_type>(n)*m*(m-1)*((pt[3][3]-pt[2][3])-2*(pt[3][2]-pt[2][2])+(pt[3][1]-pt[2][1])));
       pt_out=bez.f_vvv(u, v);
-      TEST_ASSERT(pt_out==m*(m-1)*(m-2)*(pt[3][3]-3*pt[3][2]+3*pt[3][1]-pt[3][0]));
+      TEST_ASSERT(pt_out==static_cast<data_type>(m)*(m-1)*(m-2)*(pt[3][3]-3*pt[3][2]+3*pt[3][1]-pt[3][0]));
 
       // test evaluation at interior point u=v=1/2
       u=0.5; v=0.5;
@@ -1034,31 +1043,31 @@ class bezier_surface_test_suite : public Test::Suite
 
         // test evaluation at corners
         u=0; v=0;
-        curv_ref=-0.015876322406928;
+        curv_ref=static_cast<data_type>(-0.015876322406928);
         eli::geom::surface::mean_curvature(curv_out, bez, u, v);
         TEST_ASSERT(std::abs(curv_ref-curv_out)<1e-6);
         u=1; v=0;
-        curv_ref=-0.015876322406928;
+        curv_ref=static_cast<data_type>(-0.015876322406928);
         eli::geom::surface::mean_curvature(curv_out, bez, u, v);
         TEST_ASSERT(std::abs(curv_ref-curv_out)<1e-6);
         u=0; v=1;
-        curv_ref=-0.015876322406928;
+        curv_ref=static_cast<data_type>(-0.015876322406928);
         eli::geom::surface::mean_curvature(curv_out, bez, u, v);
         TEST_ASSERT(std::abs(curv_ref-curv_out)<1e-6);
         u=1; v=1;
-        curv_ref=-0.015876322406928;
+        curv_ref=static_cast<data_type>(-0.015876322406928);
         eli::geom::surface::mean_curvature(curv_out, bez, u, v);
         TEST_ASSERT(std::abs(curv_ref-curv_out)<1e-6);
 
         // test at interior point u=v=1/2
         u=0.5; v=0.5;
-        curv_ref=-0.008333333333333;
+        curv_ref=static_cast<data_type>(-0.008333333333333);
         eli::geom::surface::mean_curvature(curv_out, bez, u, v);
         TEST_ASSERT(std::abs(curv_ref-curv_out)<1e-6);
 
         // test at interior point u=1/4 & v=3/4
         u=0.25; v=0.75;
-        curv_ref=-0.014099238414151;
+        curv_ref=static_cast<data_type>(-0.014099238414151);
         eli::geom::surface::mean_curvature(curv_out, bez, u, v);
         TEST_ASSERT(std::abs(curv_ref-curv_out)<1e-6);
       }
@@ -1069,31 +1078,31 @@ class bezier_surface_test_suite : public Test::Suite
 
         // test evaluation at corners
         u=0; v=0;
-        curv_ref=-0.00061728395;
+        curv_ref=static_cast<data_type>(-0.00061728395);
         eli::geom::surface::gaussian_curvature(curv_out, bez, u, v);
         TEST_ASSERT(std::abs(curv_ref-curv_out)<1e-10);
         u=1; v=0;
-        curv_ref=-0.00061728395;
+        curv_ref=static_cast<data_type>(-0.00061728395);
         eli::geom::surface::gaussian_curvature(curv_out, bez, u, v);
         TEST_ASSERT(std::abs(curv_ref-curv_out)<1e-10);
         u=0; v=1;
-        curv_ref=-0.00061728395;
+        curv_ref=static_cast<data_type>(-0.00061728395);
         eli::geom::surface::gaussian_curvature(curv_out, bez, u, v);
         TEST_ASSERT(std::abs(curv_ref-curv_out)<1e-10);
         u=1; v=1;
-        curv_ref=-0.00061728395;
+        curv_ref=static_cast<data_type>(-0.00061728395);
         eli::geom::surface::gaussian_curvature(curv_out, bez, u, v);
         TEST_ASSERT(std::abs(curv_ref-curv_out)<1e-10);
 
         // test at interior point u=v=1/2
         u=0.5; v=0.5;
-        curv_ref=6.944444444444444e-5;
+        curv_ref=static_cast<data_type>(6.944444444444444e-5);
         eli::geom::surface::gaussian_curvature(curv_out, bez, u, v);
         TEST_ASSERT(std::abs(curv_ref-curv_out)<1e-10);
 
         // test at interior point u=1/4 & v=3/4
         u=0.25; v=0.75;
-        curv_ref=5.381754978392456e-05;
+        curv_ref=static_cast<data_type>(5.381754978392456e-05);
         eli::geom::surface::gaussian_curvature(curv_out, bez, u, v);
         TEST_ASSERT(std::abs(curv_ref-curv_out)<1e-10);
       }
@@ -1155,9 +1164,9 @@ class bezier_surface_test_suite : public Test::Suite
         eli::geom::surface::principal_curvature(kmax_out, kmin_out, kmax_dir_out, kmin_dir_out, n_out, bez, u, v);
         eli::geom::surface::mean_curvature(H_out, bez, u, v);
         eli::geom::surface::gaussian_curvature(K_out, bez, u, v);
-        kmax_dir_ref <<  0.70710678,          0,  0.70710678;
-        kmin_dir_ref <<  0.57735027, 0.57735027, -0.57735027;
-        n_ref        << -0.40824829, 0.81649658,  0.40824829;
+        kmax_dir_ref << static_cast<data_type>( 0.70710678), static_cast<data_type>(0),          static_cast<data_type>( 0.70710678);
+        kmin_dir_ref << static_cast<data_type>( 0.57735027), static_cast<data_type>(0.57735027), static_cast<data_type>(-0.57735027);
+        n_ref        << static_cast<data_type>(-0.40824829), static_cast<data_type>(0.81649658), static_cast<data_type>( 0.40824829);
         TEST_ASSERT(std::abs((kmax_out+kmin_out)/2-H_out)<std::numeric_limits<data_type>::epsilon());
         TEST_ASSERT(std::abs((kmax_out*kmin_out)-K_out)<std::numeric_limits<data_type>::epsilon());
         TEST_ASSERT((kmax_dir_out - kmax_dir_ref).norm()<1e-7);
@@ -1170,9 +1179,9 @@ class bezier_surface_test_suite : public Test::Suite
         eli::geom::surface::principal_curvature(kmax_out, kmin_out, kmax_dir_out, kmin_dir_out, n_out, bez, u, v);
         eli::geom::surface::mean_curvature(H_out, bez, u, v);
         eli::geom::surface::gaussian_curvature(K_out, bez, u, v);
-        kmax_dir_ref <<  0.70710678,          0, -0.70710678;
-        kmin_dir_ref << -0.57735027, 0.57735027, -0.57735027;
-        n_ref        <<  0.40824829, 0.81649658,  0.40824829;
+        kmax_dir_ref << static_cast<data_type>( 0.70710678), static_cast<data_type>(0),          static_cast<data_type>(-0.70710678);
+        kmin_dir_ref << static_cast<data_type>(-0.57735027), static_cast<data_type>(0.57735027), static_cast<data_type>(-0.57735027);
+        n_ref        << static_cast<data_type>( 0.40824829), static_cast<data_type>(0.81649658), static_cast<data_type>( 0.40824829);
         TEST_ASSERT(std::abs((kmax_out+kmin_out)/2-H_out)<std::numeric_limits<data_type>::epsilon());
         TEST_ASSERT(std::abs((kmax_out*kmin_out)-K_out)<std::numeric_limits<data_type>::epsilon());
         TEST_ASSERT((kmax_dir_out - kmax_dir_ref).norm()<1e-7);
@@ -1185,9 +1194,9 @@ class bezier_surface_test_suite : public Test::Suite
         eli::geom::surface::principal_curvature(kmax_out, kmin_out, kmax_dir_out, kmin_dir_out, n_out, bez, u, v);
         eli::geom::surface::mean_curvature(H_out, bez, u, v);
         eli::geom::surface::gaussian_curvature(K_out, bez, u, v);
-        kmax_dir_ref <<  0.70710678,          0, -0.70710678;
-        kmin_dir_ref << -0.57735027,-0.57735027, -0.57735027;
-        n_ref        << -0.40824829, 0.81649658, -0.40824829;
+        kmax_dir_ref << static_cast<data_type>( 0.70710678), static_cast<data_type>( 0),          static_cast<data_type>(-0.70710678);
+        kmin_dir_ref << static_cast<data_type>(-0.57735027), static_cast<data_type>(-0.57735027), static_cast<data_type>(-0.57735027);
+        n_ref        << static_cast<data_type>(-0.40824829), static_cast<data_type>( 0.81649658), static_cast<data_type>(-0.40824829);
         TEST_ASSERT(std::abs((kmax_out+kmin_out)/2-H_out)<std::numeric_limits<data_type>::epsilon());
         TEST_ASSERT(std::abs((kmax_out*kmin_out)-K_out)<std::numeric_limits<data_type>::epsilon());
         TEST_ASSERT((kmax_dir_out - kmax_dir_ref).norm()<1e-7);
@@ -1200,9 +1209,9 @@ class bezier_surface_test_suite : public Test::Suite
         eli::geom::surface::principal_curvature(kmax_out, kmin_out, kmax_dir_out, kmin_dir_out, n_out, bez, u, v);
         eli::geom::surface::mean_curvature(H_out, bez, u, v);
         eli::geom::surface::gaussian_curvature(K_out, bez, u, v);
-        kmax_dir_ref <<  0.70710678,          0,  0.70710678;
-        kmin_dir_ref <<  0.57735027,-0.57735027, -0.57735027;
-        n_ref        <<  0.40824829, 0.81649658, -0.40824829;
+        kmax_dir_ref << static_cast<data_type>( 0.70710678), static_cast<data_type>( 0),          static_cast<data_type>( 0.70710678);
+        kmin_dir_ref << static_cast<data_type>( 0.57735027), static_cast<data_type>(-0.57735027), static_cast<data_type>(-0.57735027);
+        n_ref        << static_cast<data_type>( 0.40824829), static_cast<data_type>( 0.81649658), static_cast<data_type>(-0.40824829);
         TEST_ASSERT(std::abs((kmax_out+kmin_out)/2-H_out)<std::numeric_limits<data_type>::epsilon());
         TEST_ASSERT(std::abs((kmax_out*kmin_out)-K_out)<std::numeric_limits<data_type>::epsilon());
         TEST_ASSERT((kmax_dir_out - kmax_dir_ref).norm()<1e-7);
@@ -1234,9 +1243,9 @@ class bezier_surface_test_suite : public Test::Suite
         eli::geom::surface::principal_curvature(kmax_out, kmin_out, kmax_dir_out, kmin_dir_out, n_out, bez, u, v);
         eli::geom::surface::mean_curvature(H_out, bez, u, v);
         eli::geom::surface::gaussian_curvature(K_out, bez, u, v);
-        kmax_dir_ref <<  0.70710678,          0,  -0.70710678;
-        kmin_dir_ref << -0.69879657, -0.15286175, -0.69879657;
-        n_ref        << -0.10808958,  0.98824758, -0.10808958;
+        kmax_dir_ref << static_cast<data_type>( 0.70710678), static_cast<data_type>(0),           static_cast<data_type>(-0.70710678);
+        kmin_dir_ref << static_cast<data_type>(-0.69879657), static_cast<data_type>(-0.15286175), static_cast<data_type>(-0.69879657);
+        n_ref        << static_cast<data_type>(-0.10808958), static_cast<data_type>( 0.98824758), static_cast<data_type>(-0.10808958);
         TEST_ASSERT(std::abs((kmax_out+kmin_out)/2-H_out)<std::numeric_limits<data_type>::epsilon());
         TEST_ASSERT(std::abs((kmax_out*kmin_out)-K_out)<std::numeric_limits<data_type>::epsilon());
         TEST_ASSERT((kmax_dir_out - kmax_dir_ref).norm()<1e-7);
@@ -1584,36 +1593,36 @@ class bezier_surface_test_suite : public Test::Suite
         TEST_ASSERT(bez.degree_v()==bez2.degree_v());
 
         // set the reference control points
-        pt_ref[0][0] <<  -0.00878906, 0.0610352,  15;
-        pt_ref[1][0] <<   2.5177734,  6.3821289,  15;
-        pt_ref[2][0] <<   2.8060547, -0.16982422, 15;
-        pt_ref[3][0] <<   8.0060547,  2.5301758,  15;
-        pt_ref[4][0] <<   4.1177734,  3.9821289,  15;
-        pt_ref[5][0] <<   9.9912109,  6.0610352,  15;
-        pt_ref[0][1] <<  -0.00878906, 0.0610352,  11;
-        pt_ref[1][1] <<   2.5177734,  6.3821289,  11;
-        pt_ref[2][1] <<   2.8060547, -0.16982422, 11;
-        pt_ref[3][1] <<   8.0060547,  2.5301758,  11;
-        pt_ref[4][1] <<   4.1177734,  3.9821289,  11;
-        pt_ref[5][1] <<   9.9912109,  6.0610352,  11;
-        pt_ref[0][2] <<  -0.00878906, 0.0610352,   3;
-        pt_ref[1][2] <<   2.5177734,  6.3821289,   3;
-        pt_ref[2][2] <<   2.8060547, -0.16982422,  3;
-        pt_ref[3][2] <<   8.0060547,  2.5301758,   3;
-        pt_ref[4][2] <<   4.1177734,  3.9821289,   3;
-        pt_ref[5][2] <<   9.9912109,  6.0610352,   3;
-        pt_ref[0][3] <<  -0.00878906, 0.0610352,   0;
-        pt_ref[1][3] <<   2.5177734,  6.3821289,   0;
-        pt_ref[2][3] <<   2.8060547, -0.16982422,  0;
-        pt_ref[3][3] <<   8.0060547,  2.5301758,   0;
-        pt_ref[4][3] <<   4.1177734,  3.9821289,   0;
-        pt_ref[5][3] <<   9.9912109,  6.0610352,   0;
-        pt_ref[0][4] <<  -0.00878906, 0.0610352,  -5;
-        pt_ref[1][4] <<   2.5177734,  6.3821289,  -5;
-        pt_ref[2][4] <<   2.8060547, -0.16982422, -5;
-        pt_ref[3][4] <<   8.0060547,  2.5301758,  -5;
-        pt_ref[4][4] <<   4.1177734,  3.9821289,  -5;
-        pt_ref[5][4] <<   9.9912109,  6.0610352,  -5;
+        pt_ref[0][0] <<  static_cast<data_type>(-0.00878906), static_cast<data_type>(0.0610352),  15;
+        pt_ref[1][0] <<  static_cast<data_type>( 2.5177734),  static_cast<data_type>( 6.3821289),  15;
+        pt_ref[2][0] <<  static_cast<data_type>( 2.8060547),  static_cast<data_type>(-0.16982422), 15;
+        pt_ref[3][0] <<  static_cast<data_type>( 8.0060547),  static_cast<data_type>( 2.5301758),  15;
+        pt_ref[4][0] <<  static_cast<data_type>( 4.1177734),  static_cast<data_type>( 3.9821289),  15;
+        pt_ref[5][0] <<  static_cast<data_type>( 9.9912109),  static_cast<data_type>( 6.0610352),  15;
+        pt_ref[0][1] <<  static_cast<data_type>(-0.00878906), static_cast<data_type>( 0.0610352),  11;
+        pt_ref[1][1] <<  static_cast<data_type>( 2.5177734),  static_cast<data_type>( 6.3821289),  11;
+        pt_ref[2][1] <<  static_cast<data_type>( 2.8060547),  static_cast<data_type>(-0.16982422), 11;
+        pt_ref[3][1] <<  static_cast<data_type>( 8.0060547),  static_cast<data_type>( 2.5301758),  11;
+        pt_ref[4][1] <<  static_cast<data_type>( 4.1177734),  static_cast<data_type>( 3.9821289),  11;
+        pt_ref[5][1] <<  static_cast<data_type>( 9.9912109),  static_cast<data_type>( 6.0610352),  11;
+        pt_ref[0][2] <<  static_cast<data_type>(-0.00878906), static_cast<data_type>( 0.0610352),   3;
+        pt_ref[1][2] <<  static_cast<data_type>( 2.5177734),  static_cast<data_type>( 6.3821289),   3;
+        pt_ref[2][2] <<  static_cast<data_type>( 2.8060547),  static_cast<data_type>(-0.16982422),  3;
+        pt_ref[3][2] <<  static_cast<data_type>( 8.0060547),  static_cast<data_type>( 2.5301758),   3;
+        pt_ref[4][2] <<  static_cast<data_type>( 4.1177734),  static_cast<data_type>( 3.9821289),   3;
+        pt_ref[5][2] <<  static_cast<data_type>( 9.9912109),  static_cast<data_type>( 6.0610352),   3;
+        pt_ref[0][3] <<  static_cast<data_type>(-0.00878906), static_cast<data_type>( 0.0610352),   0;
+        pt_ref[1][3] <<  static_cast<data_type>( 2.5177734),  static_cast<data_type>( 6.3821289),   0;
+        pt_ref[2][3] <<  static_cast<data_type>( 2.8060547),  static_cast<data_type>(-0.16982422),  0;
+        pt_ref[3][3] <<  static_cast<data_type>( 8.0060547),  static_cast<data_type>( 2.5301758),   0;
+        pt_ref[4][3] <<  static_cast<data_type>( 4.1177734),  static_cast<data_type>( 3.9821289),   0;
+        pt_ref[5][3] <<  static_cast<data_type>( 9.9912109),  static_cast<data_type>( 6.0610352),   0;
+        pt_ref[0][4] <<  static_cast<data_type>(-0.00878906), static_cast<data_type>( 0.0610352),  -5;
+        pt_ref[1][4] <<  static_cast<data_type>( 2.5177734),  static_cast<data_type>( 6.3821289),  -5;
+        pt_ref[2][4] <<  static_cast<data_type>( 2.8060547),  static_cast<data_type>(-0.16982422), -5;
+        pt_ref[3][4] <<  static_cast<data_type>( 8.0060547),  static_cast<data_type>( 2.5301758),  -5;
+        pt_ref[4][4] <<  static_cast<data_type>( 4.1177734),  static_cast<data_type>( 3.9821289),  -5;
+        pt_ref[5][4] <<  static_cast<data_type>( 9.9912109),  static_cast<data_type>( 6.0610352),  -5;
 
         // test if get the correct control points
         for (index_type j=0; j<=m; ++j)
@@ -2147,7 +2156,7 @@ class bezier_surface_test_suite : public Test::Suite
         TEST_ASSERT(bez.f(u, v)==bez2.f(u, v));
         TEST_ASSERT(bez.f_u(u, v)==bez2.f_u(u, v));
 
-        v=0.2321;
+        v=static_cast<data_type>(0.2321);
         TEST_ASSERT(bez.f(u, v)==bez2.f(u, v));
         TEST_ASSERT(bez.f_u(u, v)==bez2.f_u(u, v));
 
@@ -2164,7 +2173,7 @@ class bezier_surface_test_suite : public Test::Suite
         TEST_ASSERT(bez.f(u, v)==bez2.f(u, v));
         TEST_ASSERT(bez.f_u(u, v)==bez2.f_u(u, v));
 
-        v=0.2321;
+        v=static_cast<data_type>(0.2321);
         TEST_ASSERT(bez.f(u, v)==bez2.f(u, v));
         TEST_ASSERT((bez.f_u(u, v)-bez2.f_u(u, v)).norm() < 50*eps);
 
@@ -2192,7 +2201,7 @@ class bezier_surface_test_suite : public Test::Suite
         TEST_ASSERT(bez.f(u, v)==bez2.f(u, v));
         TEST_ASSERT((bez.f_v(u, v)-bez2.f_v(u, v)).norm() < 50*eps);
 
-        u=0.2321;
+        u=static_cast<data_type>(0.2321);
         TEST_ASSERT(bez.f(u, v)==bez2.f(u, v));
         TEST_ASSERT((bez.f_v(u, v)-bez2.f_v(u, v)).norm() < 50*eps);
 
@@ -2209,7 +2218,7 @@ class bezier_surface_test_suite : public Test::Suite
         TEST_ASSERT(bez.f(u, v)==bez2.f(u, v));
         TEST_ASSERT(bez.f_v(u, v)==bez2.f_v(u, v));
 
-        u=0.2321;
+        u=static_cast<data_type>(0.2321);
         TEST_ASSERT(bez.f(u, v)==bez2.f(u, v));
         TEST_ASSERT(bez.f_v(u, v)==bez2.f_v(u, v));
 
