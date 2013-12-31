@@ -221,7 +221,7 @@ namespace eli
                 typename fit_container_type::error_code ec;
 
                 ec=fcon.get_constraint(indexes[i], ci);
-                if (ec!=fit_container_type::NO_ERROR)
+                if (ec!=fit_container_type::NO_ERRORS)
                 {
                   assert(false);
                 }
@@ -332,7 +332,7 @@ namespace eli
               typename fit_container_type::error_code ec;
 
               ec=fcon.get_constraint(indexes[i], ci);
-              if (ec!=fit_container_type::NO_ERROR)
+              if (ec!=fit_container_type::NO_ERRORS)
               {
                 assert(false);
               }

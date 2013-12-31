@@ -253,7 +253,7 @@ class piecewise_surface_creator_test_suite : public Test::Suite
         {
           c.set_control_point(cp[i], i);
         }
-        TEST_ASSERT(pc.push_back(c, 0.25)==piecewise_curve_type::NO_ERROR);
+        TEST_ASSERT(pc.push_back(c, 0.25)==piecewise_curve_type::NO_ERRORS);
 
         // set 2nd quadrant curve
         cp[0] <<  0, 1, 0;
@@ -264,7 +264,7 @@ class piecewise_surface_creator_test_suite : public Test::Suite
         {
           c.set_control_point(cp[i], i);
         }
-        TEST_ASSERT(pc.push_back(c, 0.25)==piecewise_curve_type::NO_ERROR);
+        TEST_ASSERT(pc.push_back(c, 0.25)==piecewise_curve_type::NO_ERRORS);
 
         piecewise_surface_type ps;
 

@@ -258,7 +258,7 @@ namespace eli
           typedef tol__ tolerance_type;
           enum error_code
           {
-            NO_ERROR=0,
+            NO_ERRORS=0,
             INVALID_INDEX=1,
             INDEX_NOT_FOUND=2,
             INVALID_PARAM=50,
@@ -544,7 +544,7 @@ namespace eli
             for (i=0, it=itb; it!=ite; ++i, ++it)
             {
               error_code err=push_back(*it);
-              if (err!=NO_ERROR)
+              if (err!=NO_ERRORS)
               {
                 segments.clear();
                 return err;
@@ -553,7 +553,7 @@ namespace eli
 
             assert(check_continuity(eli::geom::general::C0));
 
-            return NO_ERROR;
+            return NO_ERRORS;
           }
 
           template<typename it__, typename itd__>
@@ -567,7 +567,7 @@ namespace eli
             for (i=0, it=itb, itdt=itd; it!=ite; ++i, ++it, ++itdt)
             {
               error_code err=push_back(*it, *itdt);
-              if (err!=NO_ERROR)
+              if (err!=NO_ERRORS)
               {
                 segments.clear();
                 return err;
@@ -576,7 +576,7 @@ namespace eli
 
             assert(check_continuity(eli::geom::general::C0));
 
-            return NO_ERROR;
+            return NO_ERRORS;
           }
 
           error_code push_front(const curve_type &curve, const data_type &dt=1.0)
@@ -602,7 +602,7 @@ namespace eli
 
             assert(check_continuity(eli::geom::general::C0));
 
-            return NO_ERROR;
+            return NO_ERRORS;
           }
 
           error_code push_front(const piecewise<curve__, data_type, dim__, tol__> &p)
@@ -613,13 +613,13 @@ namespace eli
             for (itp=p.segments.rbegin(); itp!=p.segments.rend(); ++itp)
             {
               err=push_front(itp->second, p.get_delta_t(itp));
-              if (err!=NO_ERROR)
+              if (err!=NO_ERRORS)
               {
                 return err;
               }
             }
 
-            return NO_ERROR;
+            return NO_ERRORS;
           }
 
           error_code push_back(const curve_type &curve, const data_type &dt=1.0)
@@ -643,7 +643,7 @@ namespace eli
 
             assert(check_continuity(eli::geom::general::C0));
 
-            return NO_ERROR;
+            return NO_ERRORS;
           }
 
           error_code push_back(const piecewise<curve__, data_type, dim__, tol__> &p)
@@ -654,13 +654,13 @@ namespace eli
             for (itp=p.segments.begin(); itp!=p.segments.end(); ++itp)
             {
               err=push_back(itp->second, p.get_delta_t(itp));
-              if (err!=NO_ERROR)
+              if (err!=NO_ERRORS)
               {
                 return err;
               }
             }
 
-            return NO_ERROR;
+            return NO_ERRORS;
           }
 
           error_code get(curve_type &curve, const index_type &index) const
@@ -681,7 +681,7 @@ namespace eli
 
             curve=scit->second;
             dt=get_delta_t(scit);
-            return NO_ERROR;
+            return NO_ERRORS;
           }
 
           error_code replace(const curve_type &curve, const index_type &index)
@@ -725,7 +725,7 @@ namespace eli
 
             assert(check_continuity(eli::geom::general::C0));
 
-            return NO_ERROR;
+            return NO_ERRORS;
           }
 
           error_code replace(const curve_type &curve, const index_type &index0, const index_type &index1)
@@ -777,7 +777,7 @@ namespace eli
 
             assert(check_continuity(eli::geom::general::C0));
 
-            return NO_ERROR;
+            return NO_ERRORS;
           }
 
           error_code replace(const piecewise<curve__, data_type, dim__> &p, const index_type &index)
@@ -857,7 +857,7 @@ namespace eli
 
             assert(check_continuity(eli::geom::general::C0));
 
-            return NO_ERROR;
+            return NO_ERRORS;
           }
 
           /** index0 - start index of segments to replace
@@ -946,7 +946,7 @@ namespace eli
 
             assert(check_continuity(eli::geom::general::C0));
 
-            return NO_ERROR;
+            return NO_ERRORS;
           }
 
           error_code split(const data_type &t)
@@ -963,9 +963,9 @@ namespace eli
               return INVALID_PARAM;
 
             if (tol.approximately_equal(tt, 0))
-            	return NO_ERROR;
+            	return NO_ERRORS;
             if (tol.approximately_equal(tt, 1))
-            	return NO_ERROR;
+            	return NO_ERRORS;
 
             // split the segment and replace
             return split_seg(it, tt);
@@ -1138,20 +1138,20 @@ namespace eli
 
               // put the ith segment and arc2 onto the end of the list of curves
               ec=pct0.push_back(cim1, dtim1*tim1_split);
-              if (ec!=NO_ERROR)
+              if (ec!=NO_ERRORS)
               {
                 assert(false);
                 return false;
               }
               ec=pct0.push_back(arc1, dtim1*(static_cast<data_type>(1)-tim1_split));
-              if (ec!=NO_ERROR)
+              if (ec!=NO_ERRORS)
               {
                 assert(false);
                 return false;
               }
 
               ec=replace(pct0, number_segments()-1);
-              if (ec!=NO_ERROR)
+              if (ec!=NO_ERRORS)
               {
                 assert(false);
                 return false;
@@ -1159,20 +1159,20 @@ namespace eli
 
               // put arc1 and the (i-1)st segment onto the front of the list of curves
               ec=pct1.push_front(ci, dti*(1-ti_split));
-              if (ec!=NO_ERROR)
+              if (ec!=NO_ERRORS)
               {
                 assert(false);
                 return false;
               }
               ec=pct1.push_front(arc2, dti*ti_split);
-              if (ec!=NO_ERROR)
+              if (ec!=NO_ERRORS)
               {
                 assert(false);
                 return false;
               }
 
               ec=replace(pct1, 0);
-              if (ec!=NO_ERROR)
+              if (ec!=NO_ERRORS)
               {
                 assert(false);
                 return false;
@@ -1185,14 +1185,14 @@ namespace eli
               if (tim1_split>0)
               {
             	ec=pct.push_back(cim1, dtim1*tim1_split);
-                if (ec!=NO_ERROR)
+                if (ec!=NO_ERRORS)
                 {
                   assert(false);
                   return false;
                 }
               }
               ec=pct.push_back(arc, dtim1*(1-tim1_split)+dti*ti_split);
-              if (ec!=NO_ERROR)
+              if (ec!=NO_ERRORS)
               {
                 assert(false);
                 return false;
@@ -1200,7 +1200,7 @@ namespace eli
               if (ti_split<1)
               {
             	ec=pct.push_back(ci, dti*(1-ti_split));
-                if (ec!=NO_ERROR)
+                if (ec!=NO_ERRORS)
                 {
                   assert(false);
                   return false;
@@ -1209,7 +1209,7 @@ namespace eli
 
               // replace the two segments with the piecewise curve
               ec=replace(pct, i-1, i+1);
-              if (ec!=NO_ERROR)
+              if (ec!=NO_ERRORS)
               {
                 assert(false);
                 return false;
@@ -1513,7 +1513,7 @@ namespace eli
 
             assert(check_continuity(eli::geom::general::C0));
 
-            return NO_ERROR;
+            return NO_ERRORS;
           }
 
           template<typename it__>

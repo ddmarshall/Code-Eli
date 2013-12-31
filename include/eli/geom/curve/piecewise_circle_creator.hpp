@@ -146,7 +146,7 @@ namespace eli
               c.set_control_point(cp[i], i);
             }
             err=pc.push_back(c, this->get_segment_dt(0));
-            if (err!=piecewise_curve_type::NO_ERROR)
+            if (err!=piecewise_curve_type::NO_ERRORS)
             {
               pc.clear();
               pc.set_t0(0);
@@ -163,7 +163,7 @@ namespace eli
               c.set_control_point(cp[i], i);
             }
             err=pc.push_back(c, this->get_segment_dt(1));
-            if (err!=piecewise_curve_type::NO_ERROR)
+            if (err!=piecewise_curve_type::NO_ERRORS)
             {
               pc.clear();
               pc.set_t0(0);
@@ -180,7 +180,7 @@ namespace eli
               c.set_control_point(cp[i], i);
             }
             err=pc.push_back(c, this->get_segment_dt(2));
-            if (err!=piecewise_curve_type::NO_ERROR)
+            if (err!=piecewise_curve_type::NO_ERRORS)
             {
               pc.clear();
               pc.set_t0(0);
@@ -197,7 +197,7 @@ namespace eli
               c.set_control_point(cp[i], i);
             }
             err=pc.push_back(c, this->get_segment_dt(3));
-            if (err!=piecewise_curve_type::NO_ERROR)
+            if (err!=piecewise_curve_type::NO_ERRORS)
             {
               pc.clear();
               pc.set_t0(0);

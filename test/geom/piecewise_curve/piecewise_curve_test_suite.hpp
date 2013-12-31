@@ -243,31 +243,31 @@ class piecewise_curve_test_suite : public Test::Suite
 
       // initialize by passing iterators to curve collection
       err=c1.set(bc, bc+2);
-      TEST_ASSERT(err==piecewise_curve_type::NO_ERROR);
+      TEST_ASSERT(err==piecewise_curve_type::NO_ERRORS);
       TEST_ASSERT(c1.number_segments()==2);
       err=c1.get(bc_out, dt_out, 0);
-      TEST_ASSERT(err==piecewise_curve_type::NO_ERROR);
+      TEST_ASSERT(err==piecewise_curve_type::NO_ERRORS);
       TEST_ASSERT(bc[0]==bc_out);
       TEST_ASSERT(dt_out==1);
       err=c1.get(bc_out, dt_out, 1);
-      TEST_ASSERT(err==piecewise_curve_type::NO_ERROR);
+      TEST_ASSERT(err==piecewise_curve_type::NO_ERRORS);
       TEST_ASSERT(bc[1]==bc_out);
       TEST_ASSERT(dt_out==1);
 
       // initialize by setting one at a time
       c1.clear();
       err=c1.push_back(bc[0], dt[0]);
-      TEST_ASSERT(err==piecewise_curve_type::NO_ERROR);
+      TEST_ASSERT(err==piecewise_curve_type::NO_ERRORS);
       TEST_ASSERT(c1.number_segments()==1);
       err=c1.push_back(bc[1], dt[1]);
-      TEST_ASSERT(err==piecewise_curve_type::NO_ERROR);
+      TEST_ASSERT(err==piecewise_curve_type::NO_ERRORS);
       TEST_ASSERT(c1.number_segments()==2);
       err=c1.get(bc_out, dt_out, 0);
-      TEST_ASSERT(err==piecewise_curve_type::NO_ERROR);
+      TEST_ASSERT(err==piecewise_curve_type::NO_ERRORS);
       TEST_ASSERT(bc[0]==bc_out);
       TEST_ASSERT(dt[0]==dt_out);
       err=c1.get(bc_out, dt_out, 1);
-      TEST_ASSERT(err==piecewise_curve_type::NO_ERROR);
+      TEST_ASSERT(err==piecewise_curve_type::NO_ERRORS);
       TEST_ASSERT(bc[1]==bc_out);
       TEST_ASSERT(dt[1]==dt_out);
 
@@ -288,9 +288,9 @@ class piecewise_curve_test_suite : public Test::Suite
         bc2.set_control_point(cntrl2a_in[i], i);
       }
       err=c1.push_front(bc2);
-      TEST_ASSERT(err==piecewise_curve_type::NO_ERROR);
+      TEST_ASSERT(err==piecewise_curve_type::NO_ERRORS);
       err=c1.get(bc_out, dt_out, 0);
-      TEST_ASSERT(err==piecewise_curve_type::NO_ERROR);
+      TEST_ASSERT(err==piecewise_curve_type::NO_ERRORS);
       TEST_ASSERT(bc2==bc_out);
       TEST_ASSERT(dt_out==1);
 
@@ -350,7 +350,7 @@ class piecewise_curve_test_suite : public Test::Suite
 
       // initialize by passing iterators to curve collection
       err=pc.set(bc, bc+3, dt);
-      TEST_ASSERT(err==piecewise_curve_type::NO_ERROR);
+      TEST_ASSERT(err==piecewise_curve_type::NO_ERRORS);
 
       // test the bounding box
       typename piecewise_curve_type::bounding_box_type bb;
@@ -406,7 +406,7 @@ class piecewise_curve_test_suite : public Test::Suite
 
       // initialize by passing iterators to curve collection
       err=c1.set(bc, bc+3, dt);
-      TEST_ASSERT(err==piecewise_curve_type::NO_ERROR);
+      TEST_ASSERT(err==piecewise_curve_type::NO_ERRORS);
 
       c2=c1;
       c2.reverse();
@@ -464,7 +464,7 @@ class piecewise_curve_test_suite : public Test::Suite
 
       // initialize by passing iterators to curve collection
       err=c1.set(bc, bc+3, dt);
-      TEST_ASSERT(err==piecewise_curve_type::NO_ERROR);
+      TEST_ASSERT(err==piecewise_curve_type::NO_ERRORS);
 
       // replace segment correctly
       cntrl2a_in[0] << 4.0, 1.0, 0.0;
@@ -475,9 +475,9 @@ class piecewise_curve_test_suite : public Test::Suite
         bc2.set_control_point(cntrl2a_in[i], i);
       }
       err=c1.replace(bc2, 1);
-      TEST_ASSERT(err==piecewise_curve_type::NO_ERROR);
+      TEST_ASSERT(err==piecewise_curve_type::NO_ERRORS);
       err=c1.get(bc_out, dt_out, 1);
-      TEST_ASSERT(err==piecewise_curve_type::NO_ERROR);
+      TEST_ASSERT(err==piecewise_curve_type::NO_ERRORS);
       TEST_ASSERT(bc2==bc_out);
       TEST_ASSERT(dt[1]==dt_out);
 
@@ -534,21 +534,21 @@ class piecewise_curve_test_suite : public Test::Suite
         bc[2].set_control_point(cntrl3_in[i], i);
       }
       err=c2.set(bc, bc+3, dt);
-      TEST_ASSERT(err==piecewise_curve_type::NO_ERROR);
+      TEST_ASSERT(err==piecewise_curve_type::NO_ERRORS);
       c1c=c1;
       err=c1.replace(c2, 1);
-      TEST_ASSERT(err==piecewise_curve_type::NO_ERROR);
+      TEST_ASSERT(err==piecewise_curve_type::NO_ERRORS);
       TEST_ASSERT(c1.number_segments()==5);
       err=c1.get(bc_out, dt_out, 1);
-      TEST_ASSERT(err==piecewise_curve_type::NO_ERROR);
+      TEST_ASSERT(err==piecewise_curve_type::NO_ERRORS);
       TEST_ASSERT(bc[0]==bc_out);
       TEST_ASSERT(dt[0]==dt_out);
       err=c1.get(bc_out, dt_out, 2);
-      TEST_ASSERT(err==piecewise_curve_type::NO_ERROR);
+      TEST_ASSERT(err==piecewise_curve_type::NO_ERRORS);
       TEST_ASSERT(bc[1]==bc_out);
       TEST_ASSERT(dt[1]==dt_out);
       err=c1.get(bc_out, dt_out, 3);
-      TEST_ASSERT(err==piecewise_curve_type::NO_ERROR);
+      TEST_ASSERT(err==piecewise_curve_type::NO_ERRORS);
       TEST_ASSERT(bc[2]==bc_out);
       TEST_ASSERT(dt[2]==dt_out);
       c3=c1;
@@ -586,7 +586,7 @@ class piecewise_curve_test_suite : public Test::Suite
         bc[2].set_control_point(cntrl3_in[i], i);
       }
       err=c2.set(bc, bc+3, dt);
-      TEST_ASSERT(err==piecewise_curve_type::NO_ERROR);
+      TEST_ASSERT(err==piecewise_curve_type::NO_ERRORS);
       err=c1.replace(c2, 1);
       TEST_ASSERT(err==piecewise_curve_type::SEGMENT_NOT_CONNECTED);
 
@@ -618,7 +618,7 @@ class piecewise_curve_test_suite : public Test::Suite
         bc[2].set_control_point(cntrl3_in[i], i);
       }
       err=c2.set(bc, bc+3, dt);
-      TEST_ASSERT(err==piecewise_curve_type::NO_ERROR);
+      TEST_ASSERT(err==piecewise_curve_type::NO_ERRORS);
       err=c1.replace(c2, 1);
       TEST_ASSERT(err==piecewise_curve_type::SEGMENT_NOT_CONNECTED);
 
@@ -633,10 +633,10 @@ class piecewise_curve_test_suite : public Test::Suite
         bc2.set_control_point(cntrl2a_in[i], i);
       }
       err=c1.replace(bc2, 1, 3);
-      TEST_ASSERT(err==piecewise_curve_type::NO_ERROR);
+      TEST_ASSERT(err==piecewise_curve_type::NO_ERRORS);
       TEST_ASSERT(c1.number_segments()==4);
       err=c1.get(bc_out, dt_out, 1);
-      TEST_ASSERT(err==piecewise_curve_type::NO_ERROR);
+      TEST_ASSERT(err==piecewise_curve_type::NO_ERRORS);
       TEST_ASSERT(bc2==bc_out);
       c3=c1;
 
@@ -696,20 +696,20 @@ class piecewise_curve_test_suite : public Test::Suite
       }
       err=c2.set(bc, bc+3, dt);
       c2.set_t0(0);
-      TEST_ASSERT(err==piecewise_curve_type::NO_ERROR);
+      TEST_ASSERT(err==piecewise_curve_type::NO_ERRORS);
       err=c1.replace(c2, 1, 3);
-      TEST_ASSERT(err==piecewise_curve_type::NO_ERROR);
+      TEST_ASSERT(err==piecewise_curve_type::NO_ERRORS);
       TEST_ASSERT(c1.number_segments()==5);
       err=c1.get(bc_out, dt_out, 1);
-      TEST_ASSERT(err==piecewise_curve_type::NO_ERROR);
+      TEST_ASSERT(err==piecewise_curve_type::NO_ERRORS);
       TEST_ASSERT(bc[0]==bc_out);
       TEST_ASSERT(dt[0]==dt_out);
       err=c1.get(bc_out, dt_out, 2);
-      TEST_ASSERT(err==piecewise_curve_type::NO_ERROR);
+      TEST_ASSERT(err==piecewise_curve_type::NO_ERRORS);
       TEST_ASSERT(bc[1]==bc_out);
       TEST_ASSERT(dt[1]==dt_out);
       err=c1.get(bc_out, dt_out, 3);
-      TEST_ASSERT(err==piecewise_curve_type::NO_ERROR);
+      TEST_ASSERT(err==piecewise_curve_type::NO_ERRORS);
       TEST_ASSERT(bc[2]==bc_out);
       TEST_ASSERT(dt[2]==dt_out);
 
@@ -746,7 +746,7 @@ class piecewise_curve_test_suite : public Test::Suite
         bc[2].set_control_point(cntrl3_in[i], i);
       }
       err=c2.set(bc, bc+3, dt);
-      TEST_ASSERT(err==piecewise_curve_type::NO_ERROR);
+      TEST_ASSERT(err==piecewise_curve_type::NO_ERRORS);
       err=c1.replace(c2, 1, 3);
       TEST_ASSERT(err==piecewise_curve_type::SEGMENT_NOT_CONNECTED);
       cntrl1_in[0] << 4.0, 1.0, 0.0;
@@ -780,7 +780,7 @@ class piecewise_curve_test_suite : public Test::Suite
         bc[2].set_control_point(cntrl3_in[i], i);
       }
       err=c2.set(bc, bc+3, dt);
-      TEST_ASSERT(err==piecewise_curve_type::NO_ERROR);
+      TEST_ASSERT(err==piecewise_curve_type::NO_ERRORS);
       err=c1.replace(c2, 1, 3);
       TEST_ASSERT(err==piecewise_curve_type::SEGMENT_NOT_CONNECTED);
     }
@@ -1012,7 +1012,7 @@ class piecewise_curve_test_suite : public Test::Suite
         bc.set_control_point(cntrl_in[i], i);
       }
       err=pwc0.push_back(bc);
-      TEST_ASSERT(err==piecewise_curve_type::NO_ERROR);
+      TEST_ASSERT(err==piecewise_curve_type::NO_ERRORS);
       cntrl_in[0] << 4,  0,   0;
       cntrl_in[1] << 3, -0.5, 0;
       cntrl_in[2] << 2, -1,   0;
@@ -1023,13 +1023,13 @@ class piecewise_curve_test_suite : public Test::Suite
         bc.set_control_point(cntrl_in[i], i);
       }
       err=pwc0.push_back(bc);
-      TEST_ASSERT(err==piecewise_curve_type::NO_ERROR);
+      TEST_ASSERT(err==piecewise_curve_type::NO_ERRORS);
       TEST_ASSERT(pwc0.number_segments()==2);
 
       // split curve and create piecewise
       pwc1=pwc0;
       err=pwc0.split(ts);
-      TEST_ASSERT(err==piecewise_curve_type::NO_ERROR);
+      TEST_ASSERT(err==piecewise_curve_type::NO_ERRORS);
       TEST_ASSERT(pwc0.number_segments()==pwc1.number_segments()+1);
 
       t=0;
@@ -1153,7 +1153,7 @@ class piecewise_curve_test_suite : public Test::Suite
             bc.set_control_point(cntrl_in[i], i);
           }
         err=pwc0.push_back(bc);
-        TEST_ASSERT(err==piecewise_curve_type::NO_ERROR);
+        TEST_ASSERT(err==piecewise_curve_type::NO_ERRORS);
 
         cntrl_in[0] << 6,  3,   0;
         cntrl_in[1] << 3, -0.5, 0;
@@ -1166,7 +1166,7 @@ class piecewise_curve_test_suite : public Test::Suite
             bc.set_control_point(cntrl_in[i], i);
           }
         err=pwc0.push_back(bc);
-        TEST_ASSERT(err==piecewise_curve_type::NO_ERROR);
+        TEST_ASSERT(err==piecewise_curve_type::NO_ERRORS);
         TEST_ASSERT(pwc0.number_segments()==2);
 
         index_type mind, maxd;
@@ -1249,7 +1249,7 @@ class piecewise_curve_test_suite : public Test::Suite
         bc.degree_promote_to(bc.degree()+4);
 
         err=pwc0.push_back(bc);
-        TEST_ASSERT(err==piecewise_curve_type::NO_ERROR);
+        TEST_ASSERT(err==piecewise_curve_type::NO_ERRORS);
 
         TEST_ASSERT(pwc0.number_segments()==1);
 
@@ -1321,7 +1321,7 @@ class piecewise_curve_test_suite : public Test::Suite
         bc.set_control_point(p, 5);  // Set perturbed value.
 
         err=pwc0.push_back(bc);
-        TEST_ASSERT(err==piecewise_curve_type::NO_ERROR);
+        TEST_ASSERT(err==piecewise_curve_type::NO_ERRORS);
 
         TEST_ASSERT(pwc0.number_segments()==1);
 
@@ -1381,7 +1381,7 @@ class piecewise_curve_test_suite : public Test::Suite
             bc.set_control_point(cntrl_in[i], i);
           }
         err=pwc0.push_back(bc);
-        TEST_ASSERT(err==piecewise_curve_type::NO_ERROR);
+        TEST_ASSERT(err==piecewise_curve_type::NO_ERRORS);
 
         TEST_ASSERT(pwc0.number_segments()==1);
 
@@ -1441,7 +1441,7 @@ class piecewise_curve_test_suite : public Test::Suite
             bc.set_control_point(cntrl_in[i], i);
           }
         err=pwc0.push_back(bc);
-        TEST_ASSERT(err==piecewise_curve_type::NO_ERROR);
+        TEST_ASSERT(err==piecewise_curve_type::NO_ERRORS);
 
         TEST_ASSERT(pwc0.number_segments()==1);
 
@@ -1500,7 +1500,7 @@ class piecewise_curve_test_suite : public Test::Suite
             bc.set_control_point(cntrl_in[i], i);
           }
         err=pwc0.push_back(bc);
-        TEST_ASSERT(err==piecewise_curve_type::NO_ERROR);
+        TEST_ASSERT(err==piecewise_curve_type::NO_ERRORS);
 
         TEST_ASSERT(pwc0.number_segments()==1);
 
@@ -1587,7 +1587,7 @@ class piecewise_curve_test_suite : public Test::Suite
       }
       eli::geom::curve::length(bc_len[2], bc[2], tol);
       err=c1.set(bc, bc+3, dt);
-      TEST_ASSERT(err==piecewise_curve_type::NO_ERROR);
+      TEST_ASSERT(err==piecewise_curve_type::NO_ERRORS);
       TEST_ASSERT(c1.number_segments()==3);
 
       // create two segment curve calc length of each segment to compare
@@ -1647,19 +1647,19 @@ class piecewise_curve_test_suite : public Test::Suite
       bc.set_control_point(cntrl_in[i], 0);
       bc.set_control_point(cntrl_in[ip1], 1);
       err=pwc0.push_back(bc, t[i+1]-t[i]);
-      TEST_ASSERT(err==piecewise_curve_type::NO_ERROR);
+      TEST_ASSERT(err==piecewise_curve_type::NO_ERRORS);
       i=1;
       ip1=2;
       bc.set_control_point(cntrl_in[i], 0);
       bc.set_control_point(cntrl_in[ip1], 1);
       err=pwc0.push_back(bc, t[i+1]-t[i]);
-      TEST_ASSERT(err==piecewise_curve_type::NO_ERROR);
+      TEST_ASSERT(err==piecewise_curve_type::NO_ERRORS);
       i=2;
       ip1=0;
       bc.set_control_point(cntrl_in[i], 0);
       bc.set_control_point(cntrl_in[ip1], 1);
       err=pwc0.push_back(bc, t[i+1]-t[i]);
-      TEST_ASSERT(err==piecewise_curve_type::NO_ERROR);
+      TEST_ASSERT(err==piecewise_curve_type::NO_ERRORS);
       TEST_ASSERT(pwc0.number_segments()==3);
       pwc1=pwc0;
 

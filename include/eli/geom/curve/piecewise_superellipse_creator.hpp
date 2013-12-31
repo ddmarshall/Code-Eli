@@ -262,7 +262,7 @@ namespace eli
                   }
 
                   err=pc.push_back(crv, this->get_segment_dt(iseg));
-                  if (err!=piecewise_curve_type::NO_ERROR)
+                  if (err!=piecewise_curve_type::NO_ERRORS)
                   {
                     std::cout << "error number: " << err << std::endl;
                     assert(false);
@@ -291,7 +291,7 @@ namespace eli
                 {
                   pc_left.get(c, iseg);
                   err=pc.push_back(c, this->get_segment_dt(rnseg+iseg));
-                  if (err!=piecewise_curve_type::NO_ERROR)
+                  if (err!=piecewise_curve_type::NO_ERRORS)
                   {
                     std::cout << "error number: " << err << std::endl;
                     assert(false);
@@ -405,7 +405,7 @@ namespace eli
                   }
 
                   err=pc.push_back(crv, this->get_segment_dt(iseg));
-                  if (err!=piecewise_curve_type::NO_ERROR)
+                  if (err!=piecewise_curve_type::NO_ERRORS)
                   {
                     std::cout << "error number: " << err << std::endl;
                     assert(false);
@@ -428,7 +428,7 @@ namespace eli
               {
                 pc_bottom.get(c, iseg);
                 err=pc.push_back(c, this->get_segment_dt(rtseg+iseg));
-                if (err!=piecewise_curve_type::NO_ERROR)
+                if (err!=piecewise_curve_type::NO_ERRORS)
                 {
                   std::cout << "error number: " << err << std::endl;
                   assert(false);
