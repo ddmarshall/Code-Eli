@@ -88,7 +88,7 @@ namespace eli
               c.set_control_point(corner[i], 0);
               c.set_control_point(corner[i+1], 1);
               err=pc.push_back(c, this->get_segment_dt(i));
-              if (err!=piecewise_curve_type::NO_ERROR)
+              if (err!=piecewise_curve_type::NO_ERRORS)
               {
                 pc.clear();
                 pc.set_t0(0);
@@ -100,7 +100,7 @@ namespace eli
             c.set_control_point(corner[corner.size()-1], 0);
             c.set_control_point(corner[0], 1);
             err=pc.push_back(c, this->get_segment_dt(nsegs-1));
-            if (err!=piecewise_curve_type::NO_ERROR)
+            if (err!=piecewise_curve_type::NO_ERRORS)
             {
               pc.clear();
               pc.set_t0(0);

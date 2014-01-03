@@ -41,7 +41,7 @@ namespace eli
 
           enum error_code
           {
-            NO_ERROR=0,
+            NO_ERRORS=0,
             INVALID_INDEX=1,
             INDEX_NOT_FOUND=2,
             TOO_FEW_POINTS=3,
@@ -486,7 +486,7 @@ namespace eli
 
             ci=it->second;
 
-            return NO_ERROR;
+            return NO_ERRORS;
           }
 
           error_code get_constraint(const index_type &i, constraint_info &ci, point_type &pt) const
@@ -494,10 +494,10 @@ namespace eli
             error_code ec;
 
             ec=get_constraint(i, ci);
-            if (ec==NO_ERROR)
+            if (ec==NO_ERRORS)
               pt=points[i];
 
-            return NO_ERROR;
+            return NO_ERRORS;
           }
 
           error_code add_start_C0_constraint()
@@ -570,7 +570,7 @@ namespace eli
             constraint_info ci;
             constraints[i]=ci;
 
-            return NO_ERROR;
+            return NO_ERRORS;
           }
 
           error_code add_C1_constraint(const index_type &i)
@@ -592,7 +592,7 @@ namespace eli
             ci.set_fp(fp, true);
             constraints[i]=ci;
 
-            return NO_ERROR;
+            return NO_ERRORS;
           }
 
           error_code add_C1_constraint(const index_type &i, const constraint_point_type &fp)
@@ -606,7 +606,7 @@ namespace eli
             ci.set_fp(fp, false);
             constraints[i]=ci;
 
-            return NO_ERROR;
+            return NO_ERRORS;
           }
 
           error_code add_C2_constraint(const index_type &i)
@@ -632,7 +632,7 @@ namespace eli
             ci.set_fpp(fp, true, fpp, true);
             constraints[i]=ci;
 
-            return NO_ERROR;
+            return NO_ERRORS;
           }
 
           error_code add_C2_constraint(const index_type &i, const constraint_point_type &fp)
@@ -654,7 +654,7 @@ namespace eli
             ci.set_fpp(fp, false, fpp, true);
             constraints[i]=ci;
 
-            return NO_ERROR;
+            return NO_ERRORS;
           }
 
           error_code add_C2_constraint(const index_type &i, const constraint_point_type &fp, const constraint_point_type &fpp)
@@ -668,7 +668,7 @@ namespace eli
             ci.set_fpp(fp, false, fpp, false);
             constraints[i]=ci;
 
-            return NO_ERROR;
+            return NO_ERRORS;
           }
 
           error_code remove_constraint(const index_type &i)
@@ -682,7 +682,7 @@ namespace eli
               return INDEX_NOT_FOUND;
 
             constraints.erase(it);
-            return NO_ERROR;
+            return NO_ERRORS;
           }
 
           template<typename it__>
@@ -692,7 +692,7 @@ namespace eli
             for (it=constraints.begin(); it!=constraints.end(); ++it, ++itout)
               (*itout)=it->first;
 
-            return NO_ERROR;
+            return NO_ERRORS;
           }
       };
     }

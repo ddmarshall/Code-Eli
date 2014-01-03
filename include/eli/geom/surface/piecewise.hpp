@@ -43,7 +43,7 @@ namespace eli
           typedef tol__ tolerance_type;
           enum error_code
           {
-            NO_ERROR=0,
+            NO_ERRORS=0,
             INVALID_INDEX=1,
             INDEX_NOT_FOUND=2,
             INVALID_PARAM=50,
@@ -421,7 +421,7 @@ namespace eli
             dv = vkey.get_delta_parm(vit);
             surf = patches[uk][vk];
 
-            return NO_ERROR;
+            return NO_ERRORS;
           }
 
           error_code set(const surface_type &surf, const index_type &ui, const index_type &vi)
@@ -436,7 +436,7 @@ namespace eli
             // set the new surf
             patches[uk][vk]=surf;
 
-            return NO_ERROR;
+            return NO_ERRORS;
           }
 
           error_code replace(const surface_type &surf, const index_type &ui, const index_type &vi)
@@ -494,7 +494,7 @@ namespace eli
 
             assert(check_continuity(eli::geom::general::C0));
 
-            return NO_ERROR;
+            return NO_ERRORS;
           }
 
           error_code split_u(const data_type &u_in)
@@ -1258,7 +1258,7 @@ namespace eli
               s.split_u(patches[uk][vk], patches[ukr][vk], uu);
             }
 
-            return NO_ERROR;
+            return NO_ERRORS;
           }
 
           error_code split_v(const index_type &vk, const typename keymap_type::iterator &vit, const data_type &v_in, const data_type &vv)
@@ -1277,7 +1277,7 @@ namespace eli
               s.split_v(patches[uk][vk], patches[uk][vkr], vv);
             }
 
-            return NO_ERROR;
+            return NO_ERRORS;
           }
 
           // Lookup based on i,j
