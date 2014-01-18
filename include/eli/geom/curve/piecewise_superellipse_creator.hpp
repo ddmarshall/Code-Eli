@@ -445,6 +445,9 @@ namespace eli
                 return false;
             }
 
+            // translate to center on origin
+            pc.translate(this->get_origin());
+
             return true;
           }
 
