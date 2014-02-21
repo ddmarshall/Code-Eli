@@ -81,7 +81,7 @@ if (EIGEN3_FOUND)
   # add subdirectories of project
   add_subdirectory(example)
 
-  if(CPPTest_FOUND)
+  if(CPPTEST_FOUND)
     add_subdirectory(test)
   endif()
 endif()
