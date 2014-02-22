@@ -33,10 +33,12 @@ namespace eli
           default:
           {
             natural__ i;
-            for (i=n; i>1; --i)
+            for (i=n; i>10; --i)
             {
               val*=static_cast<data__>(i);
-            }
+            }data__ val2;
+            factorial(val2, 10);
+            val*=val2;
             break;
           }
           case(10):
@@ -86,6 +88,7 @@ namespace eli
           }
           case(1):
           {
+            val=static_cast<data__>(1);
             break;
           }
         }
