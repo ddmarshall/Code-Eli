@@ -100,6 +100,30 @@ namespace eli
           index_type number_u_patches() const {return nu;}
           index_type number_v_patches() const {return nv;}
 
+          surface_type * get_patch( const index_type &ui, const index_type &vi)
+          {
+              index_type uk, vk;
+              find_patch(uk, vk, ui, vi);
+              return &patches[uk][vk];
+          }
+
+          const surface_type * get_patch( const index_type &ui, const index_type &vi) const
+          {
+              index_type uk, vk;
+              find_patch(uk, vk, ui, vi);
+              return &patches[uk][vk];
+          }
+
+          surface_type * get_patch_unordered( const index_type &uk, const index_type &vk)
+          {
+              return &patches[uk][vk];
+          }
+
+          const surface_type * get_patch_unordered( const index_type &uk, const index_type &vk) const
+          {
+              return &patches[uk][vk];
+          }
+
           void get_parameter_min(data_type &umin, data_type &vmin) const
           {
             umin=ukey.get_pmin();
