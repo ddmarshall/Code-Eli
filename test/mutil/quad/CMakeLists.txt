@@ -13,6 +13,14 @@
 project(QUAD)
 
 # add the quadrature test
-add_executable(QuadTest ${PROJECT_SOURCE_DIR}/quad_test.cpp)
-target_link_libraries(QuadTest ${_ELI_TEST_LIBRARIES_LIST})
-add_test(NAME QuadTest COMMAND $<TARGET_FILE:QuadTest> --text)
+set (QUAD_TEST_EXE QuadTest)
+set (QUAD_TEST_SOURCE ${PROJECT_SOURCE_DIR}/quad_test.cpp)
+set (QUAD_TEST_HEADER ${PROJECT_SOURCE_DIR}/trapezoid_test_suite.hpp
+                      ${PROJECT_SOURCE_DIR}/simpson_test_suite.hpp
+                      ${ELI_SOURCE_DIR}/include/eli/constants/math.hpp
+                      ${ELI_SOURCE_DIR}/include/eli/mutil/quad/trapezoid.hpp
+                      ${ELI_SOURCE_DIR}/include/eli/mutil/quad/simpson.hpp)
+
+add_executable(${QUAD_TEST_EXE} ${QUAD_TEST_SOURCE} ${QUAD_TEST_HEADER})
+target_link_libraries(${QUAD_TEST_EXE} ${_ELI_TEST_LIBRARIES_LIST})
+add_test(NAME ${QUAD_TEST_EXE} COMMAND $<TARGET_FILE:${QUAD_TEST_EXE}> --text)

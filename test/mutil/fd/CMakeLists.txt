@@ -13,6 +13,16 @@
 project(FD)
 
 # add the finite difference test
-add_executable(FDTest ${PROJECT_SOURCE_DIR}/fd_test.cpp)
-target_link_libraries(FDTest ${_ELI_TEST_LIBRARIES_LIST})
-add_test(NAME FDTest COMMAND $<TARGET_FILE:FDTest> --text)
+set (FD_TEST_EXE FDTest)
+set (FD_TEST_SOURCE ${PROJECT_SOURCE_DIR}/fd_test.cpp)
+set (FD_TEST_HEADER ${PROJECT_SOURCE_DIR}/fd_test_suite.hpp
+                    ${ELI_SOURCE_DIR}/include/eli/mutil/fd.hpp
+                    ${ELI_SOURCE_DIR}/include/eli/mutil/fd/d1o1.hpp
+                    ${ELI_SOURCE_DIR}/include/eli/mutil/fd/d1o2.hpp
+                    ${ELI_SOURCE_DIR}/include/eli/mutil/fd/d1o3.hpp
+                    ${ELI_SOURCE_DIR}/include/eli/mutil/fd/d2o1.hpp
+                    ${ELI_SOURCE_DIR}/include/eli/mutil/fd/d2o2.hpp)
+
+add_executable(${FD_TEST_EXE} ${FD_TEST_SOURCE} ${FD_TEST_HEADER})
+target_link_libraries(${FD_TEST_EXE} ${_ELI_TEST_LIBRARIES_LIST})
+add_test(NAME ${FD_TEST_EXE} COMMAND $<TARGET_FILE:${FD_TEST_EXE}> --text)
