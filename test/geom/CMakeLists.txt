@@ -12,67 +12,12 @@
 
 project(GEOM)
 
-#add the bounding box test
-add_executable(BoundingBoxTest ${PROJECT_SOURCE_DIR}/bounding_box/bounding_box_test.cpp)
-target_link_libraries(BoundingBoxTest ${_ELI_TEST_LIBRARIES_LIST})
-add_test(NAME BoundingBoxTest COMMAND $<TARGET_FILE:BoundingBoxTest> --text)
-
-# add the fit_container test
-add_executable(FitContainerTest ${PROJECT_SOURCE_DIR}/fit_container/fit_container_test.cpp)
-target_link_libraries(FitContainerTest ${_ELI_TEST_LIBRARIES_LIST})
-add_test(NAME FitContainerTest COMMAND $<TARGET_FILE:FitContainerTest> --text)
-
-# add the bezier_curve test
-add_executable(BezierCurveTest ${PROJECT_SOURCE_DIR}/bezier_curve/bezier_curve_test.cpp)
-target_link_libraries(BezierCurveTest ${_ELI_TEST_LIBRARIES_LIST})
-add_test(NAME BezierCurveTest COMMAND $<TARGET_FILE:BezierCurveTest> --text)
-
-# add the bezier_curve_fit test
-add_executable(BezierCurveFitTest ${PROJECT_SOURCE_DIR}/bezier_curve/bezier_curve_fit_test.cpp)
-target_link_libraries(BezierCurveFitTest ${_ELI_TEST_LIBRARIES_LIST})
-add_test(NAME BezierCurveFitTest COMMAND $<TARGET_FILE:BezierCurveFitTest> --text)
-
-# add the piecewise_curve test
-add_executable(PiecewiseCurveTest ${PROJECT_SOURCE_DIR}/piecewise_curve/piecewise_curve_test.cpp)
-target_link_libraries(PiecewiseCurveTest ${_ELI_TEST_LIBRARIES_LIST})
-add_test(NAME PiecewiseCurveTest COMMAND $<TARGET_FILE:PiecewiseCurveTest> --text)
-
-# add the piecewise_curve_creator test
-add_executable(PiecewiseCurveCreatorTest ${PROJECT_SOURCE_DIR}/piecewise_curve/piecewise_curve_creator_test.cpp)
-target_link_libraries(PiecewiseCurveCreatorTest ${_ELI_TEST_LIBRARIES_LIST})
-add_test(NAME PiecewiseCurveCreatorTest COMMAND $<TARGET_FILE:PiecewiseCurveCreatorTest> --text)
-
-# add the explicit_bezier_curve test
-add_executable(ExplicitBezierCurveTest ${PROJECT_SOURCE_DIR}/explicit_bezier_curve/explicit_bezier_curve_test.cpp)
-target_link_libraries(ExplicitBezierCurveTest ${_ELI_TEST_LIBRARIES_LIST})
-add_test(NAME ExplicitBezierCurveTest COMMAND $<TARGET_FILE:ExplicitBezierCurveTest> --text)
-
-# add the explicit_bezier_curve_fit test
-add_executable(ExplicitBezierCurveFitTest ${PROJECT_SOURCE_DIR}/explicit_bezier_curve/explicit_bezier_curve_fit_test.cpp)
-target_link_libraries(ExplicitBezierCurveFitTest ${_ELI_TEST_LIBRARIES_LIST})
-add_test(NAME ExplicitBezierCurveFitTest COMMAND $<TARGET_FILE:ExplicitBezierCurveFitTest> --text)
-
-#### add the cst_airfoil_curve test
-###add_executable(CSTAirfoilCurveTest ${PROJECT_SOURCE_DIR}/cst_airfoil_curve/cst_airfoil_curve_test.cpp)
-###target_link_libraries(CSTAirfoilCurveTest ${_ELI_TEST_LIBRARIES_LIST})
-###add_test(NAME CSTAirfoilCurveTest COMMAND $<TARGET_FILE:CSTAirfoilCurveTest> --text)
-
-# add the bezier_surface test
-add_executable(BezierSurfaceTest ${PROJECT_SOURCE_DIR}/bezier_surface/bezier_surface_test.cpp)
-target_link_libraries(BezierSurfaceTest ${_ELI_TEST_LIBRARIES_LIST})
-add_test(NAME BezierSurfaceTest COMMAND $<TARGET_FILE:BezierSurfaceTest> --text)
-
-# add the piecewise_surface test
-add_executable(PiecewiseSurfaceTest ${PROJECT_SOURCE_DIR}/piecewise_surface/piecewise_surface_test.cpp)
-target_link_libraries(PiecewiseSurfaceTest ${_ELI_TEST_LIBRARIES_LIST})
-add_test(NAME PiecewiseSurfaceTest COMMAND $<TARGET_FILE:PiecewiseSurfaceTest> --text)
-
-# add the piecewise_surface_creator test
-add_executable(PiecewiseSurfaceCreatorTest ${PROJECT_SOURCE_DIR}/piecewise_surface/piecewise_surface_creator_test.cpp)
-target_link_libraries(PiecewiseSurfaceCreatorTest ${_ELI_TEST_LIBRARIES_LIST})
-add_test(NAME PiecewiseSurfaceCreatorTest COMMAND $<TARGET_FILE:PiecewiseSurfaceCreatorTest> --text)
-
-# add the minimum_distance test
-add_executable(MinimumDistanceTest ${PROJECT_SOURCE_DIR}/minimum_distance/minimum_distance_test.cpp)
-target_link_libraries(MinimumDistanceTest ${_ELI_TEST_LIBRARIES_LIST})
-add_test(NAME MinimumDistanceTest COMMAND $<TARGET_FILE:MinimumDistanceTest> --text)
+add_subdirectory(bounding_box)
+add_subdirectory(fit_container)
+add_subdirectory(bezier_curve)
+add_subdirectory(piecewise_curve)
+add_subdirectory(explicit_bezier_curve)
+###add_subdirectory(cst_airfoil_curve)
+add_subdirectory(bezier_surface)
+add_subdirectory(piecewise_surface)
+add_subdirectory(minimum_distance)

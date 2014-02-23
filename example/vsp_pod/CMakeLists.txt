@@ -13,5 +13,15 @@
 project(VSP_POD)
 
 # add the OpenVSP Pod construction example
-add_executable(VSPPodExample ${PROJECT_SOURCE_DIR}/vsp_pod.cpp)
-target_link_libraries(VSPPodExample ${_ELI_EXAMPLE_LIBRARIES_LIST})
+set (VSP_POD_EXE VSPPodExample)
+set (VSP_POD_SOURCE ${PROJECT_SOURCE_DIR}/vsp_pod.cpp)
+set (VSP_POD_HEADER ${ELI_SOURCE_DIR}/include/eli/constants/math.hpp
+                    ${ELI_SOURCE_DIR}/include/eli/geom/curve/bezier.hpp
+                    ${ELI_SOURCE_DIR}/include/eli/geom/curve/piecewise.hpp
+                    ${ELI_SOURCE_DIR}/include/eli/geom/curve/piecewise_creator.hpp
+                    ${ELI_SOURCE_DIR}/include/eli/geom/surface/bezier.hpp
+                    ${ELI_SOURCE_DIR}/include/eli/geom/surface/piecewise.hpp
+                    ${ELI_SOURCE_DIR}/include/eli/geom/surface/piecewise_creator.hpp)
+
+add_executable(${VSP_POD_EXE} ${VSP_POD_SOURCE} ${VSP_POD_HEADER})
+target_link_libraries(${VSP_POD_EXE} ${_ELI_EXAMPLE_LIBRARIES_LIST})

@@ -53,8 +53,6 @@ include(CTest)
 
 # find libraries that are needed or optional
 # find the cpptest library
-find_package(CPPTest REQUIRED)
-find_package(Eigen3 3.0.0 REQUIRED)
 find_package(Doxygen)
 if (DOXYGEN_FOUND)
   configure_file(${ELI_SOURCE_DIR}/cmake/Doxyfile.in ${ELI_BINARY_DIR}/Doxyfile @ONLY)
@@ -69,14 +67,21 @@ endif()
 # are to be included
 configure_file(${ELI_SOURCE_DIR}/cmake/code_eli.hpp.in ${ELI_BINARY_DIR}/include/eli/code_eli.hpp @ONLY)
 
-# add the include and link directories and libraries that are needed
-include_directories(${ELI_BINARY_DIR}/include
-                    ${ELI_SOURCE_DIR}/include
-                    ${CPPTEST_INCLUDE_DIRS}
-                    ${EIGEN3_INCLUDE_DIR})
-link_directories(${CPPTEST_LIBRARY_DIRS})
+find_package(CPPTest)
+find_package(Eigen3 3.0.0)
 
-# add subdirectories of project
-add_subdirectory(test)
-add_subdirectory(example)
+if (EIGEN3_FOUND)
+  # add the include and link directories and libraries that are needed
+  include_directories(${ELI_BINARY_DIR}/include
+                      ${ELI_SOURCE_DIR}/include
+                      ${CPPTEST_INCLUDE_DIRS}
+                      ${EIGEN3_INCLUDE_DIR})
+  link_directories(${CPPTEST_LIBRARY_DIRS})
 
+  # add subdirectories of project
+  add_subdirectory(example)
+
+  if(CPPTEST_FOUND)
+    add_subdirectory(test)
+  endif()
+endif()

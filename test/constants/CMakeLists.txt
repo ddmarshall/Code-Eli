@@ -13,6 +13,11 @@
 project(CONSTANTS)
 
 # add the constants test
-add_executable(ConstantsMathTest ${PROJECT_SOURCE_DIR}/constants_math_test.cpp)
-target_link_libraries(ConstantsMathTest ${_ELI_TEST_LIBRARIES_LIST})
-add_test(NAME ConstantsMathTest COMMAND $<TARGET_FILE:ConstantsMathTest> --text)
+set (CONSTANTS_MATH_TEST_EXE ConstantsMathTest)
+set (CONSTANTS_MATH_TEST_SOURCE ${PROJECT_SOURCE_DIR}/constants_math_test.cpp)
+set (CONSTANTS_MATH_TEST_HEADER ${PROJECT_SOURCE_DIR}/constants_math_test_suite.hpp
+                                ${ELI_SOURCE_DIR}/include/eli/constants/math.hpp)
+
+add_executable(${CONSTANTS_MATH_TEST_EXE} ${CONSTANTS_MATH_TEST_SOURCE} ${CONSTANTS_MATH_TEST_HEADER})
+target_link_libraries(${CONSTANTS_MATH_TEST_EXE} ${_ELI_TEST_LIBRARIES_LIST})
+add_test(NAME ${CONSTANTS_MATH_TEST_EXE} COMMAND $<TARGET_FILE:${CONSTANTS_MATH_TEST_EXE}> --text)
