@@ -407,7 +407,9 @@ class piecewise_superellipse_creator_test_suite : public Test::Suite
 # else
           fref << static_cast<data_type>(46.939301), static_cast<data_type>(3.475554), 0;
 # endif
-#elif defined(__GNUC__) && defined(NDEBUG) && !defined(__clang__)
+#elif defined(__GNUC__) && defined(__clang__)
+          fref << static_cast<data_type>(47.022247), static_cast<data_type>(3.483002), 0;
+#elif defined(__GNUC__) && !defined(__clang__)
           fref << static_cast<data_type>(47.022247), static_cast<data_type>(3.483002), 0;
 #else
           fref << static_cast<data_type>(47.022301), static_cast<data_type>(3.482945), 0;
@@ -703,8 +705,10 @@ class piecewise_superellipse_creator_test_suite : public Test::Suite
 # else
           fref << static_cast<data_type>(-23.633450), static_cast<data_type>(11.261473), 0;
 # endif
-#elif defined(__GNUC__) && defined(NDEBUG) && !defined(__clang__)
-          fref << static_cast<data_type>(-23.633770), static_cast<data_type>(11.261208), 0;
+#elif defined(__GNUC__) && defined(__clang__)
+          fref << static_cast<data_type>(-23.633438), static_cast<data_type>(11.261538), 0;
+#elif defined(__GNUC__) && !defined(__clang__)// && defined(NDEBUG)
+          fref << static_cast<data_type>(-23.633438), static_cast<data_type>(11.261538), 0;
 #else
           fref << static_cast<data_type>(-19.968788), static_cast<data_type>(9.096475), 0;
 #endif
@@ -1001,7 +1005,9 @@ class piecewise_superellipse_creator_test_suite : public Test::Suite
 # else
           fref << static_cast<data_type>(-1.200153), static_cast<data_type>(2.997783), 0;
 # endif
-#elif defined(__GNUC__) && defined(NDEBUG) && !defined(__clang__)
+#elif defined(__GNUC__) && defined(__clang__)
+          fref << static_cast<data_type>(-1.328212), static_cast<data_type>(3.102814), 0;
+#elif defined(__GNUC__) && !defined(__clang__)
           fref << static_cast<data_type>(-1.328212), static_cast<data_type>(3.102814), 0;
 #else
           fref << static_cast<data_type>(-1.324945), static_cast<data_type>(3.099777), 0;
