@@ -13,6 +13,10 @@
 #ifndef eli_mutil_nls_iterative_root_system_method_hpp
 #define eli_mutil_nls_iterative_root_system_method_hpp
 
+#ifdef Success  // X11 #define collides with Eigen
+#undef Success
+#endif
+
 #include "Eigen/Eigen"
 
 #include "eli/mutil/nls/iterative_root_base.hpp"

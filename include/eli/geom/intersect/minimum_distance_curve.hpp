@@ -17,6 +17,10 @@
 #include <vector>
 #include <list>
 
+#ifdef Success  // X11 #define collides with Eigen
+#undef Success
+#endif
+
 #include "Eigen/Eigen"
 
 #include "eli/mutil/nls/newton_raphson_constrained_method.hpp"

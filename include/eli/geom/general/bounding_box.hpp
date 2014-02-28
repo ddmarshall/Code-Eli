@@ -13,6 +13,10 @@
 #ifndef eli_geom_general_bounding_box_hpp
 #define eli_geom_general_bounding_box_hpp
 
+#ifdef Success  // X11 #define collides with Eigen
+#undef Success
+#endif
+
 #include "Eigen/Eigen"
 
 #include "eli/util/tolerance.hpp"
