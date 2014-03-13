@@ -160,120 +160,46 @@ namespace eli
         // possible that end points are closest, so start by checking them
         typename curve__::data_type dist, tt, dd;
 
-        // first check is start, middle and (if needed) end points
+
+        typename curve__::index_type i, n;
+
+        // Just a guess
+        n=2*c.degree()+1;
+
+        // Evenly spaced in parameter, don't repeat 0/1 if closed curve.
+        typename curve__::data_type dt;
+        if (c.open())
         {
-          t=0;
-          dist=eli::geom::point::distance(c.f(t), pt);
-          tt=0.5;
+          dt = 1.0/(n-1);
+        }
+        else
+        {
+          dt = 1.0/n;
+        }
+
+        // Find closest of evenly spaced points.
+        tt = 0;
+        dist = std::numeric_limits<typename curve__::data_type>::max();
+        for (i = 0; i < n; i++)
+        {
           dd=eli::geom::point::distance(c.f(tt), pt);
-          if (dd<dist)
+
+          if( dd < dist )
           {
             t=tt;
             dist=dd;
           }
-          if (c.open())
+          tt+=dt;
+          if( tt >= 1 )
           {
             tt=1;
-            dd=eli::geom::point::distance(c.f(tt), pt);
-            if (dd<dist)
-            {
-              t=tt;
-              dist=dd;
-            }
-          }
-        }
-        cand_pair.first=t;
-        cand_pair.second=dist;
-        tinit.push_back(cand_pair);
-
-
-        // need to pick initial guesses
-        typename curve__::index_type i, deg(c.degree()), ssize;
-        std::vector<typename curve__::data_type> tsample(2*deg+1);
-        typename curve__::point_type p0, p1;
-        typename curve__::data_type temp, tlen;
-
-        // determine the sample parameters from the control polygon points
-        ssize=tsample.size();
-        i=0;
-        p1=c.get_control_point(i);
-        tsample[i]=0;
-        for (++i; i<=deg; ++i)
-        {
-          p0=p1;
-          p1=c.get_control_point(i);
-          temp=eli::geom::point::distance(p0, p1)/2;
-          tsample[2*i-1]=tsample[2*i-2]+temp;
-          tsample[2*i]=tsample[2*i-1]+temp;
-        }
-        tlen=tsample[tsample.size()-1];
-
-        // add points that are minimums
-        {
-          // find candidate starting locations using distance between sampled points on curve and point
-          for (i=0; i<ssize; ++i)
-          {
-            temp=eli::geom::point::distance(c.f(tsample[i]/tlen), pt);
-//             std::cout << "point #=" << i << "\tdist_temp=" << temp << std::endl;
-            if (temp<=1.01*dist)
-            {
-              cand_pair.first=tsample[i]/tlen;
-              cand_pair.second=temp;
-              tinit.push_back(cand_pair);
-              if (temp<dist)
-              {
-                t=cand_pair.first;
-                dist=cand_pair.second;
-                it=tinit.begin();
-                while (it!=tinit.end())
-                {
-                  // check to see if distance is beyond new threshold and remove if so
-                  if (it->second>1.01*dist)
-                  {
-                    it=tinit.erase(it);
-                  }
-                  else
-                  {
-                    ++it;
-                  }
-                }
-              }
-//               std::cout << "% added point #=" << i << "\twith t=" << tsample[i]/tlen << std::endl;
-            }
           }
         }
 
-//         std::cout << "# t guesses=" << tinit.size() << std::endl;
+        // Polish best point with Newton's method search.
+        typename curve__::data_type t0(t);
+        dist=minimum_distance(t, c, pt, t0);
 
-        // make sure have some solutions to iterate
-//         tinit.push_back(0);
-//         if (c.open())
-//         {
-//           tinit.push_back(1);
-//         }
-
-        // cycle through all possible minima to find best
-        for (it=tinit.begin(); it!=tinit.end(); ++it)
-        {
-          dd=minimum_distance(tt, c, pt, it->first);
-//           std::cout << "% completed root starting at" << *it << std::endl;
-
-          assert((tt>=0) && (tt<=1));
-
-          dd=eli::geom::point::distance(c.f(tt), pt);
-
-          // check to see if is closer than previous minimum
-          if (dd<dist)
-          {
-            t=tt;
-            dist=dd;
-          }
-
-//               std::cout << "# dd=" << dd << std::endl;
-//               std::cout << "# j=" << j << "\tnj=" << tinit.size() << std::endl;
-        }
-
-//         std::cout << "# returning dist=" << dist << std::endl;
         return dist;
       }
     }
