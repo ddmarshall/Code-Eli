@@ -442,7 +442,7 @@ class minimum_distance_curve_test_suite : public Test::Suite
 
       curve_type3 c(3);
       point_type3 pt, fp, norm;
-      data_type  dist, t, dist_ref, t_ref;
+      data_type  dist, t, dist_ref, t_ref, t_guess;
 
       // set control points
       for (index_type2 i=0; i<4; ++i)
@@ -457,6 +457,32 @@ class minimum_distance_curve_test_suite : public Test::Suite
       norm << fp.z(), -fp.z(), -fp.x()+fp.y();
       norm.normalize();
       pt=c.f(t_ref)+dist_ref*norm;
+
+      t_guess=t_ref;
+      dist=eli::geom::intersect::minimum_distance(t, c, pt, t_guess);
+      TEST_ASSERT(tol.approximately_equal(t, t_ref));
+      TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
+
+      t_guess=t_ref+0.2;
+      dist=eli::geom::intersect::minimum_distance(t, c, pt, t_guess);
+      TEST_ASSERT(tol.approximately_equal(t, t_ref));
+      TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
+
+      t_guess=t_ref-0.2;
+      dist=eli::geom::intersect::minimum_distance(t, c, pt, t_guess);
+      TEST_ASSERT(tol.approximately_equal(t, t_ref));
+      TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
+
+      t_guess=0;
+      dist=eli::geom::intersect::minimum_distance(t, c, pt, t_guess);
+      TEST_ASSERT(tol.approximately_equal(t, t_ref));
+      TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
+
+      t_guess=1;
+      dist=eli::geom::intersect::minimum_distance(t, c, pt, t_guess);
+      TEST_ASSERT(tol.approximately_equal(t, t_ref));
+      TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
+
       dist=eli::geom::intersect::minimum_distance(t, c, pt);
       TEST_ASSERT(tol.approximately_equal(t, t_ref));
       TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
@@ -468,6 +494,32 @@ class minimum_distance_curve_test_suite : public Test::Suite
       norm << fp.z(), -fp.z(), -fp.x()+fp.y();
       norm.normalize();
       pt=c.f(t_ref)+dist_ref*norm;
+
+      t_guess=t_ref;
+      dist=eli::geom::intersect::minimum_distance(t, c, pt, t_guess);
+      TEST_ASSERT(tol.approximately_equal(t, t_ref));
+      TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
+
+      t_guess=t_ref+0.2;
+      dist=eli::geom::intersect::minimum_distance(t, c, pt, t_guess);
+      TEST_ASSERT(tol.approximately_equal(t, t_ref));
+      TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
+
+      t_guess=t_ref-0.2;
+      dist=eli::geom::intersect::minimum_distance(t, c, pt, t_guess);
+      TEST_ASSERT(tol.approximately_equal(t, t_ref));
+      TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
+
+      t_guess=0;
+      dist=eli::geom::intersect::minimum_distance(t, c, pt, t_guess);
+      TEST_ASSERT(tol.approximately_equal(t, t_ref));
+      TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
+
+      t_guess=1;
+      dist=eli::geom::intersect::minimum_distance(t, c, pt, t_guess);
+      TEST_ASSERT(tol.approximately_equal(t, t_ref));
+      TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
+
       dist=eli::geom::intersect::minimum_distance(t, c, pt);
       TEST_ASSERT(tol.approximately_equal(t, t_ref));
       TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
@@ -479,6 +531,32 @@ class minimum_distance_curve_test_suite : public Test::Suite
       norm << fp.z(),-fp.z(), -fp.x()+fp.y();
       norm.normalize();
       pt=c.f(t_ref)+dist_ref*norm;
+
+      t_guess=t_ref;
+      dist=eli::geom::intersect::minimum_distance(t, c, pt, t_guess);
+      TEST_ASSERT(tol.approximately_equal(t, t_ref));
+      TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
+
+      t_guess=t_ref+0.2;
+      dist=eli::geom::intersect::minimum_distance(t, c, pt, t_guess);
+      TEST_ASSERT(tol.approximately_equal(t, t_ref));
+      TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
+
+      t_guess=t_ref-0.2;
+      dist=eli::geom::intersect::minimum_distance(t, c, pt, t_guess);
+      TEST_ASSERT(tol.approximately_equal(t, t_ref));
+      TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
+
+      t_guess=0;
+      dist=eli::geom::intersect::minimum_distance(t, c, pt, t_guess);
+      TEST_ASSERT(tol.approximately_equal(t, t_ref));
+      TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
+
+      t_guess=1;
+      dist=eli::geom::intersect::minimum_distance(t, c, pt, t_guess);
+      TEST_ASSERT(tol.approximately_equal(t, t_ref));
+      TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
+
       dist=eli::geom::intersect::minimum_distance(t, c, pt);
       TEST_ASSERT(tol.approximately_equal(t, t_ref));
       TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
@@ -490,6 +568,32 @@ class minimum_distance_curve_test_suite : public Test::Suite
       norm << fp.z(), -fp.z(), -fp.x()+fp.y();
       norm.normalize();
       pt=c.f(t_ref)+dist_ref*norm;
+
+      t_guess=t_ref;
+      dist=eli::geom::intersect::minimum_distance(t, c, pt, t_guess);
+      TEST_ASSERT(tol.approximately_equal(t, t_ref));
+      TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
+
+      t_guess=t_ref+0.2;
+      dist=eli::geom::intersect::minimum_distance(t, c, pt, t_guess);
+      TEST_ASSERT(tol.approximately_equal(t, t_ref));
+      TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
+
+      t_guess=t_ref-0.2;
+      dist=eli::geom::intersect::minimum_distance(t, c, pt, t_guess);
+      TEST_ASSERT(tol.approximately_equal(t, t_ref));
+      TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
+
+      t_guess=0;
+      dist=eli::geom::intersect::minimum_distance(t, c, pt, t_guess);
+      TEST_ASSERT(tol.approximately_equal(t, t_ref));
+      TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
+
+      t_guess=1;
+      dist=eli::geom::intersect::minimum_distance(t, c, pt, t_guess);
+      TEST_ASSERT(tol.approximately_equal(t, t_ref));
+      TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
+
       dist=eli::geom::intersect::minimum_distance(t, c, pt);
       TEST_ASSERT(tol.approximately_equal(t, t_ref));
       TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
@@ -501,6 +605,32 @@ class minimum_distance_curve_test_suite : public Test::Suite
       norm << fp.z(), -fp.z(), -fp.x()+fp.y();
       norm.normalize();
       pt=c.f(t_ref)+dist_ref*norm;
+
+      t_guess=t_ref;
+      dist=eli::geom::intersect::minimum_distance(t, c, pt, t_guess);
+      TEST_ASSERT(tol.approximately_equal(t, t_ref));
+      TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
+
+      t_guess=t_ref+0.2;
+      dist=eli::geom::intersect::minimum_distance(t, c, pt, t_guess);
+      TEST_ASSERT(tol.approximately_equal(t, t_ref));
+      TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
+
+      t_guess=t_ref-0.2;
+      dist=eli::geom::intersect::minimum_distance(t, c, pt, t_guess);
+      TEST_ASSERT(tol.approximately_equal(t, t_ref));
+      TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
+
+      t_guess=0;
+      dist=eli::geom::intersect::minimum_distance(t, c, pt, t_guess);
+      TEST_ASSERT(tol.approximately_equal(t, t_ref));
+      TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
+
+      t_guess=1;
+      dist=eli::geom::intersect::minimum_distance(t, c, pt, t_guess);
+      TEST_ASSERT(tol.approximately_equal(t, t_ref));
+      TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
+
       dist=eli::geom::intersect::minimum_distance(t, c, pt);
       TEST_ASSERT(tol.approximately_equal(t, t_ref));
       TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
@@ -512,6 +642,32 @@ class minimum_distance_curve_test_suite : public Test::Suite
       norm << fp.z(), -fp.z(), -fp.x()+fp.y();
       norm.normalize();
       pt=c.f(t_ref)+dist_ref*norm;
+
+      t_guess=t_ref;
+      dist=eli::geom::intersect::minimum_distance(t, c, pt, t_guess);
+      TEST_ASSERT(tol.approximately_equal(t, t_ref));
+      TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
+
+      t_guess=t_ref+0.2;
+      dist=eli::geom::intersect::minimum_distance(t, c, pt, t_guess);
+      TEST_ASSERT(tol.approximately_equal(t, t_ref));
+      TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
+
+      t_guess=t_ref-0.2;
+      dist=eli::geom::intersect::minimum_distance(t, c, pt, t_guess);
+      TEST_ASSERT(tol.approximately_equal(t, t_ref));
+      TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
+
+      t_guess=0;
+      dist=eli::geom::intersect::minimum_distance(t, c, pt, t_guess);
+      TEST_ASSERT(tol.approximately_equal(t, t_ref));
+      TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
+
+      t_guess=1;
+      dist=eli::geom::intersect::minimum_distance(t, c, pt, t_guess);
+      TEST_ASSERT(tol.approximately_equal(t, t_ref));
+      TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
+
       dist=eli::geom::intersect::minimum_distance(t, c, pt);
       TEST_ASSERT(tol.approximately_equal(t, t_ref));
       TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
@@ -523,6 +679,32 @@ class minimum_distance_curve_test_suite : public Test::Suite
       norm << fp.z(), -fp.z(), -fp.x()+fp.y();
       norm.normalize();
       pt=c.f(t_ref)+dist_ref*norm;
+
+      t_guess=t_ref;
+      dist=eli::geom::intersect::minimum_distance(t, c, pt, t_guess);
+      TEST_ASSERT(tol.approximately_equal(t, t_ref));
+      TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
+
+      t_guess=t_ref+0.2;
+      dist=eli::geom::intersect::minimum_distance(t, c, pt, t_guess);
+      TEST_ASSERT(tol.approximately_equal(t, t_ref));
+      TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
+
+      t_guess=t_ref-t_ref/2;
+      dist=eli::geom::intersect::minimum_distance(t, c, pt, t_guess);
+      TEST_ASSERT(tol.approximately_equal(t, t_ref));
+      TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
+
+      t_guess=0;
+      dist=eli::geom::intersect::minimum_distance(t, c, pt, t_guess);
+      TEST_ASSERT(tol.approximately_equal(t, t_ref));
+      TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
+
+      t_guess=1;
+      dist=eli::geom::intersect::minimum_distance(t, c, pt, t_guess);
+      TEST_ASSERT(tol.approximately_equal(t, t_ref));
+      TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
+
       dist=eli::geom::intersect::minimum_distance(t, c, pt);
       TEST_ASSERT(tol.approximately_equal(t, t_ref));
       TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
@@ -534,6 +716,32 @@ class minimum_distance_curve_test_suite : public Test::Suite
       norm << fp.z(), -fp.z(), -fp.x()+fp.y();
       norm.normalize();
       pt=c.f(t_ref)+dist_ref*norm;
+
+      t_guess=t_ref;
+      dist=eli::geom::intersect::minimum_distance(t, c, pt, t_guess);
+      TEST_ASSERT(tol.approximately_equal(t, t_ref));
+      TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
+
+      t_guess=t_ref+0.2;
+      dist=eli::geom::intersect::minimum_distance(t, c, pt, t_guess);
+      TEST_ASSERT(tol.approximately_equal(t, t_ref));
+      TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
+
+      t_guess=t_ref-t_ref/2;
+      dist=eli::geom::intersect::minimum_distance(t, c, pt, t_guess);
+      TEST_ASSERT(tol.approximately_equal(t, t_ref));
+      TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
+
+      t_guess=0;
+      dist=eli::geom::intersect::minimum_distance(t, c, pt, t_guess);
+      TEST_ASSERT(tol.approximately_equal(t, t_ref));
+      TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
+
+      t_guess=1;
+      dist=eli::geom::intersect::minimum_distance(t, c, pt, t_guess);
+      TEST_ASSERT(tol.approximately_equal(t, t_ref));
+      TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
+
       dist=eli::geom::intersect::minimum_distance(t, c, pt);
       TEST_ASSERT(tol.approximately_equal(t, t_ref));
       TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
@@ -545,6 +753,32 @@ class minimum_distance_curve_test_suite : public Test::Suite
       norm << fp.z(), -fp.z(), -fp.x()+fp.y();
       norm.normalize();
       pt=c.f(t_ref)+dist_ref*norm;
+
+      t_guess=t_ref;
+      dist=eli::geom::intersect::minimum_distance(t, c, pt, t_guess);
+      TEST_ASSERT(tol.approximately_equal(t, t_ref));
+      TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
+
+      t_guess=t_ref+(1-t_ref)/2;
+      dist=eli::geom::intersect::minimum_distance(t, c, pt, t_guess);
+      TEST_ASSERT(tol.approximately_equal(t, t_ref));
+      TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
+
+      t_guess=t_ref-0.2;
+      dist=eli::geom::intersect::minimum_distance(t, c, pt, t_guess);
+      TEST_ASSERT(tol.approximately_equal(t, t_ref));
+      TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
+
+      t_guess=0;
+      dist=eli::geom::intersect::minimum_distance(t, c, pt, t_guess);
+      TEST_ASSERT(tol.approximately_equal(t, t_ref));
+      TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
+
+      t_guess=1;
+      dist=eli::geom::intersect::minimum_distance(t, c, pt, t_guess);
+      TEST_ASSERT(tol.approximately_equal(t, t_ref));
+      TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
+
       dist=eli::geom::intersect::minimum_distance(t, c, pt);
       TEST_ASSERT(tol.approximately_equal(t, t_ref));
       TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
@@ -553,6 +787,27 @@ class minimum_distance_curve_test_suite : public Test::Suite
       t_ref=static_cast<data_type>(0);
       pt << -2, 2, 3;
       dist_ref=(cntrl_in[0]-pt).norm();
+
+      t_guess=t_ref;
+      dist=eli::geom::intersect::minimum_distance(t, c, pt, t_guess);
+      TEST_ASSERT(tol.approximately_equal(t, t_ref));
+      TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
+
+      t_guess=t_ref+0.2;
+      dist=eli::geom::intersect::minimum_distance(t, c, pt, t_guess);
+      TEST_ASSERT(tol.approximately_equal(t, t_ref));
+      TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
+
+      t_guess=0;
+      dist=eli::geom::intersect::minimum_distance(t, c, pt, t_guess);
+      TEST_ASSERT(tol.approximately_equal(t, t_ref));
+      TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
+
+      t_guess=1;
+      dist=eli::geom::intersect::minimum_distance(t, c, pt, t_guess);
+      TEST_ASSERT(tol.approximately_equal(t, t_ref));
+      TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
+
       dist=eli::geom::intersect::minimum_distance(t, c, pt);
       TEST_ASSERT(tol.approximately_equal(t, t_ref));
       TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
@@ -561,6 +816,27 @@ class minimum_distance_curve_test_suite : public Test::Suite
       t_ref=static_cast<data_type>(1);
       pt << 5, 2, 1;
       dist_ref=(cntrl_in[3]-pt).norm();
+
+      t_guess=t_ref;
+      dist=eli::geom::intersect::minimum_distance(t, c, pt, t_guess);
+      TEST_ASSERT(tol.approximately_equal(t, t_ref));
+      TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
+
+      t_guess=t_ref-0.2;
+      dist=eli::geom::intersect::minimum_distance(t, c, pt, t_guess);
+      TEST_ASSERT(tol.approximately_equal(t, t_ref));
+      TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
+
+      t_guess=0;
+      dist=eli::geom::intersect::minimum_distance(t, c, pt, t_guess);
+      TEST_ASSERT(tol.approximately_equal(t, t_ref));
+      TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
+
+      t_guess=1;
+      dist=eli::geom::intersect::minimum_distance(t, c, pt, t_guess);
+      TEST_ASSERT(tol.approximately_equal(t, t_ref));
+      TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
+
       dist=eli::geom::intersect::minimum_distance(t, c, pt);
       TEST_ASSERT(tol.approximately_equal(t, t_ref));
       TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
@@ -587,7 +863,7 @@ class minimum_distance_curve_test_suite : public Test::Suite
 
       curve_type3 c(12);
       point_type3 pt, norm, fp;
-      data_type  dist, t, dist_ref, t_ref;
+      data_type  dist, t, dist_ref, t_ref, t_guess;
 
       // set control points
       for (index_type3 i=0; i<13; ++i)
@@ -602,6 +878,32 @@ class minimum_distance_curve_test_suite : public Test::Suite
       norm << fp.z(), -fp.z(), -fp.x()+fp.y();
       norm.normalize();
       pt=c.f(t_ref)+dist_ref*norm;
+
+      t_guess=t_ref;
+      dist=eli::geom::intersect::minimum_distance(t, c, pt, t_guess);
+      TEST_ASSERT(tol.approximately_equal(t, t_ref));
+      TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
+
+      t_guess=t_ref+0.2;
+      dist=eli::geom::intersect::minimum_distance(t, c, pt, t_guess);
+      TEST_ASSERT(tol.approximately_equal(t, t_ref));
+      TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
+
+      t_guess=t_ref-0.2;
+      dist=eli::geom::intersect::minimum_distance(t, c, pt, t_guess);
+      TEST_ASSERT(tol.approximately_equal(t, t_ref));
+      TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
+
+      t_guess=0;
+      dist=eli::geom::intersect::minimum_distance(t, c, pt, t_guess);
+      TEST_ASSERT(tol.approximately_equal(t, t_ref));
+      TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
+
+      t_guess=1;
+      dist=eli::geom::intersect::minimum_distance(t, c, pt, t_guess);
+      TEST_ASSERT(tol.approximately_equal(t, t_ref));
+      TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
+
       dist=eli::geom::intersect::minimum_distance(t, c, pt);
       TEST_ASSERT(tol.approximately_equal(t, t_ref));
       TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
@@ -613,6 +915,32 @@ class minimum_distance_curve_test_suite : public Test::Suite
       norm << fp.z(), -fp.z(), -fp.x()+fp.y();
       norm.normalize();
       pt=c.f(t_ref)+dist_ref*norm;
+
+      t_guess=t_ref;
+      dist=eli::geom::intersect::minimum_distance(t, c, pt, t_guess);
+      TEST_ASSERT(tol.approximately_equal(t, t_ref));
+      TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
+
+      t_guess=t_ref+0.2;
+      dist=eli::geom::intersect::minimum_distance(t, c, pt, t_guess);
+      TEST_ASSERT(tol.approximately_equal(t, t_ref));
+      TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
+
+      t_guess=t_ref-0.2;
+      dist=eli::geom::intersect::minimum_distance(t, c, pt, t_guess);
+      TEST_ASSERT(tol.approximately_equal(t, t_ref));
+      TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
+
+      t_guess=0;
+      dist=eli::geom::intersect::minimum_distance(t, c, pt, t_guess);
+      TEST_ASSERT(tol.approximately_equal(t, t_ref));
+      TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
+
+      t_guess=1;
+      dist=eli::geom::intersect::minimum_distance(t, c, pt, t_guess);
+      TEST_ASSERT(tol.approximately_equal(t, t_ref));
+      TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
+
       dist=eli::geom::intersect::minimum_distance(t, c, pt);
       TEST_ASSERT(tol.approximately_equal(t, t_ref));
       TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
@@ -624,6 +952,32 @@ class minimum_distance_curve_test_suite : public Test::Suite
       norm << fp.z(), -fp.z(), -fp.x()+fp.y();
       norm.normalize();
       pt=c.f(t_ref)+dist_ref*norm;
+
+      t_guess=t_ref;
+      dist=eli::geom::intersect::minimum_distance(t, c, pt, t_guess);
+      TEST_ASSERT(tol.approximately_equal(t, t_ref));
+      TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
+
+      t_guess=t_ref+0.2;
+      dist=eli::geom::intersect::minimum_distance(t, c, pt, t_guess);
+      TEST_ASSERT(tol.approximately_equal(t, t_ref));
+      TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
+
+      t_guess=t_ref-0.2;
+      dist=eli::geom::intersect::minimum_distance(t, c, pt, t_guess);
+      TEST_ASSERT(tol.approximately_equal(t, t_ref));
+      TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
+
+      t_guess=0;
+      dist=eli::geom::intersect::minimum_distance(t, c, pt, t_guess);
+      TEST_ASSERT(tol.approximately_equal(t, t_ref));
+      TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
+
+      t_guess=1;
+      dist=eli::geom::intersect::minimum_distance(t, c, pt, t_guess);
+      TEST_ASSERT(tol.approximately_equal(t, t_ref));
+      TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
+
       dist=eli::geom::intersect::minimum_distance(t, c, pt);
       TEST_ASSERT(tol.approximately_equal(t, t_ref));
       TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
@@ -635,6 +989,32 @@ class minimum_distance_curve_test_suite : public Test::Suite
       norm << fp.z(), -fp.z(), -fp.x()+fp.y();
       norm.normalize();
       pt=c.f(t_ref)+dist_ref*norm;
+
+      t_guess=t_ref;
+      dist=eli::geom::intersect::minimum_distance(t, c, pt, t_guess);
+      TEST_ASSERT(tol.approximately_equal(t, t_ref));
+      TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
+
+      t_guess=t_ref+0.2;
+      dist=eli::geom::intersect::minimum_distance(t, c, pt, t_guess);
+      TEST_ASSERT(tol.approximately_equal(t, t_ref));
+      TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
+
+      t_guess=t_ref-0.2;
+      dist=eli::geom::intersect::minimum_distance(t, c, pt, t_guess);
+      TEST_ASSERT(tol.approximately_equal(t, t_ref));
+      TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
+
+      t_guess=0;
+      dist=eli::geom::intersect::minimum_distance(t, c, pt, t_guess);
+      TEST_ASSERT(tol.approximately_equal(t, t_ref));
+      TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
+
+      t_guess=1;
+      dist=eli::geom::intersect::minimum_distance(t, c, pt, t_guess);
+      TEST_ASSERT(tol.approximately_equal(t, t_ref));
+      TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
+
       dist=eli::geom::intersect::minimum_distance(t, c, pt);
       TEST_ASSERT(tol.approximately_equal(t, t_ref));
       TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
@@ -646,6 +1026,32 @@ class minimum_distance_curve_test_suite : public Test::Suite
       norm << fp.z(), -fp.z(), -fp.x()+fp.y();
       norm.normalize();
       pt=c.f(t_ref)+dist_ref*norm;
+
+      t_guess=t_ref;
+      dist=eli::geom::intersect::minimum_distance(t, c, pt, t_guess);
+      TEST_ASSERT(tol.approximately_equal(t, t_ref));
+      TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
+
+      t_guess=t_ref+0.2;
+      dist=eli::geom::intersect::minimum_distance(t, c, pt, t_guess);
+      TEST_ASSERT(tol.approximately_equal(t, t_ref));
+      TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
+
+      t_guess=t_ref-0.2;
+      dist=eli::geom::intersect::minimum_distance(t, c, pt, t_guess);
+      TEST_ASSERT(tol.approximately_equal(t, t_ref));
+      TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
+
+      t_guess=0;
+      dist=eli::geom::intersect::minimum_distance(t, c, pt, t_guess);
+      TEST_ASSERT(tol.approximately_equal(t, t_ref));
+      TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
+
+      t_guess=1;
+      dist=eli::geom::intersect::minimum_distance(t, c, pt, t_guess);
+      TEST_ASSERT(tol.approximately_equal(t, t_ref));
+      TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
+
       dist=eli::geom::intersect::minimum_distance(t, c, pt);
       TEST_ASSERT(tol.approximately_equal(t, t_ref));
       TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
@@ -657,6 +1063,32 @@ class minimum_distance_curve_test_suite : public Test::Suite
       norm << fp.z(), -fp.z(), -fp.x()+fp.y();
       norm.normalize();
       pt=c.f(t_ref)+dist_ref*norm;
+
+      t_guess=t_ref;
+      dist=eli::geom::intersect::minimum_distance(t, c, pt, t_guess);
+      TEST_ASSERT(tol.approximately_equal(t, t_ref));
+      TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
+
+      t_guess=t_ref+(1-t_ref)/2;
+      dist=eli::geom::intersect::minimum_distance(t, c, pt, t_guess);
+      TEST_ASSERT(tol.approximately_equal(t, t_ref));
+      TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
+
+      t_guess=t_ref-0.2;
+      dist=eli::geom::intersect::minimum_distance(t, c, pt, t_guess);
+      TEST_ASSERT(tol.approximately_equal(t, t_ref));
+      TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
+
+      t_guess=0;
+      dist=eli::geom::intersect::minimum_distance(t, c, pt, t_guess);
+      TEST_ASSERT(tol.approximately_equal(t, t_ref));
+      TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
+
+      t_guess=1;
+      dist=eli::geom::intersect::minimum_distance(t, c, pt, t_guess);
+      TEST_ASSERT(tol.approximately_equal(t, t_ref));
+      TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
+
       dist=eli::geom::intersect::minimum_distance(t, c, pt);
       TEST_ASSERT(tol.approximately_equal(t, t_ref));
       TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
@@ -668,6 +1100,32 @@ class minimum_distance_curve_test_suite : public Test::Suite
       norm << -fp.z(), fp.z(), fp.x()-fp.y();
       norm.normalize();
       pt=c.f(t_ref)+dist_ref*norm;
+
+      t_guess=t_ref;
+      dist=eli::geom::intersect::minimum_distance(t, c, pt, t_guess);
+      TEST_ASSERT(tol.approximately_equal(t, t_ref));
+      TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
+
+      t_guess=t_ref+(1-t_ref)/2;
+      dist=eli::geom::intersect::minimum_distance(t, c, pt, t_guess);
+      TEST_ASSERT(tol.approximately_equal(t, t_ref));
+      TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
+
+      t_guess=t_ref-0.2;
+      dist=eli::geom::intersect::minimum_distance(t, c, pt, t_guess);
+      TEST_ASSERT(tol.approximately_equal(t, t_ref));
+      TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
+
+      t_guess=0;
+      dist=eli::geom::intersect::minimum_distance(t, c, pt, t_guess);
+      TEST_ASSERT(tol.approximately_equal(t, t_ref));
+      TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
+
+      t_guess=1;
+      dist=eli::geom::intersect::minimum_distance(t, c, pt, t_guess);
+      TEST_ASSERT(tol.approximately_equal(t, t_ref));
+      TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
+
       dist=eli::geom::intersect::minimum_distance(t, c, pt);
       TEST_ASSERT(tol.approximately_equal(t, t_ref));
       TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
@@ -679,6 +1137,32 @@ class minimum_distance_curve_test_suite : public Test::Suite
       norm << fp.z(), -fp.z(), -fp.x()+fp.y();
       norm.normalize();
       pt=c.f(t_ref)+dist_ref*norm;
+
+      t_guess=t_ref;
+      dist=eli::geom::intersect::minimum_distance(t, c, pt, t_guess);
+      TEST_ASSERT(tol.approximately_equal(t, t_ref));
+      TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
+
+      t_guess=t_ref+0.2;
+      dist=eli::geom::intersect::minimum_distance(t, c, pt, t_guess);
+      TEST_ASSERT(tol.approximately_equal(t, t_ref));
+      TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
+
+      t_guess=t_ref-t_ref/2;
+      dist=eli::geom::intersect::minimum_distance(t, c, pt, t_guess);
+      TEST_ASSERT(tol.approximately_equal(t, t_ref));
+      TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
+
+      t_guess=0;
+      dist=eli::geom::intersect::minimum_distance(t, c, pt, t_guess);
+      TEST_ASSERT(tol.approximately_equal(t, t_ref));
+      TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
+
+      t_guess=1;
+      dist=eli::geom::intersect::minimum_distance(t, c, pt, t_guess);
+      TEST_ASSERT(tol.approximately_equal(t, t_ref));
+      TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
+
       dist=eli::geom::intersect::minimum_distance(t, c, pt);
       TEST_ASSERT(tol.approximately_equal(t, t_ref));
       TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
@@ -690,6 +1174,32 @@ class minimum_distance_curve_test_suite : public Test::Suite
       norm << -fp.z(), fp.z(), fp.x()-fp.y();
       norm.normalize();
       pt=c.f(t_ref)+dist_ref*norm;
+
+      t_guess=t_ref;
+      dist=eli::geom::intersect::minimum_distance(t, c, pt, t_guess);
+      TEST_ASSERT(tol.approximately_equal(t, t_ref));
+      TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
+
+      t_guess=t_ref+0.2;
+      dist=eli::geom::intersect::minimum_distance(t, c, pt, t_guess);
+      TEST_ASSERT(tol.approximately_equal(t, t_ref));
+      TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
+
+      t_guess=t_ref-t_ref/2;
+      dist=eli::geom::intersect::minimum_distance(t, c, pt, t_guess);
+      TEST_ASSERT(tol.approximately_equal(t, t_ref));
+      TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
+
+      t_guess=0;
+      dist=eli::geom::intersect::minimum_distance(t, c, pt, t_guess);
+      TEST_ASSERT(tol.approximately_equal(t, t_ref));
+      TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
+
+      t_guess=1;
+      dist=eli::geom::intersect::minimum_distance(t, c, pt, t_guess);
+      TEST_ASSERT(tol.approximately_equal(t, t_ref));
+      TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
+
       dist=eli::geom::intersect::minimum_distance(t, c, pt);
       TEST_ASSERT(tol.approximately_equal(t, t_ref));
       TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
@@ -701,6 +1211,32 @@ class minimum_distance_curve_test_suite : public Test::Suite
       norm << -fp.z(), fp.z(), fp.x()-fp.y();
       norm.normalize();
       pt=c.f(t_ref)+dist_ref*norm;
+
+      t_guess=t_ref;
+      dist=eli::geom::intersect::minimum_distance(t, c, pt, t_guess);
+      TEST_ASSERT(tol.approximately_equal(t, t_ref));
+      TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
+
+      t_guess=t_ref+0.2;
+      dist=eli::geom::intersect::minimum_distance(t, c, pt, t_guess);
+      TEST_ASSERT(tol.approximately_equal(t, t_ref));
+      TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
+
+      t_guess=t_ref-t_ref/2;
+      dist=eli::geom::intersect::minimum_distance(t, c, pt, t_guess);
+      TEST_ASSERT(tol.approximately_equal(t, t_ref));
+      TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
+
+      t_guess=0;
+      dist=eli::geom::intersect::minimum_distance(t, c, pt, t_guess);
+      TEST_ASSERT(tol.approximately_equal(t, t_ref));
+      TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
+
+      t_guess=1;
+      dist=eli::geom::intersect::minimum_distance(t, c, pt, t_guess);
+      TEST_ASSERT(tol.approximately_equal(t, t_ref));
+      TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
+
       dist=eli::geom::intersect::minimum_distance(t, c, pt);
       TEST_ASSERT(tol.approximately_equal(t, t_ref));
       TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
