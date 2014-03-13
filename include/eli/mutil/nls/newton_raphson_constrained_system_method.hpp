@@ -244,14 +244,6 @@ namespace eli
                 assert(xmax[i]>xmin[i]);
                 assert(period>0);
 
-                if (std::abs(dx[i])>period)
-                {
-                  if (dx[i]>0)
-                    xinew=x[i]+static_cast<data__>(0.9999)*period;
-                  else
-                    xinew=x[i]-static_cast<data__>(0.9999)*period;
-                }
-
                 if (xinew<xmin[i])
                 {
                   xinew-=period*std::floor((xinew-xmin[i])/period);
@@ -269,14 +261,6 @@ namespace eli
 
                 assert(xmax[i]>xmin[i]);
                 assert(period>0);
-
-                if (std::abs(dx[i])>period)
-                {
-                  if (dx[i]>0)
-                    xinew=x[i]+static_cast<data__>(0.9999)*period;
-                  else
-                    xinew=x[i]-static_cast<data__>(0.9999)*period;
-                }
 
                 if (xinew>xmax[i])
                 {
