@@ -110,7 +110,7 @@ namespace eli
 
         // setup the solver
         nrm.set_absolute_tolerance(tol.get_absolute_tolerance());
-        nrm.set_max_iteration(100);
+        nrm.set_max_iteration(10);
         if (c.open())
         {
           nrm.set_lower_condition(0, eli::mutil::nls::newton_raphson_constrained_method<typename curve__::data_type>::NRC_EXCLUSIVE);

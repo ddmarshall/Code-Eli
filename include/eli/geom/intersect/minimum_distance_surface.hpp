@@ -123,7 +123,7 @@ namespace eli
 
         // setup the solver
         nrm.set_absolute_tolerance(tol.get_absolute_tolerance());
-        nrm.set_max_iteration(200);
+        nrm.set_max_iteration(20);
         nrm.set_norm_type(nonlinear_solver_type::max_norm);
         if (s.open_u())
         {
