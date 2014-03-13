@@ -183,6 +183,8 @@ namespace eli
                 if (xnew>xmax)
                 {
                   xnew-=period*std::ceil((xnew-xmax)/period);
+                  assert(xnew>=xmin);
+                  assert(xnew<=xmax);
                 }
                 break;
               }
