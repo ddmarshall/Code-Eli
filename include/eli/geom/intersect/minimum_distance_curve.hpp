@@ -45,7 +45,7 @@ namespace eli
           {
             typename curve__::data_type tt(t);
 
-            assert((tt>=0) && (tt<=1));
+            assert((tt>=pc->get_t0()) && (tt<=pc->get_tmax()));
 
             return (pc->f(tt)-pt).dot(pc->fp(tt));
           }
@@ -61,7 +61,7 @@ namespace eli
           {
             typename curve__::data_type tt(t);
 
-            assert((tt>=0) && (tt<=1));
+            assert((tt>=pc->get_t0()) && (tt<=pc->get_tmax()));
 
             typename curve__::point_type fp(pc->fp(tt));
             typename curve__::data_type rtn(fp.dot(fp)+pc->fpp(tt).dot(pc->f(tt)-pt));
@@ -73,13 +73,13 @@ namespace eli
 
               g.pc=pc;
               g.pt=pt;
-              if (t>=1)
+              if (t>=pc->get_tmax())
               {
-                rtn=(g(1)-g(static_cast<typename curve__::data_type>(0.99)))/static_cast<typename curve__::data_type>(0.01);
+                rtn=(g(pc->get_tmax())-g(static_cast<typename curve__::data_type>(pc->get_tmax()-.01)))/static_cast<typename curve__::data_type>(0.01);
               }
-              else if (t<=0)
+              else if (t<=pc->get_t0())
               {
-                rtn=(g(static_cast<typename curve__::data_type>(0.01))-g(0))/static_cast<typename curve__::data_type>(0.01);
+                rtn=(g(pc->get_t0()+.01)-g(pc->get_t0()))/static_cast<typename curve__::data_type>(0.01);
               }
               else
               {
@@ -113,12 +113,12 @@ namespace eli
         nrm.set_max_iteration(10);
         if (c.open())
         {
-          nrm.set_lower_condition(0, eli::mutil::nls::newton_raphson_constrained_method<typename curve__::data_type>::NRC_EXCLUSIVE);
-          nrm.set_upper_condition(1, eli::mutil::nls::newton_raphson_constrained_method<typename curve__::data_type>::NRC_EXCLUSIVE);
+          nrm.set_lower_condition(c.get_t0(), eli::mutil::nls::newton_raphson_constrained_method<typename curve__::data_type>::NRC_EXCLUSIVE);
+          nrm.set_upper_condition(c.get_tmax(), eli::mutil::nls::newton_raphson_constrained_method<typename curve__::data_type>::NRC_EXCLUSIVE);
         }
         else
         {
-          nrm.set_periodic_condition(0, 1);
+          nrm.set_periodic_condition(c.get_t0(), c.get_tmax());
         }
 
         // set the initial guess
@@ -131,7 +131,7 @@ namespace eli
         // if found root and it is within bounds and is closer than initial guess
         if (stat==eli::mutil::nls::newton_raphson_method<typename curve__::data_type>::converged)
         {
-          assert((t>=0) && (t<=1));
+          assert((t>=c.get_t0()) && (t<=c.get_tmax()));
 
           dist = eli::geom::point::distance(c.f(t), pt);
           if  (dist<=dist0)
@@ -158,27 +158,28 @@ namespace eli
         std::pair<typename curve__::data_type, typename curve__::data_type> cand_pair;
 
         // possible that end points are closest, so start by checking them
-        typename curve__::data_type dist, tt, dd;
+        typename curve__::data_type dist, tt, dd, tspan;
 
 
         typename curve__::index_type i, n;
 
         // Just a guess
         n=2*c.degree()+1;
+        tspan = c.get_tmax()-c.get_t0();
 
         // Evenly spaced in parameter, don't repeat 0/1 if closed curve.
         typename curve__::data_type dt;
         if (c.open())
         {
-          dt = 1.0/(n-1);
+          dt = tspan/(n-1);
         }
         else
         {
-          dt = 1.0/n;
+          dt = tspan/n;
         }
 
         // Find closest of evenly spaced points.
-        tt = 0;
+        tt = c.get_t0();
         dist = std::numeric_limits<typename curve__::data_type>::max();
         for (i = 0; i < n; i++)
         {
@@ -190,9 +191,9 @@ namespace eli
             dist=dd;
           }
           tt+=dt;
-          if( tt >= 1 )
+          if( tt >= c.get_tmax() )
           {
-            tt=1;
+            tt=c.get_tmax();
           }
         }
 

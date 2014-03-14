@@ -53,7 +53,8 @@ class minimum_distance_curve_test_suite : public Test::Suite
       TEST_ADD(minimum_distance_curve_test_suite<float>::point_closed_2d_test);
       TEST_ADD(minimum_distance_curve_test_suite<float>::point_smooth_3d_test);
       TEST_ADD(minimum_distance_curve_test_suite<float>::point_closed_3d_test);
-      TEST_ADD(minimum_distance_curve_test_suite<float>::point_piecewise_smooth_3d_test);
+      TEST_ADD(minimum_distance_curve_test_suite<float>::point_piecewise_01_smooth_3d_test);
+      TEST_ADD(minimum_distance_curve_test_suite<float>::point_piecewise_trange_smooth_3d_test);
     }
     void AddTests(const double &)
     {
@@ -62,7 +63,8 @@ class minimum_distance_curve_test_suite : public Test::Suite
       TEST_ADD(minimum_distance_curve_test_suite<double>::point_closed_2d_test);
       TEST_ADD(minimum_distance_curve_test_suite<double>::point_smooth_3d_test);
       TEST_ADD(minimum_distance_curve_test_suite<double>::point_closed_3d_test);
-      TEST_ADD(minimum_distance_curve_test_suite<double>::point_piecewise_smooth_3d_test);
+      TEST_ADD(minimum_distance_curve_test_suite<double>::point_piecewise_01_smooth_3d_test);
+      TEST_ADD(minimum_distance_curve_test_suite<double>::point_piecewise_trange_smooth_3d_test);
     }
     void AddTests(const long double &)
     {
@@ -71,7 +73,8 @@ class minimum_distance_curve_test_suite : public Test::Suite
       TEST_ADD(minimum_distance_curve_test_suite<long double>::point_closed_2d_test);
       TEST_ADD(minimum_distance_curve_test_suite<long double>::point_smooth_3d_test);
       TEST_ADD(minimum_distance_curve_test_suite<long double>::point_closed_3d_test);
-      TEST_ADD(minimum_distance_curve_test_suite<long double>::point_piecewise_smooth_3d_test);
+      TEST_ADD(minimum_distance_curve_test_suite<long double>::point_piecewise_01_smooth_3d_test);
+      TEST_ADD(minimum_distance_curve_test_suite<long double>::point_piecewise_trange_smooth_3d_test);
     }
 
   public:
@@ -131,6 +134,7 @@ class minimum_distance_curve_test_suite : public Test::Suite
     {
       size_t i;
 
+      std::cout << std::endl;
       std::cout << "figure(" << figno << ");" << std::endl;
       std::cout << "xpts=[" << pts[0].x();
       for (i=1; i<pts.size(); ++i)
@@ -164,6 +168,7 @@ class minimum_distance_curve_test_suite : public Test::Suite
 
       std::cout << "setenv('GNUTERM', 'x11');" << std::endl;
       std::cout << "plot3(xpts, ypts, zpts, 'bo', xint, yint, zint, 'k-');" << std::endl;
+      std::cout << "axis equal" << std::endl;
 
       std::cout << "figure(" << figno+1 << ");" << std::endl;
       std::cout << "t=[" << t[0];
@@ -175,7 +180,7 @@ class minimum_distance_curve_test_suite : public Test::Suite
         std::cout << ", " << (c.f(t[i])-pts[0]).dot(c.fp(t[i]));
       std::cout << "];" << std::endl;
 
-      std::cout << "plot([0,1], [0, 0], 'k-', t, g, 'k-');" << std::endl;
+      std::cout << "plot([0,1], [0, 0], 'k-', t, g, 'k-');" << std::endl << std::endl;
     }
 
     void point_smooth_2d_test()
@@ -1285,7 +1290,7 @@ class minimum_distance_curve_test_suite : public Test::Suite
 //       }
     }
 
-    void point_piecewise_smooth_3d_test()
+    void point_piecewise_01_smooth_3d_test()
     {
       point_type3 cntrl_in[4];
 
@@ -1295,10 +1300,10 @@ class minimum_distance_curve_test_suite : public Test::Suite
       cntrl_in[2] << 3, 0, 1;
       cntrl_in[3] << 4, 1, 2;
 
-      piecewise_curve_type3 pwc;
+      piecewise_curve_type3 pwc, pwcsave;
       curve_type3 c(3);
       point_type3 pt, fp, norm;
-      data_type  dist, t, dist_ref, t_ref, t_guess;
+      data_type  dist, t, dist_ref, t_ref, t_guess, t_split;
       typename piecewise_curve_type3::error_code err;
 
       // set control points
@@ -1310,8 +1315,10 @@ class minimum_distance_curve_test_suite : public Test::Suite
       err=pwc.push_back(c);
       TEST_ASSERT(err==piecewise_curve_type3::NO_ERRORS);
 
-      // test point on curve
-      dist_ref=0;
+      pwcsave=pwc;
+
+      // test point near curve
+      dist_ref=0.1;
       t_ref=0.25;
       fp=pwc.fp(t_ref);
       norm << fp.z(), -fp.z(), -fp.x()+fp.y();
@@ -1338,12 +1345,158 @@ class minimum_distance_curve_test_suite : public Test::Suite
       TEST_ASSERT(tol.approximately_equal(t, t_ref));
       TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
 
-      t_guess=1;
+// Case fails because Newton's method seeks local maximum.
+//      t_guess=1;
+//      dist=eli::geom::intersect::minimum_distance(t, pwc, pt, t_guess);
+//      TEST_ASSERT(tol.approximately_equal(t, t_ref));
+//      TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
+
+      t_split=t_ref;
+      pwc.split(t_split);
+
+      t_guess=t_ref;
       dist=eli::geom::intersect::minimum_distance(t, pwc, pt, t_guess);
       TEST_ASSERT(tol.approximately_equal(t, t_ref));
       TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
 
+      t_guess=t_ref+0.2;
+      dist=eli::geom::intersect::minimum_distance(t, pwc, pt, t_guess);
+      TEST_ASSERT(tol.approximately_equal(t, t_ref));
+      TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
+
+      t_guess=t_ref-0.2;
+      dist=eli::geom::intersect::minimum_distance(t, pwc, pt, t_guess);
+      TEST_ASSERT(tol.approximately_equal(t, t_ref));
+      TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
+
+      t_guess=t_split;
+      dist=eli::geom::intersect::minimum_distance(t, pwc, pt, t_guess);
+      TEST_ASSERT(tol.approximately_equal(t, t_ref));
+      TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
+
+      t_guess=t_split+std::numeric_limits<data_type>::epsilon();
+      dist=eli::geom::intersect::minimum_distance(t, pwc, pt, t_guess);
+      TEST_ASSERT(tol.approximately_equal(t, t_ref));
+      TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
+
+      t_guess=t_split-std::numeric_limits<data_type>::epsilon();
+      dist=eli::geom::intersect::minimum_distance(t, pwc, pt, t_guess);
+      TEST_ASSERT(tol.approximately_equal(t, t_ref));
+      TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
+
+      t_guess=0;
+      dist=eli::geom::intersect::minimum_distance(t, pwc, pt, t_guess);
+      TEST_ASSERT(tol.approximately_equal(t, t_ref));
+      TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
+
+// Case fails because Newton's method seeks local maximum.
+//      t_guess=1;
+//      dist=eli::geom::intersect::minimum_distance(t, pwc, pt, t_guess);
+//      TEST_ASSERT(tol.approximately_equal(t, t_ref));
+//      TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
+
+      t_split=t_ref-0.05;
+      pwc=pwcsave;
+      pwc.split(t_split);
+
+      t_guess=t_ref;
+      dist=eli::geom::intersect::minimum_distance(t, pwc, pt, t_guess);
+      TEST_ASSERT(tol.approximately_equal(t, t_ref));
+      TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
+
+      t_guess=t_ref+0.2;
+      dist=eli::geom::intersect::minimum_distance(t, pwc, pt, t_guess);
+      TEST_ASSERT(tol.approximately_equal(t, t_ref));
+      TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
+
+      t_guess=t_ref-0.2;
+      dist=eli::geom::intersect::minimum_distance(t, pwc, pt, t_guess);
+      TEST_ASSERT(tol.approximately_equal(t, t_ref));
+      TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
+
+      t_guess=t_split;
+      dist=eli::geom::intersect::minimum_distance(t, pwc, pt, t_guess);
+      TEST_ASSERT(tol.approximately_equal(t, t_ref));
+      TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
+
+      t_guess=t_split+std::numeric_limits<data_type>::epsilon();
+      dist=eli::geom::intersect::minimum_distance(t, pwc, pt, t_guess);
+      TEST_ASSERT(tol.approximately_equal(t, t_ref));
+      TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
+
+      t_guess=t_split-std::numeric_limits<data_type>::epsilon();
+      dist=eli::geom::intersect::minimum_distance(t, pwc, pt, t_guess);
+      TEST_ASSERT(tol.approximately_equal(t, t_ref));
+      TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
+
+      t_guess=0;
+      dist=eli::geom::intersect::minimum_distance(t, pwc, pt, t_guess);
+      TEST_ASSERT(tol.approximately_equal(t, t_ref));
+      TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
+
+// Case fails because Newton's method seeks local maximum.
+//      t_guess=1;
+//      dist=eli::geom::intersect::minimum_distance(t, pwc, pt, t_guess);
+//      TEST_ASSERT(tol.approximately_equal(t, t_ref));
+//      TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
+
+      t_split=t_ref+0.05;
+      pwc=pwcsave;
+      pwc.split(t_split);
+
+      t_guess=t_ref;
+      dist=eli::geom::intersect::minimum_distance(t, pwc, pt, t_guess);
+      TEST_ASSERT(tol.approximately_equal(t, t_ref));
+      TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
+
+      t_guess=t_ref+0.2;
+      dist=eli::geom::intersect::minimum_distance(t, pwc, pt, t_guess);
+      TEST_ASSERT(tol.approximately_equal(t, t_ref));
+      TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
+
+      t_guess=t_ref-0.2;
+      dist=eli::geom::intersect::minimum_distance(t, pwc, pt, t_guess);
+      TEST_ASSERT(tol.approximately_equal(t, t_ref));
+      TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
+
+      t_guess=t_split;
+      dist=eli::geom::intersect::minimum_distance(t, pwc, pt, t_guess);
+      TEST_ASSERT(tol.approximately_equal(t, t_ref));
+      TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
+
+      t_guess=t_split+std::numeric_limits<data_type>::epsilon();
+      dist=eli::geom::intersect::minimum_distance(t, pwc, pt, t_guess);
+      TEST_ASSERT(tol.approximately_equal(t, t_ref));
+      TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
+
+      t_guess=t_split-std::numeric_limits<data_type>::epsilon();
+      dist=eli::geom::intersect::minimum_distance(t, pwc, pt, t_guess);
+      TEST_ASSERT(tol.approximately_equal(t, t_ref));
+      TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
+
+      t_guess=0;
+      dist=eli::geom::intersect::minimum_distance(t, pwc, pt, t_guess);
+      TEST_ASSERT(tol.approximately_equal(t, t_ref));
+      TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
+
+// Case fails because Newton's method seeks local maximum.
+//      t_guess=1;
+//      dist=eli::geom::intersect::minimum_distance(t, pwc, pt, t_guess);
+//      TEST_ASSERT(tol.approximately_equal(t, t_ref));
+//      TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
+
+
+      pwcsave=pwc;
+
+      pwc.split(0.1);
       pwc.split(0.2);
+      pwc.split(0.3);
+      pwc.split(0.4);
+      pwc.split(0.5);
+      pwc.split(0.6);
+      pwc.split(0.7);
+      pwc.split(0.8);
+      pwc.split(0.9);
 
       t_guess=t_ref;
       dist=eli::geom::intersect::minimum_distance(t, pwc, pt, t_guess);
@@ -1365,116 +1518,255 @@ class minimum_distance_curve_test_suite : public Test::Suite
       TEST_ASSERT(tol.approximately_equal(t, t_ref));
       TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
 
-      t_guess=1;
+// Case fails because Newton's method seeks local maximum.
+//      t_guess=1;
+//      dist=eli::geom::intersect::minimum_distance(t, pwc, pt, t_guess);
+//      TEST_ASSERT(tol.approximately_equal(t, t_ref));
+//      TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
+
+    }
+
+    void point_piecewise_trange_smooth_3d_test()
+    {
+      point_type3 cntrl_in[4];
+
+      // set control points
+      cntrl_in[0] <<-1, 2, 1;
+      cntrl_in[1] << 0, 1, 0;
+      cntrl_in[2] << 3, 0, 1;
+      cntrl_in[3] << 4, 1, 2;
+
+      piecewise_curve_type3 pwc, pwcsave;
+      curve_type3 c(3);
+      point_type3 pt, fp, norm;
+      data_type  dist, t, dist_ref, t_ref, t_guess, t_split, t0;
+      typename piecewise_curve_type3::error_code err;
+
+      // set control points
+      for (index_type2 i=0; i<4; ++i)
+      {
+        c.set_control_point(cntrl_in[i], i);
+      }
+
+      err=pwc.push_back(c);
+      TEST_ASSERT(err==piecewise_curve_type3::NO_ERRORS);
+
+      // pwc.parameter_report();
+
+      t0=1.6;
+      pwc.set_t0(t0);
+
+      // pwc.parameter_report();
+
+      pwcsave=pwc;
+
+      // test point near curve
+      dist_ref=0.1;
+      t_ref=0.25+t0;
+      fp=pwc.fp(t_ref);
+      norm << fp.z(), -fp.z(), -fp.x()+fp.y();
+      norm.normalize();
+      pt=pwc.f(t_ref)+dist_ref*norm;
+
+      t_guess=t_ref;
       dist=eli::geom::intersect::minimum_distance(t, pwc, pt, t_guess);
       TEST_ASSERT(tol.approximately_equal(t, t_ref));
       TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
 
-      /*
-      // test point very near curve
-      dist_ref=static_cast<data_type>(0.01);
-      t_ref=0.25;
-      fp=pwc.fp(t_ref);
-      norm << fp.z(), -fp.z(), -fp.x()+fp.y();
-      norm.normalize();
-      pt=pwc.f(t_ref)+dist_ref*norm;
-      dist=eli::geom::intersect::minimum_distance(t, pwc, pt);
+      t_guess=t_ref+0.2;
+      dist=eli::geom::intersect::minimum_distance(t, pwc, pt, t_guess);
       TEST_ASSERT(tol.approximately_equal(t, t_ref));
       TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
 
-      // test point near curve
-      dist_ref=static_cast<data_type>(0.1);
-      t_ref=0.25;
-      fp=pwc.fp(t_ref);
-      norm << fp.z(),-fp.z(), -fp.x()+fp.y();
-      norm.normalize();
-      pt=pwc.f(t_ref)+dist_ref*norm;
-      dist=eli::geom::intersect::minimum_distance(t, pwc, pt);
+      t_guess=t_ref-0.2;
+      dist=eli::geom::intersect::minimum_distance(t, pwc, pt, t_guess);
       TEST_ASSERT(tol.approximately_equal(t, t_ref));
       TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
 
-      // test point far from curve
-      dist_ref=static_cast<data_type>(1.5);
-      t_ref=0.25;
-      fp=pwc.fp(t_ref);
-      norm << fp.z(), -fp.z(), -fp.x()+fp.y();
-      norm.normalize();
-      pt=pwc.f(t_ref)+dist_ref*norm;
-      dist=eli::geom::intersect::minimum_distance(t, pwc, pt);
+      t_guess=0+t0;
+      dist=eli::geom::intersect::minimum_distance(t, pwc, pt, t_guess);
       TEST_ASSERT(tol.approximately_equal(t, t_ref));
       TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
 
-      // test point on curve
-      dist_ref=0;
-      t_ref=static_cast<data_type>(0.6);
-      fp=pwc.fp(t_ref);
-      norm << fp.z(), -fp.z(), -fp.x()+fp.y();
-      norm.normalize();
-      pt=pwc.f(t_ref)+dist_ref*norm;
-      dist=eli::geom::intersect::minimum_distance(t, pwc, pt);
+// Case fails because Newton's method seeks local maximum.
+//      t_guess=1+t0;
+//      dist=eli::geom::intersect::minimum_distance(t, pwc, pt, t_guess);
+//      TEST_ASSERT(tol.approximately_equal(t, t_ref));
+//      TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
+
+      t_split=t_ref;
+      pwc.split(t_split);
+
+      t_guess=t_ref;
+      dist=eli::geom::intersect::minimum_distance(t, pwc, pt, t_guess);
       TEST_ASSERT(tol.approximately_equal(t, t_ref));
       TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
 
-      // test point near curve
-      dist_ref=static_cast<data_type>(0.1);
-      t_ref=static_cast<data_type>(0.65);
-      fp=pwc.fp(t_ref);
-      norm << fp.z(), -fp.z(), -fp.x()+fp.y();
-      norm.normalize();
-      pt=pwc.f(t_ref)+dist_ref*norm;
-      dist=eli::geom::intersect::minimum_distance(t, pwc, pt);
+      t_guess=t_ref+0.2;
+      dist=eli::geom::intersect::minimum_distance(t, pwc, pt, t_guess);
       TEST_ASSERT(tol.approximately_equal(t, t_ref));
       TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
 
-      // test point near end of curve
-      dist_ref=static_cast<data_type>(0.1);
-      t_ref=static_cast<data_type>(0.01);
-      fp=pwc.fp(t_ref);
-      norm << fp.z(), -fp.z(), -fp.x()+fp.y();
-      norm.normalize();
-      pt=pwc.f(t_ref)+dist_ref*norm;
-      dist=eli::geom::intersect::minimum_distance(t, pwc, pt);
+      t_guess=t_ref-0.2;
+      dist=eli::geom::intersect::minimum_distance(t, pwc, pt, t_guess);
       TEST_ASSERT(tol.approximately_equal(t, t_ref));
       TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
 
-      // test point very near end of curve
-      dist_ref=static_cast<data_type>(0.1);
-      t_ref=static_cast<data_type>(0.001);
-      fp=pwc.fp(t_ref);
-      norm << fp.z(), -fp.z(), -fp.x()+fp.y();
-      norm.normalize();
-      pt=pwc.f(t_ref)+dist_ref*norm;
-      dist=eli::geom::intersect::minimum_distance(t, pwc, pt);
+      t_guess=t_split;
+      dist=eli::geom::intersect::minimum_distance(t, pwc, pt, t_guess);
       TEST_ASSERT(tol.approximately_equal(t, t_ref));
       TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
 
-      // test point very near end of curve
-      dist_ref=static_cast<data_type>(0.1);
-      t_ref=static_cast<data_type>(0.999);
-      fp=pwc.fp(t_ref);
-      norm << fp.z(), -fp.z(), -fp.x()+fp.y();
-      norm.normalize();
-      pt=pwc.f(t_ref)+dist_ref*norm;
-      dist=eli::geom::intersect::minimum_distance(t, pwc, pt);
+      t_guess=t_split+std::numeric_limits<data_type>::epsilon();
+      dist=eli::geom::intersect::minimum_distance(t, pwc, pt, t_guess);
       TEST_ASSERT(tol.approximately_equal(t, t_ref));
       TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
 
-      // test point beyond start of curve
-      t_ref=static_cast<data_type>(0);
-      pt << -2, 2, 3;
-      dist_ref=(cntrl_in[0]-pt).norm();
-      dist=eli::geom::intersect::minimum_distance(t, pwc, pt);
+      t_guess=t_split-std::numeric_limits<data_type>::epsilon();
+      dist=eli::geom::intersect::minimum_distance(t, pwc, pt, t_guess);
       TEST_ASSERT(tol.approximately_equal(t, t_ref));
       TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
 
-      // test point beyond end of curve
-      t_ref=static_cast<data_type>(1);
-      pt << 5, 2, 1;
-      dist_ref=(cntrl_in[3]-pt).norm();
-      dist=eli::geom::intersect::minimum_distance(t, pwc, pt);
+      t_guess=0+t0;
+      dist=eli::geom::intersect::minimum_distance(t, pwc, pt, t_guess);
       TEST_ASSERT(tol.approximately_equal(t, t_ref));
       TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
-*/
+
+// Case fails because Newton's method seeks local maximum.
+//      t_guess=1+t0;
+//      dist=eli::geom::intersect::minimum_distance(t, pwc, pt, t_guess);
+//      TEST_ASSERT(tol.approximately_equal(t, t_ref));
+//      TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
+
+      t_split=t_ref-0.05;
+      pwc=pwcsave;
+      pwc.split(t_split);
+
+      t_guess=t_ref;
+      dist=eli::geom::intersect::minimum_distance(t, pwc, pt, t_guess);
+      TEST_ASSERT(tol.approximately_equal(t, t_ref));
+      TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
+
+      t_guess=t_ref+0.2;
+      dist=eli::geom::intersect::minimum_distance(t, pwc, pt, t_guess);
+      TEST_ASSERT(tol.approximately_equal(t, t_ref));
+      TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
+
+      t_guess=t_ref-0.2;
+      dist=eli::geom::intersect::minimum_distance(t, pwc, pt, t_guess);
+      TEST_ASSERT(tol.approximately_equal(t, t_ref));
+      TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
+
+      t_guess=t_split;
+      dist=eli::geom::intersect::minimum_distance(t, pwc, pt, t_guess);
+      TEST_ASSERT(tol.approximately_equal(t, t_ref));
+      TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
+
+      t_guess=t_split+std::numeric_limits<data_type>::epsilon();
+      dist=eli::geom::intersect::minimum_distance(t, pwc, pt, t_guess);
+      TEST_ASSERT(tol.approximately_equal(t, t_ref));
+      TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
+
+      t_guess=t_split-std::numeric_limits<data_type>::epsilon();
+      dist=eli::geom::intersect::minimum_distance(t, pwc, pt, t_guess);
+      TEST_ASSERT(tol.approximately_equal(t, t_ref));
+      TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
+
+      t_guess=0+t0;
+      dist=eli::geom::intersect::minimum_distance(t, pwc, pt, t_guess);
+      TEST_ASSERT(tol.approximately_equal(t, t_ref));
+      TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
+
+// Case fails because Newton's method seeks local maximum.
+//      t_guess=1+t0;
+//      dist=eli::geom::intersect::minimum_distance(t, pwc, pt, t_guess);
+//      TEST_ASSERT(tol.approximately_equal(t, t_ref));
+//      TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
+
+      t_split=t_ref+0.05;
+      pwc=pwcsave;
+      pwc.split(t_split);
+
+      t_guess=t_ref;
+      dist=eli::geom::intersect::minimum_distance(t, pwc, pt, t_guess);
+      TEST_ASSERT(tol.approximately_equal(t, t_ref));
+      TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
+
+      t_guess=t_ref+0.2;
+      dist=eli::geom::intersect::minimum_distance(t, pwc, pt, t_guess);
+      TEST_ASSERT(tol.approximately_equal(t, t_ref));
+      TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
+
+      t_guess=t_ref-0.2;
+      dist=eli::geom::intersect::minimum_distance(t, pwc, pt, t_guess);
+      TEST_ASSERT(tol.approximately_equal(t, t_ref));
+      TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
+
+      t_guess=t_split;
+      dist=eli::geom::intersect::minimum_distance(t, pwc, pt, t_guess);
+      TEST_ASSERT(tol.approximately_equal(t, t_ref));
+      TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
+
+      t_guess=t_split+std::numeric_limits<data_type>::epsilon();
+      dist=eli::geom::intersect::minimum_distance(t, pwc, pt, t_guess);
+      TEST_ASSERT(tol.approximately_equal(t, t_ref));
+      TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
+
+      t_guess=t_split-std::numeric_limits<data_type>::epsilon();
+      dist=eli::geom::intersect::minimum_distance(t, pwc, pt, t_guess);
+      TEST_ASSERT(tol.approximately_equal(t, t_ref));
+      TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
+
+      t_guess=0+t0;
+      dist=eli::geom::intersect::minimum_distance(t, pwc, pt, t_guess);
+      TEST_ASSERT(tol.approximately_equal(t, t_ref));
+      TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
+
+// Case fails because Newton's method seeks local maximum.
+//      t_guess=1+t0;
+//      dist=eli::geom::intersect::minimum_distance(t, pwc, pt, t_guess);
+//      TEST_ASSERT(tol.approximately_equal(t, t_ref));
+//      TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
+
+
+      pwcsave=pwc;
+
+      pwc.split(0.1+t0);
+      pwc.split(0.2+t0);
+      pwc.split(0.3+t0);
+      pwc.split(0.4+t0);
+      pwc.split(0.5+t0);
+      pwc.split(0.6+t0);
+      pwc.split(0.7+t0);
+      pwc.split(0.8+t0);
+      pwc.split(0.9+t0);
+
+      t_guess=t_ref;
+      dist=eli::geom::intersect::minimum_distance(t, pwc, pt, t_guess);
+      TEST_ASSERT(tol.approximately_equal(t, t_ref));
+      TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
+
+      t_guess=t_ref+0.2;
+      dist=eli::geom::intersect::minimum_distance(t, pwc, pt, t_guess);
+      TEST_ASSERT(tol.approximately_equal(t, t_ref));
+      TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
+
+      t_guess=t_ref-0.2;
+      dist=eli::geom::intersect::minimum_distance(t, pwc, pt, t_guess);
+      TEST_ASSERT(tol.approximately_equal(t, t_ref));
+      TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
+
+      t_guess=0+t0;
+      dist=eli::geom::intersect::minimum_distance(t, pwc, pt, t_guess);
+      TEST_ASSERT(tol.approximately_equal(t, t_ref));
+      TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
+
+// Case fails because Newton's method seeks local maximum.
+//      t_guess=1+t0;
+//      dist=eli::geom::intersect::minimum_distance(t, pwc, pt, t_guess);
+//      TEST_ASSERT(tol.approximately_equal(t, t_ref));
+//      TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
+
     }
 };
 

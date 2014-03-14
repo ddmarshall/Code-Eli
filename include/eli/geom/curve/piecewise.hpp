@@ -299,7 +299,7 @@ namespace eli
 
           static dimension_type dimension() {return dim__;}
 
-          const data_type & get_tmax() const {return tmax;}
+          data_type get_tmax() const {return tmax;}
 
           data_type get_t0() const
           {
@@ -347,7 +347,7 @@ namespace eli
             tmax_out = tmax;
           }
 
-          void parameter_report()
+          void parameter_report() const
           {
             printf("Parameter report:\n");
             typename segment_collection_type::const_iterator it;
