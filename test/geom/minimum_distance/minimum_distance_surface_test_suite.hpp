@@ -424,7 +424,7 @@ class minimum_distance_surface_test_suite : public Test::Suite
       norm=s.normal(u_ref, v_ref);
       u_contra=-norm.cross(s.f_v(u_ref, v_ref));
       u_contra.normalize();
-      pt=static_cast<data_type>(0.1)*u_contra+s.f(u_ref, v_ref)+dist_ref*norm;
+      pt=static_cast<data_type>(-0.1)*u_contra+s.f(u_ref, v_ref)+dist_ref*norm;
       dist_ref=eli::geom::point::distance(pt, s.f(u_ref, v_ref));
       dist=eli::geom::intersect::minimum_distance(u, v, s, pt);
       TEST_ASSERT(tol.approximately_equal(u, u_ref));
@@ -438,7 +438,7 @@ class minimum_distance_surface_test_suite : public Test::Suite
       norm=s.normal(u_ref, v_ref);
       v_contra=norm.cross(s.f_u(u_ref, v_ref));
       v_contra.normalize();
-      pt=static_cast<data_type>(0.1)*v_contra+s.f(u_ref, v_ref)+dist_ref*norm;
+      pt=static_cast<data_type>(-0.1)*v_contra+s.f(u_ref, v_ref)+dist_ref*norm;
       dist_ref=eli::geom::point::distance(pt, s.f(u_ref, v_ref));
       dist=eli::geom::intersect::minimum_distance(u, v, s, pt);
       TEST_ASSERT(tol.approximately_equal(u, u_ref));
@@ -530,8 +530,6 @@ class minimum_distance_surface_test_suite : public Test::Suite
       norm=-s.normal(u_ref, v_ref);
       pt=s.f(u_ref, v_ref)+dist_ref*norm;
       dist=eli::geom::intersect::minimum_distance(u, v, s, pt);
-      if (typeid(data_type)==typeid(float))
-        u_ref=static_cast<data_type>(0.348769);
       TEST_ASSERT(tol.approximately_equal(u, u_ref));
       TEST_ASSERT(tol.approximately_equal(v, v_ref));
       TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
