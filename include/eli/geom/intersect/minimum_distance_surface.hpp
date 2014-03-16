@@ -158,8 +158,7 @@ namespace eli
         u=ans(0);
         v=ans(1);
 
-        // if found root and it is within bounds and is closer than initial guess
-        if (stat==nonlinear_solver_type::converged)
+        // if root is within bounds and is closer than initial guess
         {
           assert((u>=0) && (u<=1));
           assert((v>=0) && (v<=1));
