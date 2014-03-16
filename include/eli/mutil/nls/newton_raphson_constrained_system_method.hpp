@@ -173,12 +173,12 @@ namespace eli
                                          const typename iterative_system_root_base<data_type, N__, NSOL__>::solution_matrix &dx) const
           {
             size_t i;
-            data_type lambda(1.0);
+            typename iterative_system_root_base<data_type, N__, NSOL__>::solution_matrix dx_new(dx);
 
-            // calculate the minimum of all limits
+            // Limit constrained values to hit constraint, but allow other terms to remain.
             for (i=0; i<N__; ++i)
             {
-              data_type xinew(x(i)+lambda*dx(i));
+              data_type xinew(x(i)+dx(i));
 
               // check if min threshold is hit
               switch(xmin_cond[i])
@@ -187,7 +187,7 @@ namespace eli
                 {
                   if (xinew<xmin[i])
                   {
-                    lambda=(xmin[i]-x(i))/dx(i);
+                    dx_new(i)=xmin[i]-x(i);
                   }
                   break;
                 }
@@ -195,7 +195,7 @@ namespace eli
                 {
                   if (xinew<=xmin[i])
                   {
-                    lambda=(xmin[i]-x(i))*(1-std::numeric_limits<data_type>::epsilon())/dx(i);
+                    dx_new(i)=(xmin[i]-x(i))*(1-std::numeric_limits<data_type>::epsilon());
                   }
                   break;
                 }
@@ -213,7 +213,7 @@ namespace eli
                 {
                   if (xinew>xmax[i])
                   {
-                    lambda=(xmax[i]-x(i))/dx(i);
+                    dx_new(i)=xmax[i]-x(i);
                   }
                   break;
                 }
@@ -221,7 +221,7 @@ namespace eli
                 {
                   if (xinew>=xmax[i])
                   {
-                    lambda=(xmax[i]-x(i))*(1-std::numeric_limits<data_type>::epsilon())/dx(i);
+                    dx_new(i)=(xmax[i]-x(i))*(1-std::numeric_limits<data_type>::epsilon());
                   }
                   break;
                 }
@@ -233,8 +233,7 @@ namespace eli
               }
             }
 
-            // build the new dx
-            typename iterative_system_root_base<data_type, N__, NSOL__>::solution_matrix dx_new(lambda*dx);
+            // Limit the new dx for periodic conditions.
             for (i=0; i<N__; ++i)
             {
               if (xmin_cond[i]==NRC_PERIODIC)
