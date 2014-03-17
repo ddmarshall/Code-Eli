@@ -123,6 +123,18 @@ namespace eli
           index_type degree_u() const {return static_cast<index_type>(B_v.size())-1;}
           index_type degree_v() const {return static_cast<index_type>(B_u.size())-1;}
 
+          void get_parameter_min(data_type &umin, data_type &vmin) const
+          {
+            umin=0;
+            vmin=0;
+          }
+
+          void get_parameter_max(data_type &umax, data_type &vmax) const
+          {
+            umax=1;
+            vmax=1;
+          }
+
           void resize(const index_type &u_dim, const index_type &v_dim)
           {
             // allocate the control points
