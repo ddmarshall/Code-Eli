@@ -313,9 +313,22 @@ namespace eli
               v=vv;
               dist=dd;
             }
+          }
+          // check v-min edge
+          vv=vmin;
+          s.get_vconst_curve(bc, vv);
+          dd=eli::geom::intersect::minimum_distance(uu, bc, pt);
+          if (dd<dist)
+          {
+            u=uu;
+            v=vv;
+            dist=dd;
+          }
 
-            // check v-min edge
-            vv=vmin;
+          // if open in v-direction check v-max edge
+          if (s.open_v())
+          {
+            vv=vmax;
             s.get_vconst_curve(bc, vv);
             dd=eli::geom::intersect::minimum_distance(uu, bc, pt);
             if (dd<dist)
@@ -323,20 +336,6 @@ namespace eli
               u=uu;
               v=vv;
               dist=dd;
-            }
-
-            // if open in v-direction check v-max edge
-            if (s.open_v())
-            {
-              vv=vmax;
-              s.get_vconst_curve(bc, vv);
-              dd=eli::geom::intersect::minimum_distance(uu, bc, pt);
-              if (dd<dist)
-              {
-                u=uu;
-                v=vv;
-                dist=dd;
-              }
             }
           }
         }
