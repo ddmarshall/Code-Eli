@@ -71,17 +71,16 @@ find_package(CPPTest)
 find_package(Eigen3 3.0.0)
 
 if (EIGEN3_FOUND)
-  # add the include and link directories and libraries that are needed
+  # add the include directories and libraries that are needed
   include_directories(${ELI_BINARY_DIR}/include
                       ${ELI_SOURCE_DIR}/include
-                      ${CPPTEST_INCLUDE_DIRS}
                       ${EIGEN3_INCLUDE_DIR})
-  link_directories(${CPPTEST_LIBRARY_DIRS})
-
-  # add subdirectories of project
   add_subdirectory(example)
 
   if(CPPTEST_FOUND)
+    # add the CPPTest include and link directories
+    include_directories(${CPPTEST_INCLUDE_DIRS})
+    link_directories(${CPPTEST_LIBRARY_DIRS})
     add_subdirectory(test)
   endif()
 endif()
