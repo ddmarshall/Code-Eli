@@ -365,7 +365,7 @@ namespace eli
 
           index_type number_segments() const {return static_cast<index_type>(segments.size());}
 
-          void degree(index_type &mind, index_type &maxd)
+          void degree(index_type &mind, index_type &maxd) const
           {
             typename segment_collection_type::const_iterator it;
 
