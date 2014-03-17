@@ -234,6 +234,23 @@ namespace eli
 {
   namespace geom
   {
+
+    namespace curve
+    {
+      template<template<typename, unsigned short, typename> class curve__, typename data__, unsigned short dim__, typename tol__ >
+      class piecewise;
+    }
+
+    namespace intersect
+    {
+      template<template<typename, unsigned short, typename> class curve1__, typename data1__, unsigned short dim1__, typename tol1__>
+      typename curve::piecewise<curve1__, data1__, dim1__, tol1__>::data_type
+                      minimum_distance(
+                              typename curve::piecewise<curve1__, data1__, dim1__, tol1__>::data_type &t,
+                              const curve::piecewise<curve1__, data1__, dim1__, tol1__> &pc,
+                              const typename curve::piecewise<curve1__, data1__, dim1__, tol1__>::point_type &pt);
+    }
+
     namespace curve
     {
       // forward declaration of length function used in methods below. The length function
@@ -1477,6 +1494,13 @@ namespace eli
                              const typename piecewise<curve1__, data1__, dim1__, tol1__>::data_type &t0,
                              const typename piecewise<curve1__, data1__, dim1__, tol1__>::data_type &t1,
                              const typename piecewise<curve1__, data1__, dim1__, tol1__>::data_type &tol);
+
+          template<template<typename, unsigned short, typename> class curve1__, typename data1__, unsigned short dim1__, typename tol1__>
+          friend typename piecewise<curve1__, data1__, dim1__, tol1__>::data_type
+                          eli::geom::intersect::minimum_distance(
+                                  typename piecewise<curve1__, data1__, dim1__, tol1__>::data_type &t,
+                                  const piecewise<curve1__, data1__, dim1__, tol1__> &pc,
+                                  const typename piecewise<curve1__, data1__, dim1__, tol1__>::point_type &pt);
 
           typedef std::map<data_type, curve_type> segment_collection_type;
 

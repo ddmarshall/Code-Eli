@@ -16,6 +16,7 @@
 #include <cmath>
 #include <vector>
 #include <list>
+#include <algorithm>
 
 #ifdef Success  // X11 #define collides with Eigen
 #undef Success
@@ -26,11 +27,18 @@
 #include "eli/mutil/nls/newton_raphson_constrained_method.hpp"
 
 #include "eli/geom/point/distance.hpp"
+#include "eli/geom/curve/piecewise.hpp"
 
 namespace eli
 {
   namespace geom
   {
+    namespace curve
+    {
+      template<template<typename, unsigned short, typename> class curve__, typename data__, unsigned short dim__, typename tol__ >
+      class piecewise;
+    }
+
     namespace intersect
     {
       namespace internal
@@ -202,6 +210,78 @@ namespace eli
         dist=minimum_distance(t, c, pt, t0);
 
         return dist;
+      }
+
+      template< typename first__, typename second__>
+      bool pairfirstcompare( const std::pair < first__, second__ > &a, const std::pair < first__, second__ > &b )
+      {
+          return ( a.first < b.first );
+      }
+
+      template<template<typename, unsigned short, typename> class curve__, typename data__, unsigned short dim__, typename tol__>
+      typename curve::piecewise<curve__, data__, dim__, tol__>::data_type minimum_distance(typename curve::piecewise<curve__, data__, dim__, tol__>::data_type &t,
+                                                                                    const curve::piecewise<curve__, data__, dim__, tol__> &pc,
+                                                                                    const typename curve::piecewise<curve__, data__, dim__, tol__>::point_type &pt)
+      {
+        typedef curve::piecewise<curve__, data__, dim__, tol__> piecewise_type;
+        typedef typename piecewise_type::curve_type curve_type;
+        typedef typename piecewise_type::index_type index_type;
+        typedef typename piecewise_type::data_type data_type;
+        typedef typename piecewise_type::point_type point_type;
+        typedef typename piecewise_type::bounding_box_type bounding_box_type;
+
+        typedef typename piecewise_type::segment_collection_type::const_iterator segit;
+
+        typedef std::vector< std::pair<data_type,segit> > dvec;
+        dvec minbbdist;
+
+        // Find closest corner of bounding boxes, add them to vector
+        // Simple linear search, would be more efficient with some sort of tree.
+        for (segit seg=pc.segments.begin(); seg!=pc.segments.end(); ++seg)
+        {
+          bounding_box_type bb_local;
+          seg->second.get_bounding_box(bb_local);
+
+          data_type dbbmin;
+          dbbmin = minimum_distance(bb_local, pt);
+
+          minbbdist.push_back(std::make_pair(dbbmin, seg));
+        }
+
+        // Sort by nearest distance.
+        std::sort( minbbdist.begin(), minbbdist.end(), pairfirstcompare<data_type, segit> );
+
+        // Iterate over segments, starting with nearest bounding box
+        data_type dmin(std::numeric_limits<data_type>::max());
+        typename dvec::const_iterator it;
+        for (it=minbbdist.begin(); it!=minbbdist.end(); ++it)
+        {
+          // If nearest bb distance is farther than current best, we're done.
+          if(it->first < dmin )
+          {
+            segit seg = it->second;
+
+            curve_type c(seg->second);
+
+            data_type tlocal, d;
+            d=minimum_distance(tlocal,c,pt);
+
+            if(d < dmin)
+            {
+              data_type tstart(seg->first);
+              data_type dt(pc.get_delta_t(seg));
+
+              dmin = d;
+              t=tstart+tlocal*dt;
+            }
+          }
+          else
+          {
+            break;
+          }
+
+        }
+        return dmin;
       }
     }
   }
