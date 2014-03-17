@@ -14,6 +14,7 @@
 #define eli_mutil_fd_d1o3_hpp
 
 #include <vector>
+#include <assert.h>
 
 namespace eli
 {
