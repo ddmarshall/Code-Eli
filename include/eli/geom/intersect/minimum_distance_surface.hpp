@@ -28,6 +28,7 @@
 
 #include "eli/geom/intersect/minimum_distance_curve.hpp"
 #include "eli/geom/point/distance.hpp"
+#include "eli/geom/intersect/minimum_distance_bounding_box.hpp"
 
 namespace eli
 {
