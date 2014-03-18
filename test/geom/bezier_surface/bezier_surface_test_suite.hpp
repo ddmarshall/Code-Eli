@@ -39,6 +39,7 @@ class bezier_surface_test_suite : public Test::Suite
     typedef typename bezier_type::data_type data_type;
     typedef typename bezier_type::index_type index_type;
     typedef typename bezier_type::tolerance_type tolerance_type;
+    typedef typename bezier_type::curve_type curve_type;
 
     tolerance_type tol;
 
@@ -63,6 +64,7 @@ class bezier_surface_test_suite : public Test::Suite
       TEST_ADD(bezier_surface_test_suite<float>::distance_bound_test);
       TEST_ADD(bezier_surface_test_suite<float>::split_test);
       TEST_ADD(bezier_surface_test_suite<float>::normal_test);
+      TEST_ADD(bezier_surface_test_suite<float>::get_curve_test);
     }
     void AddTests(const double &)
     {
@@ -84,6 +86,7 @@ class bezier_surface_test_suite : public Test::Suite
       TEST_ADD(bezier_surface_test_suite<double>::distance_bound_test);
       TEST_ADD(bezier_surface_test_suite<double>::split_test);
       TEST_ADD(bezier_surface_test_suite<double>::normal_test);
+      TEST_ADD(bezier_surface_test_suite<double>::get_curve_test);
     }
     void AddTests(const long double &)
     {
@@ -105,6 +108,7 @@ class bezier_surface_test_suite : public Test::Suite
       TEST_ADD(bezier_surface_test_suite<long double>::distance_bound_test);
       TEST_ADD(bezier_surface_test_suite<long double>::split_test);
       TEST_ADD(bezier_surface_test_suite<long double>::normal_test);
+      TEST_ADD(bezier_surface_test_suite<long double>::get_curve_test);
     }
 
   public:
@@ -2846,6 +2850,499 @@ class bezier_surface_test_suite : public Test::Suite
         ref_normal=bez.normal(u, v+std::numeric_limits<data_type>::epsilon());
         TEST_ASSERT(tol.approximately_equal(ref_normal, normal));
       }
+    }
+
+    void get_curve_test()
+    {
+      index_type n(3), m(3);
+      point_type pt[3+1][3+1], pt_out, pt_ref;
+      data_type u, v, d;
+      curve_type c;
+
+      // create surface with specified control points
+      pt[0][0] << -15, 0,  15;
+      pt[1][0] <<  -5, 5,  15;
+      pt[2][0] <<   5, 5,  15;
+      pt[3][0] <<  15, 0,  15;
+      pt[0][1] << -15, 5,   5;
+      pt[1][1] <<  -5, 5,   5;
+      pt[2][1] <<   5, 5,   5;
+      pt[3][1] <<  15, 5,   5;
+      pt[0][2] << -15, 5,  -5;
+      pt[1][2] <<  -5, 5,  -5;
+      pt[2][2] <<   5, 5,  -5;
+      pt[3][2] <<  15, 5,  -5;
+      pt[0][3] << -15, 0, -15;
+      pt[1][3] <<  -5, 5, -15;
+      pt[2][3] <<   5, 5, -15;
+      pt[3][3] <<  15, 0, -15;
+
+      // create surface with specified dimensions and set control points
+      bezier_type bez(n, m);
+
+      for (index_type i=0; i<=n; ++i)
+      {
+        for (index_type j=0; j<=m; ++j)
+        {
+          bez.set_control_point(pt[i][j], i, j);
+        }
+      }
+
+      // Extract u curve
+      u=0;
+      bez.get_uconst_curve(c, u);
+
+      v=0;
+      pt_ref=bez.f(u, v);
+      pt_out=c.f(v);
+      TEST_ASSERT(pt_out==pt_ref);
+
+      v=0.1;
+      pt_ref=bez.f(u, v);
+      pt_out=c.f(v);
+      TEST_ASSERT(pt_out==pt_ref);
+
+      v=0.2;
+      pt_ref=bez.f(u, v);
+      pt_out=c.f(v);
+      TEST_ASSERT(pt_out==pt_ref);
+
+      v=0.4;
+      pt_ref=bez.f(u, v);
+      pt_out=c.f(v);
+      TEST_ASSERT(pt_out==pt_ref);
+
+      v=0.6;
+      pt_ref=bez.f(u, v);
+      pt_out=c.f(v);
+      TEST_ASSERT(pt_out==pt_ref);
+
+      v=0.8;
+      pt_ref=bez.f(u, v);
+      pt_out=c.f(v);
+      TEST_ASSERT(pt_out==pt_ref);
+
+      v=1;
+      pt_ref=bez.f(u, v);
+      pt_out=c.f(v);
+      TEST_ASSERT(pt_out==pt_ref);
+
+      // Extract u curve
+      u=0.1;
+      bez.get_uconst_curve(c, u);
+
+      v=0;
+      pt_ref=bez.f(u, v);
+      pt_out=c.f(v);
+      TEST_ASSERT(pt_out==pt_ref);
+
+      v=0.1;
+      pt_ref=bez.f(u, v);
+      pt_out=c.f(v);
+      TEST_ASSERT(pt_out==pt_ref);
+
+      v=0.2;
+      pt_ref=bez.f(u, v);
+      pt_out=c.f(v);
+      TEST_ASSERT(pt_out==pt_ref);
+
+      v=0.4;
+      pt_ref=bez.f(u, v);
+      pt_out=c.f(v);
+      TEST_ASSERT(pt_out==pt_ref);
+
+      v=0.6;
+      pt_ref=bez.f(u, v);
+      pt_out=c.f(v);
+      TEST_ASSERT(pt_out==pt_ref);
+
+      v=0.8;
+      pt_ref=bez.f(u, v);
+      pt_out=c.f(v);
+      TEST_ASSERT(pt_out==pt_ref);
+
+      v=1;
+      pt_ref=bez.f(u, v);
+      pt_out=c.f(v);
+      TEST_ASSERT(pt_out==pt_ref);
+
+      // Extract u curve
+      u=0.2;
+      bez.get_uconst_curve(c, u);
+
+      v=0;
+      pt_ref=bez.f(u, v);
+      pt_out=c.f(v);
+      TEST_ASSERT(pt_out==pt_ref);
+
+      v=0.1;
+      pt_ref=bez.f(u, v);
+      pt_out=c.f(v);
+      TEST_ASSERT(pt_out==pt_ref);
+
+      v=0.2;
+      pt_ref=bez.f(u, v);
+      pt_out=c.f(v);
+      TEST_ASSERT(pt_out==pt_ref);
+
+      v=0.4;
+      pt_ref=bez.f(u, v);
+      pt_out=c.f(v);
+      TEST_ASSERT(pt_out==pt_ref);
+
+      v=0.6;
+      pt_ref=bez.f(u, v);
+      pt_out=c.f(v);
+      TEST_ASSERT(pt_out==pt_ref);
+
+      v=0.8;
+      pt_ref=bez.f(u, v);
+      pt_out=c.f(v);
+      TEST_ASSERT(pt_out==pt_ref);
+
+      v=1;
+      pt_ref=bez.f(u, v);
+      pt_out=c.f(v);
+      TEST_ASSERT(pt_out==pt_ref);
+
+      // Extract u curve
+      u=0.5;
+      bez.get_uconst_curve(c, u);
+
+      v=0;
+      pt_ref=bez.f(u, v);
+      pt_out=c.f(v);
+      TEST_ASSERT(pt_out==pt_ref);
+
+      v=0.1;
+      pt_ref=bez.f(u, v);
+      pt_out=c.f(v);
+      TEST_ASSERT(pt_out==pt_ref);
+
+      v=0.2;
+      pt_ref=bez.f(u, v);
+      pt_out=c.f(v);
+      TEST_ASSERT(pt_out==pt_ref);
+
+      v=0.4;
+      pt_ref=bez.f(u, v);
+      pt_out=c.f(v);
+      TEST_ASSERT(pt_out==pt_ref);
+
+      v=0.6;
+      pt_ref=bez.f(u, v);
+      pt_out=c.f(v);
+      TEST_ASSERT(pt_out==pt_ref);
+
+      v=0.8;
+      pt_ref=bez.f(u, v);
+      pt_out=c.f(v);
+      TEST_ASSERT(pt_out==pt_ref);
+
+      v=1;
+      pt_ref=bez.f(u, v);
+      pt_out=c.f(v);
+      TEST_ASSERT(pt_out==pt_ref);
+
+      // Extract u curve
+      u=1;
+      bez.get_uconst_curve(c, u);
+
+      v=0;
+      pt_ref=bez.f(u, v);
+      pt_out=c.f(v);
+      TEST_ASSERT(pt_out==pt_ref);
+
+      v=0.1;
+      pt_ref=bez.f(u, v);
+      pt_out=c.f(v);
+      TEST_ASSERT(pt_out==pt_ref);
+
+      v=0.2;
+      pt_ref=bez.f(u, v);
+      pt_out=c.f(v);
+      TEST_ASSERT(pt_out==pt_ref);
+
+      v=0.4;
+      pt_ref=bez.f(u, v);
+      pt_out=c.f(v);
+      TEST_ASSERT(pt_out==pt_ref);
+
+      v=0.6;
+      pt_ref=bez.f(u, v);
+      pt_out=c.f(v);
+      TEST_ASSERT(pt_out==pt_ref);
+
+      v=0.8;
+      pt_ref=bez.f(u, v);
+      pt_out=c.f(v);
+      TEST_ASSERT(pt_out==pt_ref);
+
+      v=1;
+      pt_ref=bez.f(u, v);
+      pt_out=c.f(v);
+      TEST_ASSERT(pt_out==pt_ref);
+
+
+
+      // Extract v curve
+      v=0;
+      bez.get_vconst_curve(c, v);
+
+      u=0;
+      pt_ref=bez.f(u, v);
+      pt_out=c.f(u);
+      TEST_ASSERT(pt_out==pt_ref);
+
+      u=0.1;
+      pt_ref=bez.f(u, v);
+      pt_out=c.f(u);
+      TEST_ASSERT(pt_out==pt_ref);
+
+      u=0.2;
+      pt_ref=bez.f(u, v);
+      pt_out=c.f(u);
+      TEST_ASSERT(pt_out==pt_ref);
+
+      u=0.4;
+      pt_ref=bez.f(u, v);
+      pt_out=c.f(u);
+      TEST_ASSERT(pt_out==pt_ref);
+
+      u=0.6;
+      pt_ref=bez.f(u, v);
+      pt_out=c.f(u);
+      TEST_ASSERT(pt_out==pt_ref);
+
+      u=0.8;
+      pt_ref=bez.f(u, v);
+      pt_out=c.f(u);
+      TEST_ASSERT(pt_out==pt_ref);
+
+      u=1;
+      pt_ref=bez.f(u, v);
+      pt_out=c.f(u);
+      TEST_ASSERT(pt_out==pt_ref);
+
+      // Extract v curve
+      v=0.1;
+      bez.get_vconst_curve(c, v);
+
+      u=0;
+      pt_ref=bez.f(u, v);
+      pt_out=c.f(u);
+      TEST_ASSERT(pt_out==pt_ref);
+
+      u=0.1;
+      pt_ref=bez.f(u, v);
+      pt_out=c.f(u);
+      d=(pt_ref - pt_out).norm();
+      TEST_ASSERT(d<std::numeric_limits<data_type>::epsilon()*30);
+
+      u=0.2;
+      pt_ref=bez.f(u, v);
+      pt_out=c.f(u);
+      if (typeid(data_type)==typeid(float))
+      {
+        d=(pt_ref - pt_out).norm();
+        TEST_ASSERT(d<std::numeric_limits<data_type>::epsilon()*30);
+      }
+      else
+      {
+        TEST_ASSERT(pt_out==pt_ref);
+      }
+
+      u=0.4;
+      pt_ref=bez.f(u, v);
+      pt_out=c.f(u);
+      d=(pt_ref - pt_out).norm();
+      TEST_ASSERT(d<std::numeric_limits<data_type>::epsilon()*30);
+
+      u=0.6;
+      pt_ref=bez.f(u, v);
+      pt_out=c.f(u);
+      d=(pt_ref - pt_out).norm();
+      TEST_ASSERT(d<std::numeric_limits<data_type>::epsilon()*30);
+
+      u=0.8;
+      pt_ref=bez.f(u, v);
+      pt_out=c.f(u);
+      if (typeid(data_type)==typeid(float))
+      {
+        d=(pt_ref - pt_out).norm();
+        TEST_ASSERT(d<std::numeric_limits<data_type>::epsilon()*30);
+      }
+      else
+      {
+        TEST_ASSERT(pt_out==pt_ref);
+      }
+
+      u=1;
+      pt_ref=bez.f(u, v);
+      pt_out=c.f(u);
+      TEST_ASSERT(pt_out==pt_ref);
+
+      // Extract v curve
+      v=0.2;
+      bez.get_vconst_curve(c, v);
+
+      u=0;
+      pt_ref=bez.f(u, v);
+      pt_out=c.f(u);
+      TEST_ASSERT(pt_out==pt_ref);
+
+      u=0.1;
+      pt_ref=bez.f(u, v);
+      pt_out=c.f(u);
+      if (typeid(data_type)==typeid(float))
+      {
+        d=(pt_ref - pt_out).norm();
+        TEST_ASSERT(d<std::numeric_limits<data_type>::epsilon()*30);
+      }
+      else
+      {
+        TEST_ASSERT(pt_out==pt_ref);
+      }
+
+      u=0.2;
+      pt_ref=bez.f(u, v);
+      pt_out=c.f(u);
+      TEST_ASSERT(pt_out==pt_ref);
+
+      u=0.4;
+      pt_ref=bez.f(u, v);
+      pt_out=c.f(u);
+      d=(pt_ref - pt_out).norm();
+      TEST_ASSERT(d<std::numeric_limits<data_type>::epsilon()*30);
+
+      u=0.6;
+      pt_ref=bez.f(u, v);
+      pt_out=c.f(u);
+      d=(pt_ref - pt_out).norm();
+      TEST_ASSERT(d<std::numeric_limits<data_type>::epsilon()*30);
+
+      u=0.8;
+      pt_ref=bez.f(u, v);
+      pt_out=c.f(u);
+      d=(pt_ref - pt_out).norm();
+      TEST_ASSERT(d<std::numeric_limits<data_type>::epsilon()*30);
+
+      u=1;
+      pt_ref=bez.f(u, v);
+      pt_out=c.f(u);
+      TEST_ASSERT(pt_out==pt_ref);
+
+      // Extract v curve
+      v=0.4;
+      bez.get_vconst_curve(c, v);
+
+      u=0;
+      pt_ref=bez.f(u, v);
+      pt_out=c.f(u);
+      TEST_ASSERT(pt_out==pt_ref);
+
+      u=0.1;
+      pt_ref=bez.f(u, v);
+      pt_out=c.f(u);
+      d=(pt_ref - pt_out).norm();
+      TEST_ASSERT(d<std::numeric_limits<data_type>::epsilon()*30);
+
+      u=0.2;
+      pt_ref=bez.f(u, v);
+      pt_out=c.f(u);
+      d=(pt_ref - pt_out).norm();
+      TEST_ASSERT(d<std::numeric_limits<data_type>::epsilon()*30);
+
+      u=0.4;
+      pt_ref=bez.f(u, v);
+      pt_out=c.f(u);
+      if (typeid(data_type)==typeid(float))
+      {
+        d=(pt_ref - pt_out).norm();
+        TEST_ASSERT(d<std::numeric_limits<data_type>::epsilon()*30);
+      }
+      else
+      {
+        TEST_ASSERT(pt_out==pt_ref);
+      }
+
+      u=0.6;
+      pt_ref=bez.f(u, v);
+      pt_out=c.f(u);
+      if (typeid(data_type)==typeid(float))
+      {
+        d=(pt_ref - pt_out).norm();
+        TEST_ASSERT(d<std::numeric_limits<data_type>::epsilon()*30);
+      }
+      else
+      {
+        TEST_ASSERT(pt_out==pt_ref);
+      }
+
+      u=0.8;
+      pt_ref=bez.f(u, v);
+      pt_out=c.f(u);
+      if (typeid(data_type)==typeid(float))
+      {
+        d=(pt_ref - pt_out).norm();
+        TEST_ASSERT(d<std::numeric_limits<data_type>::epsilon()*30);
+      }
+      else
+      {
+        TEST_ASSERT(pt_out==pt_ref);
+      }
+
+      u=1;
+      pt_ref=bez.f(u, v);
+      pt_out=c.f(u);
+      if (typeid(data_type)==typeid(float))
+      {
+        d=(pt_ref - pt_out).norm();
+        TEST_ASSERT(d<std::numeric_limits<data_type>::epsilon()*30);
+      }
+      else
+      {
+        TEST_ASSERT(pt_out==pt_ref);
+      }
+
+      // Extract v curve
+      v=1;
+      bez.get_vconst_curve(c, v);
+
+      u=0;
+      pt_ref=bez.f(u, v);
+      pt_out=c.f(u);
+      TEST_ASSERT(pt_out==pt_ref);
+
+      u=0.1;
+      pt_ref=bez.f(u, v);
+      pt_out=c.f(u);
+      TEST_ASSERT(pt_out==pt_ref);
+
+      u=0.2;
+      pt_ref=bez.f(u, v);
+      pt_out=c.f(u);
+      TEST_ASSERT(pt_out==pt_ref);
+
+      u=0.4;
+      pt_ref=bez.f(u, v);
+      pt_out=c.f(u);
+      TEST_ASSERT(pt_out==pt_ref);
+
+      u=0.6;
+      pt_ref=bez.f(u, v);
+      pt_out=c.f(u);
+      TEST_ASSERT(pt_out==pt_ref);
+
+      u=0.8;
+      pt_ref=bez.f(u, v);
+      pt_out=c.f(u);
+      TEST_ASSERT(pt_out==pt_ref);
+
+      u=1;
+      pt_ref=bez.f(u, v);
+      pt_out=c.f(u);
+      TEST_ASSERT(pt_out==pt_ref);
     }
 };
 
