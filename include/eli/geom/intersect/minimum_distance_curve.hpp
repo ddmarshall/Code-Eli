@@ -136,8 +136,7 @@ namespace eli
         // find the root
         stat = nrm.find_root(t, g, gp, 0);
 
-        // if found root and it is within bounds and is closer than initial guess
-        if (stat==eli::mutil::nls::newton_raphson_method<typename curve__::data_type>::converged)
+        // if root is within bounds and is closer than initial guess
         {
           assert((t>=c.get_t0()) && (t<=c.get_tmax()));
 
@@ -146,10 +145,6 @@ namespace eli
           {
             return dist;
           }
-        }
-        else
-        {
-//             std::cout << "# not converged!" << std::endl;
         }
 
         // couldn't find better answer so return initial guess
