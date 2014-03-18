@@ -276,7 +276,7 @@ namespace eli
           bool closed_u() const
           {
             index_type ifirst, ilast, j;
-            typename surface_type::boundary_curve_type bc0, bc1;
+            typename surface_type::curve_type bc0, bc1;
 
             ifirst = ukey.key.begin()->second;
             ilast = ukey.key.rbegin()->second;
@@ -299,7 +299,7 @@ namespace eli
           bool closed_v() const
           {
             index_type i, jfirst, jlast;
-            typename surface_type::boundary_curve_type bc0, bc1;
+            typename surface_type::curve_type bc0, bc1;
 
             jfirst = vkey.key.begin()->second;
             jlast = vkey.key.rbegin()->second;
@@ -487,7 +487,7 @@ namespace eli
               return INVALID_INDEX;
 
             // advance to desired index
-            typename surface_type::boundary_curve_type bc0, bc1;
+            typename surface_type::curve_type bc0, bc1;
             index_type uk, vk;
             typename keymap_type::const_iterator uit, vit;
             find_patch(uk, vk, uit, vit, ui, vi);

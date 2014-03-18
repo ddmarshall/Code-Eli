@@ -284,7 +284,7 @@ namespace eli
         // Since these are always edges, we could implement an edge curve extraction routine
         // that returned the control points directly instead of performing an arbitrary curve
         // extraction calculation.
-        typename surface__::boundary_curve_type bc;
+        typename surface__::curve_type bc;
         if(u<=(umin+std::abs(umin)*2*std::numeric_limits<typename surface__::data_type>::epsilon()))
         {
           s.get_uconst_curve(bc, umin);

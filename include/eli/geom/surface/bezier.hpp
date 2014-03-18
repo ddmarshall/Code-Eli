@@ -49,7 +49,7 @@ namespace eli
           typedef tol__ tolerance_type;
           typedef Eigen::Matrix<data_type, dim__, dim__> rotation_matrix_type;
           typedef eli::geom::general::bounding_box<data_type, dim__, tolerance_type> bounding_box_type;
-          typedef eli::geom::curve::bezier<data_type, dim__, tolerance_type> boundary_curve_type;
+          typedef eli::geom::curve::bezier<data_type, dim__, tolerance_type> curve_type;
 
         private:
           typedef Eigen::Map<Eigen::Matrix<data_type, Eigen::Dynamic, dim__>,
@@ -216,7 +216,7 @@ namespace eli
           bool open_u() const {return !closed_u();}
           bool closed_u() const
           {
-            boundary_curve_type bc0, bc1;
+            curve_type bc0, bc1;
 
             get_uconst_curve(bc0, 0);
             get_uconst_curve(bc1, 1);
@@ -226,7 +226,7 @@ namespace eli
           bool open_v() const {return !closed_v();}
           bool closed_v() const
           {
-            boundary_curve_type bc0, bc1;
+            curve_type bc0, bc1;
 
             get_vconst_curve(bc0, 0);
             get_vconst_curve(bc1, 1);
@@ -309,7 +309,7 @@ namespace eli
             }
           }
 
-          void get_uconst_curve(boundary_curve_type &bc, const data_type &u) const
+          void get_uconst_curve(curve_type &bc, const data_type &u) const
           {
             index_type j, m(degree_v());
 
@@ -330,7 +330,7 @@ namespace eli
             }
           }
 
-          void get_vconst_curve(boundary_curve_type &bc, const data_type &v) const
+          void get_vconst_curve(curve_type &bc, const data_type &v) const
           {
             index_type i, n(degree_u());
 
