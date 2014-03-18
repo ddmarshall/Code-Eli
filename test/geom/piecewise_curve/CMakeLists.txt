@@ -64,6 +64,7 @@ set (PIECEWISE_AIRFOIL_CREATOR_TEST_HEADER ${PROJECT_SOURCE_DIR}/piecewise_four_
                                            ${ELI_SOURCE_DIR}/include/eli/constants/math.hpp
                                            ${ELI_SOURCE_DIR}/include/eli/util/tolerance.hpp
                                            ${ELI_SOURCE_DIR}/include/eli/mutil/fd/d1o2.hpp
+                                           ${ELI_SOURCE_DIR}/include/eli/mutil/fd/d2o2.hpp
                                            ${ELI_SOURCE_DIR}/include/eli/geom/general/continuity.hpp
                                            ${ELI_SOURCE_DIR}/include/eli/geom/curve/bezier.hpp
                                            ${ELI_SOURCE_DIR}/include/eli/geom/curve/length.hpp
