@@ -16,6 +16,7 @@
 #include <cmath>
 #include <vector>
 #include <list>
+#include <algorithm>
 
 #ifdef Success  // X11 #define collides with Eigen
 #undef Success
@@ -339,6 +340,104 @@ namespace eli
         return dist;
 
       }
+
+// Defined for minimum_distance_curve.  Could be moved to util somewhere.
+//      template< typename first__, typename second__>
+//      bool pairfirstcompare( const std::pair < first__, second__ > &a, const std::pair < first__, second__ > &b )
+//      {
+//          return ( a.first < b.first );
+//      }
+
+      template<template<typename, unsigned short, typename> class surface__, typename data__, unsigned short dim__, typename tol__ >
+      typename surface::piecewise<surface__, data__, dim__, tol__>::data_type minimum_distance(
+          typename surface::piecewise<surface__, data__, dim__, tol__>::data_type &u,
+          typename surface::piecewise<surface__, data__, dim__, tol__>::data_type &v,
+          const surface::piecewise<surface__, data__, dim__, tol__> &ps,
+          const typename surface::piecewise<surface__, data__, dim__, tol__>::point_type &pt)
+      {
+        typedef surface::piecewise<surface__, data__, dim__, tol__> piecewise_type;
+        typedef typename piecewise_type::surface_type surface_type;
+        typedef typename piecewise_type::index_type index_type;
+        typedef typename piecewise_type::data_type data_type;
+        typedef typename piecewise_type::point_type point_type;
+        typedef typename piecewise_type::bounding_box_type bounding_box_type;
+
+        typedef typename piecewise_type::keymap_type keymap_type;
+        typedef typename keymap_type::const_iterator keyit;
+
+        typedef std::pair<keyit, keyit> itpair;
+        typedef std::vector< std::pair<data_type, itpair > > dvec;
+        dvec minbbdist;
+
+        // Find closest corner of bounding boxes, add them to vector
+        // Simple linear search, would be more efficient with some sort of tree.
+        for(keyit uit = ps.ukey.key.begin(); uit != ps.ukey.key.end(); ++uit)
+        {
+          for(keyit vit = ps.vkey.key.begin(); vit != ps.vkey.key.end(); ++vit)
+          {
+            index_type uk = uit->second;
+            index_type vk = vit->second;
+
+            surface_type s = ps.patches[uk][vk];
+
+            bounding_box_type bb_local;
+            s.get_bounding_box(bb_local);
+
+            data_type dbbmin;
+            dbbmin = minimum_distance(bb_local, pt);
+
+            minbbdist.push_back(std::make_pair(dbbmin, std::make_pair(uit, vit)));
+
+          }
+        }
+
+        // Sort by nearest distance.
+        std::sort( minbbdist.begin(), minbbdist.end(), pairfirstcompare<data_type, itpair > );
+
+
+        // Iterate over segments, starting with nearest bounding box
+        data_type dist(std::numeric_limits<data_type>::max());
+
+        typename dvec::const_iterator it;
+        for (it=minbbdist.begin(); it!=minbbdist.end(); ++it)
+        {
+          // If nearest bb distance is farther than current best, we're done.
+          if(it->first < dist )
+          {
+            itpair itp = it->second;
+            keyit uit = itp.first;
+            keyit vit = itp.second;
+
+            index_type uk = uit->second;
+            index_type vk = vit->second;
+
+            surface_type s = ps.patches[uk][vk];
+
+            data_type uu, vv, d;
+            d=minimum_distance(uu, vv, s, pt);
+
+            if(d < dist)
+            {
+              data_type du(ps.ukey.get_delta_parm(uit));
+              data_type dv(ps.vkey.get_delta_parm(vit));
+
+              data_type ustart(uit->first);
+              data_type vstart(vit->first);
+
+              dist = d;
+              u=ustart+uu*du;
+              v=vstart+vv*dv;
+            }
+          }
+          else
+          {
+            break;
+          }
+
+        }
+        return dist;
+      }
+
     }
   }
 }

@@ -26,6 +26,24 @@ namespace eli
 {
   namespace geom
   {
+
+    namespace surface
+    {
+      template<template<typename, unsigned short, typename> class surface__, typename data__, unsigned short dim__, typename tol__ >
+      class piecewise;
+    }
+
+    namespace intersect
+    {
+      template<template<typename, unsigned short, typename> class surface1__, typename data1__, unsigned short dim1__, typename tol1__ >
+      typename surface::piecewise<surface1__, data1__, dim1__, tol1__>::data_type
+        minimum_distance(
+          typename surface::piecewise<surface1__, data1__, dim1__, tol1__>::data_type &u,
+	      typename surface::piecewise<surface1__, data1__, dim1__, tol1__>::data_type &v,
+          const surface::piecewise<surface1__, data1__, dim1__, tol1__> &ps,
+          const typename surface::piecewise<surface1__, data1__, dim1__, tol1__>::point_type &pt);
+    }
+
     namespace surface
     {
       template<template<typename, unsigned short, typename> class surface__, typename data__, unsigned short dim__, typename tol__=eli::util::tolerance<data__> >
@@ -840,6 +858,14 @@ namespace eli
 //                            const typename piecewise<surf1__, data1__, dim1__, tol1__>::data_type &t0,
 //                            const typename piecewise<surf1__, data1__, dim1__, tol1__>::data_type &t1,
 //                            const typename piecewise<surf1__, data1__, dim1__, tol1__>::data_type &tol);
+
+          template<template<typename, unsigned short, typename> class surface1__, typename data1__, unsigned short dim1__, typename tol1__ >
+          friend typename piecewise<surface1__, data1__, dim1__, tol1__>::data_type
+            eli::geom::intersect::minimum_distance(
+              typename piecewise<surface1__, data1__, dim1__, tol1__>::data_type &u,
+              typename piecewise<surface1__, data1__, dim1__, tol1__>::data_type &v,
+              const piecewise<surface1__, data1__, dim1__, tol1__> &ps,
+              const typename piecewise<surface1__, data1__, dim1__, tol1__>::point_type &pt);
 
           typedef std::map< data_type, index_type > keymap_type;
 
