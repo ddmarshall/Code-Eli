@@ -51,7 +51,7 @@ namespace eli
           }
 
         public:
-          d2o2() : nnodes(4), n_order(2), st(d2o2<__data>::LEFT_BIASED)
+          d2o2() : nnodes(4), n_order(2), st(d2o2<__data>::RIGHT_BIASED)
           {
           }
 
