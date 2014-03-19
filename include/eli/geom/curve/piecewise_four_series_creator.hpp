@@ -257,7 +257,7 @@ namespace eli
             }
 
             // calculate the supporting quantities needed
-            calc_camber(yc, ycp, ycpp, ycppp, xc);
+            calc_camber(yc, ycp, ycpp, ycppp, xc, lower);
             calc_thickness(yt, ytp, ytpp, xc, lower);
             tmp1=one+ycp*ycp;
             tmp2=std::sqrt(tmp1);
@@ -358,7 +358,7 @@ namespace eli
             A(i,3)=static_cast<data_type>(3)*xi2;
             A(i,4)=static_cast<data_type>(4)*xi3;
           }
-          void calc_camber(data_type &y, data_type &yp, data_type &ypp, data_type &yppp, const data_type &xi) const
+          void calc_camber(data_type &y, data_type &yp, data_type &ypp, data_type &yppp, const data_type &xi, bool lower) const
           {
             // check to make sure given valid parametric value
             assert((xi>=0) && (xi<=1));
@@ -393,6 +393,12 @@ namespace eli
               yp=two*p1m2*(m-xi);
               ypp=-two*p1m2;
               yppp=zero;
+
+              if (lower)
+              {
+                yp*=-one;
+                yppp*=-one;
+              }
             }
           }
 
