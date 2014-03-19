@@ -57,6 +57,8 @@ class piecewise_four_series_creator_test_suite : public Test::Suite
       TEST_ADD(piecewise_four_series_creator_test_suite<float>::create_airfoil_test);
       TEST_ADD(piecewise_four_series_creator_test_suite<float>::thickness_test);
       TEST_ADD(piecewise_four_series_creator_test_suite<float>::thickness_derivatives_test);
+      TEST_ADD(piecewise_four_series_creator_test_suite<float>::camber_test);
+      TEST_ADD(piecewise_four_series_creator_test_suite<float>::camber_derivatives_test);
     }
     void AddTests(const double &)
     {
@@ -65,6 +67,8 @@ class piecewise_four_series_creator_test_suite : public Test::Suite
       TEST_ADD(piecewise_four_series_creator_test_suite<double>::create_airfoil_test);
       TEST_ADD(piecewise_four_series_creator_test_suite<double>::thickness_test);
       TEST_ADD(piecewise_four_series_creator_test_suite<double>::thickness_derivatives_test);
+      TEST_ADD(piecewise_four_series_creator_test_suite<double>::camber_test);
+      TEST_ADD(piecewise_four_series_creator_test_suite<double>::camber_derivatives_test);
     }
     void AddTests(const long double &)
     {
@@ -73,6 +77,8 @@ class piecewise_four_series_creator_test_suite : public Test::Suite
       TEST_ADD(piecewise_four_series_creator_test_suite<long double>::create_airfoil_test);
       TEST_ADD(piecewise_four_series_creator_test_suite<long double>::thickness_test);
       TEST_ADD(piecewise_four_series_creator_test_suite<long double>::thickness_derivatives_test);
+      TEST_ADD(piecewise_four_series_creator_test_suite<long double>::camber_test);
+      TEST_ADD(piecewise_four_series_creator_test_suite<long double>::camber_derivatives_test);
     }
 
   public:
@@ -482,6 +488,169 @@ class piecewise_four_series_creator_test_suite : public Test::Suite
 //        std::cout << std::endl;
       }
     }
+
+    void camber_test()
+    {
+      airfoil_type af;
+      std::vector<data_type> x(18), y(18);
+      airfoil_point_type xout;
+      const data_type tol(1e-5);
+
+      // create 2300 airfoil to test against externally calculated data
+      af.set_camber(2, 3);
+      af.set_thickness(00);
+      x[ 0]=static_cast<data_type>(0);        y[ 0]=static_cast<data_type>(0);
+      x[ 1]=static_cast<data_type>(1.25e-2);  y[ 1]=static_cast<data_type>(0.1632e-2);
+      x[ 2]=static_cast<data_type>(2.50e-2);  y[ 2]=static_cast<data_type>(0.3194e-2);
+      x[ 3]=static_cast<data_type>(5.00e-2);  y[ 3]=static_cast<data_type>(0.6111e-2);
+      x[ 4]=static_cast<data_type>(7.50e-2);  y[ 4]=static_cast<data_type>(0.8750e-2);
+      x[ 5]=static_cast<data_type>(10.00e-2); y[ 5]=static_cast<data_type>(1.1111e-2);
+      x[ 6]=static_cast<data_type>(15.00e-2); y[ 6]=static_cast<data_type>(1.5000e-2);
+      x[ 7]=static_cast<data_type>(20.00e-2); y[ 7]=static_cast<data_type>(1.7778e-2);
+      x[ 8]=static_cast<data_type>(25.00e-2); y[ 8]=static_cast<data_type>(1.9444e-2);
+      x[ 9]=static_cast<data_type>(30.00e-2); y[ 9]=static_cast<data_type>(2.0000e-2);
+      x[10]=static_cast<data_type>(40.00e-2); y[10]=static_cast<data_type>(1.9592e-2);
+      x[11]=static_cast<data_type>(50.00e-2); y[11]=static_cast<data_type>(1.8367e-2);
+      x[12]=static_cast<data_type>(60.00e-2); y[12]=static_cast<data_type>(1.6327e-2);
+      x[13]=static_cast<data_type>(70.00e-2); y[13]=static_cast<data_type>(1.3469e-2);
+      x[14]=static_cast<data_type>(80.00e-2); y[14]=static_cast<data_type>(0.9796e-2);
+      x[15]=static_cast<data_type>(90.00e-2); y[15]=static_cast<data_type>(0.5306e-2);
+      x[16]=static_cast<data_type>(95.00e-2); y[16]=static_cast<data_type>(0.2755e-2);
+      x[17]=static_cast<data_type>(1);        y[17]=static_cast<data_type>(0);
+
+      // test the airfoil coordinates
+      for (size_t i=0; i<x.size(); ++i)
+      {
+        xout = af.f(x[i]);
+        TEST_ASSERT_DELTA(x[i], xout(0), tol);
+        TEST_ASSERT_DELTA(y[i], xout(1), tol);
+//        std::cout << "i=" << i << "\tycal=" << xout(1) << "\tyref=" << y[i] << "\tdy=" << xout(1)-y[i] << std::endl;
+      }
+    }
+
+    void camber_derivatives_test()
+    {
+      // test the known derivatives
+      {
+        airfoil_type af;
+        airfoil_point_type x, xp, x_ref, xp_ref;
+        data_type xi;
+
+        // configure camber line
+        af.set_camber(3, 2);
+        af.set_thickness(00);
+
+        // lower surface max camber
+        xi=static_cast<data_type>(-0.2);
+        x_ref << -xi, static_cast<data_type>(0.03);
+        xp_ref << static_cast<data_type>(-1), static_cast<data_type>(0);
+        x=af.f(xi);
+        xp=af.fp(xi);
+        TEST_ASSERT((x-x_ref).norm()<1e-8);
+        TEST_ASSERT((xp-xp_ref).norm()<1e-8);
+
+        // upper surface max thickness
+        xi=static_cast<data_type>(0.2);
+        x_ref << xi, static_cast<data_type>(0.03);
+        xp_ref << static_cast<data_type>(1), static_cast<data_type>(0);
+        x=af.f(xi);
+        xp=af.fp(xi);
+        TEST_ASSERT((x-x_ref).norm()<1e-8);
+        TEST_ASSERT((xp-xp_ref).norm()<1e-8);
+//        std::cout << "xi=" << xi;
+//        std::cout << "\tx=" << x << "\tx_ref=" << x_ref;
+//        std::cout << "\tdx=" << x-x_ref << "\tdx.norm()=" << (x-x_ref).norm();
+//        std::cout << "\txp=" << xp << "\txp_ref=" << xp_ref;
+//        std::cout << "\tdxp=" << xp-xp_ref << "\tdxp.norm()=" << (xp-xp_ref).norm();
+//        std::cout << std::endl;
+      }
+
+      // use finite differences to calculate the derivatives
+      {
+        airfoil_type af;
+        airfoil_point_type xr, xp, xpp, xp_ref, xpp_ref;
+        data_type xi, x[3], y[3];
+        const data_type dxi(1e2*std::sqrt(std::numeric_limits<data_type>::epsilon()));
+        eli::mutil::fd::d1o2<data_type> d1_calc;
+        eli::mutil::fd::d2o2<data_type> d2_calc;
+
+        // configure camber line
+        af.set_camber(3, 2);
+        af.set_thickness(00);
+
+        // lower surface
+        xi=static_cast<data_type>(-0.8);
+        xr=af.f(xi-dxi); x[0]=xr(0); y[0]=xr(1);
+        xr=af.f(xi);     x[1]=xr(0); y[1]=xr(1);
+        xr=af.f(xi+dxi); x[2]=xr(0); y[2]=xr(1);
+        d1_calc.evaluate(xp_ref(0), x, dxi);
+        d1_calc.evaluate(xp_ref(1), y, dxi);
+        d2_calc.evaluate(xpp_ref(0), x, dxi);
+        d2_calc.evaluate(xpp_ref(1), y, dxi);
+        xp=af.fp(xi);
+        xpp=af.fpp(xi);
+        TEST_ASSERT((xp-xp_ref).norm()<1e-6);
+        TEST_ASSERT((xpp-xpp_ref).norm()<1e-6);
+
+        xi=static_cast<data_type>(-0.25);
+        xr=af.f(xi-dxi); x[0]=xr(0); y[0]=xr(1);
+        xr=af.f(xi);     x[1]=xr(0); y[1]=xr(1);
+        xr=af.f(xi+dxi); x[2]=xr(0); y[2]=xr(1);
+        d1_calc.evaluate(xp_ref(0), x, dxi);
+        d1_calc.evaluate(xp_ref(1), y, dxi);
+        d2_calc.evaluate(xpp_ref(0), x, dxi);
+        d2_calc.evaluate(xpp_ref(1), y, dxi);
+        xp=af.fp(xi);
+        xpp=af.fpp(xi);
+        TEST_ASSERT((xp-xp_ref).norm()<1e-6);
+        TEST_ASSERT((xpp-xpp_ref).norm()<5e-6);
+
+        // upper surface
+        xi=static_cast<data_type>(0.15);
+        xr=af.f(xi-dxi); x[0]=xr(0); y[0]=xr(1);
+        xr=af.f(xi);     x[1]=xr(0); y[1]=xr(1);
+        xr=af.f(xi+dxi); x[2]=xr(0); y[2]=xr(1);
+        d1_calc.evaluate(xp_ref(0), x, dxi);
+        d1_calc.evaluate(xp_ref(1), y, dxi);
+        d2_calc.evaluate(xpp_ref(0), x, dxi);
+        d2_calc.evaluate(xpp_ref(1), y, dxi);
+        xp=af.fp(xi);
+        xpp=af.fpp(xi);
+        TEST_ASSERT((xp-xp_ref).norm()<1e-6);
+        TEST_ASSERT((xpp-xpp_ref).norm()<5e-6);
+
+        xi=static_cast<data_type>(0.7);
+        xr=af.f(xi-dxi); x[0]=xr(0); y[0]=xr(1);
+        xr=af.f(xi);     x[1]=xr(0); y[1]=xr(1);
+        xr=af.f(xi+dxi); x[2]=xr(0); y[2]=xr(1);
+        d1_calc.evaluate(xp_ref(0), x, dxi);
+        d1_calc.evaluate(xp_ref(1), y, dxi);
+        d2_calc.evaluate(xpp_ref(0), x, dxi);
+        d2_calc.evaluate(xpp_ref(1), y, dxi);
+        xp=af.fp(xi);
+        xpp=af.fpp(xi);
+        TEST_ASSERT((xp-xp_ref).norm()<1e-6);
+        TEST_ASSERT((xpp-xpp_ref).norm()<7e-5);
+//        std::cout << "xi=" << xi;
+//        std::cout << "\tdx=" << (x[2]-x[0])/(2*dxi) << "\tdy=" << (y[2]-y[0])/(2*dxi);
+//        std::cout << std::endl << "     ";
+//        std::cout << "ddx=" << (x[0]-2*x[1]+x[2])/(dxi*dxi) << "\tddy=" << (y[0]-2*y[1]+y[2])/(dxi*dxi);
+//        std::cout << std::endl << "     ";
+//        std::cout << "xp=" << xp;
+//        std::cout << std::endl << "     ";
+//        std::cout << "xp_ref=" << xp_ref;
+//        std::cout << std::endl << "     ";
+//        std::cout << "dxp=" << xp-xp_ref << "dxp.norm()=" << (xp-xp_ref).norm();
+//        std::cout << std::endl << "     ";
+//        std::cout << "xpp=    " << xpp;
+//        std::cout << std::endl << "     ";
+//        std::cout << "xpp_ref=" << xpp_ref;
+//        std::cout << std::endl << "     ";
+//        std::cout << "dxpp=" << xpp-xpp_ref << "\tdxpp.norm()=" << (xpp-xpp_ref).norm();
+//        std::cout << std::endl;
+      }
+    }
+
 };
 
 #endif
