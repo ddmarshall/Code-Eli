@@ -54,6 +54,17 @@ namespace eli
           {
             typename curve__::data_type tt(t);
 
+            if ( !(tt>=pc->get_t0()) )
+            {
+              std::cout << "Minimum distance curve g_functor, tt less than minimum.  tt: " << tt << " t0: " << pc->get_t0() << std::endl;
+              tt=pc->get_t0();
+            }
+            if ( !(tt<=pc->get_tmax()) )
+            {
+              std::cout << "Minimum distance curve g_functor, tt greater than maximum.  tt: " << tt << " tmax: " << pc->get_tmax() << std::endl;
+              tt=pc->get_tmax();
+            }
+
             assert((tt>=pc->get_t0()) && (tt<=pc->get_tmax()));
 
             return (pc->f(tt)-pt).dot(pc->fp(tt));
@@ -69,6 +80,17 @@ namespace eli
           typename curve__::data_type operator()(const typename curve__::data_type &t) const
           {
             typename curve__::data_type tt(t);
+
+            if ( !(tt>=pc->get_t0()) )
+            {
+              std::cout << "Minimum distance curve gp_functor, tt less than minimum.  tt: " << tt << " t0: " << pc->get_t0() << std::endl;
+              tt=pc->get_t0();
+            }
+            if ( !(tt<=pc->get_tmax()) )
+            {
+              std::cout << "Minimum distance curve gp_functor, tt greater than maximum.  tt: " << tt << " tmax: " << pc->get_tmax() << std::endl;
+              tt=pc->get_tmax();
+            }
 
             assert((tt>=pc->get_t0()) && (tt<=pc->get_tmax()));
 

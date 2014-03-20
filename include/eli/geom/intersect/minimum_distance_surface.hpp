@@ -54,6 +54,28 @@ namespace eli
             ps->get_parameter_min(umin,vmin);
             ps->get_parameter_max(umax,vmax);
 
+            if ( !(uu>=umin) )
+            {
+              std::cout << "Minimum distance surface g_functor, u less than minimum.  uu: " << uu << " umin: " << umin << std::endl;
+              uu=umin;
+            }
+            if ( !(uu<=umax) )
+            {
+              std::cout << "Minimum distance surface g_functor, u greater than maximum.  uu: " << uu << " uamx: " << umax << std::endl;
+              uu=umax;
+            }
+
+            if ( !(vv>=vmin) )
+            {
+              std::cout << "Minimum distance surface g_functor, v less than minimum.  vv: " << vv << " vmin: " << vmin << std::endl;
+              vv=vmin;
+            }
+            if ( !(vv<=vmax) )
+            {
+              std::cout << "Minimum distance surface g_functor, v greater than maximum.  vv: " << vv << " vmax: " << vmax << std::endl;
+              vv=vmax;
+            }
+
             assert((uu>=umin) && (uu<=umax));
             assert((vv>=vmin) && (vv<=vmax));
 
@@ -85,6 +107,28 @@ namespace eli
             typename surface__::data_type umin, umax, vmin, vmax;
             ps->get_parameter_min(umin,vmin);
             ps->get_parameter_max(umax,vmax);
+
+            if ( !(uu>=umin) )
+            {
+              std::cout << "Minimum distance surface gp_functor, u less than minimum.  uu: " << uu << " umin: " << umin << std::endl;
+              uu=umin;
+            }
+            if ( !(uu<=umax) )
+            {
+              std::cout << "Minimum distance surface gp_functor, u greater than maximum.  uu: " << uu << " uamx: " << umax << std::endl;
+              uu=umax;
+            }
+
+            if ( !(vv>=vmin) )
+            {
+              std::cout << "Minimum distance surface gp_functor, v less than minimum.  vv: " << vv << " vmin: " << vmin << std::endl;
+              vv=vmin;
+            }
+            if ( !(vv<=vmax) )
+            {
+              std::cout << "Minimum distance surface gp_functor, v greater than maximum.  vv: " << vv << " vmax: " << vmax << std::endl;
+              vv=vmax;
+            }
 
             assert((uu>=umin) && (uu<=umax));
             assert((vv>=vmin) && (vv<=vmax));
