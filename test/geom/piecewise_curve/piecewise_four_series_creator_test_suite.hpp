@@ -59,6 +59,7 @@ class piecewise_four_series_creator_test_suite : public Test::Suite
       TEST_ADD(piecewise_four_series_creator_test_suite<float>::thickness_derivatives_test);
       TEST_ADD(piecewise_four_series_creator_test_suite<float>::camber_test);
       TEST_ADD(piecewise_four_series_creator_test_suite<float>::camber_derivatives_test);
+      TEST_ADD(piecewise_four_series_creator_test_suite<float>::airfoil_test);
     }
     void AddTests(const double &)
     {
@@ -69,6 +70,7 @@ class piecewise_four_series_creator_test_suite : public Test::Suite
       TEST_ADD(piecewise_four_series_creator_test_suite<double>::thickness_derivatives_test);
       TEST_ADD(piecewise_four_series_creator_test_suite<double>::camber_test);
       TEST_ADD(piecewise_four_series_creator_test_suite<double>::camber_derivatives_test);
+      TEST_ADD(piecewise_four_series_creator_test_suite<double>::airfoil_test);
     }
     void AddTests(const long double &)
     {
@@ -79,6 +81,7 @@ class piecewise_four_series_creator_test_suite : public Test::Suite
       TEST_ADD(piecewise_four_series_creator_test_suite<long double>::thickness_derivatives_test);
       TEST_ADD(piecewise_four_series_creator_test_suite<long double>::camber_test);
       TEST_ADD(piecewise_four_series_creator_test_suite<long double>::camber_derivatives_test);
+      TEST_ADD(piecewise_four_series_creator_test_suite<long double>::airfoil_test);
     }
 
   public:
@@ -648,6 +651,69 @@ class piecewise_four_series_creator_test_suite : public Test::Suite
 //        std::cout << std::endl << "     ";
 //        std::cout << "dxpp=" << xpp-xpp_ref << "\tdxpp.norm()=" << (xpp-xpp_ref).norm();
 //        std::cout << std::endl;
+      }
+    }
+
+    void airfoil_test()
+    {
+      airfoil_type af;
+      std::vector<data_type> xi(36), x(36), y(36);
+      airfoil_point_type xout;
+      const data_type tol(3e-3);
+
+      // create 2412 airfoil to test against Abbott & von Doenhoff data NACA Report 824 p. 358
+      af.set_camber(2, 4);
+      af.set_thickness(12);
+      xi[ 0] = static_cast<data_type>(       0.0e-2); x[ 0] = static_cast<data_type>(   0.0e-2); y[ 0] = static_cast<data_type>(  0.0e-2);
+      xi[ 1] = static_cast<data_type>( -1.078935e-2); x[ 1] = static_cast<data_type>(  1.25e-2); y[ 1] = static_cast<data_type>(-1.65e-2); 
+      xi[ 2] = static_cast<data_type>( -2.265269e-2); x[ 2] = static_cast<data_type>(  2.50e-2); y[ 2] = static_cast<data_type>(-2.27e-2); 
+      xi[ 3] = static_cast<data_type>( -4.695760e-2); x[ 3] = static_cast<data_type>(  5.00e-2); y[ 3] = static_cast<data_type>(-3.01e-2); 
+      xi[ 4] = static_cast<data_type>( -7.162585e-2); x[ 4] = static_cast<data_type>(  7.50e-2); y[ 4] = static_cast<data_type>(-3.46e-2); 
+      xi[ 5] = static_cast<data_type>( -9.650263e-2); x[ 5] = static_cast<data_type>( 10.00e-2); y[ 5] = static_cast<data_type>(-3.75e-2);
+      xi[ 6] = static_cast<data_type>(-14.664316e-2); x[ 6] = static_cast<data_type>( 15.00e-2); y[ 6] = static_cast<data_type>(-4.10e-2); 
+      xi[ 7] = static_cast<data_type>(-19.710203e-2); x[ 7] = static_cast<data_type>( 20.00e-2); y[ 7] = static_cast<data_type>(-4.23e-2); 
+      xi[ 8] = static_cast<data_type>(-24.774236e-2); x[ 8] = static_cast<data_type>( 25.00e-2); y[ 8] = static_cast<data_type>(-4.22e-2); 
+      xi[ 9] = static_cast<data_type>(-29.847722e-2); x[ 9] = static_cast<data_type>( 30.00e-2); y[ 9] = static_cast<data_type>(-4.12e-2);
+      xi[10] = static_cast<data_type>(-40.000000e-2); x[10] = static_cast<data_type>( 40.00e-2); y[10] = static_cast<data_type>(-3.80e-2); 
+      xi[11] = static_cast<data_type>(-50.059125e-2); x[11] = static_cast<data_type>( 50.00e-2); y[11] = static_cast<data_type>(-3.34e-2);
+      xi[12] = static_cast<data_type>(-60.101712e-2); x[12] = static_cast<data_type>( 60.00e-2); y[12] = static_cast<data_type>(-2.76e-2);
+      xi[13] = static_cast<data_type>(-70.122161e-2); x[13] = static_cast<data_type>( 70.00e-2); y[13] = static_cast<data_type>(-2.14e-2);
+      xi[14] = static_cast<data_type>(-80.116232e-2); x[14] = static_cast<data_type>( 80.00e-2); y[14] = static_cast<data_type>(-1.50e-2); 
+      xi[15] = static_cast<data_type>(-90.079880e-2); x[15] = static_cast<data_type>( 90.00e-2); y[15] = static_cast<data_type>(-0.82e-2);
+      xi[16] = static_cast<data_type>(-95.048848e-2); x[16] = static_cast<data_type>( 95.00e-2); y[16] = static_cast<data_type>(-0.48e-2); 
+      xi[17] = static_cast<data_type>(      -1.0e+0); x[17] = static_cast<data_type>( 99.99e-2); y[17] = static_cast<data_type>(-0.13e-2); 
+      xi[18] = static_cast<data_type>(       0.0e-2); x[18] = static_cast<data_type>(   0.0e-2); y[18] = static_cast<data_type>(  0.0e-2);
+      xi[19] = static_cast<data_type>(  1.444524e-2); x[19] = static_cast<data_type>(  1.25e-2); y[19] = static_cast<data_type>( 2.15e-2);
+      xi[20] = static_cast<data_type>(  2.753309e-2); x[20] = static_cast<data_type>(  2.50e-2); y[20] = static_cast<data_type>( 2.99e-2); 
+      xi[21] = static_cast<data_type>(  5.315146e-2); x[21] = static_cast<data_type>(  5.00e-2); y[21] = static_cast<data_type>( 4.13e-2); 
+      xi[22] = static_cast<data_type>(  7.842503e-2); x[22] = static_cast<data_type>(  7.50e-2); y[22] = static_cast<data_type>( 4.96e-2);
+      xi[23] = static_cast<data_type>( 10.350449e-2); x[23] = static_cast<data_type>( 10.00e-2); y[23] = static_cast<data_type>( 5.63e-2); 
+      xi[24] = static_cast<data_type>( 15.331062e-2); x[24] = static_cast<data_type>( 15.00e-2); y[24] = static_cast<data_type>( 6.61e-2); 
+      xi[25] = static_cast<data_type>( 20.283261e-2); x[25] = static_cast<data_type>( 20.00e-2); y[25] = static_cast<data_type>( 7.26e-2); 
+      xi[26] = static_cast<data_type>( 25.219585e-2); x[26] = static_cast<data_type>( 25.00e-2); y[26] = static_cast<data_type>( 7.67e-2); 
+      xi[27] = static_cast<data_type>( 30.147780e-2); x[27] = static_cast<data_type>( 30.00e-2); y[27] = static_cast<data_type>( 7.88e-2); 
+      xi[28] = static_cast<data_type>( 40.000000e-2); x[28] = static_cast<data_type>( 40.00e-2); y[28] = static_cast<data_type>( 7.80e-2); 
+      xi[29] = static_cast<data_type>( 49.941485e-2); x[29] = static_cast<data_type>( 50.00e-2); y[29] = static_cast<data_type>( 7.24e-2); 
+      xi[30] = static_cast<data_type>( 59.898946e-2); x[30] = static_cast<data_type>( 60.00e-2); y[30] = static_cast<data_type>( 6.36e-2);
+      xi[31] = static_cast<data_type>( 69.878040e-2); x[31] = static_cast<data_type>( 70.00e-2); y[31] = static_cast<data_type>( 5.18e-2); 
+      xi[32] = static_cast<data_type>( 79.883299e-2); x[32] = static_cast<data_type>( 80.00e-2); y[32] = static_cast<data_type>( 3.75e-2); 
+      xi[33] = static_cast<data_type>( 89.919268e-2); x[33] = static_cast<data_type>( 90.00e-2); y[33] = static_cast<data_type>( 2.08e-2);
+      xi[34] = static_cast<data_type>( 94.950448e-2); x[34] = static_cast<data_type>( 95.00e-2); y[34] = static_cast<data_type>( 1.14e-2);
+      xi[35] = static_cast<data_type>(       1.0e+0); x[35] = static_cast<data_type>(100.01e-2); y[35] = static_cast<data_type>( 0.13e-2); 
+
+      // test the airfoil coordinates
+      for (size_t i=0; i<x.size(); ++i)
+      {
+        xout = af.f(xi[i]);
+        TEST_ASSERT_DELTA(x[i], xout(0), tol);
+        TEST_ASSERT_DELTA(y[i], xout(1), tol);
+//        std::cout << "i=" << i << std::endl;
+//        std::cout << "      " << "\txcal=" << xout(0)
+//                  << "\txref=" << x[i]
+//                  << "\tdx=" << xout(0)-x[i] << std::endl;
+//        std::cout << "      " << "\tycal=" << xout(1)
+//                  << "\tyref=" << y[i]
+//                  << "\tdy=" << xout(1)-y[i] << std::endl;
       }
     }
 
