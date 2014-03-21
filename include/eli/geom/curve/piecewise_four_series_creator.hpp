@@ -228,15 +228,14 @@ namespace eli
             // check to make sure given valid parametric value
             assert((xi>=-1) && (xi<=1));
 
-            data_type xc, dxc, yc, ycp, ycpp, ycppp, xt, yt, ytp, ytpp, k, kp, zeta, zetap;
-            data_type tmp1, tmp2;
-            const data_type one(1), three(3);
+            data_type xc, xcp, yc, ycp, ycpp, ycppp, xt, yt, ytp, ytpp;
+            const data_type one(1), two(2), three(3);
             bool lower;
 
             // calculate the lower surface
             if (xi<0)
             {
-              dxc=-one;
+              xcp=-one;
               xc=-xi;
               lower=true;
             }
@@ -245,11 +244,11 @@ namespace eli
             {
               if (xi==0)
               {
-                dxc=0;
+                xcp=0;
               }
               else
               {
-                dxc=one;
+                xcp=one;
               }
 
               xc=xi;
@@ -259,20 +258,24 @@ namespace eli
             // calculate the supporting quantities needed
             calc_camber(yc, ycp, ycpp, ycppp, xc, lower);
             calc_thickness(yt, ytp, ytpp, xc, lower);
-            tmp1=one+ycp*ycp;
-            tmp2=std::sqrt(tmp1);
-            k=ycpp/(tmp1*tmp2);
-            kp=ycppp/(tmp1*tmp2)-three*ycp*k*k*tmp2;
-            zeta=ytp/tmp2;
-            zetap=ytpp/tmp2-zeta*k*ycp*tmp2;
+
+            data_type tmp1, cos_theta, cos2_theta, cos3_theta, sin_theta;
+
+            tmp1=std::sqrt(one+ycp*ycp);
+            cos_theta=one/tmp1;
+            sin_theta=ycp/tmp1;
+            cos2_theta=cos_theta*cos_theta;
+            cos3_theta=cos2_theta*cos_theta;
 
             // calculate the info
-            x(0)=xc-yt*ycp/tmp2;
-            x(1)=yc+yt/tmp2;
-            xp(0)=dxc-ycp*zeta-yt*k;
-            xp(1)=ycp+zeta+yt*ycp*k;
-            xpp(0)=-(ycpp*zeta+ycp*zetap+ytp*k+yt*kp);
-            xpp(1)=ycpp+zetap+ytp*ycp*k+ycpp*yt*k+yt*ycp*kp;
+            x(0)=xc-yt*sin_theta;
+            x(1)=yc+yt*cos_theta;
+            xp(0)=xcp-ytp*sin_theta-yt*cos3_theta*ycpp;
+            xp(1)=ycp+ytp*cos_theta-yt*cos2_theta*sin_theta*ycpp;
+            xpp(0)=-ytpp*sin_theta-two*ytp*cos3_theta*ycpp
+                  +yt*cos2_theta*(three*cos2_theta*sin_theta*ycpp*ycpp-ycppp);
+            xpp(1)=ycpp+ytpp*cos_theta-two*ytp*sin_theta*cos2_theta*ycpp
+                  -yt*cos_theta*((two-cos2_theta)*cos2_theta*ycpp*ycpp-sin_theta*ycppp);
           }
 
           point_type tangent(const data_type &xi) const
