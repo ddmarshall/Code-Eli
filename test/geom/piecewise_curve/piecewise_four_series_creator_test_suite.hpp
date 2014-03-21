@@ -10,8 +10,8 @@
 *    David D. Marshall - initial code and implementation
 ********************************************************************************/
 
-#ifndef piecewise_four_series_creator_test_suite_hpp
-#define piecewise_four_series_creator_test_suite_hpp
+#ifndef piecewise_four_digit_creator_test_suite_hpp
+#define piecewise_four_digit_creator_test_suite_hpp
 
 #include "eli/code_eli.hpp"
 
@@ -31,7 +31,7 @@
 #include <limits>   // std::numeric_limits
 
 template<typename data__>
-class piecewise_four_series_creator_test_suite : public Test::Suite
+class piecewise_four_digit_creator_test_suite : public Test::Suite
 {
   private:
     typedef eli::geom::curve::piecewise<eli::geom::curve::bezier, data__, 3> piecewise_curve_type;
@@ -40,9 +40,9 @@ class piecewise_four_series_creator_test_suite : public Test::Suite
     typedef typename piecewise_curve_type::data_type data_type;
     typedef typename piecewise_curve_type::index_type index_type;
     typedef typename piecewise_curve_type::tolerance_type tolerance_type;
-    typedef eli::geom::curve::piecewise_four_series_creator<data__, 3, tolerance_type> point_creator_type;
+    typedef eli::geom::curve::piecewise_four_digit_creator<data__, 3, tolerance_type> point_creator_type;
 
-    typedef eli::geom::airfoil::four_series<data_type> airfoil_type;
+    typedef eli::geom::curve::pseudo::four_digit<data_type> airfoil_type;
     typedef typename airfoil_type::coefficient_type airfoil_thickness_coefficient_type;
     typedef typename airfoil_type::point_type airfoil_point_type;
     typedef typename airfoil_type::param_type aifoil_parameter_type;
@@ -53,46 +53,46 @@ class piecewise_four_series_creator_test_suite : public Test::Suite
     void AddTests(const float &)
     {
       // add the tests
-      TEST_ADD(piecewise_four_series_creator_test_suite<float>::airfoil_coefficients_test);
-      TEST_ADD(piecewise_four_series_creator_test_suite<float>::create_airfoil_test);
-      TEST_ADD(piecewise_four_series_creator_test_suite<float>::thickness_test);
-      TEST_ADD(piecewise_four_series_creator_test_suite<float>::thickness_derivatives_test);
-      TEST_ADD(piecewise_four_series_creator_test_suite<float>::camber_test);
-      TEST_ADD(piecewise_four_series_creator_test_suite<float>::camber_derivatives_test);
-      TEST_ADD(piecewise_four_series_creator_test_suite<float>::airfoil_test);
-      TEST_ADD(piecewise_four_series_creator_test_suite<float>::airfoil_derivatives_test);
+      TEST_ADD(piecewise_four_digit_creator_test_suite<float>::airfoil_coefficients_test);
+      TEST_ADD(piecewise_four_digit_creator_test_suite<float>::create_airfoil_test);
+      TEST_ADD(piecewise_four_digit_creator_test_suite<float>::thickness_test);
+      TEST_ADD(piecewise_four_digit_creator_test_suite<float>::thickness_derivatives_test);
+      TEST_ADD(piecewise_four_digit_creator_test_suite<float>::camber_test);
+      TEST_ADD(piecewise_four_digit_creator_test_suite<float>::camber_derivatives_test);
+      TEST_ADD(piecewise_four_digit_creator_test_suite<float>::airfoil_test);
+      TEST_ADD(piecewise_four_digit_creator_test_suite<float>::airfoil_derivatives_test);
     }
     void AddTests(const double &)
     {
       // add the tests
-      TEST_ADD(piecewise_four_series_creator_test_suite<double>::airfoil_coefficients_test);
-      TEST_ADD(piecewise_four_series_creator_test_suite<double>::create_airfoil_test);
-      TEST_ADD(piecewise_four_series_creator_test_suite<double>::thickness_test);
-      TEST_ADD(piecewise_four_series_creator_test_suite<double>::thickness_derivatives_test);
-      TEST_ADD(piecewise_four_series_creator_test_suite<double>::camber_test);
-      TEST_ADD(piecewise_four_series_creator_test_suite<double>::camber_derivatives_test);
-      TEST_ADD(piecewise_four_series_creator_test_suite<double>::airfoil_test);
-      TEST_ADD(piecewise_four_series_creator_test_suite<double>::airfoil_derivatives_test);
+      TEST_ADD(piecewise_four_digit_creator_test_suite<double>::airfoil_coefficients_test);
+      TEST_ADD(piecewise_four_digit_creator_test_suite<double>::create_airfoil_test);
+      TEST_ADD(piecewise_four_digit_creator_test_suite<double>::thickness_test);
+      TEST_ADD(piecewise_four_digit_creator_test_suite<double>::thickness_derivatives_test);
+      TEST_ADD(piecewise_four_digit_creator_test_suite<double>::camber_test);
+      TEST_ADD(piecewise_four_digit_creator_test_suite<double>::camber_derivatives_test);
+      TEST_ADD(piecewise_four_digit_creator_test_suite<double>::airfoil_test);
+      TEST_ADD(piecewise_four_digit_creator_test_suite<double>::airfoil_derivatives_test);
     }
     void AddTests(const long double &)
     {
       // add the tests
-      TEST_ADD(piecewise_four_series_creator_test_suite<long double>::airfoil_coefficients_test);
-      TEST_ADD(piecewise_four_series_creator_test_suite<long double>::create_airfoil_test);
-      TEST_ADD(piecewise_four_series_creator_test_suite<long double>::thickness_test);
-      TEST_ADD(piecewise_four_series_creator_test_suite<long double>::thickness_derivatives_test);
-      TEST_ADD(piecewise_four_series_creator_test_suite<long double>::camber_test);
-      TEST_ADD(piecewise_four_series_creator_test_suite<long double>::camber_derivatives_test);
-      TEST_ADD(piecewise_four_series_creator_test_suite<long double>::airfoil_test);
-      TEST_ADD(piecewise_four_series_creator_test_suite<long double>::airfoil_derivatives_test);
+      TEST_ADD(piecewise_four_digit_creator_test_suite<long double>::airfoil_coefficients_test);
+      TEST_ADD(piecewise_four_digit_creator_test_suite<long double>::create_airfoil_test);
+      TEST_ADD(piecewise_four_digit_creator_test_suite<long double>::thickness_test);
+      TEST_ADD(piecewise_four_digit_creator_test_suite<long double>::thickness_derivatives_test);
+      TEST_ADD(piecewise_four_digit_creator_test_suite<long double>::camber_test);
+      TEST_ADD(piecewise_four_digit_creator_test_suite<long double>::camber_derivatives_test);
+      TEST_ADD(piecewise_four_digit_creator_test_suite<long double>::airfoil_test);
+      TEST_ADD(piecewise_four_digit_creator_test_suite<long double>::airfoil_derivatives_test);
     }
 
   public:
-    piecewise_four_series_creator_test_suite() : tol()
+    piecewise_four_digit_creator_test_suite() : tol()
     {
       AddTests(data__());
     }
-    ~piecewise_four_series_creator_test_suite()
+    ~piecewise_four_digit_creator_test_suite()
     {
     }
 

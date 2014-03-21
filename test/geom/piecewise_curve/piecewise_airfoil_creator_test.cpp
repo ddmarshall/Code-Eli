@@ -151,9 +151,9 @@ int main(int argc, char *argv[])
     std::string ostr_filename("piecewise_airfoil_test_results.html");
 
     // add the cppack test suites
-    ts.add(std::auto_ptr<Test::Suite>(new piecewise_four_series_creator_test_suite<float>()));
-    ts.add(std::auto_ptr<Test::Suite>(new piecewise_four_series_creator_test_suite<double>()));
-    ts.add(std::auto_ptr<Test::Suite>(new piecewise_four_series_creator_test_suite<long double>()));
+    ts.add(std::auto_ptr<Test::Suite>(new piecewise_four_digit_creator_test_suite<float>()));
+    ts.add(std::auto_ptr<Test::Suite>(new piecewise_four_digit_creator_test_suite<double>()));
+    ts.add(std::auto_ptr<Test::Suite>(new piecewise_four_digit_creator_test_suite<long double>()));
 
     //
     // NOTE: End of section that should be changed
