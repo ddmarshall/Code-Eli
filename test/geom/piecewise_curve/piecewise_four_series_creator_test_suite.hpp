@@ -60,6 +60,7 @@ class piecewise_four_series_creator_test_suite : public Test::Suite
       TEST_ADD(piecewise_four_series_creator_test_suite<float>::camber_test);
       TEST_ADD(piecewise_four_series_creator_test_suite<float>::camber_derivatives_test);
       TEST_ADD(piecewise_four_series_creator_test_suite<float>::airfoil_test);
+      TEST_ADD(piecewise_four_series_creator_test_suite<float>::airfoil_derivatives_test);
     }
     void AddTests(const double &)
     {
@@ -71,6 +72,7 @@ class piecewise_four_series_creator_test_suite : public Test::Suite
       TEST_ADD(piecewise_four_series_creator_test_suite<double>::camber_test);
       TEST_ADD(piecewise_four_series_creator_test_suite<double>::camber_derivatives_test);
       TEST_ADD(piecewise_four_series_creator_test_suite<double>::airfoil_test);
+      TEST_ADD(piecewise_four_series_creator_test_suite<double>::airfoil_derivatives_test);
     }
     void AddTests(const long double &)
     {
@@ -82,6 +84,7 @@ class piecewise_four_series_creator_test_suite : public Test::Suite
       TEST_ADD(piecewise_four_series_creator_test_suite<long double>::camber_test);
       TEST_ADD(piecewise_four_series_creator_test_suite<long double>::camber_derivatives_test);
       TEST_ADD(piecewise_four_series_creator_test_suite<long double>::airfoil_test);
+      TEST_ADD(piecewise_four_series_creator_test_suite<long double>::airfoil_derivatives_test);
     }
 
   public:
@@ -408,13 +411,13 @@ class piecewise_four_series_creator_test_suite : public Test::Suite
         xpp=af.fpp(xi);
         if (typeid(data_type)==typeid(float))
         {
-          TEST_ASSERT((xp-xp_ref).norm()<1e-3);
+          TEST_ASSERT((xp-xp_ref).norm()<1e-5);
           TEST_ASSERT((xpp-xpp_ref).norm()<3e-3);
         }
         else
         {
-          TEST_ASSERT((xp-xp_ref).norm()<2e-4);
-          TEST_ASSERT((xpp-xpp_ref).norm()<2e-4);
+          TEST_ASSERT((xp-xp_ref).norm()<1e-10);
+          TEST_ASSERT((xpp-xpp_ref).norm()<5e-5);
         }
 
         xi=static_cast<data_type>(-0.25);
@@ -429,13 +432,13 @@ class piecewise_four_series_creator_test_suite : public Test::Suite
         xpp=af.fpp(xi);
         if (typeid(data_type)==typeid(float))
         {
-          TEST_ASSERT((xp-xp_ref).norm()<1e-3);
+          TEST_ASSERT((xp-xp_ref).norm()<6e-4);
           TEST_ASSERT((xpp-xpp_ref).norm()<3e-3);
         }
         else
         {
-          TEST_ASSERT((xp-xp_ref).norm()<2e-4);
-          TEST_ASSERT((xpp-xpp_ref).norm()<2e-4);
+          TEST_ASSERT((xp-xp_ref).norm()<1e-10);
+          TEST_ASSERT((xpp-xpp_ref).norm()<8e-6);
         }
 
         // upper surface
@@ -456,8 +459,8 @@ class piecewise_four_series_creator_test_suite : public Test::Suite
         }
         else
         {
-          TEST_ASSERT((xp-xp_ref).norm()<2e-4);
-          TEST_ASSERT((xpp-xpp_ref).norm()<2e-4);
+          TEST_ASSERT((xp-xp_ref).norm()<1e-10);
+          TEST_ASSERT((xpp-xpp_ref).norm()<5e-6);
         }
 
         xi=static_cast<data_type>(0.7);
@@ -470,8 +473,16 @@ class piecewise_four_series_creator_test_suite : public Test::Suite
         d2_calc.evaluate(xpp_ref(1), y, dxi);
         xp=af.fp(xi);
         xpp=af.fpp(xi);
-        TEST_ASSERT((xp-xp_ref).norm()<2e-4);
-        TEST_ASSERT((xpp-xpp_ref).norm()<3e-4);
+        if (typeid(data_type)==typeid(float))
+        {
+          TEST_ASSERT((xp-xp_ref).norm()<5e-5);
+          TEST_ASSERT((xpp-xpp_ref).norm()<5e-4);
+        }
+        else
+        {
+          TEST_ASSERT((xp-xp_ref).norm()<1e-10);
+          TEST_ASSERT((xpp-xpp_ref).norm()<8e-5);
+        }
 //        std::cout << "xi=" << xi;
 //        std::cout << "\tdx=" << (x[2]-x[0])/(2*dxi) << "\tdy=" << (y[2]-y[0])/(2*dxi);
 //        std::cout << std::endl << "     ";
@@ -592,8 +603,16 @@ class piecewise_four_series_creator_test_suite : public Test::Suite
         d2_calc.evaluate(xpp_ref(1), y, dxi);
         xp=af.fp(xi);
         xpp=af.fpp(xi);
-        TEST_ASSERT((xp-xp_ref).norm()<1e-6);
-        TEST_ASSERT((xpp-xpp_ref).norm()<1e-6);
+        if (typeid(data_type)==typeid(float))
+        {
+          TEST_ASSERT((xp-xp_ref).norm()<1e-6);
+          TEST_ASSERT((xpp-xpp_ref).norm()<1e-6);
+        }
+        else
+        {
+          TEST_ASSERT((xp-xp_ref).norm()<1e-10);
+          TEST_ASSERT((xpp-xpp_ref).norm()<1e-10);
+        }
 
         xi=static_cast<data_type>(-0.25);
         xr=af.f(xi-dxi); x[0]=xr(0); y[0]=xr(1);
@@ -605,8 +624,16 @@ class piecewise_four_series_creator_test_suite : public Test::Suite
         d2_calc.evaluate(xpp_ref(1), y, dxi);
         xp=af.fp(xi);
         xpp=af.fpp(xi);
-        TEST_ASSERT((xp-xp_ref).norm()<1e-6);
-        TEST_ASSERT((xpp-xpp_ref).norm()<5e-6);
+        if (typeid(data_type)==typeid(float))
+        {
+          TEST_ASSERT((xp-xp_ref).norm()<1e-6);
+          TEST_ASSERT((xpp-xpp_ref).norm()<5e-6);
+        }
+        else
+        {
+          TEST_ASSERT((xp-xp_ref).norm()<1e-10);
+          TEST_ASSERT((xpp-xpp_ref).norm()<5e-6);
+        }
 
         // upper surface
         xi=static_cast<data_type>(0.15);
@@ -619,8 +646,16 @@ class piecewise_four_series_creator_test_suite : public Test::Suite
         d2_calc.evaluate(xpp_ref(1), y, dxi);
         xp=af.fp(xi);
         xpp=af.fpp(xi);
-        TEST_ASSERT((xp-xp_ref).norm()<1e-6);
-        TEST_ASSERT((xpp-xpp_ref).norm()<5e-6);
+        if (typeid(data_type)==typeid(float))
+        {
+          TEST_ASSERT((xp-xp_ref).norm()<1e-6);
+          TEST_ASSERT((xpp-xpp_ref).norm()<5e-6);
+        }
+        else
+        {
+          TEST_ASSERT((xp-xp_ref).norm()<1e-10);
+          TEST_ASSERT((xpp-xpp_ref).norm()<2e-6);
+        }
 
         xi=static_cast<data_type>(0.7);
         xr=af.f(xi-dxi); x[0]=xr(0); y[0]=xr(1);
@@ -632,12 +667,17 @@ class piecewise_four_series_creator_test_suite : public Test::Suite
         d2_calc.evaluate(xpp_ref(1), y, dxi);
         xp=af.fp(xi);
         xpp=af.fpp(xi);
-        TEST_ASSERT((xp-xp_ref).norm()<1e-6);
-        TEST_ASSERT((xpp-xpp_ref).norm()<7e-5);
+        if (typeid(data_type)==typeid(float))
+        {
+          TEST_ASSERT((xp-xp_ref).norm()<2e-3);
+          TEST_ASSERT((xpp-xpp_ref).norm()<2e-2);
+        }
+        else
+        {
+          TEST_ASSERT((xp-xp_ref).norm()<1e-10);
+          TEST_ASSERT((xpp-xpp_ref).norm()<7e-5);
+        }
 //        std::cout << "xi=" << xi;
-//        std::cout << "\tdx=" << (x[2]-x[0])/(2*dxi) << "\tdy=" << (y[2]-y[0])/(2*dxi);
-//        std::cout << std::endl << "     ";
-//        std::cout << "ddx=" << (x[0]-2*x[1]+x[2])/(dxi*dxi) << "\tddy=" << (y[0]-2*y[1]+y[2])/(dxi*dxi);
 //        std::cout << std::endl << "     ";
 //        std::cout << "xp=" << xp;
 //        std::cout << std::endl << "     ";
@@ -715,6 +755,174 @@ class piecewise_four_series_creator_test_suite : public Test::Suite
 //                  << "\tyref=" << y[i]
 //                  << "\tdy=" << xout(1)-y[i] << std::endl;
       }
+    }
+
+    void airfoil_derivatives_test()
+    {
+      // use finite differences to calculate the derivatives
+      airfoil_type af;
+      airfoil_point_type xr, xp, xpp, xp_ref, xpp_ref;
+      data_type xi, x[3], y[3];
+      const data_type dxi(1e2*std::sqrt(std::numeric_limits<data_type>::epsilon()));
+      eli::mutil::fd::d1o2<data_type> d1_calc;
+      eli::mutil::fd::d2o2<data_type> d2_calc;
+
+      // configure camber line
+      af.set_camber(3, 2);
+      af.set_thickness(24);
+
+      // lower surface
+      xi=static_cast<data_type>(-0.8);
+      xr=af.f(xi-dxi); x[0]=xr(0); y[0]=xr(1);
+      xr=af.f(xi);     x[1]=xr(0); y[1]=xr(1);
+      xr=af.f(xi+dxi); x[2]=xr(0); y[2]=xr(1);
+      d1_calc.evaluate(xp_ref(0), x, dxi);
+      d1_calc.evaluate(xp_ref(1), y, dxi);
+      d2_calc.evaluate(xpp_ref(0), x, dxi);
+      d2_calc.evaluate(xpp_ref(1), y, dxi);
+      xp=af.fp(xi);
+      xpp=af.fpp(xi);
+      if (typeid(data_type)==typeid(float))
+      {
+        TEST_ASSERT((xp-xp_ref).norm()<2e-5);
+        TEST_ASSERT((xpp-xpp_ref).norm()<5e-4);
+      }else
+      {
+        TEST_ASSERT((xp-xp_ref).norm()<1e-10);
+        TEST_ASSERT((xpp-xpp_ref).norm()<2e-4);
+      }
+//      std::cout << "xi=" << xi;
+//      std::cout << "\tdx=" << (x[2]-x[0])/(2*dxi) << "\tdy=" << (y[2]-y[0])/(2*dxi);
+//      std::cout << std::endl << "     ";
+//      std::cout << "ddx=" << (x[0]-2*x[1]+x[2])/(dxi*dxi) << "\tddy=" << (y[0]-2*y[1]+y[2])/(dxi*dxi);
+//      std::cout << std::endl << "     ";
+//      std::cout << "xp=" << xp;
+//      std::cout << std::endl << "     ";
+//      std::cout << "xp_ref=" << xp_ref;
+//      std::cout << std::endl << "     ";
+//      std::cout << "dxp=" << xp-xp_ref << "\tdxp.norm()=" << (xp-xp_ref).norm();
+//      std::cout << std::endl << "     ";
+//      std::cout << "xpp=    " << xpp;
+//      std::cout << std::endl << "     ";
+//      std::cout << "xpp_ref=" << xpp_ref;
+//      std::cout << std::endl << "     ";
+//      std::cout << "dxpp=" << xpp-xpp_ref << "\tdxpp.norm()=" << (xpp-xpp_ref).norm();
+//      std::cout << std::endl;
+
+      xi=static_cast<data_type>(-0.25);
+      xr=af.f(xi-dxi); x[0]=xr(0); y[0]=xr(1);
+      xr=af.f(xi);     x[1]=xr(0); y[1]=xr(1);
+      xr=af.f(xi+dxi); x[2]=xr(0); y[2]=xr(1);
+      d1_calc.evaluate(xp_ref(0), x, dxi);
+      d1_calc.evaluate(xp_ref(1), y, dxi);
+      d2_calc.evaluate(xpp_ref(0), x, dxi);
+      d2_calc.evaluate(xpp_ref(1), y, dxi);
+      xp=af.fp(xi);
+      xpp=af.fpp(xi);
+      if (typeid(data_type)==typeid(float))
+      {
+        TEST_ASSERT((xp-xp_ref).norm()<5e-3);
+        TEST_ASSERT((xpp-xpp_ref).norm()<5e-3);
+      }
+      else
+      {
+        TEST_ASSERT((xp-xp_ref).norm()<1e-10);
+        TEST_ASSERT((xpp-xpp_ref).norm()<5e-5);
+      }
+//      std::cout << "xi=" << xi;
+//      std::cout << "\tdx=" << (x[2]-x[0])/(2*dxi) << "\tdy=" << (y[2]-y[0])/(2*dxi);
+//      std::cout << std::endl << "     ";
+//      std::cout << "ddx=" << (x[0]-2*x[1]+x[2])/(dxi*dxi) << "\tddy=" << (y[0]-2*y[1]+y[2])/(dxi*dxi);
+//      std::cout << std::endl << "     ";
+//      std::cout << "xp=" << xp;
+//      std::cout << std::endl << "     ";
+//      std::cout << "xp_ref=" << xp_ref;
+//      std::cout << std::endl << "     ";
+//      std::cout << "dxp=" << xp-xp_ref << "\tdxp.norm()=" << (xp-xp_ref).norm();
+//      std::cout << std::endl << "     ";
+//      std::cout << "xpp=    " << xpp;
+//      std::cout << std::endl << "     ";
+//      std::cout << "xpp_ref=" << xpp_ref;
+//      std::cout << std::endl << "     ";
+//      std::cout << "dxpp=" << xpp-xpp_ref << "\tdxpp.norm()=" << (xpp-xpp_ref).norm();
+//      std::cout << std::endl;
+
+      // upper surface
+      xi=static_cast<data_type>(0.15);
+      xr=af.f(xi-dxi); x[0]=xr(0); y[0]=xr(1);
+      xr=af.f(xi);     x[1]=xr(0); y[1]=xr(1);
+      xr=af.f(xi+dxi); x[2]=xr(0); y[2]=xr(1);
+      d1_calc.evaluate(xp_ref(0), x, dxi);
+      d1_calc.evaluate(xp_ref(1), y, dxi);
+      d2_calc.evaluate(xpp_ref(0), x, dxi);
+      d2_calc.evaluate(xpp_ref(1), y, dxi);
+      xp=af.fp(xi);
+      xpp=af.fpp(xi);
+      if (typeid(data_type)==typeid(float))
+      {
+        TEST_ASSERT((xp-xp_ref).norm()<5e-3);
+        TEST_ASSERT((xpp-xpp_ref).norm()<3e-2);
+      }
+      else
+      {
+        TEST_ASSERT((xp-xp_ref).norm()<1e-10);
+        TEST_ASSERT((xpp-xpp_ref).norm()<6e-3);
+      }
+//      std::cout << "xi=" << xi;
+//      std::cout << "\tdx=" << (x[2]-x[0])/(2*dxi) << "\tdy=" << (y[2]-y[0])/(2*dxi);
+//      std::cout << std::endl << "     ";
+//      std::cout << "ddx=" << (x[0]-2*x[1]+x[2])/(dxi*dxi) << "\tddy=" << (y[0]-2*y[1]+y[2])/(dxi*dxi);
+//      std::cout << std::endl << "     ";
+//      std::cout << "xp=" << xp;
+//      std::cout << std::endl << "     ";
+//      std::cout << "xp_ref=" << xp_ref;
+//      std::cout << std::endl << "     ";
+//      std::cout << "dxp=" << xp-xp_ref << "\tdxp.norm()=" << (xp-xp_ref).norm();
+//      std::cout << std::endl << "     ";
+//      std::cout << "xpp=    " << xpp;
+//      std::cout << std::endl << "     ";
+//      std::cout << "xpp_ref=" << xpp_ref;
+//      std::cout << std::endl << "     ";
+//      std::cout << "dxpp=" << xpp-xpp_ref << "\tdxpp.norm()=" << (xpp-xpp_ref).norm();
+//      std::cout << std::endl;
+
+      xi=static_cast<data_type>(0.7);
+      xr=af.f(xi-dxi); x[0]=xr(0); y[0]=xr(1);
+      xr=af.f(xi);     x[1]=xr(0); y[1]=xr(1);
+      xr=af.f(xi+dxi); x[2]=xr(0); y[2]=xr(1);
+      d1_calc.evaluate(xp_ref(0), x, dxi);
+      d1_calc.evaluate(xp_ref(1), y, dxi);
+      d2_calc.evaluate(xpp_ref(0), x, dxi);
+      d2_calc.evaluate(xpp_ref(1), y, dxi);
+      xp=af.fp(xi);
+      xpp=af.fpp(xi);
+      if (typeid(data_type)==typeid(float))
+      {
+        TEST_ASSERT((xp-xp_ref).norm()<1e-4);
+        TEST_ASSERT((xpp-xpp_ref).norm()<5e-4);
+      }
+      else
+      {
+        TEST_ASSERT((xp-xp_ref).norm()<1e-10);
+        TEST_ASSERT((xpp-xpp_ref).norm()<1e-4);
+      }
+//      std::cout << "xi=" << xi;
+//      std::cout << "\tdx=" << (x[2]-x[0])/(2*dxi) << "\tdy=" << (y[2]-y[0])/(2*dxi);
+//      std::cout << std::endl << "     ";
+//      std::cout << "ddx=" << (x[0]-2*x[1]+x[2])/(dxi*dxi) << "\tddy=" << (y[0]-2*y[1]+y[2])/(dxi*dxi);
+//      std::cout << std::endl << "     ";
+//      std::cout << "xp=" << xp;
+//      std::cout << std::endl << "     ";
+//      std::cout << "xp_ref=" << xp_ref;
+//      std::cout << std::endl << "     ";
+//      std::cout << "dxp=" << xp-xp_ref << "\tdxp.norm()=" << (xp-xp_ref).norm();
+//      std::cout << std::endl << "     ";
+//      std::cout << "xpp=    " << xpp;
+//      std::cout << std::endl << "     ";
+//      std::cout << "xpp_ref=" << xpp_ref;
+//      std::cout << std::endl << "     ";
+//      std::cout << "dxpp=" << xpp-xpp_ref << "\tdxpp.norm()=" << (xpp-xpp_ref).norm();
+//      std::cout << std::endl;
     }
 
 };
