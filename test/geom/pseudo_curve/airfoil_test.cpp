@@ -20,7 +20,7 @@
 
 #include <cpptest.h> // CppTest Framework
 
-#include "piecewise_four_digit_creator_test_suite.hpp"         // piecewise_four_digit_creator_test_suite
+#include "four_digit_test_suite.hpp"         // four_digit_test_suite
 
 enum TestType {testTypeText, testTypeCompiler, testTypeHTML};
 
@@ -148,12 +148,12 @@ int main(int argc, char *argv[])
     // NOTE: This is where changes should be needed
     //
     Test::Suite ts;
-    std::string ostr_filename("piecewise_airfoil_test_results.html");
+    std::string ostr_filename("airfoil_test_results.html");
 
     // add the cppack test suites
-    ts.add(std::auto_ptr<Test::Suite>(new piecewise_four_digit_creator_test_suite<float>()));
-    ts.add(std::auto_ptr<Test::Suite>(new piecewise_four_digit_creator_test_suite<double>()));
-    ts.add(std::auto_ptr<Test::Suite>(new piecewise_four_digit_creator_test_suite<long double>()));
+    ts.add(std::auto_ptr<Test::Suite>(new four_digit_test_suite<float>()));
+    ts.add(std::auto_ptr<Test::Suite>(new four_digit_test_suite<double>()));
+    ts.add(std::auto_ptr<Test::Suite>(new four_digit_test_suite<long double>()));
 
     //
     // NOTE: End of section that should be changed

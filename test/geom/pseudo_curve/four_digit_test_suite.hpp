@@ -1,5 +1,5 @@
 /*********************************************************************************
-* Copyright (c) 2013 David D. Marshall <ddmarsha@calpoly.edu>
+* Copyright (c) 2014 David D. Marshall <ddmarsha@calpoly.edu>
 *
 * All rights reserved. This program and the accompanying materials
 * are made available under the terms of the Eclipse Public License v1.0
@@ -10,16 +10,15 @@
 *    David D. Marshall - initial code and implementation
 ********************************************************************************/
 
-#ifndef piecewise_four_digit_creator_test_suite_hpp
-#define piecewise_four_digit_creator_test_suite_hpp
+#ifndef four_digit_test_suite_hpp
+#define four_digit_test_suite_hpp
 
 #include "eli/code_eli.hpp"
 
 #include "eli/constants/math.hpp"
 #include "eli/mutil/fd/d1o2.hpp"
 #include "eli/mutil/fd/d2o2.hpp"
-#include "eli/geom/curve/piecewise.hpp"
-#include "eli/geom/curve/piecewise_four_series_creator.hpp"
+#include "eli/geom/curve/pseudo/four_digit.hpp"
 
 #include <cmath>    // std::pow, std::exp
 #include <cassert>  // assert()
@@ -31,177 +30,63 @@
 #include <limits>   // std::numeric_limits
 
 template<typename data__>
-class piecewise_four_digit_creator_test_suite : public Test::Suite
+class four_digit_test_suite : public Test::Suite
 {
   private:
-    typedef eli::geom::curve::piecewise<eli::geom::curve::bezier, data__, 3> piecewise_curve_type;
-    typedef typename piecewise_curve_type::curve_type curve_type;
-    typedef typename piecewise_curve_type::point_type point_type;
-    typedef typename piecewise_curve_type::data_type data_type;
-    typedef typename piecewise_curve_type::index_type index_type;
-    typedef typename piecewise_curve_type::tolerance_type tolerance_type;
-    typedef eli::geom::curve::piecewise_four_digit_creator<data__, 3, tolerance_type> point_creator_type;
-
+    typedef data__ data_type;
     typedef eli::geom::curve::pseudo::four_digit<data_type> airfoil_type;
     typedef typename airfoil_type::coefficient_type airfoil_thickness_coefficient_type;
     typedef typename airfoil_type::point_type airfoil_point_type;
     typedef typename airfoil_type::param_type aifoil_parameter_type;
 
-    tolerance_type tol;
-
   protected:
     void AddTests(const float &)
     {
       // add the tests
-      TEST_ADD(piecewise_four_digit_creator_test_suite<float>::airfoil_coefficients_test);
-      TEST_ADD(piecewise_four_digit_creator_test_suite<float>::create_airfoil_test);
-      TEST_ADD(piecewise_four_digit_creator_test_suite<float>::thickness_test);
-      TEST_ADD(piecewise_four_digit_creator_test_suite<float>::thickness_derivatives_test);
-      TEST_ADD(piecewise_four_digit_creator_test_suite<float>::camber_test);
-      TEST_ADD(piecewise_four_digit_creator_test_suite<float>::camber_derivatives_test);
-      TEST_ADD(piecewise_four_digit_creator_test_suite<float>::airfoil_test);
-      TEST_ADD(piecewise_four_digit_creator_test_suite<float>::airfoil_derivatives_test);
+      TEST_ADD(four_digit_test_suite<float>::airfoil_coefficients_test);
+      TEST_ADD(four_digit_test_suite<float>::create_airfoil_test);
+      TEST_ADD(four_digit_test_suite<float>::thickness_test);
+      TEST_ADD(four_digit_test_suite<float>::thickness_derivatives_test);
+      TEST_ADD(four_digit_test_suite<float>::camber_test);
+      TEST_ADD(four_digit_test_suite<float>::camber_derivatives_test);
+      TEST_ADD(four_digit_test_suite<float>::airfoil_test);
+      TEST_ADD(four_digit_test_suite<float>::airfoil_derivatives_test);
     }
     void AddTests(const double &)
     {
       // add the tests
-      TEST_ADD(piecewise_four_digit_creator_test_suite<double>::airfoil_coefficients_test);
-      TEST_ADD(piecewise_four_digit_creator_test_suite<double>::create_airfoil_test);
-      TEST_ADD(piecewise_four_digit_creator_test_suite<double>::thickness_test);
-      TEST_ADD(piecewise_four_digit_creator_test_suite<double>::thickness_derivatives_test);
-      TEST_ADD(piecewise_four_digit_creator_test_suite<double>::camber_test);
-      TEST_ADD(piecewise_four_digit_creator_test_suite<double>::camber_derivatives_test);
-      TEST_ADD(piecewise_four_digit_creator_test_suite<double>::airfoil_test);
-      TEST_ADD(piecewise_four_digit_creator_test_suite<double>::airfoil_derivatives_test);
+      TEST_ADD(four_digit_test_suite<double>::airfoil_coefficients_test);
+      TEST_ADD(four_digit_test_suite<double>::create_airfoil_test);
+      TEST_ADD(four_digit_test_suite<double>::thickness_test);
+      TEST_ADD(four_digit_test_suite<double>::thickness_derivatives_test);
+      TEST_ADD(four_digit_test_suite<double>::camber_test);
+      TEST_ADD(four_digit_test_suite<double>::camber_derivatives_test);
+      TEST_ADD(four_digit_test_suite<double>::airfoil_test);
+      TEST_ADD(four_digit_test_suite<double>::airfoil_derivatives_test);
     }
     void AddTests(const long double &)
     {
       // add the tests
-      TEST_ADD(piecewise_four_digit_creator_test_suite<long double>::airfoil_coefficients_test);
-      TEST_ADD(piecewise_four_digit_creator_test_suite<long double>::create_airfoil_test);
-      TEST_ADD(piecewise_four_digit_creator_test_suite<long double>::thickness_test);
-      TEST_ADD(piecewise_four_digit_creator_test_suite<long double>::thickness_derivatives_test);
-      TEST_ADD(piecewise_four_digit_creator_test_suite<long double>::camber_test);
-      TEST_ADD(piecewise_four_digit_creator_test_suite<long double>::camber_derivatives_test);
-      TEST_ADD(piecewise_four_digit_creator_test_suite<long double>::airfoil_test);
-      TEST_ADD(piecewise_four_digit_creator_test_suite<long double>::airfoil_derivatives_test);
+      TEST_ADD(four_digit_test_suite<long double>::airfoil_coefficients_test);
+      TEST_ADD(four_digit_test_suite<long double>::create_airfoil_test);
+      TEST_ADD(four_digit_test_suite<long double>::thickness_test);
+      TEST_ADD(four_digit_test_suite<long double>::thickness_derivatives_test);
+      TEST_ADD(four_digit_test_suite<long double>::camber_test);
+      TEST_ADD(four_digit_test_suite<long double>::camber_derivatives_test);
+      TEST_ADD(four_digit_test_suite<long double>::airfoil_test);
+      TEST_ADD(four_digit_test_suite<long double>::airfoil_derivatives_test);
     }
 
   public:
-    piecewise_four_digit_creator_test_suite() : tol()
+    four_digit_test_suite()
     {
       AddTests(data__());
     }
-    ~piecewise_four_digit_creator_test_suite()
+    ~four_digit_test_suite()
     {
     }
 
   private:
-    void octave_print(int figno, const piecewise_curve_type &pc) const
-    {
-      index_type i, pp, ns;
-      data_type tmin, tmax;
-
-      ns=pc.number_segments();
-      pc.get_parameter_min(tmin);
-      pc.get_parameter_max(tmax);
-
-      std::cout << "figure(" << figno << ");" << std::endl;
-
-      // get control points and print
-      std::cout << "cp_x=[";
-      for (pp=0; pp<ns; ++pp)
-      {
-        curve_type bez;
-        pc.get(bez, pp);
-        for (i=0; i<=bez.degree(); ++i)
-        {
-          std::cout << bez.get_control_point(i).x();
-          if (i<bez.degree())
-            std::cout << ", ";
-          else if (pp<ns-1)
-            std::cout << "; ";
-        }
-        std::cout << std::endl;
-      }
-      std::cout << "];" << std::endl;
-
-      std::cout << "cp_y=[";
-      for (pp=0; pp<ns; ++pp)
-      {
-        curve_type bez;
-        pc.get(bez, pp);
-        for (i=0; i<=bez.degree(); ++i)
-        {
-          std::cout << bez.get_control_point(i).y();
-          if (i<bez.degree())
-            std::cout << ", ";
-          else if (pp<ns-1)
-            std::cout << "; ";
-        }
-        std::cout << std::endl;
-      }
-      std::cout << "];" << std::endl;
-
-      std::cout << "cp_z=[";
-      for (pp=0; pp<ns; ++pp)
-      {
-        curve_type bez;
-        pc.get(bez, pp);
-        for (i=0; i<=bez.degree(); ++i)
-        {
-          std::cout << bez.get_control_point(i).z();
-          if (i<bez.degree())
-            std::cout << ", ";
-          else if (pp<ns-1)
-            std::cout << "; ";
-        }
-        std::cout << std::endl;
-      }
-      std::cout << "];" << std::endl;
-
-      // initialize the t parameters
-      std::vector<data__> t(129);
-      for (i=0; i<static_cast<index_type>(t.size()); ++i)
-      {
-        t[i]=tmin+(tmax-tmin)*static_cast<data__>(i)/(t.size()-1);
-      }
-
-      // set the surface points
-      std::cout << "surf_x=[";
-      for (i=0; i<static_cast<index_type>(t.size()); ++i)
-      {
-        std::cout << pc.f(t[i]).x();
-        if (i<static_cast<index_type>(t.size()-1))
-          std::cout << ", ";
-      }
-      std::cout << "];" << std::endl;
-
-      std::cout << "surf_y=[";
-      for (i=0; i<static_cast<index_type>(t.size()); ++i)
-      {
-        std::cout << pc.f(t[i]).y();
-        if (i<static_cast<index_type>(t.size()-1))
-          std::cout << ", ";
-      }
-      std::cout << "];" << std::endl;
-
-      std::cout << "surf_z=[";
-      for (i=0; i<static_cast<index_type>(t.size()); ++i)
-      {
-        std::cout << pc.f(t[i]).z();
-        if (i<static_cast<index_type>(t.size()-1))
-          std::cout << ", ";
-      }
-      std::cout << "];" << std::endl;
-
-      std::cout << "setenv('GNUTERM', 'x11');" << std::endl;
-      std::cout << "plot3(surf_x, surf_y, surf_z, '-k');" << std::endl;
-      std::cout << "hold on;" << std::endl;
-      std::cout << "plot3(cp_x', cp_y', cp_z', '-ok', 'MarkerFaceColor', [0 0 0]);" << std::endl;
-      std::cout << "hold off;" << std::endl;
-    }
-
     void airfoil_coefficients_test()
     {
       airfoil_type af;
@@ -791,23 +676,6 @@ class piecewise_four_digit_creator_test_suite : public Test::Suite
         TEST_ASSERT((xp-xp_ref).norm()<1e-10);
         TEST_ASSERT((xpp-xpp_ref).norm()<2e-4);
       }
-//      std::cout << "xi=" << xi;
-//      std::cout << "\tdx=" << (x[2]-x[0])/(2*dxi) << "\tdy=" << (y[2]-y[0])/(2*dxi);
-//      std::cout << std::endl << "     ";
-//      std::cout << "ddx=" << (x[0]-2*x[1]+x[2])/(dxi*dxi) << "\tddy=" << (y[0]-2*y[1]+y[2])/(dxi*dxi);
-//      std::cout << std::endl << "     ";
-//      std::cout << "xp=" << xp;
-//      std::cout << std::endl << "     ";
-//      std::cout << "xp_ref=" << xp_ref;
-//      std::cout << std::endl << "     ";
-//      std::cout << "dxp=" << xp-xp_ref << "\tdxp.norm()=" << (xp-xp_ref).norm();
-//      std::cout << std::endl << "     ";
-//      std::cout << "xpp=    " << xpp;
-//      std::cout << std::endl << "     ";
-//      std::cout << "xpp_ref=" << xpp_ref;
-//      std::cout << std::endl << "     ";
-//      std::cout << "dxpp=" << xpp-xpp_ref << "\tdxpp.norm()=" << (xpp-xpp_ref).norm();
-//      std::cout << std::endl;
 
       xi=static_cast<data_type>(-0.25);
       xr=af.f(xi-dxi); x[0]=xr(0); y[0]=xr(1);
@@ -829,23 +697,6 @@ class piecewise_four_digit_creator_test_suite : public Test::Suite
         TEST_ASSERT((xp-xp_ref).norm()<1e-10);
         TEST_ASSERT((xpp-xpp_ref).norm()<5e-5);
       }
-//      std::cout << "xi=" << xi;
-//      std::cout << "\tdx=" << (x[2]-x[0])/(2*dxi) << "\tdy=" << (y[2]-y[0])/(2*dxi);
-//      std::cout << std::endl << "     ";
-//      std::cout << "ddx=" << (x[0]-2*x[1]+x[2])/(dxi*dxi) << "\tddy=" << (y[0]-2*y[1]+y[2])/(dxi*dxi);
-//      std::cout << std::endl << "     ";
-//      std::cout << "xp=" << xp;
-//      std::cout << std::endl << "     ";
-//      std::cout << "xp_ref=" << xp_ref;
-//      std::cout << std::endl << "     ";
-//      std::cout << "dxp=" << xp-xp_ref << "\tdxp.norm()=" << (xp-xp_ref).norm();
-//      std::cout << std::endl << "     ";
-//      std::cout << "xpp=    " << xpp;
-//      std::cout << std::endl << "     ";
-//      std::cout << "xpp_ref=" << xpp_ref;
-//      std::cout << std::endl << "     ";
-//      std::cout << "dxpp=" << xpp-xpp_ref << "\tdxpp.norm()=" << (xpp-xpp_ref).norm();
-//      std::cout << std::endl;
 
       // upper surface
       xi=static_cast<data_type>(0.15);
@@ -868,23 +719,6 @@ class piecewise_four_digit_creator_test_suite : public Test::Suite
         TEST_ASSERT((xp-xp_ref).norm()<1e-10);
         TEST_ASSERT((xpp-xpp_ref).norm()<6e-3);
       }
-//      std::cout << "xi=" << xi;
-//      std::cout << "\tdx=" << (x[2]-x[0])/(2*dxi) << "\tdy=" << (y[2]-y[0])/(2*dxi);
-//      std::cout << std::endl << "     ";
-//      std::cout << "ddx=" << (x[0]-2*x[1]+x[2])/(dxi*dxi) << "\tddy=" << (y[0]-2*y[1]+y[2])/(dxi*dxi);
-//      std::cout << std::endl << "     ";
-//      std::cout << "xp=" << xp;
-//      std::cout << std::endl << "     ";
-//      std::cout << "xp_ref=" << xp_ref;
-//      std::cout << std::endl << "     ";
-//      std::cout << "dxp=" << xp-xp_ref << "\tdxp.norm()=" << (xp-xp_ref).norm();
-//      std::cout << std::endl << "     ";
-//      std::cout << "xpp=    " << xpp;
-//      std::cout << std::endl << "     ";
-//      std::cout << "xpp_ref=" << xpp_ref;
-//      std::cout << std::endl << "     ";
-//      std::cout << "dxpp=" << xpp-xpp_ref << "\tdxpp.norm()=" << (xpp-xpp_ref).norm();
-//      std::cout << std::endl;
 
       xi=static_cast<data_type>(0.7);
       xr=af.f(xi-dxi); x[0]=xr(0); y[0]=xr(1);
