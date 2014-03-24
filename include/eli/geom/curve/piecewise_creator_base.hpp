@@ -15,6 +15,10 @@
 
 #include <vector>
 
+#ifdef Success  // X11 #define collides with Eigen
+#undef Success
+#endif
+
 #include <Eigen/Eigen>
 
 #include "eli/geom/curve/piecewise.hpp"

@@ -18,6 +18,10 @@
 #include <iterator>
 #include <limits>
 
+#ifdef Success  // X11 #define collides with Eigen
+#undef Success
+#endif
+
 #include "Eigen/Eigen"
 
 #include "eli/mutil/dm/combination.hpp"

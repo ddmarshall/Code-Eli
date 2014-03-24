@@ -17,6 +17,10 @@
 
 #include "Eigen/Eigen"
 
+#ifdef Success  // X11 #define collides with Eigen
+#undef Success
+#endif
+
 #include "eli/geom/intersect/minimum_distance_line.hpp"
 
 namespace eli
