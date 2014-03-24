@@ -161,7 +161,7 @@ namespace eli
               // check to make sure given valid parametric value
               assert((xi>=-1) && (xi<=1));
 
-              data_type xc, xcp, yc, ycp, ycpp, ycppp, xt, yt, ytp, ytpp;
+              data_type xc, xcp, yc, ycp, ycpp, ycppp, yt, ytp, ytpp;
               const data_type one(1), two(2), three(3);
               bool lower;
 
@@ -237,7 +237,6 @@ namespace eli
               coefficient_matrix_type coef_mat;
               coefficient_type rhs;
               coefficient_type orig_a;
-              coef_mat_index_type i;
 
               // set the specified coefficients
               orig_a << static_cast<data_type>(0.2969),
@@ -250,7 +249,7 @@ namespace eli
               if (!sharp_trailing_edge())
               {
                 a=orig_a;
-                return true;
+                return;
               }
 
               // if want sharp trailing edge then find "actual" constraints that
