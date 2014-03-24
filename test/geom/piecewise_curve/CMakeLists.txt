@@ -56,3 +56,23 @@ set (PIECEWISE_CURVE_CREATOR_TEST_HEADER ${PROJECT_SOURCE_DIR}/piecewise_point_c
 add_executable(${PIECEWISE_CURVE_CREATOR_TEST_EXE} ${PIECEWISE_CURVE_CREATOR_TEST_SOURCE} ${PIECEWISE_CURVE_CREATOR_TEST_HEADER})
 target_link_libraries(${PIECEWISE_CURVE_CREATOR_TEST_EXE} ${_ELI_TEST_LIBRARIES_LIST})
 add_test(NAME ${PIECEWISE_CURVE_CREATOR_TEST_EXE} COMMAND $<TARGET_FILE:${PIECEWISE_CURVE_CREATOR_TEST_EXE}> --text)
+
+# add the piecewise_airfoil_creator test
+set (PIECEWISE_AIRFOIL_CREATOR_TEST_EXE PiecewiseAirfoilCreatorTest)
+set (PIECEWISE_AIRFOIL_CREATOR_TEST_SOURCE ${PROJECT_SOURCE_DIR}/piecewise_airfoil_creator_test.cpp)
+set (PIECEWISE_AIRFOIL_CREATOR_TEST_HEADER ${PROJECT_SOURCE_DIR}/piecewise_four_digit_creator_test_suite.hpp
+                                           ${ELI_SOURCE_DIR}/include/eli/constants/math.hpp
+                                           ${ELI_SOURCE_DIR}/include/eli/util/tolerance.hpp
+                                           ${ELI_SOURCE_DIR}/include/eli/mutil/fd/d1o2.hpp
+                                           ${ELI_SOURCE_DIR}/include/eli/mutil/fd/d2o2.hpp
+                                           ${ELI_SOURCE_DIR}/include/eli/geom/general/continuity.hpp
+                                           ${ELI_SOURCE_DIR}/include/eli/geom/curve/bezier.hpp
+                                           ${ELI_SOURCE_DIR}/include/eli/geom/curve/length.hpp
+                                           ${ELI_SOURCE_DIR}/include/eli/geom/curve/curvature.hpp
+                                           ${ELI_SOURCE_DIR}/include/eli/geom/curve/piecewise.hpp
+                                           ${ELI_SOURCE_DIR}/include/eli/geom/curve/piecewise_four_digit_creator.hpp)
+
+
+add_executable(${PIECEWISE_AIRFOIL_CREATOR_TEST_EXE} ${PIECEWISE_AIRFOIL_CREATOR_TEST_SOURCE} ${PIECEWISE_AIRFOIL_CREATOR_TEST_HEADER})
+target_link_libraries(${PIECEWISE_AIRFOIL_CREATOR_TEST_EXE} ${_ELI_TEST_LIBRARIES_LIST})
+add_test(NAME ${PIECEWISE_AIRFOIL_CREATOR_TEST_EXE} COMMAND $<TARGET_FILE:${PIECEWISE_AIRFOIL_CREATOR_TEST_EXE}> --text)

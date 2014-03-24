@@ -10,21 +10,9 @@
 *    David D. Marshall - initial code and implementation
 ********************************************************************************/
 
-#ifndef eli_geom_curve_hpp
-#define eli_geom_curve_hpp
+#ifndef eli_geom_curve_pseudo_hpp
+#define eli_geom_curve_pseudo_hpp
 
-// include types of curves
-#include "eli/geom/curve/bezier.hpp"
-#include "eli/geom/curve/explicit_bezier.hpp"
-#include "eli/geom/curve/piecewise.hpp"
-#include "eli/geom/curve/pseudo.hpp"
-
-// include helpers
-#include "eli/geom/curve/piecewise_circle_creator.hpp"
-#include "eli/geom/curve/piecewise_spline_creator.hpp"
-#include "eli/geom/curve/fit_container.hpp"
-#include "eli/geom/curve/length.hpp"
-#include "eli/geom/curve/curvature.hpp"
-#include "eli/geom/curve/torsion.hpp"
+#include "eli/geom/curve/pseudo/four_digit.hpp"
 
 #endif

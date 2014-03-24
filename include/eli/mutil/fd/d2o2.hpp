@@ -45,13 +45,16 @@ namespace eli
             __data d(static_cast<__data>(0));
 
             for (size_t i=0; i<number_nodes(); ++i, ++itphi)
-              d+=a[i]*(*itphi);
+            {
+              if (a[i]!=0)
+                d+=a[i]*(*itphi);
+            }
 
             return d;
           }
 
         public:
-          d2o2() : nnodes(4), n_order(2), st(d2o2<__data>::LEFT_BIASED)
+          d2o2() : nnodes(4), n_order(2), st(d2o2<__data>::RIGHT_BIASED)
           {
           }
 
