@@ -232,7 +232,6 @@ namespace eli
             void recalc_coefficients()
             {
               typedef Eigen::Matrix<data_type, 5, 5> coefficient_matrix_type;
-              typedef typename coefficient_matrix_type::Index coef_mat_index_type;
 
               coefficient_matrix_type coef_mat;
               coefficient_type rhs;
