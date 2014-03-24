@@ -14,7 +14,7 @@
 #define four_digit_hpp
 
 #include <string>    // std::string
-#include <strstream> // std::ostringstream, std::istringstream
+#include <sstream>   // std::ostringstream, std::istringstream
 #include <iomanip>   // std::setw
 #include <algorithm> // std::transform
 
