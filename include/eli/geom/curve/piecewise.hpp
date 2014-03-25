@@ -149,8 +149,8 @@ namespace eli
             }
             case(eli::geom::general::G0):
             {
-              v1.normalize();
-              v2.normalize();
+              v1=curve1.fp(1).normalized();
+              v2=curve2.fp(0).normalized();
 
               if (tol.approximately_equal(v1, v2))
                 return report_point_continuity(curve1, dt1, curve2, dt2, eli::geom::general::G1, tol);
@@ -169,8 +169,8 @@ namespace eli
             }
             case(eli::geom::general::G1):
             {
-              v1.normalize();
-              v2.normalize();
+              v1=curve1.fpp(1).normalized();
+              v2=curve2.fpp(0).normalized();
 
               if (tol.approximately_equal(v1, v2))
                 return report_point_continuity(curve1, dt1, curve2, dt2, eli::geom::general::G2, tol);
@@ -189,8 +189,8 @@ namespace eli
             }
             case(eli::geom::general::G2):
             {
-              v1.normalize();
-              v2.normalize();
+              v1=curve1.fppp(1).normalized();
+              v2=curve2.fppp(0).normalized();
 
               if (tol.approximately_equal(v1, v2))
                 return report_point_continuity(curve1, dt1, curve2, dt2, eli::geom::general::G3, tol);
