@@ -18,6 +18,7 @@
 #include <algorithm>
 
 #include "eli/util/tolerance.hpp"
+#include "eli/geom/curve/piecewise.hpp"
 
 #include "eli/geom/general/continuity.hpp"
 #include "eli/geom/curve/equivalent_curves.hpp"
@@ -26,6 +27,24 @@ namespace eli
 {
   namespace geom
   {
+
+    namespace surface
+    {
+      template<template<typename, unsigned short, typename> class surface__, typename data__, unsigned short dim__, typename tol__ >
+      class piecewise;
+    }
+
+    namespace intersect
+    {
+      template<template<typename, unsigned short, typename> class surface1__, typename data1__, unsigned short dim1__, typename tol1__ >
+      typename surface::piecewise<surface1__, data1__, dim1__, tol1__>::data_type
+        minimum_distance(
+          typename surface::piecewise<surface1__, data1__, dim1__, tol1__>::data_type &u,
+	      typename surface::piecewise<surface1__, data1__, dim1__, tol1__>::data_type &v,
+          const surface::piecewise<surface1__, data1__, dim1__, tol1__> &ps,
+          const typename surface::piecewise<surface1__, data1__, dim1__, tol1__>::point_type &pt);
+    }
+
     namespace surface
     {
       template<template<typename, unsigned short, typename> class surface__, typename data__, unsigned short dim__, typename tol__=eli::util::tolerance<data__> >
@@ -38,6 +57,9 @@ namespace eli
           typedef typename surface_type::control_point_type control_point_type;
           typedef typename surface_type::rotation_matrix_type rotation_matrix_type;
           typedef typename surface_type::bounding_box_type bounding_box_type;
+          typedef typename surface_type::curve_type curve_type;
+          typedef eli::geom::curve::piecewise<eli::geom::curve::bezier, data__, dim__, tol__> piecewise_curve_type;
+
           typedef data__ data_type;
           typedef unsigned short dimension_type;
           typedef tol__ tolerance_type;
@@ -258,7 +280,7 @@ namespace eli
           bool closed_u() const
           {
             index_type ifirst, ilast, j;
-            typename surface_type::boundary_curve_type bc0, bc1;
+            typename surface_type::curve_type bc0, bc1;
 
             ifirst = ukey.key.begin()->second;
             ilast = ukey.key.rbegin()->second;
@@ -281,7 +303,7 @@ namespace eli
           bool closed_v() const
           {
             index_type i, jfirst, jlast;
-            typename surface_type::boundary_curve_type bc0, bc1;
+            typename surface_type::curve_type bc0, bc1;
 
             jfirst = vkey.key.begin()->second;
             jlast = vkey.key.rbegin()->second;
@@ -469,7 +491,7 @@ namespace eli
               return INVALID_INDEX;
 
             // advance to desired index
-            typename surface_type::boundary_curve_type bc0, bc1;
+            typename surface_type::curve_type bc0, bc1;
             index_type uk, vk;
             typename keymap_type::const_iterator uit, vit;
             find_patch(uk, vk, uit, vit, ui, vi);
@@ -647,6 +669,66 @@ namespace eli
           {
             to_cubic_u(ttol);
             to_cubic_v(ttol);
+          }
+
+          void get_uconst_curve(piecewise_curve_type &pwc, const data_type &u) const
+          {
+            index_type uk, vk;
+            typename keymap_type::const_iterator uit, vit;
+            data_type uu(0), vv(0);
+            data_type vmin = vkey.get_pmin();
+
+            find_patch(uk, vk, uit, vit, uu, vv, u, vmin);
+
+            assert ((uk != -1) && (vk != -1));
+
+            pwc.clear();
+            pwc.set_t0(vmin);
+
+            for( index_type i=0; i<nv; i++)
+            {
+              vkey.find_segment(vk, vit, i);
+
+              data_type dv=vkey.get_delta_parm(vit);
+
+              surface_type s=patches[uk][vk];
+
+              curve_type c;
+
+              s.get_uconst_curve(c, uu);
+
+              pwc.push_back(c,dv);
+            }
+          }
+
+          void get_vconst_curve(piecewise_curve_type &pwc, const data_type &v) const
+          {
+            index_type uk, vk;
+            typename keymap_type::const_iterator uit, vit;
+            data_type uu(0), vv(0);
+            data_type umin = ukey.get_pmin();
+
+            find_patch(uk, vk, uit, vit, uu, vv, umin, v);
+
+            assert ((uk != -1) && (vk != -1));
+
+            pwc.clear();
+            pwc.set_t0(umin);
+
+            for( index_type i=0; i<nu; i++)
+            {
+              ukey.find_segment(uk, uit, i);
+
+              data_type du=ukey.get_delta_parm(uit);
+
+              surface_type s=patches[uk][vk];
+
+              curve_type c;
+
+              s.get_vconst_curve(c, vv);
+
+              pwc.push_back(c,du);
+            }
           }
 
           point_type f(const data_type &u, const data_type &v) const
@@ -840,6 +922,14 @@ namespace eli
 //                            const typename piecewise<surf1__, data1__, dim1__, tol1__>::data_type &t0,
 //                            const typename piecewise<surf1__, data1__, dim1__, tol1__>::data_type &t1,
 //                            const typename piecewise<surf1__, data1__, dim1__, tol1__>::data_type &tol);
+
+          template<template<typename, unsigned short, typename> class surface1__, typename data1__, unsigned short dim1__, typename tol1__ >
+          friend typename piecewise<surface1__, data1__, dim1__, tol1__>::data_type
+            eli::geom::intersect::minimum_distance(
+              typename piecewise<surface1__, data1__, dim1__, tol1__>::data_type &u,
+              typename piecewise<surface1__, data1__, dim1__, tol1__>::data_type &v,
+              const piecewise<surface1__, data1__, dim1__, tol1__> &ps,
+              const typename piecewise<surface1__, data1__, dim1__, tol1__>::point_type &pt);
 
           typedef std::map< data_type, index_type > keymap_type;
 

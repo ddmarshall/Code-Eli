@@ -198,6 +198,9 @@ namespace eli
             return B.rows()-1;
           }
 
+          data_type get_tmax() const {return 1;}
+          data_type get_t0() const {return 0;}
+
           static dimension_type dimension() {return dim__;}
 
           void set_control_point(const control_point_type &cp, const index_type &i)

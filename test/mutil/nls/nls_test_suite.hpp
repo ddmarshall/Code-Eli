@@ -245,7 +245,7 @@ class nls_test_suite : public Test::Suite
   private:
     void bisection_method_test()
     {
-      data__ delta(std::sqrt(std::numeric_limits<data__>::epsilon())), rhs(0.5), root;
+      data__ delta(std::sqrt(std::numeric_limits<data__>::epsilon())), rhs(0.5), root(0);
       eli::mutil::nls::bisection_method<data__> bm;
       int stat;
 
@@ -274,7 +274,7 @@ class nls_test_suite : public Test::Suite
 
     void newton_raphson_method_test()
     {
-      data__ delta(std::sqrt(std::numeric_limits<data__>::epsilon())), rhs(0.5), root;
+      data__ delta(std::sqrt(std::numeric_limits<data__>::epsilon())), rhs(0.5), root(0);
       eli::mutil::nls::newton_raphson_method<data__> nrm;
       int stat;
 

@@ -149,8 +149,8 @@ namespace eli
             }
             case(eli::geom::general::G0):
             {
-              v1.normalize();
-              v2.normalize();
+              v1=curve1.fp(1).normalized();
+              v2=curve2.fp(0).normalized();
 
               if (tol.approximately_equal(v1, v2))
                 return report_point_continuity(curve1, dt1, curve2, dt2, eli::geom::general::G1, tol);
@@ -169,8 +169,8 @@ namespace eli
             }
             case(eli::geom::general::G1):
             {
-              v1.normalize();
-              v2.normalize();
+              v1=curve1.fpp(1).normalized();
+              v2=curve2.fpp(0).normalized();
 
               if (tol.approximately_equal(v1, v2))
                 return report_point_continuity(curve1, dt1, curve2, dt2, eli::geom::general::G2, tol);
@@ -189,8 +189,8 @@ namespace eli
             }
             case(eli::geom::general::G2):
             {
-              v1.normalize();
-              v2.normalize();
+              v1=curve1.fppp(1).normalized();
+              v2=curve2.fppp(0).normalized();
 
               if (tol.approximately_equal(v1, v2))
                 return report_point_continuity(curve1, dt1, curve2, dt2, eli::geom::general::G3, tol);
@@ -234,6 +234,23 @@ namespace eli
 {
   namespace geom
   {
+
+    namespace curve
+    {
+      template<template<typename, unsigned short, typename> class curve__, typename data__, unsigned short dim__, typename tol__ >
+      class piecewise;
+    }
+
+    namespace intersect
+    {
+      template<template<typename, unsigned short, typename> class curve1__, typename data1__, unsigned short dim1__, typename tol1__>
+      typename curve::piecewise<curve1__, data1__, dim1__, tol1__>::data_type
+                      minimum_distance(
+                              typename curve::piecewise<curve1__, data1__, dim1__, tol1__>::data_type &t,
+                              const curve::piecewise<curve1__, data1__, dim1__, tol1__> &pc,
+                              const typename curve::piecewise<curve1__, data1__, dim1__, tol1__>::point_type &pt);
+    }
+
     namespace curve
     {
       // forward declaration of length function used in methods below. The length function
@@ -299,7 +316,7 @@ namespace eli
 
           static dimension_type dimension() {return dim__;}
 
-          const data_type & get_tmax() const {return tmax;}
+          data_type get_tmax() const {return tmax;}
 
           data_type get_t0() const
           {
@@ -347,7 +364,7 @@ namespace eli
             tmax_out = tmax;
           }
 
-          void parameter_report()
+          void parameter_report() const
           {
             printf("Parameter report:\n");
             typename segment_collection_type::const_iterator it;
@@ -365,7 +382,7 @@ namespace eli
 
           index_type number_segments() const {return static_cast<index_type>(segments.size());}
 
-          void degree(index_type &mind, index_type &maxd)
+          void degree(index_type &mind, index_type &maxd) const
           {
             typename segment_collection_type::const_iterator it;
 
@@ -1477,6 +1494,13 @@ namespace eli
                              const typename piecewise<curve1__, data1__, dim1__, tol1__>::data_type &t0,
                              const typename piecewise<curve1__, data1__, dim1__, tol1__>::data_type &t1,
                              const typename piecewise<curve1__, data1__, dim1__, tol1__>::data_type &tol);
+
+          template<template<typename, unsigned short, typename> class curve1__, typename data1__, unsigned short dim1__, typename tol1__>
+          friend typename piecewise<curve1__, data1__, dim1__, tol1__>::data_type
+                          eli::geom::intersect::minimum_distance(
+                                  typename piecewise<curve1__, data1__, dim1__, tol1__>::data_type &t,
+                                  const piecewise<curve1__, data1__, dim1__, tol1__> &pc,
+                                  const typename piecewise<curve1__, data1__, dim1__, tol1__>::point_type &pt);
 
           typedef std::map<data_type, curve_type> segment_collection_type;
 

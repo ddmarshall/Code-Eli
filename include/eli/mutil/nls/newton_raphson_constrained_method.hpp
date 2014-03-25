@@ -139,14 +139,6 @@ namespace eli
                 assert(xmax>xmin);
                 assert(period>0);
 
-                if (std::abs(dx)>period)
-                {
-                  if (dx>0)
-                    xnew=x+static_cast<data__>(0.9999)*period;
-                  else
-                    xnew=x-static_cast<data__>(0.9999)*period;
-                }
-
                 if (xnew<xmin)
                 {
                   xnew-=period*std::floor((xnew-xmin)/period);
@@ -188,17 +180,11 @@ namespace eli
                 assert(xmax>xmin);
                 assert(period>0);
 
-                if (std::abs(dx)>period)
-                {
-                  if (dx>0)
-                    xnew=x+static_cast<data__>(0.9999)*period;
-                  else
-                    xnew=x-static_cast<data__>(0.9999)*period;
-                }
-
                 if (xnew>xmax)
                 {
                   xnew-=period*std::ceil((xnew-xmax)/period);
+                  assert(xnew>=xmin);
+                  assert(xnew<=xmax);
                 }
                 break;
               }

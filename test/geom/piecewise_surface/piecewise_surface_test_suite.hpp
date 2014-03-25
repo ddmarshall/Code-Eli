@@ -43,6 +43,7 @@ class piecewise_surface_test_suite : public Test::Suite
     typedef typename piecewise_surface_type::data_type data_type;
     typedef typename piecewise_surface_type::index_type index_type;
     typedef typename piecewise_surface_type::tolerance_type tolerance_type;
+    typedef typename piecewise_surface_type::piecewise_curve_type piecewise_curve_type;
 
     tolerance_type tol;
 
@@ -60,6 +61,7 @@ class piecewise_surface_test_suite : public Test::Suite
       TEST_ADD(piecewise_surface_test_suite<float>::split_test);
       TEST_ADD(piecewise_surface_test_suite<float>::to_cubic_test);
       TEST_ADD(piecewise_surface_test_suite<float>::area_test);
+      TEST_ADD(piecewise_surface_test_suite<float>::get_curve_test);
     }
     void AddTests(const double &)
     {
@@ -74,6 +76,7 @@ class piecewise_surface_test_suite : public Test::Suite
       TEST_ADD(piecewise_surface_test_suite<double>::split_test);
       TEST_ADD(piecewise_surface_test_suite<double>::to_cubic_test);
       TEST_ADD(piecewise_surface_test_suite<double>::area_test);
+      TEST_ADD(piecewise_surface_test_suite<double>::get_curve_test);
     }
     void AddTests(const long double &)
     {
@@ -88,6 +91,7 @@ class piecewise_surface_test_suite : public Test::Suite
       TEST_ADD(piecewise_surface_test_suite<long double>::split_test);
       TEST_ADD(piecewise_surface_test_suite<long double>::to_cubic_test);
       TEST_ADD(piecewise_surface_test_suite<long double>::area_test);
+      TEST_ADD(piecewise_surface_test_suite<long double>::get_curve_test);
     }
 
   public:
@@ -1230,6 +1234,466 @@ class piecewise_surface_test_suite : public Test::Suite
       ref_len=temp0+bc_len[1]+temp1;
       TEST_ASSERT(std::abs(len-ref_len)<166*tol);
 #endif
+    }
+
+    void get_curve_test()
+    {
+      const index_type n(3), m(3);
+      surface_type s(n, m);
+      point_type cp[3+1][3+1], pt_out, pt_ref;
+      point_type pt, norm, u_contra, v_contra;
+      data_type u, v, d;
+      index_type i, j;
+      piecewise_surface_type pws;
+      piecewise_curve_type pwc;
+      typename piecewise_surface_type::error_code err;
+
+      pws.init_uv(1, 1);
+
+      // create surface with specified control points
+      cp[0][0] << -15, 0,  15;
+      cp[1][0] <<  -5, 5,  15;
+      cp[2][0] <<   5, 5,  15;
+      cp[3][0] <<  15, 0,  15;
+      cp[0][1] << -15, 5,   5;
+      cp[1][1] <<  -5, 5,   5;
+      cp[2][1] <<   5, 5,   5;
+      cp[3][1] <<  15, 5,   5;
+      cp[0][2] << -15, 5,  -5;
+      cp[1][2] <<  -5, 5,  -5;
+      cp[2][2] <<   5, 5,  -5;
+      cp[3][2] <<  15, 5,  -5;
+      cp[0][3] << -15, 0, -15;
+      cp[1][3] <<  -5, 5, -15;
+      cp[2][3] <<   5, 5, -15;
+      cp[3][3] <<  15, 0, -15;
+
+      // create surface with specified dimensions and set control points
+      for (i=0; i<=n; ++i)
+      {
+        for (j=0; j<=m; ++j)
+        {
+          s.set_control_point(cp[i][j], i, j);
+        }
+      }
+      TEST_ASSERT(s.open_u());
+      TEST_ASSERT(s.open_v());
+
+      err=pws.set(s, 0, 0);
+      TEST_ASSERT(err==piecewise_surface_type::NO_ERRORS);
+
+      pws.split_u(0.2);
+      pws.split_u(0.3);
+      pws.split_u(0.6);
+      pws.split_u(0.7);
+
+      pws.split_v(0.2);
+      pws.split_v(0.412);
+      pws.split_v(0.6);
+      pws.split_v(0.895);
+
+      // Extract u curve
+      u=0;
+      pws.get_uconst_curve(pwc, u);
+
+      v=0;
+      pt_ref=pws.f(u, v);
+      pt_out=pwc.f(v);
+      TEST_ASSERT(pt_out==pt_ref);
+
+      v=0.1;
+      pt_ref=pws.f(u, v);
+      pt_out=pwc.f(v);
+      TEST_ASSERT(pt_out==pt_ref);
+
+      v=0.2;
+      pt_ref=pws.f(u, v);
+      pt_out=pwc.f(v);
+      TEST_ASSERT(pt_out==pt_ref);
+
+      v=0.4;
+      pt_ref=pws.f(u, v);
+      pt_out=pwc.f(v);
+      TEST_ASSERT(pt_out==pt_ref);
+
+      v=0.6;
+      pt_ref=pws.f(u, v);
+      pt_out=pwc.f(v);
+      TEST_ASSERT(pt_out==pt_ref);
+
+      v=0.8;
+      pt_ref=pws.f(u, v);
+      pt_out=pwc.f(v);
+      TEST_ASSERT(pt_out==pt_ref);
+
+      v=1;
+      pt_ref=pws.f(u, v);
+      pt_out=pwc.f(v);
+      TEST_ASSERT(pt_out==pt_ref);
+
+      // Extract u curve
+      u=0.1;
+      pws.get_uconst_curve(pwc, u);
+
+      v=0;
+      pt_ref=pws.f(u, v);
+      pt_out=pwc.f(v);
+      TEST_ASSERT(pt_out==pt_ref);
+
+      v=0.1;
+      pt_ref=pws.f(u, v);
+      pt_out=pwc.f(v);
+      TEST_ASSERT(pt_out==pt_ref);
+
+      v=0.2;
+      pt_ref=pws.f(u, v);
+      pt_out=pwc.f(v);
+      TEST_ASSERT(pt_out==pt_ref);
+
+      v=0.4;
+      pt_ref=pws.f(u, v);
+      pt_out=pwc.f(v);
+      TEST_ASSERT(pt_out==pt_ref);
+
+      v=0.6;
+      pt_ref=pws.f(u, v);
+      pt_out=pwc.f(v);
+      TEST_ASSERT(pt_out==pt_ref);
+
+      v=0.8;
+      pt_ref=pws.f(u, v);
+      pt_out=pwc.f(v);
+      TEST_ASSERT(pt_out==pt_ref);
+
+      v=1;
+      pt_ref=pws.f(u, v);
+      pt_out=pwc.f(v);
+      TEST_ASSERT(pt_out==pt_ref);
+
+      // Extract u curve
+      u=0.2;
+      pws.get_uconst_curve(pwc, u);
+
+      v=0;
+      pt_ref=pws.f(u, v);
+      pt_out=pwc.f(v);
+      TEST_ASSERT(pt_out==pt_ref);
+
+      v=0.1;
+      pt_ref=pws.f(u, v);
+      pt_out=pwc.f(v);
+      TEST_ASSERT(pt_out==pt_ref);
+
+      v=0.2;
+      pt_ref=pws.f(u, v);
+      pt_out=pwc.f(v);
+      TEST_ASSERT(pt_out==pt_ref);
+
+      v=0.4;
+      pt_ref=pws.f(u, v);
+      pt_out=pwc.f(v);
+      TEST_ASSERT(pt_out==pt_ref);
+
+      v=0.6;
+      pt_ref=pws.f(u, v);
+      pt_out=pwc.f(v);
+      TEST_ASSERT(pt_out==pt_ref);
+
+      v=0.8;
+      pt_ref=pws.f(u, v);
+      pt_out=pwc.f(v);
+      TEST_ASSERT(pt_out==pt_ref);
+
+      v=1;
+      pt_ref=pws.f(u, v);
+      pt_out=pwc.f(v);
+      TEST_ASSERT(pt_out==pt_ref);
+
+      // Extract u curve
+      u=0.5;
+      pws.get_uconst_curve(pwc, u);
+
+      v=0;
+      pt_ref=pws.f(u, v);
+      pt_out=pwc.f(v);
+      TEST_ASSERT(pt_out==pt_ref);
+
+      v=0.1;
+      pt_ref=pws.f(u, v);
+      pt_out=pwc.f(v);
+      TEST_ASSERT(pt_out==pt_ref);
+
+      v=0.2;
+      pt_ref=pws.f(u, v);
+      pt_out=pwc.f(v);
+      TEST_ASSERT(pt_out==pt_ref);
+
+      v=0.4;
+      pt_ref=pws.f(u, v);
+      pt_out=pwc.f(v);
+      TEST_ASSERT(pt_out==pt_ref);
+
+      v=0.6;
+      pt_ref=pws.f(u, v);
+      pt_out=pwc.f(v);
+      TEST_ASSERT(pt_out==pt_ref);
+
+      v=0.8;
+      pt_ref=pws.f(u, v);
+      pt_out=pwc.f(v);
+      TEST_ASSERT(pt_out==pt_ref);
+
+      v=1;
+      pt_ref=pws.f(u, v);
+      pt_out=pwc.f(v);
+      TEST_ASSERT(pt_out==pt_ref);
+
+      // Extract u curve
+      u=1;
+      pws.get_uconst_curve(pwc, u);
+
+      v=0;
+      pt_ref=pws.f(u, v);
+      pt_out=pwc.f(v);
+      TEST_ASSERT(pt_out==pt_ref);
+
+      v=0.1;
+      pt_ref=pws.f(u, v);
+      pt_out=pwc.f(v);
+      TEST_ASSERT(pt_out==pt_ref);
+
+      v=0.2;
+      pt_ref=pws.f(u, v);
+      pt_out=pwc.f(v);
+      TEST_ASSERT(pt_out==pt_ref);
+
+      v=0.4;
+      pt_ref=pws.f(u, v);
+      pt_out=pwc.f(v);
+      TEST_ASSERT(pt_out==pt_ref);
+
+      v=0.6;
+      pt_ref=pws.f(u, v);
+      pt_out=pwc.f(v);
+      TEST_ASSERT(pt_out==pt_ref);
+
+      v=0.8;
+      pt_ref=pws.f(u, v);
+      pt_out=pwc.f(v);
+      TEST_ASSERT(pt_out==pt_ref);
+
+      v=1;
+      pt_ref=pws.f(u, v);
+      pt_out=pwc.f(v);
+      TEST_ASSERT(pt_out==pt_ref);
+
+
+
+      // Extract v curve
+      v=0;
+      pws.get_vconst_curve(pwc, v);
+
+      u=0;
+      pt_ref=pws.f(u, v);
+      pt_out=pwc.f(u);
+      TEST_ASSERT(pt_out==pt_ref);
+
+      u=0.1;
+      pt_ref=pws.f(u, v);
+      pt_out=pwc.f(u);
+      TEST_ASSERT(pt_out==pt_ref);
+
+      u=0.2;
+      pt_ref=pws.f(u, v);
+      pt_out=pwc.f(u);
+      TEST_ASSERT(pt_out==pt_ref);
+
+      u=0.4;
+      pt_ref=pws.f(u, v);
+      pt_out=pwc.f(u);
+      TEST_ASSERT(pt_out==pt_ref);
+
+      u=0.6;
+      pt_ref=pws.f(u, v);
+      pt_out=pwc.f(u);
+      TEST_ASSERT(pt_out==pt_ref);
+
+      u=0.8;
+      pt_ref=pws.f(u, v);
+      pt_out=pwc.f(u);
+      TEST_ASSERT(pt_out==pt_ref);
+
+      u=1;
+      pt_ref=pws.f(u, v);
+      pt_out=pwc.f(u);
+      TEST_ASSERT(pt_out==pt_ref);
+
+      // Extract v curve
+      v=0.1;
+      pws.get_vconst_curve(pwc, v);
+
+      u=0;
+      pt_ref=pws.f(u, v);
+      pt_out=pwc.f(u);
+      TEST_ASSERT(pt_out==pt_ref);
+
+      u=0.1;
+      pt_ref=pws.f(u, v);
+      pt_out=pwc.f(u);
+      d=(pt_ref - pt_out).norm();
+      TEST_ASSERT(d<std::numeric_limits<data_type>::epsilon()*30);
+
+      u=0.2;
+      pt_ref=pws.f(u, v);
+      pt_out=pwc.f(u);
+      TEST_ASSERT(pt_out==pt_ref);
+
+      u=0.4;
+      pt_ref=pws.f(u, v);
+      pt_out=pwc.f(u);
+      d=(pt_ref - pt_out).norm();
+      TEST_ASSERT(d<std::numeric_limits<data_type>::epsilon()*30);
+
+      u=0.6;
+      pt_ref=pws.f(u, v);
+      pt_out=pwc.f(u);
+      d=(pt_ref - pt_out).norm();
+      TEST_ASSERT(d<std::numeric_limits<data_type>::epsilon()*30);
+
+      u=0.8;
+      pt_ref=pws.f(u, v);
+      pt_out=pwc.f(u);
+      d=(pt_ref - pt_out).norm();
+      TEST_ASSERT(d<std::numeric_limits<data_type>::epsilon()*30);
+
+      u=1;
+      pt_ref=pws.f(u, v);
+      pt_out=pwc.f(u);
+      TEST_ASSERT(pt_out==pt_ref);
+
+      // Extract v curve
+      v=0.2;
+      pws.get_vconst_curve(pwc, v);
+
+      u=0;
+      pt_ref=pws.f(u, v);
+      pt_out=pwc.f(u);
+      TEST_ASSERT(pt_out==pt_ref);
+
+      u=0.1;
+      pt_ref=pws.f(u, v);
+      pt_out=pwc.f(u);
+      TEST_ASSERT(pt_out==pt_ref);
+
+      u=0.2;
+      pt_ref=pws.f(u, v);
+      pt_out=pwc.f(u);
+      TEST_ASSERT(pt_out==pt_ref);
+
+      u=0.4;
+      pt_ref=pws.f(u, v);
+      pt_out=pwc.f(u);
+      d=(pt_ref - pt_out).norm();
+      TEST_ASSERT(d<std::numeric_limits<data_type>::epsilon()*30);
+
+      u=0.6;
+      pt_ref=pws.f(u, v);
+      pt_out=pwc.f(u);
+      d=(pt_ref - pt_out).norm();
+      TEST_ASSERT(d<std::numeric_limits<data_type>::epsilon()*30);
+
+      u=0.8;
+      pt_ref=pws.f(u, v);
+      pt_out=pwc.f(u);
+      d=(pt_ref - pt_out).norm();
+      TEST_ASSERT(d<std::numeric_limits<data_type>::epsilon()*30);
+
+      u=1;
+      pt_ref=pws.f(u, v);
+      pt_out=pwc.f(u);
+      TEST_ASSERT(pt_out==pt_ref);
+
+      // Extract v curve
+      v=0.4;
+      pws.get_vconst_curve(pwc, v);
+
+      u=0;
+      pt_ref=pws.f(u, v);
+      pt_out=pwc.f(u);
+      TEST_ASSERT(pt_out==pt_ref);
+
+      u=0.1;
+      pt_ref=pws.f(u, v);
+      pt_out=pwc.f(u);
+      d=(pt_ref - pt_out).norm();
+      TEST_ASSERT(d<std::numeric_limits<data_type>::epsilon()*30);
+
+      u=0.2;
+      pt_ref=pws.f(u, v);
+      pt_out=pwc.f(u);
+      d=(pt_ref - pt_out).norm();
+      TEST_ASSERT(d<std::numeric_limits<data_type>::epsilon()*30);
+
+      u=0.4;
+      pt_ref=pws.f(u, v);
+      pt_out=pwc.f(u);
+      d=(pt_ref - pt_out).norm();
+      TEST_ASSERT(d<std::numeric_limits<data_type>::epsilon()*30);
+
+      u=0.6;
+      pt_ref=pws.f(u, v);
+      pt_out=pwc.f(u);
+      TEST_ASSERT(pt_out==pt_ref);
+
+      u=0.8;
+      pt_ref=pws.f(u, v);
+      pt_out=pwc.f(u);
+      d=(pt_ref - pt_out).norm();
+      TEST_ASSERT(d<std::numeric_limits<data_type>::epsilon()*30);
+
+      u=1;
+      pt_ref=pws.f(u, v);
+      pt_out=pwc.f(u);
+      TEST_ASSERT(pt_out==pt_ref);
+
+      // Extract v curve
+      v=1;
+      pws.get_vconst_curve(pwc, v);
+
+      u=0;
+      pt_ref=pws.f(u, v);
+      pt_out=pwc.f(u);
+      TEST_ASSERT(pt_out==pt_ref);
+
+      u=0.1;
+      pt_ref=pws.f(u, v);
+      pt_out=pwc.f(u);
+      TEST_ASSERT(pt_out==pt_ref);
+
+      u=0.2;
+      pt_ref=pws.f(u, v);
+      pt_out=pwc.f(u);
+      TEST_ASSERT(pt_out==pt_ref);
+
+      u=0.4;
+      pt_ref=pws.f(u, v);
+      pt_out=pwc.f(u);
+      TEST_ASSERT(pt_out==pt_ref);
+
+      u=0.6;
+      pt_ref=pws.f(u, v);
+      pt_out=pwc.f(u);
+      TEST_ASSERT(pt_out==pt_ref);
+
+      u=0.8;
+      pt_ref=pws.f(u, v);
+      pt_out=pwc.f(u);
+      TEST_ASSERT(pt_out==pt_ref);
+
+      u=1;
+      pt_ref=pws.f(u, v);
+      pt_out=pwc.f(u);
+      TEST_ASSERT(pt_out==pt_ref);
     }
 };
 

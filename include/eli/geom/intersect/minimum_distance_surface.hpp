@@ -16,6 +16,7 @@
 #include <cmath>
 #include <vector>
 #include <list>
+#include <algorithm>
 
 #ifdef Success  // X11 #define collides with Eigen
 #undef Success
@@ -27,6 +28,7 @@
 
 #include "eli/geom/intersect/minimum_distance_curve.hpp"
 #include "eli/geom/point/distance.hpp"
+#include "eli/geom/intersect/minimum_distance_bounding_box.hpp"
 
 namespace eli
 {
@@ -48,11 +50,37 @@ namespace eli
             typename surface__::data_type uu(u[0]), vv(u[1]);
             vec rtn;
 
-            assert((uu>=0) && (uu<=1));
-            assert((vv>=0) && (vv<=1));
+            typename surface__::data_type umin, umax, vmin, vmax;
+            ps->get_parameter_min(umin,vmin);
+            ps->get_parameter_max(umax,vmax);
 
-            uu=std::min(std::max(uu, static_cast<typename surface__::data_type>(0)), static_cast<typename surface__::data_type>(1));
-            vv=std::min(std::max(vv, static_cast<typename surface__::data_type>(0)), static_cast<typename surface__::data_type>(1));
+            if ( !(uu>=umin) )
+            {
+              std::cout << "Minimum distance surface g_functor, u less than minimum.  uu: " << uu << " umin: " << umin << std::endl;
+              uu=umin;
+            }
+            if ( !(uu<=umax) )
+            {
+              std::cout << "Minimum distance surface g_functor, u greater than maximum.  uu: " << uu << " uamx: " << umax << std::endl;
+              uu=umax;
+            }
+
+            if ( !(vv>=vmin) )
+            {
+              std::cout << "Minimum distance surface g_functor, v less than minimum.  vv: " << vv << " vmin: " << vmin << std::endl;
+              vv=vmin;
+            }
+            if ( !(vv<=vmax) )
+            {
+              std::cout << "Minimum distance surface g_functor, v greater than maximum.  vv: " << vv << " vmax: " << vmax << std::endl;
+              vv=vmax;
+            }
+
+            assert((uu>=umin) && (uu<=umax));
+            assert((vv>=vmin) && (vv<=vmax));
+
+            uu=std::min(std::max(uu, static_cast<typename surface__::data_type>(umin)), static_cast<typename surface__::data_type>(umax));
+            vv=std::min(std::max(vv, static_cast<typename surface__::data_type>(vmin)), static_cast<typename surface__::data_type>(vmax));
 
             typename surface__::point_type tmp;
 
@@ -76,11 +104,37 @@ namespace eli
             typename surface__::data_type uu(u[0]), vv(u[1]);
             mat rtn;
 
-            assert((uu>=0) && (uu<=1));
-            assert((vv>=0) && (vv<=1));
+            typename surface__::data_type umin, umax, vmin, vmax;
+            ps->get_parameter_min(umin,vmin);
+            ps->get_parameter_max(umax,vmax);
 
-            uu=std::min(std::max(uu, static_cast<typename surface__::data_type>(0)), static_cast<typename surface__::data_type>(1));
-            vv=std::min(std::max(vv, static_cast<typename surface__::data_type>(0)), static_cast<typename surface__::data_type>(1));
+            if ( !(uu>=umin) )
+            {
+              std::cout << "Minimum distance surface gp_functor, u less than minimum.  uu: " << uu << " umin: " << umin << std::endl;
+              uu=umin;
+            }
+            if ( !(uu<=umax) )
+            {
+              std::cout << "Minimum distance surface gp_functor, u greater than maximum.  uu: " << uu << " uamx: " << umax << std::endl;
+              uu=umax;
+            }
+
+            if ( !(vv>=vmin) )
+            {
+              std::cout << "Minimum distance surface gp_functor, v less than minimum.  vv: " << vv << " vmin: " << vmin << std::endl;
+              vv=vmin;
+            }
+            if ( !(vv<=vmax) )
+            {
+              std::cout << "Minimum distance surface gp_functor, v greater than maximum.  vv: " << vv << " vmax: " << vmax << std::endl;
+              vv=vmax;
+            }
+
+            assert((uu>=umin) && (uu<=umax));
+            assert((vv>=vmin) && (vv<=vmax));
+
+            uu=std::min(std::max(uu, static_cast<typename surface__::data_type>(umin)), static_cast<typename surface__::data_type>(umax));
+            vv=std::min(std::max(vv, static_cast<typename surface__::data_type>(vmin)), static_cast<typename surface__::data_type>(vmax));
 
             typename surface__::point_type tmp, Su, Sv, Suu, Suv, Svv;
 
@@ -109,11 +163,14 @@ namespace eli
       {
         typedef eli::mutil::nls::newton_raphson_constrained_system_method<typename surface__::data_type, 2, 1> nonlinear_solver_type;
         nonlinear_solver_type nrm;
-        int stat;
         internal::surface_g_functor<surface__> g;
         internal::surface_gp_functor<surface__> gp;
         typename surface__::data_type dist0, dist;
         typename surface__::tolerance_type tol;
+
+        typename surface__::data_type umin, umax, vmin, vmax;
+        s.get_parameter_min(umin,vmin);
+        s.get_parameter_max(umax,vmax);
 
         // setup the functors
         g.ps=&s;
@@ -123,25 +180,25 @@ namespace eli
 
         // setup the solver
         nrm.set_absolute_tolerance(tol.get_absolute_tolerance());
-        nrm.set_max_iteration(200);
+        nrm.set_max_iteration(20);
         nrm.set_norm_type(nonlinear_solver_type::max_norm);
         if (s.open_u())
         {
-          nrm.set_lower_condition(0, 0, nonlinear_solver_type::NRC_EXCLUSIVE);
-          nrm.set_upper_condition(0, 1, nonlinear_solver_type::NRC_EXCLUSIVE);
+          nrm.set_lower_condition(0, umin, nonlinear_solver_type::NRC_EXCLUSIVE);
+          nrm.set_upper_condition(0, umax, nonlinear_solver_type::NRC_EXCLUSIVE);
         }
         else
         {
-          nrm.set_periodic_condition(0, 0, 1);
+          nrm.set_periodic_condition(0, umin, umax);
         }
         if (s.open_v())
         {
-          nrm.set_lower_condition(1, 0, nonlinear_solver_type::NRC_EXCLUSIVE);
-          nrm.set_upper_condition(1, 1, nonlinear_solver_type::NRC_EXCLUSIVE);
+          nrm.set_lower_condition(1, vmin, nonlinear_solver_type::NRC_EXCLUSIVE);
+          nrm.set_upper_condition(1, vmax, nonlinear_solver_type::NRC_EXCLUSIVE);
         }
         else
         {
-          nrm.set_periodic_condition(1, 0, 1);
+          nrm.set_periodic_condition(1, vmin, vmax);
         }
 
         // set the initial guess
@@ -154,15 +211,14 @@ namespace eli
         dist0=eli::geom::point::distance(s.f(u0, v0), pt);
 
         // find the root
-        stat = nrm.find_root(ans, g, gp, rhs);
+        nrm.find_root(ans, g, gp, rhs);
         u=ans(0);
         v=ans(1);
 
-        // if found root and it is within bounds and is closer than initial guess
-        if (stat==nonlinear_solver_type::converged)
+        // if root is within bounds and is closer than initial guess
         {
-          assert((u>=0) && (u<=1));
-          assert((v>=0) && (v<=1));
+          assert((u>=umin) && (u<=umax));
+          assert((v>=vmin) && (v<=vmax));
 
           dist = eli::geom::point::distance(s.f(u, v), pt);
           if  (dist<=dist0)
@@ -187,253 +243,244 @@ namespace eli
         return dist0;
       }
 
-      namespace internal
-      {
-        template<typename data__>
-        struct surface_point_uv_pairs
-        {
-          data__ u, v, dist;
-        };
-      }
-
       template<typename surface__>
       typename surface__::data_type minimum_distance(typename surface__::data_type &u, typename surface__::data_type &v, const surface__ &s, const typename surface__::point_type &pt)
       {
         typename surface__::tolerance_type tol;
-        std::list<internal::surface_point_uv_pairs<typename surface__::data_type>> uvinit;
-        typename std::list<internal::surface_point_uv_pairs<typename surface__::data_type>>::iterator it;
-        internal::surface_point_uv_pairs<typename surface__::data_type> cand_match;
 
         // possible that end points are closest, so start by checking them
         typename surface__::data_type dist, uu, vv, dd;
 
-        // first check start and (if needed) end points of edges and middle of surface
+        typename surface__::data_type umin, umax, vmin, vmax, uspan, vspan;
+        s.get_parameter_min(umin,vmin);
+        s.get_parameter_max(umax,vmax);
+        uspan=umax-umin;
+        vspan=vmax-vmin;
+
+        typename surface__::index_type i, j, nu, nv;
+        typename surface__::data_type du, dv;
+
+        nu=2*s.degree_u()+1;
+        nv=2*s.degree_v()+1;
+
+        // Evenly spaced in parameter, don't repeat 0/1 if closed curve.
+        if (s.open_u())
         {
-          bool openu=s.open_u(), openv=s.open_v();
-          u=0;
-          v=0;
-          dist=eli::geom::point::distance(s.f(u, v), pt);
-          uu=0.5;
-          vv=0.5;
-          dd=eli::geom::point::distance(s.f(uu, vv), pt);
+          du = uspan/(nu-1);
+        }
+        else
+        {
+          du = uspan/nu;
+        }
+
+        if (s.open_v())
+        {
+          dv = vspan/(nv-1);
+        }
+        else
+        {
+          dv = vspan/nv;
+        }
+
+        // Find closest of evenly spaced points.
+        uu=umin;
+        dist = std::numeric_limits<typename surface__::data_type>::max();
+        for (i = 0; i < nu; i++)
+        {
+          vv=vmin;
+          for (j = 0; j < nv; j++)
+          {
+            dd=eli::geom::point::distance(s.f(uu,vv), pt);
+
+            if( dd < dist )
+            {
+              u=uu;
+              v=vv;
+              dist=dd;
+            }
+            uu+=du;
+            vv+=dv;
+            if(uu>=umax)
+            {
+              uu=umax;
+            }
+            if(vv>=vmax)
+            {
+              vv=vmax;
+            }
+          }
+        }
+
+        // Polish best point with Newton's method search.
+        dd=minimum_distance(uu, vv, s, pt, u, v);
+
+        if ((uu>=umin) && (uu<=umax) && (vv>=vmin) && (vv<=vmax))
+        {
           if (dd<dist)
           {
             u=uu;
             v=vv;
             dist=dd;
           }
-          if (openu)
-          {
-            uu=1;
-            vv=0;
-            dd=eli::geom::point::distance(s.f(uu, vv), pt);
-            if (dd<dist)
-            {
-              u=uu;
-              v=vv;
-              dist=dd;
-            }
-            if (openv)
-            {
-              uu=1;
-              vv=1;
-              dd=eli::geom::point::distance(s.f(uu, vv), pt);
-              if (dd<dist)
-              {
-                u=uu;
-                v=vv;
-                dist=dd;
-              }
-            }
-          }
-          if (s.open_v())
-          {
-            uu=1;
-            vv=0;
-            dd=eli::geom::point::distance(s.f(uu, vv), pt);
-            if (dd<dist)
-            {
-              u=uu;
-              v=vv;
-              dist=dd;
-            }
-          }
+        }
 
-          // check center point
-          uu=0.5;
-          vv=0.5;
-          dd=eli::geom::point::distance(s.f(uu, vv), pt);
+        // next check edges
+        // Since these are always edges, we could implement an edge curve extraction routine
+        // that returned the control points directly instead of performing an arbitrary curve
+        // extraction calculation.
+        typename surface__::curve_type bc;
+        if(u<=(umin+std::abs(umin)*2*std::numeric_limits<typename surface__::data_type>::epsilon()))
+        {
+          s.get_uconst_curve(bc, umin);
+          dd=eli::geom::intersect::minimum_distance(vv, bc, pt, v);
+
           if (dd<dist)
           {
-            u=uu;
+            u=umin;
             v=vv;
             dist=dd;
           }
         }
 
-        // take best match so far and add it to cases
-        cand_match.u=u;
-        cand_match.v=v;
-        cand_match.dist=dist;
-        uvinit.push_back(cand_match);
-
-        // next first check center and edges
+        if(u>=(umax-std::abs(umax)*2*std::numeric_limits<typename surface__::data_type>::epsilon()))
         {
-          typename surface__::boundary_curve_type bc;
+          s.get_uconst_curve(bc, umax);
+          dd=eli::geom::intersect::minimum_distance(vv, bc, pt, v);
 
-          // check u-min edge
-          u=0;
-          s.get_uconst_curve(bc, u);
-          dist=eli::geom::intersect::minimum_distance(v, bc, pt);
-
-          // if open in u-direction check u-max edge
-          if (s.open_u())
+          if (dd<dist)
           {
-            uu=1;
-            s.get_uconst_curve(bc, uu);
-            dd=eli::geom::intersect::minimum_distance(vv, bc, pt);
-            if (dd<dist)
-            {
-              u=uu;
-              v=vv;
-              dist=dd;
-            }
-
-            // check v-min edge
-            vv=0;
-            s.get_vconst_curve(bc, vv);
-            dd=eli::geom::intersect::minimum_distance(uu, bc, pt);
-            if (dd<dist)
-            {
-              u=uu;
-              v=vv;
-              dist=dd;
-            }
-
-            // if open in v-direction check v-max edge
-            if (s.open_v())
-            {
-              vv=1;
-              s.get_vconst_curve(bc, vv);
-              dd=eli::geom::intersect::minimum_distance(uu, bc, pt);
-              if (dd<dist)
-              {
-                u=uu;
-                v=vv;
-                dist=dd;
-              }
-            }
+            u=umax;
+            v=vv;
+            dist=dd;
           }
         }
 
-        // take best match so far and add it to cases
-        cand_match.u=u;
-        cand_match.v=v;
-        cand_match.dist=dist;
-        uvinit.push_back(cand_match);
-
-        // need to pick initial guesses
-        typename surface__::index_type i, j, degu(s.degree_u()), degv(s.degree_v()), susize, svsize;
-        std::vector<typename surface__::data_type> usample(1*degu+1), vsample(1*degv+1);
-        typename surface__::point_type p0, p1;
-        typename surface__::data_type temp;
-
-        // determine the sample parameters from the control polygon points
-// TODO: need to calculate distance between control points for better distribution of samples
-#if 0
-        ssize=tsample.size();
-        i=0;
-        p1=c.get_control_point(i);
-        tsample[i]=0;
-        for (++i; i<=degu; ++i)
+        if(v<=(vmin+std::abs(vmin)*2*std::numeric_limits<typename surface__::data_type>::epsilon()))
         {
-          p0=p1;
-          p1=c.get_control_point(i);
-          temp=eli::geom::point::distance(p0, p1)/2;
-          tsample[2*i-1]=tsample[2*i-2]+temp;
-          tsample[2*i]=tsample[2*i-1]+temp;
+          s.get_vconst_curve(bc, vmin);
+          dd=eli::geom::intersect::minimum_distance(uu, bc, pt, u);
+
+          if (dd<dist)
+          {
+            u=uu;
+            v=vmin;
+            dist=dd;
+          }
         }
-        tlen=tsample[tsample.size()-1];
-#else
-          susize=usample.size();
-          svsize=vsample.size();
-          for (i=0; i<susize; ++i)
-          {
-            usample[i]=static_cast<typename surface__::data_type>(i)/(susize-1);
-          }
-          for (j=0; j<svsize; ++j)
-          {
-            vsample[j]=static_cast<typename surface__::data_type>(j)/(svsize-1);
-          }
-#endif
 
-        // add points that are minimums
+        if(v>=(vmax-std::abs(vmax)*2*std::numeric_limits<typename surface__::data_type>::epsilon()))
         {
-          // find candidate starting locations using distance between sampled points on curve and point
-          for (i=0; i<susize; ++i)
+          s.get_vconst_curve(bc, vmax);
+          dd=eli::geom::intersect::minimum_distance(uu, bc, pt, u);
+
+          if (dd<dist)
           {
-            for (j=0; j<svsize; ++j)
+            u=uu;
+            v=vmax;
+            dist=dd;
+          }
+        }
+
+        return dist;
+
+      }
+
+// Defined for minimum_distance_curve.  Could be moved to util somewhere.
+//      template< typename first__, typename second__>
+//      bool pairfirstcompare( const std::pair < first__, second__ > &a, const std::pair < first__, second__ > &b )
+//      {
+//          return ( a.first < b.first );
+//      }
+
+      template<template<typename, unsigned short, typename> class surface__, typename data__, unsigned short dim__, typename tol__ >
+      typename surface::piecewise<surface__, data__, dim__, tol__>::data_type minimum_distance(
+          typename surface::piecewise<surface__, data__, dim__, tol__>::data_type &u,
+          typename surface::piecewise<surface__, data__, dim__, tol__>::data_type &v,
+          const surface::piecewise<surface__, data__, dim__, tol__> &ps,
+          const typename surface::piecewise<surface__, data__, dim__, tol__>::point_type &pt)
+      {
+        typedef surface::piecewise<surface__, data__, dim__, tol__> piecewise_type;
+        typedef typename piecewise_type::surface_type surface_type;
+        typedef typename piecewise_type::index_type index_type;
+        typedef typename piecewise_type::data_type data_type;
+        typedef typename piecewise_type::bounding_box_type bounding_box_type;
+
+        typedef typename piecewise_type::keymap_type keymap_type;
+        typedef typename keymap_type::const_iterator keyit;
+
+        typedef std::pair<keyit, keyit> itpair;
+        typedef std::vector< std::pair<data_type, itpair > > dvec;
+        dvec minbbdist;
+
+        // Find closest corner of bounding boxes, add them to vector
+        // Simple linear search, would be more efficient with some sort of tree.
+        for(keyit uit = ps.ukey.key.begin(); uit != ps.ukey.key.end(); ++uit)
+        {
+          for(keyit vit = ps.vkey.key.begin(); vit != ps.vkey.key.end(); ++vit)
+          {
+            index_type uk = uit->second;
+            index_type vk = vit->second;
+
+            surface_type s = ps.patches[uk][vk];
+
+            bounding_box_type bb_local;
+            s.get_bounding_box(bb_local);
+
+            data_type dbbmin;
+            dbbmin = minimum_distance(bb_local, pt);
+
+            minbbdist.push_back(std::make_pair(dbbmin, std::make_pair(uit, vit)));
+
+          }
+        }
+
+        // Sort by nearest distance.
+        std::sort( minbbdist.begin(), minbbdist.end(), pairfirstcompare<data_type, itpair > );
+
+
+        // Iterate over segments, starting with nearest bounding box
+        data_type dist(std::numeric_limits<data_type>::max());
+
+        typename dvec::const_iterator it;
+        for (it=minbbdist.begin(); it!=minbbdist.end(); ++it)
+        {
+          // If nearest bb distance is farther than current best, we're done.
+          if(it->first < dist )
+          {
+            itpair itp = it->second;
+            keyit uit = itp.first;
+            keyit vit = itp.second;
+
+            index_type uk = uit->second;
+            index_type vk = vit->second;
+
+            surface_type s = ps.patches[uk][vk];
+
+            data_type uu, vv, d;
+            d=minimum_distance(uu, vv, s, pt);
+
+            if(d < dist)
             {
-              temp=eli::geom::point::distance(s.f(usample[i], vsample[j]), pt);
-//             std::cout << "% point #=" << i << ", " << j << "\tdist_temp=" << temp << std::endl;
-              if (temp<=1.01*dist)
-              {
-                cand_match.u=usample[i];
-                cand_match.v=vsample[j];
-                cand_match.dist=temp;
-                uvinit.push_back(cand_match);
-                if (temp<dist)
-                {
-                  u=cand_match.u;
-                  v=cand_match.v;
-                  dist=cand_match.dist;
-                  it=uvinit.begin();
-                  while (it!=uvinit.end())
-                  {
-                    // check to see if distance is beyond new threshold and remove if so
-                    if (it->dist>1.01*dist)
-                    {
-                      it=uvinit.erase(it);
-                    }
-                    else
-                    {
-                      ++it;
-                    }
-                  }
-                }
-//               std::cout << "% added point #=" << i << ", "<< j << "\tat (" << cand_match.u << ", " << cand_match.v << ")" << std::endl;
-              }
+              data_type du(ps.ukey.get_delta_parm(uit));
+              data_type dv(ps.vkey.get_delta_parm(vit));
+
+              data_type ustart(uit->first);
+              data_type vstart(vit->first);
+
+              dist = d;
+              u=ustart+uu*du;
+              v=vstart+vv*dv;
             }
           }
-        }
-
-//         std::cout << "% t guesses=" << uvinit.size() << std::endl;
-
-        // cycle through all possible minima to find best
-        for (it=uvinit.begin(); it!=uvinit.end(); ++it)
-        {
-          dd=minimum_distance(uu, vv, s, pt, it->u, it->v);
-//           std::cout << "% completed root starting at (" << it->u << ", " << it->v << ") and ending at (" << uu << ", " << vv << ") with distance=" << dd << std::endl;
-
-          // if have valid solution
-          if ((uu>=0) && (uu<=1) && (vv>=0) && (vv<=1))
+          else
           {
-            dd=eli::geom::point::distance(s.f(uu, vv), pt);
-
-//               std::cout << "# dd=" << dd << std::endl;
-            // check to see if is closer than previous minimum
-            if (dd<dist)
-            {
-              u=uu;
-              v=vv;
-              dist=dd;
-            }
+            break;
           }
-        }
 
-//         std::cout << "# returning dist=" << dist << std::endl;
+        }
         return dist;
       }
+
     }
   }
 }
