@@ -403,7 +403,6 @@ namespace eli
         typedef typename piecewise_type::surface_type surface_type;
         typedef typename piecewise_type::index_type index_type;
         typedef typename piecewise_type::data_type data_type;
-        typedef typename piecewise_type::point_type point_type;
         typedef typename piecewise_type::bounding_box_type bounding_box_type;
 
         typedef typename piecewise_type::keymap_type keymap_type;
