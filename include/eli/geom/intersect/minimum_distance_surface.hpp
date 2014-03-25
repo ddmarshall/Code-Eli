@@ -163,7 +163,6 @@ namespace eli
       {
         typedef eli::mutil::nls::newton_raphson_constrained_system_method<typename surface__::data_type, 2, 1> nonlinear_solver_type;
         nonlinear_solver_type nrm;
-        int stat;
         internal::surface_g_functor<surface__> g;
         internal::surface_gp_functor<surface__> gp;
         typename surface__::data_type dist0, dist;
@@ -212,7 +211,7 @@ namespace eli
         dist0=eli::geom::point::distance(s.f(u0, v0), pt);
 
         // find the root
-        stat = nrm.find_root(ans, g, gp, rhs);
+        nrm.find_root(ans, g, gp, rhs);
         u=ans(0);
         v=ans(1);
 

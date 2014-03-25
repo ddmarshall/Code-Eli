@@ -127,7 +127,6 @@ namespace eli
       typename curve__::data_type minimum_distance(typename curve__::data_type &t, const curve__ &c, const typename curve__::point_type &pt, const typename curve__::data_type &t0)
       {
         eli::mutil::nls::newton_raphson_constrained_method<typename curve__::data_type> nrm;
-        int stat;
         internal::curve_g_functor<curve__> g;
         internal::curve_gp_functor<curve__> gp;
         typename curve__::data_type dist0, dist;
@@ -157,7 +156,7 @@ namespace eli
         dist0=eli::geom::point::distance(c.f(t0), pt);
 
         // find the root
-        stat = nrm.find_root(t, g, gp, 0);
+        nrm.find_root(t, g, gp, 0);
 
         // if root is within bounds and is closer than initial guess
         {
@@ -243,9 +242,7 @@ namespace eli
       {
         typedef curve::piecewise<curve__, data__, dim__, tol__> piecewise_type;
         typedef typename piecewise_type::curve_type curve_type;
-        typedef typename piecewise_type::index_type index_type;
         typedef typename piecewise_type::data_type data_type;
-        typedef typename piecewise_type::point_type point_type;
         typedef typename piecewise_type::bounding_box_type bounding_box_type;
 
         typedef typename piecewise_type::segment_collection_type::const_iterator segit;
