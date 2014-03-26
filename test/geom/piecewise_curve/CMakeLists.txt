@@ -38,6 +38,7 @@ set (PIECEWISE_CURVE_CREATOR_TEST_HEADER ${PROJECT_SOURCE_DIR}/piecewise_point_c
                                          ${PROJECT_SOURCE_DIR}/piecewise_circle_creator_test_suite.hpp
                                          ${PROJECT_SOURCE_DIR}/piecewise_cubic_spline_creator_test_suite.hpp
                                          ${PROJECT_SOURCE_DIR}/piecewise_superellipse_creator_test_suite.hpp
+                                         ${PROJECT_SOURCE_DIR}/piecewise_general_creator_test_suite.hpp
                                          ${ELI_SOURCE_DIR}/include/eli/constants/math.hpp
                                          ${ELI_SOURCE_DIR}/include/eli/util/tolerance.hpp
                                          ${ELI_SOURCE_DIR}/include/eli/mutil/fd/d1o2.hpp
@@ -50,7 +51,8 @@ set (PIECEWISE_CURVE_CREATOR_TEST_HEADER ${PROJECT_SOURCE_DIR}/piecewise_point_c
                                          ${ELI_SOURCE_DIR}/include/eli/geom/curve/piecewise_polygon_creator.hpp
                                          ${ELI_SOURCE_DIR}/include/eli/geom/curve/piecewise_circle_creator.hpp
                                          ${ELI_SOURCE_DIR}/include/eli/geom/curve/piecewise_cubic_spline_creator.hpp
-                                         ${ELI_SOURCE_DIR}/include/eli/geom/curve/piecewise_superellipse_creator.hpp)
+                                         ${ELI_SOURCE_DIR}/include/eli/geom/curve/piecewise_superellipse_creator.hpp
+                                         ${ELI_SOURCE_DIR}/include/eli/geom/curve/piecewise_general_creator.hpp)
 
 
 add_executable(${PIECEWISE_CURVE_CREATOR_TEST_EXE} ${PIECEWISE_CURVE_CREATOR_TEST_SOURCE} ${PIECEWISE_CURVE_CREATOR_TEST_HEADER})
