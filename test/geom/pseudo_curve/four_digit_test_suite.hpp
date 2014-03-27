@@ -37,7 +37,6 @@ class four_digit_test_suite : public Test::Suite
     typedef eli::geom::curve::pseudo::four_digit<data_type> airfoil_type;
     typedef typename airfoil_type::coefficient_type airfoil_thickness_coefficient_type;
     typedef typename airfoil_type::point_type airfoil_point_type;
-    typedef typename airfoil_type::param_type aifoil_parameter_type;
 
   protected:
     void AddTests(const float &)
@@ -106,7 +105,7 @@ class four_digit_test_suite : public Test::Suite
     void create_airfoil_test()
     {
       airfoil_type af;
-      aifoil_parameter_type th, cam, cam_loc;
+      data_type th, cam, cam_loc;
       bool rtn;
 
       // set airfoil thickness
@@ -126,7 +125,7 @@ class four_digit_test_suite : public Test::Suite
       // test the name
       std::string name, name_ref;
 
-      name_ref="NACA "+std::to_string(cam)+std::to_string(cam_loc)+std::to_string(th);
+      name_ref="NACA "+std::to_string((int)round(cam))+std::to_string((int)round(cam_loc))+std::to_string((int)round(th));
       name=af.get_name();
       TEST_ASSERT(name==name_ref);
     }

@@ -180,7 +180,8 @@ class piecewise_four_digit_creator_test_suite : public Test::Suite
     {
 #if 0
       airfoil_type af;
-      aifoil_parameter_type th, cam, cam_loc;
+
+      data_type th, cam, cam_loc;
       bool rtn;
 
       // set airfoil thickness
@@ -200,7 +201,7 @@ class piecewise_four_digit_creator_test_suite : public Test::Suite
       // test the name
       std::string name, name_ref;
 
-      name_ref="NACA "+std::to_string(cam)+std::to_string(cam_loc)+std::to_string(th);
+      name_ref="NACA "+std::to_string((int)round(cam))+std::to_string((int)round(cam_loc))+std::to_string((int)round(th));
       name=af.get_name();
       TEST_ASSERT(name==name_ref);
 #endif

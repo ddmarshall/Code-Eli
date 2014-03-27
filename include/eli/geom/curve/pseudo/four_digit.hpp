@@ -36,7 +36,6 @@ namespace eli
         class four_digit
         {
           public:
-            typedef unsigned short param_type;
             typedef data__ data_type;
             typedef Eigen::Matrix<data_type, 1, 2> point_type;
             typedef Eigen::Matrix<data_type, 5, 1> coefficient_type;
@@ -68,7 +67,7 @@ namespace eli
             }
             bool sharp_trailing_edge() const {return sharp_te;}
 
-            bool set_thickness(const param_type &t)
+            bool set_thickness(const data_type &t)
             {
               if (t<100)
               {
@@ -78,9 +77,9 @@ namespace eli
               }
               return false;
             }
-            param_type get_thickness() const {return thickness;}
+            data_type get_thickness() const {return thickness;}
 
-            bool set_camber(const param_type &cam, const param_type &cam_loc)
+            bool set_camber(const data_type &cam, const data_type &cam_loc)
             {
               if ( (cam<9) && (cam_loc<9) )
               {
@@ -92,8 +91,8 @@ namespace eli
 
               return false;
             }
-            param_type get_maximum_camber() const {return camber;}
-            param_type get_maximum_camber_location() const {return camber_loc;}
+            data_type get_maximum_camber() const {return camber;}
+            data_type get_maximum_camber_location() const {return camber_loc;}
 
             bool set_name(const std::string &name)
             {
@@ -389,11 +388,11 @@ namespace eli
             }
 
           private:
-            param_type thickness;   // thickness index (integer [00,99] with practical limit of [00, 30].
+            data_type thickness;    // thickness index (integer [00,99] with practical limit of [00, 30].
                                     // Index is interpreted as 100 times the maximum thickness.
-            param_type camber;      // max camber index (integer [0,9]). Index will be
+            data_type camber;       // max camber index (integer [0,9]). Index will be
                                     // interpreted as 100 times the maximum camber.
-            param_type camber_loc;  // chord-wise location of maximum camber index (integer [0,9]).
+            data_type camber_loc;   // chord-wise location of maximum camber index (integer [0,9]).
                                     // Index is interpreted as 10 times the maximum camber location.
 
             data_type m;  // location of maximum camber
