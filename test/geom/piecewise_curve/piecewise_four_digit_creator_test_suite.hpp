@@ -170,10 +170,11 @@ class piecewise_four_digit_creator_test_suite : public Test::Suite
       std::cout << "];" << std::endl;
 
       std::cout << "setenv('GNUTERM', 'x11');" << std::endl;
-      std::cout << "plot3(surf_x, surf_y, surf_z, '-k');" << std::endl;
+      std::cout << "plot(surf_x, surf_y, '-k');" << std::endl;
       std::cout << "hold on;" << std::endl;
-      std::cout << "plot3(cp_x', cp_y', cp_z', '-ok', 'MarkerFaceColor', [0 0 0]);" << std::endl;
+      std::cout << "plot(cp_x', cp_y', '-ok', 'MarkerFaceColor', [0 0 0]);" << std::endl;
       std::cout << "hold off;" << std::endl;
+      std::cout << "axis equal;" << std::endl;
     }
 
     void create_airfoil_test()
