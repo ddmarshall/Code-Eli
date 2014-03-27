@@ -109,7 +109,7 @@ namespace eli
           typedef typename base_class_type::index_type index_type;
           typedef typename base_class_type::tolerance_type tolerance_type;
 
-          piecewise_four_digit_creator() : piecewise_airfoil_creator_base<data_type, dim__, tolerance_type>(2, 0) {}
+          piecewise_four_digit_creator() : piecewise_airfoil_creator_base<data_type, dim__, tolerance_type>(0) {}
           piecewise_four_digit_creator(const piecewise_four_digit_creator<data_type, dim__, tolerance_type> &ppc)
             : piecewise_airfoil_creator_base<data_type, dim__, tolerance_type>(ppc) {}
           ~piecewise_four_digit_creator() {}
