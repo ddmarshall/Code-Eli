@@ -26,6 +26,7 @@
 
 #include "eli/geom/curve/piecewise.hpp"
 #include "eli/geom/curve/bezier.hpp"
+#include "eli/geom/curve/pseudo/four_digit.hpp"
 
 namespace eli
 {
@@ -108,11 +109,56 @@ namespace eli
           typedef typename base_class_type::point_type point_type;
           typedef typename base_class_type::index_type index_type;
           typedef typename base_class_type::tolerance_type tolerance_type;
+          typedef eli::geom::curve::pseudo::four_digit<data_type> airfoil_type;
 
           piecewise_four_digit_creator() : piecewise_airfoil_creator_base<data_type, dim__, tolerance_type>(0) {}
           piecewise_four_digit_creator(const piecewise_four_digit_creator<data_type, dim__, tolerance_type> &ppc)
             : piecewise_airfoil_creator_base<data_type, dim__, tolerance_type>(ppc) {}
           ~piecewise_four_digit_creator() {}
+
+          void set_sharp_trailing_edge(bool fl)
+          {
+            af.set_sharp_trailing_edge(fl);
+          }
+          bool sharp_trailing_edge() const
+          {
+            return af.sharp_trailing_edge();
+          }
+
+          bool set_thickness(const data_type &t)
+          {
+            return af.set_thickness(t);
+          }
+
+          data_type get_thickness() const
+          {
+            return af.get_thickness();
+          }
+
+          bool set_camber(const data_type &cam, const data_type &cam_loc)
+          {
+            return af.set_camber(cam, cam_loc);
+          }
+
+          data_type get_maximum_camber() const
+          {
+            return af.get_maximum_camber();
+          }
+
+          data_type get_maximum_camber_location() const
+          {
+            return af.get_maximum_camber_location();
+          }
+
+          bool set_name(const std::string &name)
+          {
+            return af.set_name(name);
+          }
+
+          std::string get_name() const
+          {
+            return af.get_name();
+          }
 
           virtual bool create(piecewise<bezier, data_type, dim__, tolerance_type> &pc) const
           {
@@ -156,6 +202,7 @@ namespace eli
           }
 
         private:
+          airfoil_type af;
       };
     }
   }
