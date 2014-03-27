@@ -38,44 +38,294 @@ namespace eli
           typedef typename base_class_type::index_type index_type;
           typedef typename base_class_type::tolerance_type tolerance_type;
 
-          enum joint_conditions {NOT_SET=0,
-                                 VALUE_SET=1/*,
-                                 DIRECTION_SET=2*/};
+          enum
+          {
+            POINT_SET    =0x000001, // must be set for valid joint
+            LEFT_FP_SET  =0x000010,
+            RIGHT_FP_SET =0x000100,
+            LEFT_FPP_SET =0x001000,
+            RIGHT_FPP_SET=0x010000
+          };
 
-          enum joint_continuity {C0=general::C0,
-                                 C1=general::C1,
-                                 C2=general::C2};
+          enum joint_continuity
+          {
+            C0=general::C0,
+            C1=general::C1,
+            C2=general::C2
+          };
 
           class joint_data
           {
             public:
-              void set_f(const point_type &p) {f=p;}
+              joint_data() : conditions(0), continuity(C0)
+              {
+              }
+
+              joint_data(const joint_data &jd)
+                : f(jd.f), fp_left(jd.fp_left), fp_right(jd.fp_right), fpp_left(jd.fpp_left),
+                  fpp_right(jd.fpp_right), conditions(jd.conditions), continuity(jd.continuity)
+              {
+              }
+
+              ~joint_data() {}
+
+              const joint_data & operator=(const joint_data &jd)
+              {
+                if (this!=&jd)
+                {
+                  f=jd.f;
+                  fp_left=jd.fp_left;
+                  fp_right=jd.fp_right;
+                  fpp_left=jd.fpp_left;
+                  fpp_right=jd.fpp_right;
+                  conditions=jd.conditions;
+                  continuity=jd.continuity;
+                }
+
+                return (*this);
+              }
+
+              bool operator==(const joint_data &jd) const
+              {
+                tolerance_type tol;
+
+                if (conditions!=jd.conditions)
+                  return false;
+                if (continuity!=jd.continuity)
+                  return false;
+                if (jd.use_f())
+                {
+                  if (!tol.approximately_equal(f, jd.f))
+                    return false;
+                }
+                if (jd.use_left_fp())
+                {
+                  if (!tol.approximately_equal(fp_left, jd.fp_left))
+                    return false;
+                }
+                if (jd.use_right_fp())
+                {
+                  if (!tol.approximately_equal(fp_right, jd.fp_right))
+                    return false;
+                }
+                if (jd.use_left_fpp())
+                {
+                  if (!tol.approximately_equal(fpp_left, jd.fpp_left))
+                    return false;
+                }
+                if (jd.use_right_fpp())
+                {
+                  if (!tol.approximately_equal(fpp_right, jd.fpp_right))
+                    return false;
+                }
+
+                return true;
+              }
+
+              bool operator!=(const joint_data &jd) const {return !operator==(jd);}
+
+              // point interface
+              bool set_f(const point_type &p)
+              {
+                f=p;
+                conditions|=POINT_SET;
+                return check_state();
+              }
               point_type get_f() const {return f;}
-
-              void unset_fp() {use_fp=NOT_SET;}
-              void set_fp(const point_type &p)
+              bool unset_f()
               {
-                use_fp=VALUE_SET;
-                fp=p;
+                conditions&=~POINT_SET;
+                return check_state();
               }
-              joint_conditions fp_state() const {return use_fp;}
-              point_type get_fp() const {return fp;}
-
-              void unset_fpp() {use_fpp=NOT_SET;}
-              void set_fpp(const point_type &p)
+              bool use_f() const
               {
-                use_fpp=VALUE_SET;
-                fpp=p;
+                return ((conditions & POINT_SET) == POINT_SET);
               }
-              joint_conditions fpp_state() const {return use_fpp;}
-              point_type get_fpp() const {return fpp;}
+
+              // first derivative interface
+              bool set_left_fp(const point_type &fpl)
+              {
+                fp_left=fpl;
+                conditions|=LEFT_FP_SET;
+                return check_state();
+              }
+              bool set_right_fp(const point_type &fpr)
+              {
+                fp_right=fpr;
+                conditions|=RIGHT_FP_SET;
+                return check_state();
+              }
+              bool set_fp(const point_type &p)
+              {
+                conditions|=(LEFT_FP_SET | RIGHT_FP_SET);
+                fp_left=p;
+                fp_right=p;
+                return check_state();
+              }
+
+              point_type get_left_fp() const
+              {
+                return fp_left;
+              }
+              point_type get_right_fp() const
+              {
+                return fp_right;
+              }
+              void get_fp(point_type &fpl, point_type &fpr) const
+              {
+                fpl=fp_left;
+                fpr=fp_right;
+              }
+
+              bool unset_fp()
+              {
+                conditions&=~(LEFT_FP_SET | RIGHT_FP_SET);
+                return check_state();
+              }
+              bool unset_left_fp()
+              {
+                conditions&=~LEFT_FP_SET;
+
+                return check_state();
+              }
+              bool unset_right_fp()
+              {
+                conditions&=~RIGHT_FP_SET;
+
+                return check_state();
+              }
+
+              bool use_left_fp() const
+              {
+                return ((conditions & LEFT_FP_SET) == LEFT_FP_SET);
+              }
+              bool use_right_fp() const
+              {
+                return ((conditions & RIGHT_FP_SET) == RIGHT_FP_SET);
+              }
+
+              // second derivative interface
+              bool set_left_fpp(const point_type &fppl)
+              {
+                fpp_left=fppl;
+                conditions|=LEFT_FPP_SET;
+                return check_state();
+              }
+              bool set_right_fpp(const point_type &fppr)
+              {
+                fpp_right=fppr;
+                conditions|=RIGHT_FPP_SET;
+                return check_state();
+              }
+              bool set_fpp(const point_type &p)
+              {
+                conditions|=(LEFT_FPP_SET | RIGHT_FPP_SET);
+                fpp_left=p;
+                fpp_right=p;
+                return check_state();
+              }
+
+              point_type get_left_fpp() const
+              {
+                return fpp_left;
+              }
+              point_type get_right_fpp() const
+              {
+                return fpp_right;
+              }
+              void get_fpp(point_type &fppl, point_type &fppr) const
+              {
+                fppl=fpp_left;
+                fppr=fpp_right;
+              }
+
+              bool unset_fpp()
+              {
+                conditions&=~(LEFT_FPP_SET | RIGHT_FPP_SET);
+                return check_state();
+              }
+              bool unset_left_fpp()
+              {
+                conditions&=~LEFT_FPP_SET;
+
+                return check_state();
+              }
+              bool unset_right_fpp()
+              {
+                conditions&=~RIGHT_FPP_SET;
+
+                return check_state();
+              }
+
+              bool use_left_fpp() const
+              {
+                return ((conditions & LEFT_FPP_SET) == LEFT_FPP_SET);
+              }
+              bool use_right_fpp() const
+              {
+                return ((conditions & RIGHT_FPP_SET) == RIGHT_FPP_SET);
+              }
+
+              bool set_continuity(joint_continuity jc)
+              {
+                continuity=jc;
+                return check_state();
+              }
+              joint_continuity get_continuity() const
+              {
+                return continuity;
+              }
+
+              bool check_state() const
+              {
+                tolerance_type tol;
+
+                // check if point set
+                if ((conditions & POINT_SET)==0)
+                  return false;
+
+                // if highest continuity is C0 then done
+                if (continuity==C0)
+                  return true;
+
+                // check first derivatives match on both sides
+                if ((conditions & (LEFT_FP_SET | RIGHT_FP_SET)) == (LEFT_FP_SET | RIGHT_FP_SET))
+                {
+                  if (!tol.approximately_equal(fp_left, fp_right))
+                    return false;
+                }
+                // check neither side first derivatives set set
+                else if ((conditions & (LEFT_FP_SET | RIGHT_FP_SET)) != 0)
+                {
+                  return false;
+                }
+
+                // if highest continuity is C1 then done
+                if (continuity==C1)
+                  return true;
+
+                // check second derivatives match on both sides
+                if ((conditions & (LEFT_FPP_SET | RIGHT_FPP_SET)) == (LEFT_FPP_SET | RIGHT_FPP_SET))
+                {
+                  if (!tol.approximately_equal(fpp_left, fpp_right))
+                    return false;
+                }
+                // check neither side second derivatives set set
+                else if ((conditions & (LEFT_FPP_SET | RIGHT_FPP_SET)) != 0)
+                {
+                  return false;
+                }
+
+                // since highest continuity can only be C2 then done
+                return true;
+              }
 
             private:
               point_type f;
-              joint_conditions use_fp;
-              point_type fp;
-              joint_conditions use_fpp;
-              point_type fpp;
+              point_type fp_left, fp_right;
+              point_type fpp_left, fpp_right;
+              unsigned int conditions;
+              joint_continuity continuity;
           };
 
         public:
@@ -136,9 +386,64 @@ namespace eli
             typedef typename piecewise_curve_type::error_code error_code;
             typedef typename curve_type::control_point_type control_point_type;
 
+            index_type nsegs(this->get_number_segments()), i;
+            std::vector<index_type> seg_degree(nsegs);
+
             pc.clear();
+#if 0
+            // cycle through each segment to find the minimum degree for each segment
+            for (i=0; i<nsegs; ++i)
+            {
+              seg_degree[i]=1;
+              switch (joints[i].fp_state())
+              {
+                case(NOT_SET):
+                {
+                  break;
+                }
+                case(VALUE_SET):
+                {
+                  seg_degree[i]+=1;
+                  break;
+                }
+                default:
+                {
+                  // should not get here
+                  assert(false);
 
+                  return false;
+                  break;
+                }
+              }
+              switch (joints[i].fpp_state())
+              {
+                case(NOT_SET):
+                {
+                  break;
+                }
+                case(VALUE_SET):
+                {
+                  seg_degree[i]+=1;
+                  break;
+                }
+                default:
+                {
+                  // should not get here
+                  assert(false);
 
+                  return false;
+                  break;
+                }
+              }
+
+              if (seg_degree[i]>max_degree[i])
+              {
+                std::cerr << "Required degree for segment " << i << " is " << seg_degree[i]
+                          << " but maximum requested degree is only " << max_degree[i] << std::endl;
+                return false;
+              }
+            }
+#endif
             return false;
           }
 

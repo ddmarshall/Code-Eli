@@ -39,6 +39,7 @@ class piecewise_general_creator_test_suite : public Test::Suite
     typedef typename piecewise_curve_type::index_type index_type;
     typedef typename piecewise_curve_type::tolerance_type tolerance_type;
     typedef eli::geom::curve::piecewise_general_creator<data__, 3, tolerance_type> general_creator_type;
+    typedef typename general_creator_type::joint_data joint_data_type;
 
     tolerance_type tol;
 
@@ -46,16 +47,19 @@ class piecewise_general_creator_test_suite : public Test::Suite
     void AddTests(const float &)
     {
       // add the tests
+      TEST_ADD(piecewise_general_creator_test_suite<float>::create_joint_test);
       TEST_ADD(piecewise_general_creator_test_suite<float>::create_simple_general_test);
     }
     void AddTests(const double &)
     {
       // add the tests
+      TEST_ADD(piecewise_general_creator_test_suite<double>::create_joint_test);
       TEST_ADD(piecewise_general_creator_test_suite<double>::create_simple_general_test);
     }
     void AddTests(const long double &)
     {
       // add the tests
+      TEST_ADD(piecewise_general_creator_test_suite<long double>::create_joint_test);
       TEST_ADD(piecewise_general_creator_test_suite<long double>::create_simple_general_test);
     }
 
@@ -174,8 +178,544 @@ class piecewise_general_creator_test_suite : public Test::Suite
       std::cout << "hold off;" << std::endl;
     }
 
+    void create_joint_test()
+    {
+      point_type p1, p2;
+      bool rtn_flag;
+
+      p1 << 1, 0, 0;
+      p2 << 2, 2, 2;
+
+      // set point
+      {
+        joint_data_type joint;
+
+        // should start in bad state
+        rtn_flag=joint.check_state();
+        TEST_ASSERT(!rtn_flag);
+        TEST_ASSERT(joint.get_continuity()==general_creator_type::C0);
+        TEST_ASSERT(!joint.use_f());
+
+        // add point
+        rtn_flag=joint.set_f(p1);
+        TEST_ASSERT(rtn_flag);
+        TEST_ASSERT(joint.get_continuity()==general_creator_type::C0);
+        TEST_ASSERT(joint.use_f());
+
+        // unset point
+        rtn_flag=joint.unset_f();
+        TEST_ASSERT(!rtn_flag);
+        TEST_ASSERT(!joint.use_f());
+      }
+
+      // set point and fp
+      {
+        joint_data_type joint;
+
+        // should start in bad state
+        rtn_flag=joint.check_state();
+        TEST_ASSERT(!rtn_flag);
+        TEST_ASSERT(joint.get_continuity()==general_creator_type::C0);
+        TEST_ASSERT(!joint.use_f());
+        TEST_ASSERT(!joint.use_left_fp());
+        TEST_ASSERT(!joint.use_right_fp());
+
+        // add left fp
+        rtn_flag=joint.set_left_fp(p1);
+        TEST_ASSERT(!rtn_flag);
+        TEST_ASSERT(joint.get_left_fp()==p1);
+        TEST_ASSERT(!joint.use_f());
+        TEST_ASSERT(joint.use_left_fp());
+        TEST_ASSERT(!joint.use_right_fp());
+
+        // add point
+        rtn_flag=joint.set_f(p1);
+        TEST_ASSERT(rtn_flag);
+        TEST_ASSERT(joint.get_continuity()==general_creator_type::C0);
+        TEST_ASSERT(joint.use_f());
+        TEST_ASSERT(joint.use_left_fp());
+        TEST_ASSERT(!joint.use_right_fp());
+
+        // add right fp
+        rtn_flag=joint.set_right_fp(p2);
+        TEST_ASSERT(rtn_flag);
+        TEST_ASSERT(joint.get_right_fp()==p2);
+        TEST_ASSERT(joint.use_f());
+        TEST_ASSERT(joint.use_left_fp());
+        TEST_ASSERT(joint.use_right_fp());
+
+        // remove left fp
+        rtn_flag=joint.unset_left_fp();
+        TEST_ASSERT(rtn_flag);
+        TEST_ASSERT(joint.use_f());
+        TEST_ASSERT(!joint.use_left_fp());
+        TEST_ASSERT(joint.use_right_fp());
+
+        // remove left fp again
+        rtn_flag=joint.unset_left_fp();
+        TEST_ASSERT(rtn_flag);
+        TEST_ASSERT(joint.use_f());
+        TEST_ASSERT(!joint.use_left_fp());
+        TEST_ASSERT(joint.use_right_fp());
+
+        // remove right fp
+        rtn_flag=joint.unset_right_fp();
+        TEST_ASSERT(rtn_flag);
+        TEST_ASSERT(joint.use_f());
+        TEST_ASSERT(!joint.use_left_fp());
+        TEST_ASSERT(!joint.use_right_fp());
+
+        // add fp
+        rtn_flag=joint.set_fp(p2);
+        TEST_ASSERT(rtn_flag);
+        TEST_ASSERT(joint.get_left_fp()==p2);
+        TEST_ASSERT(joint.get_right_fp()==p2);
+        TEST_ASSERT(joint.use_f());
+        TEST_ASSERT(joint.use_left_fp());
+        TEST_ASSERT(joint.use_right_fp());
+
+        // remove right fp
+        rtn_flag=joint.unset_right_fp();
+        TEST_ASSERT(rtn_flag);
+        TEST_ASSERT(joint.use_f());
+        TEST_ASSERT(joint.use_left_fp());
+        TEST_ASSERT(!joint.use_right_fp());
+      }
+
+      // set point, fp and fpp
+      {
+        joint_data_type joint;
+
+        // should start in bad state
+        rtn_flag=joint.check_state();
+        TEST_ASSERT(!rtn_flag);
+        TEST_ASSERT(joint.get_continuity()==general_creator_type::C0);
+        TEST_ASSERT(!joint.use_f());
+        TEST_ASSERT(!joint.use_left_fp());
+        TEST_ASSERT(!joint.use_right_fp());
+        TEST_ASSERT(!joint.use_left_fpp());
+        TEST_ASSERT(!joint.use_right_fpp());
+
+        // add left fpp
+        rtn_flag=joint.set_left_fpp(p1);
+        TEST_ASSERT(!rtn_flag);
+        TEST_ASSERT(joint.get_left_fpp()==p1);
+        TEST_ASSERT(!joint.use_f());
+        TEST_ASSERT(!joint.use_left_fp());
+        TEST_ASSERT(!joint.use_right_fp());
+        TEST_ASSERT(joint.use_left_fpp());
+        TEST_ASSERT(!joint.use_right_fpp());
+
+        // add right fpp
+        rtn_flag=joint.set_right_fpp(p2);
+        TEST_ASSERT(!rtn_flag);
+        TEST_ASSERT(joint.get_right_fpp()==p2);
+        TEST_ASSERT(!joint.use_f());
+        TEST_ASSERT(!joint.use_left_fp());
+        TEST_ASSERT(!joint.use_right_fp());
+        TEST_ASSERT(joint.use_left_fpp());
+        TEST_ASSERT(joint.use_right_fpp());
+
+        // add point
+        rtn_flag=joint.set_f(p1);
+        TEST_ASSERT(rtn_flag);
+        TEST_ASSERT(joint.get_continuity()==general_creator_type::C0);
+        TEST_ASSERT(joint.use_f());
+        TEST_ASSERT(!joint.use_left_fp());
+        TEST_ASSERT(!joint.use_right_fp());
+        TEST_ASSERT(joint.use_left_fpp());
+        TEST_ASSERT(joint.use_right_fpp());
+
+        // remove right fpp
+        rtn_flag=joint.unset_right_fpp();
+        TEST_ASSERT(rtn_flag);
+        TEST_ASSERT(joint.use_f());
+        TEST_ASSERT(!joint.use_left_fp());
+        TEST_ASSERT(!joint.use_right_fp());
+        TEST_ASSERT(joint.use_left_fpp());
+        TEST_ASSERT(!joint.use_right_fp());
+
+        // remove right fpp again
+        rtn_flag=joint.unset_right_fpp();
+        TEST_ASSERT(rtn_flag);
+        TEST_ASSERT(joint.use_f());
+        TEST_ASSERT(!joint.use_left_fp());
+        TEST_ASSERT(!joint.use_right_fp());
+        TEST_ASSERT(joint.use_left_fpp());
+        TEST_ASSERT(!joint.use_right_fp());
+
+        // remove left fpp
+        rtn_flag=joint.unset_left_fpp();
+        TEST_ASSERT(rtn_flag);
+        TEST_ASSERT(joint.use_f());
+        TEST_ASSERT(!joint.use_left_fp());
+        TEST_ASSERT(!joint.use_right_fp());
+        TEST_ASSERT(!joint.use_left_fpp());
+        TEST_ASSERT(!joint.use_right_fpp());
+
+        // add fp
+        rtn_flag=joint.set_fp(p2);
+        TEST_ASSERT(rtn_flag);
+        TEST_ASSERT(joint.get_left_fp()==p2);
+        TEST_ASSERT(joint.get_right_fp()==p2);
+        TEST_ASSERT(joint.use_f());
+        TEST_ASSERT(joint.use_left_fp());
+        TEST_ASSERT(joint.use_right_fp());
+        TEST_ASSERT(!joint.use_left_fpp());
+        TEST_ASSERT(!joint.use_right_fpp());
+
+        // add fpp
+        rtn_flag=joint.set_fpp(p1);
+        TEST_ASSERT(rtn_flag);
+        TEST_ASSERT(joint.get_left_fpp()==p1);
+        TEST_ASSERT(joint.get_right_fpp()==p1);
+        TEST_ASSERT(joint.use_f());
+        TEST_ASSERT(joint.use_left_fp());
+        TEST_ASSERT(joint.use_right_fp());
+        TEST_ASSERT(joint.use_left_fpp());
+        TEST_ASSERT(joint.use_right_fpp());
+
+        // remove right fp
+        rtn_flag=joint.unset_right_fp();
+        TEST_ASSERT(rtn_flag);
+        TEST_ASSERT(joint.use_f());
+        TEST_ASSERT(joint.use_left_fp());
+        TEST_ASSERT(!joint.use_right_fp());
+        TEST_ASSERT(joint.use_left_fpp());
+        TEST_ASSERT(joint.use_right_fpp());
+
+        // remove right fpp
+        rtn_flag=joint.unset_right_fpp();
+        TEST_ASSERT(rtn_flag);
+        TEST_ASSERT(joint.use_f());
+        TEST_ASSERT(joint.use_left_fp());
+        TEST_ASSERT(!joint.use_right_fp());
+        TEST_ASSERT(joint.use_left_fpp());
+        TEST_ASSERT(!joint.use_right_fpp());
+
+        // remove everything
+        rtn_flag=joint.unset_fpp();
+        TEST_ASSERT(rtn_flag);
+        rtn_flag=joint.unset_fp();
+        TEST_ASSERT(rtn_flag);
+        rtn_flag=joint.unset_f();
+        TEST_ASSERT(!rtn_flag);
+
+        // add everything to right only
+        rtn_flag=joint.set_f(p2);
+        TEST_ASSERT(rtn_flag);
+        rtn_flag=joint.set_right_fp(p1);
+        TEST_ASSERT(rtn_flag);
+        rtn_flag=joint.set_right_fpp(p2);
+        TEST_ASSERT(rtn_flag);
+        TEST_ASSERT(joint.use_f());
+        TEST_ASSERT(joint.get_f()==p2);
+        TEST_ASSERT(joint.get_right_fp()==p1);
+        TEST_ASSERT(joint.get_right_fpp()==p2);
+        TEST_ASSERT(!joint.use_left_fp());
+        TEST_ASSERT(joint.use_right_fp());
+        TEST_ASSERT(!joint.use_left_fpp());
+        TEST_ASSERT(joint.use_right_fpp());
+      }
+
+      // set conditions with C1
+      {
+        joint_data_type joint;
+
+        // start with point
+        rtn_flag=joint.set_f(p1);
+        TEST_ASSERT(rtn_flag);
+        TEST_ASSERT(joint.get_continuity()==general_creator_type::C0);
+        TEST_ASSERT(joint.use_f());
+        TEST_ASSERT(!joint.use_left_fp());
+        TEST_ASSERT(!joint.use_right_fp());
+        TEST_ASSERT(!joint.use_left_fpp());
+        TEST_ASSERT(!joint.use_right_fpp());
+
+        // set continuity to C1
+        rtn_flag=joint.set_continuity(general_creator_type::C1);
+        TEST_ASSERT(rtn_flag);
+        TEST_ASSERT(joint.get_continuity()==general_creator_type::C1);
+        TEST_ASSERT(joint.use_f());
+        TEST_ASSERT(!joint.use_left_fp());
+        TEST_ASSERT(!joint.use_right_fp());
+        TEST_ASSERT(!joint.use_left_fpp());
+        TEST_ASSERT(!joint.use_right_fpp());
+
+        // add left fp
+        rtn_flag=joint.set_left_fp(p2);
+        TEST_ASSERT(!rtn_flag);
+        TEST_ASSERT(joint.get_continuity()==general_creator_type::C1);
+        TEST_ASSERT(joint.use_f());
+        TEST_ASSERT(joint.use_left_fp());
+        TEST_ASSERT(!joint.use_right_fp());
+        TEST_ASSERT(!joint.use_left_fpp());
+        TEST_ASSERT(!joint.use_right_fpp());
+
+        // unset left fp
+        rtn_flag=joint.unset_left_fp();
+        TEST_ASSERT(rtn_flag);
+        TEST_ASSERT(joint.get_continuity()==general_creator_type::C1);
+        TEST_ASSERT(joint.use_f());
+        TEST_ASSERT(!joint.use_left_fp());
+        TEST_ASSERT(!joint.use_right_fp());
+        TEST_ASSERT(!joint.use_left_fpp());
+        TEST_ASSERT(!joint.use_right_fpp());
+
+        // add right fp
+        rtn_flag=joint.set_right_fp(p2);
+        TEST_ASSERT(!rtn_flag);
+        TEST_ASSERT(joint.get_continuity()==general_creator_type::C1);
+        TEST_ASSERT(joint.use_f());
+        TEST_ASSERT(!joint.use_left_fp());
+        TEST_ASSERT(joint.use_right_fp());
+        TEST_ASSERT(!joint.use_left_fpp());
+        TEST_ASSERT(!joint.use_right_fpp());
+
+        // change continuity
+        rtn_flag=joint.set_continuity(general_creator_type::C0);
+        TEST_ASSERT(rtn_flag);
+        TEST_ASSERT(joint.get_continuity()==general_creator_type::C0);
+        TEST_ASSERT(joint.use_f());
+        TEST_ASSERT(!joint.use_left_fp());
+        TEST_ASSERT(joint.use_right_fp());
+        TEST_ASSERT(!joint.use_left_fpp());
+        TEST_ASSERT(!joint.use_right_fpp());
+
+        // add fp
+        rtn_flag=joint.set_fp(p1);
+        TEST_ASSERT(rtn_flag);
+        TEST_ASSERT(joint.get_continuity()==general_creator_type::C0);
+        TEST_ASSERT(joint.use_f());
+        TEST_ASSERT(joint.use_left_fp());
+        TEST_ASSERT(joint.use_right_fp());
+        TEST_ASSERT(!joint.use_left_fpp());
+        TEST_ASSERT(!joint.use_right_fpp());
+
+        // change continuity
+        rtn_flag=joint.set_continuity(general_creator_type::C1);
+        TEST_ASSERT(rtn_flag);
+        TEST_ASSERT(joint.get_continuity()==general_creator_type::C1);
+        TEST_ASSERT(joint.use_f());
+        TEST_ASSERT(joint.use_left_fp());
+        TEST_ASSERT(joint.use_right_fp());
+        TEST_ASSERT(!joint.use_left_fpp());
+        TEST_ASSERT(!joint.use_right_fpp());
+
+        // unset left fp
+        rtn_flag=joint.unset_left_fp();
+        TEST_ASSERT(!rtn_flag);
+        TEST_ASSERT(joint.get_continuity()==general_creator_type::C1);
+        TEST_ASSERT(joint.use_f());
+        TEST_ASSERT(!joint.use_left_fp());
+        TEST_ASSERT(joint.use_right_fp());
+        TEST_ASSERT(!joint.use_left_fpp());
+        TEST_ASSERT(!joint.use_right_fpp());
+
+        // set left fp to discontinuous value
+        rtn_flag=joint.set_left_fp(p2);
+        TEST_ASSERT(!rtn_flag);
+        TEST_ASSERT(joint.get_continuity()==general_creator_type::C1);
+        TEST_ASSERT(joint.use_f());
+        TEST_ASSERT(joint.use_left_fp());
+        TEST_ASSERT(joint.use_right_fp());
+        TEST_ASSERT(!joint.use_left_fpp());
+        TEST_ASSERT(!joint.use_right_fpp());
+
+        // set left fp
+        rtn_flag=joint.set_left_fp(joint.get_right_fp());
+        TEST_ASSERT(rtn_flag);
+        TEST_ASSERT(joint.get_continuity()==general_creator_type::C1);
+        TEST_ASSERT(joint.use_f());
+        TEST_ASSERT(joint.use_left_fp());
+        TEST_ASSERT(joint.use_right_fp());
+        TEST_ASSERT(!joint.use_left_fpp());
+        TEST_ASSERT(!joint.use_right_fpp());
+      }
+
+      // set point, fp, fpp and C2
+      {
+        joint_data_type joint;
+
+        // start with point and fp
+        rtn_flag=joint.set_f(p1);
+        TEST_ASSERT(rtn_flag);
+        rtn_flag=joint.set_fp(p2);
+        TEST_ASSERT(rtn_flag);
+        rtn_flag=joint.set_continuity(general_creator_type::C1);
+        TEST_ASSERT(rtn_flag);
+        TEST_ASSERT(joint.get_continuity()==general_creator_type::C1);
+        TEST_ASSERT(joint.use_f());
+        TEST_ASSERT(joint.use_left_fp());
+        TEST_ASSERT(joint.use_right_fp());
+        TEST_ASSERT(!joint.use_left_fpp());
+        TEST_ASSERT(!joint.use_right_fpp());
+
+        // set continuity to C2
+        rtn_flag=joint.set_continuity(general_creator_type::C2);
+        TEST_ASSERT(rtn_flag);
+        TEST_ASSERT(joint.get_continuity()==general_creator_type::C2);
+        TEST_ASSERT(joint.use_f());
+        TEST_ASSERT(joint.use_left_fp());
+        TEST_ASSERT(joint.use_right_fp());
+        TEST_ASSERT(!joint.use_left_fpp());
+        TEST_ASSERT(!joint.use_right_fpp());
+
+        // unset left fp
+        rtn_flag=joint.unset_left_fp();
+        TEST_ASSERT(!rtn_flag);
+        TEST_ASSERT(joint.get_continuity()==general_creator_type::C2);
+        TEST_ASSERT(joint.use_f());
+        TEST_ASSERT(!joint.use_left_fp());
+        TEST_ASSERT(joint.use_right_fp());
+        TEST_ASSERT(!joint.use_left_fpp());
+        TEST_ASSERT(!joint.use_right_fpp());
+
+        // unset right fp
+        rtn_flag=joint.unset_right_fp();
+        TEST_ASSERT(rtn_flag);
+        TEST_ASSERT(joint.get_continuity()==general_creator_type::C2);
+        TEST_ASSERT(joint.use_f());
+        TEST_ASSERT(!joint.use_left_fp());
+        TEST_ASSERT(!joint.use_right_fp());
+        TEST_ASSERT(!joint.use_left_fpp());
+        TEST_ASSERT(!joint.use_right_fpp());
+
+        // set fpp
+        rtn_flag=joint.set_fpp(p1);
+        TEST_ASSERT(rtn_flag);
+        TEST_ASSERT(joint.get_continuity()==general_creator_type::C2);
+        TEST_ASSERT(joint.use_f());
+        TEST_ASSERT(!joint.use_left_fp());
+        TEST_ASSERT(!joint.use_right_fp());
+        TEST_ASSERT(joint.use_left_fpp());
+        TEST_ASSERT(joint.use_right_fpp());
+
+        // unset left fpp
+        rtn_flag=joint.unset_left_fpp();
+        TEST_ASSERT(!rtn_flag);
+        TEST_ASSERT(joint.get_continuity()==general_creator_type::C2);
+        TEST_ASSERT(joint.use_f());
+        TEST_ASSERT(!joint.use_left_fp());
+        TEST_ASSERT(!joint.use_right_fp());
+        TEST_ASSERT(!joint.use_left_fpp());
+        TEST_ASSERT(joint.use_right_fpp());
+
+        // set left fpp to discontinuous value
+        rtn_flag=joint.set_left_fpp(p2);
+        TEST_ASSERT(!rtn_flag);
+        TEST_ASSERT(joint.get_continuity()==general_creator_type::C2);
+        TEST_ASSERT(joint.use_f());
+        TEST_ASSERT(!joint.use_left_fp());
+        TEST_ASSERT(!joint.use_right_fp());
+        TEST_ASSERT(joint.use_left_fpp());
+        TEST_ASSERT(joint.use_right_fpp());
+
+        // set left fpp
+        rtn_flag=joint.set_left_fpp(joint.get_right_fpp());
+        TEST_ASSERT(rtn_flag);
+        TEST_ASSERT(joint.get_continuity()==general_creator_type::C2);
+        TEST_ASSERT(joint.use_f());
+        TEST_ASSERT(!joint.use_left_fp());
+        TEST_ASSERT(!joint.use_right_fp());
+        TEST_ASSERT(joint.use_left_fpp());
+        TEST_ASSERT(joint.use_right_fpp());
+
+        // set fp
+        rtn_flag=joint.set_fp(p2);
+        TEST_ASSERT(rtn_flag);
+        TEST_ASSERT(joint.get_continuity()==general_creator_type::C2);
+        TEST_ASSERT(joint.use_f());
+        TEST_ASSERT(joint.use_left_fp());
+        TEST_ASSERT(joint.use_right_fp());
+        TEST_ASSERT(joint.use_left_fpp());
+        TEST_ASSERT(joint.use_right_fpp());
+      }
+
+      // copy constructor, equivalence and assignment operators
+      {
+        joint_data_type j1, j2, j3;
+
+        // defaults should be the same
+        TEST_ASSERT(j1==j2);
+
+        // manually build identical ones
+        j1.set_f(p2);
+        j1.set_left_fp(p1);
+        j1.set_right_fpp(p2);
+        j2.set_f(p2);
+        j2.set_left_fp(p1);
+        j2.set_right_fpp(p2);
+        TEST_ASSERT(j1==j2);
+
+        // assignment operator
+        j3=j2;
+        TEST_ASSERT(j3==j1);
+        TEST_ASSERT(j3==j2);
+
+        // set value for j2's fpp and then don't use it
+        j1.unset_fpp();
+        j2.unset_fpp();
+        j3.unset_fpp();
+        j2.set_fpp(p1);
+        j2.unset_fpp();
+        TEST_ASSERT(j3==j1);
+        TEST_ASSERT(j3==j2);
+
+        // copy constructor
+        joint_data_type j4(j3);
+        TEST_ASSERT(j4==j3);
+      }
+    }
+
     void create_simple_general_test()
     {
+#if 0
+      //
+      // test open cases
+      //
+
+      // simple line connecting 2 points
+      {
+        index_type nsegs(1);
+        std::vector<typename general_creator_type::joint_data> joints(nsegs+1);
+        std::vector<typename general_creator_type::joint_continuity> joint_cont(nsegs-1);
+        std::vector<typename general_creator_type::index_type> max_degree(nsegs);
+        point_type p;
+        general_creator_type gc;
+        piecewise_curve_type c;
+        bool rtn_flag;
+
+        // set the joints
+        p << 1, 1, 0;
+        joints[0].set_f(p);
+        p << 0, 0, -1;
+        joints[1].set_f(p);
+
+        // set the joint continuities
+        /* no need to since no internal joint */
+
+        // set the maximum degrees of each segment
+        max_degree[0]=4;
+
+        // create curve
+        rtn_flag=gc.set_conditions(joints, joint_cont, max_degree, false);
+        TEST_ASSERT(rtn_flag);
+        rtn_flag=gc.create(c);
+        TEST_ASSERT(rtn_flag);
+
+        // test to make sure got correct curve
+        if (typeid(data_type)==typeid(double))
+          octave_print(1, c);
+      }
+
+      //
+      // test closed cases
+      //
+      {
+        typename general_creator_type::joint_continuity closed_cont;
+      }
+#endif
     }
 };
 
