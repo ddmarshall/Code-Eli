@@ -173,6 +173,7 @@ namespace eli
 
             std::vector<point_type, Eigen::aligned_allocator<point_type> > pts;
 
+//            point_type d1start, d1end, d2start, d2end;
 
             index_type i;
             index_type nseg(this->get_number_segments());
@@ -215,9 +216,19 @@ namespace eli
 
             index_type istart(0), iend(nref);
 
+//            temppt = af.fp(xis[istart]);
+//            temppt = af.tangent(xis[istart]);
+//            d1start = point_type(temppt.x(), temppt.y(), 0);
+//            temppt = af.fpp(xis[istart]);
+//            d2start = point_type(temppt.x(), temppt.y(), 0);
 
             for( i = 0; i < nseg; i++ )
             {
+//              temppt = af.fp(xis[iend]);
+//              temppt = af.tangent(xis[iend]);
+//              d1end = point_type(temppt.x(), temppt.y(), 0);
+//              temppt = af.fpp(xis[iend]);
+//              d2end = point_type(temppt.x(), temppt.y(), 0);
 
               // set up fit container
               fit_container_type fcon;
@@ -226,6 +237,15 @@ namespace eli
               fcon.add_start_C0_constraint();
               fcon.add_end_C0_constraint();
 
+// C1 and C2 fits are problematic.  I believe this is because they fit the magnitude of the
+// supplied derivative, not just its direction (for first derivatives).  In general,
+// using af.tangent works better than af.fp.  Results can be obtained for low order curves.
+// The resulting curves blow up for higher order, or for C2 using .fp or .tangent.
+
+//              fcon.add_start_C1_constraint(d1start);
+//              fcon.add_end_C1_constraint(d1end);
+//              fcon.add_start_C2_constraint(d1start,d2start);
+//              fcon.add_end_C2_constraint(d1end,d2end);
 
               // do fit
               dimension_type dim(10);
@@ -238,6 +258,8 @@ namespace eli
               assert(err==piecewise_curve_type::NO_ERRORS);
 
               istart = iend;
+//              d1start = d1end;
+//              d2start = d2end;
 
               iend = iend + nref;
             }
