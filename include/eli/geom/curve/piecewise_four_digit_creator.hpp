@@ -110,6 +110,7 @@ namespace eli
           typedef typename base_class_type::index_type index_type;
           typedef typename base_class_type::tolerance_type tolerance_type;
           typedef eli::geom::curve::pseudo::four_digit<data_type> airfoil_type;
+          typedef typename airfoil_type::point_type af_point_type;
 
           piecewise_four_digit_creator() : piecewise_airfoil_creator_base<data_type, dim__, tolerance_type>(0) {}
           piecewise_four_digit_creator(const piecewise_four_digit_creator<data_type, dim__, tolerance_type> &ppc)
@@ -162,42 +163,85 @@ namespace eli
 
           virtual bool create(piecewise<bezier, data_type, dim__, tolerance_type> &pc) const
           {
-#if 0
             typedef piecewise<bezier, data_type, dim__, tolerance_type> piecewise_curve_type;
             typedef typename piecewise_curve_type::curve_type curve_type;
             typedef typename piecewise_curve_type::error_code error_code;
+            typedef typename curve_type::fit_container_type fit_container_type;
+            typedef typename curve_type::dimension_type dimension_type;
+
+            af_point_type temppt;
+
+            std::vector<point_type, Eigen::aligned_allocator<point_type> > pts;
+
+
+            index_type i;
+            index_type nseg(this->get_number_segments());
+
+            // Number of sample points per segment.
+            index_type nref=25;
+
+            // Number of points evaluated around airfoil.
+            index_type npt = nref*nseg+1;
+            pts.resize(npt);
+            // Leading edge point index.
+            index_type ile(1+(npt-1)/2);
+
+            // Set up initial parameter and parameter step.
+            data_type xi(af.get_u_min());
+            data_type dxi((af.get_u_max()-af.get_u_min())/(npt-1));
+            std::vector< data_type > xis;
+            xis.resize(npt);
+
+            // Evaluate airfoil.
+            for( i = 0; i < npt; i++ )
+            {
+              if(i==ile)
+              {
+                xi=0;  // Force exact floating point value for le.
+              }
+              else if(i==npt-1)
+              {
+                xi=af.get_u_max();  // Force exact floating point value for te.
+              }
+
+              temppt = af.f(xi);
+              pts[i] = point_type(temppt.x(), temppt.y(), 0);
+              xis[i] = xi;
+              xi += dxi;
+            }
 
             pc.clear();
-
-            curve_type c(1);
-            error_code err;
-            index_type nsegs(this->get_number_segments());
-
-            // do sanity check
-            if (corner.size()!=static_cast<size_t>(nsegs+1))
-            {
-              assert(false);
-              return false;
-            }
-
-            // set the start parameter
             pc.set_t0(this->get_t0());
 
-            // set the first n edges
-            for (index_type i=0; i<nsegs; ++i)
+            index_type istart(0), iend(nref);
+
+
+            for( i = 0; i < nseg; i++ )
             {
-              c.set_control_point(corner[i], 0);
-              c.set_control_point(corner[i+1], 1);
-              err=pc.push_back(c, this->get_segment_dt(i));
-              if (err!=piecewise_curve_type::NO_ERRORS)
-              {
-                pc.clear();
-                pc.set_t0(0);
-                return false;
-              }
+
+              // set up fit container
+              fit_container_type fcon;
+
+              fcon.set_points(pts.begin()+istart, pts.begin()+iend+1);
+              fcon.add_start_C0_constraint();
+              fcon.add_end_C0_constraint();
+
+
+              // do fit
+              dimension_type dim(10);
+              curve_type bez;
+
+              bez.fit(fcon, dim);
+
+              // Push back to piecewise curve.
+              error_code err = pc.push_back(bez, this->get_segment_dt(i));
+              assert(err==piecewise_curve_type::NO_ERRORS);
+
+              istart = iend;
+
+              iend = iend + nref;
             }
-#endif
-            
+
             return false;
           }
 
