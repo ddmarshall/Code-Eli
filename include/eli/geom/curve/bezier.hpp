@@ -529,184 +529,27 @@ namespace eli
             }
           }
 
-          data_type fit(const fit_container_type &fcon, const index_type &deg_in)
+          void fit(const fit_container_type &fcon, const index_type &deg_in)
           {
             std::vector<data_type> t;
-            return fit(t, fcon, deg_in);
+            fit_only(t, fcon, deg_in);
           }
 
-          data_type fit(std::vector<data_type> &t, const fit_container_type &fcon, const index_type &deg_in)
+          void fit(std::vector<data_type> &t, const fit_container_type &fcon, const index_type &deg_in)
           {
-            size_t i, npts(fcon.number_points()), n, nclosed;
-            std::vector<point_type, Eigen::aligned_allocator<point_type> > pts(npts);
+            fit_with_error(t, fcon, deg_in);
+          }
 
-            // get the points from the container
-            fcon.get_points(pts.begin());
+          data_type fit_with_error(const fit_container_type &fcon, const index_type &deg_in)
+          {
+            std::vector<data_type> t;
+            return fit_with_error(t, fcon, deg_in);
+          }
 
-            // account for the closed constraints
-            switch(fcon.get_end_flag())
-            {
-              case(eli::geom::general::C2):
-              {
-                nclosed=3;
-                break;
-              }
-              case(eli::geom::general::C1):
-              {
-                nclosed=2;
-                break;
-              }
-              case(eli::geom::general::C0):
-              {
-                nclosed=1;
-                break;
-              }
-              default:
-              {
-                nclosed=0;
-                break;
-              }
-            }
-
-            // calculate the t corresponding to input points via approximate arc-length
-            determine_t(t, pts, fcon.closed());
-
-            // determine the actual degree of curve
-            n=internal::determine_n(deg_in, fcon.number_constraints()+nclosed, npts);
-
-            // build the fit terms from points
-            mat_type A, x;
-            row_pts_type b;
-            internal::build_fit_Ab(A, b, t, pts, n, dim__);
-
-            // handle special case of unconstrained optimization problem
-            if ((fcon.number_constraints()==0) && (fcon.open()))
-            {
-              // determine the coefficients
-              eli::mutil::opt::least_squares_uncon(x, A, b);
-            }
-            else
-            {
-              // now becomes a constrained least squares problem
-              // the constraints come from closed flag and/or constraint collection
-              size_t bi, ncon=fcon.number_constraints()+nclosed;
-
-              mat_type B(ncon, n+1);
-              row_pts_type d(ncon, dim__);
-
-              // construct the system of constraints
-              B.setZero();
-              d.setZero();
-
-              size_t nconpts=fcon.number_constraint_points();
-              std::vector<typename fit_container_type::index_type> indexes(nconpts);
-
-              // cycle through all of the constraints
-              fcon.get_constraint_indexes(indexes.begin());
-              bi=0;
-              for (size_t i=0; i<nconpts; ++i)
-              {
-                point_type pt;
-                typename fit_container_type::constraint_info ci;
-                typename fit_container_type::error_code ec;
-
-                ec=fcon.get_constraint(indexes[i], ci);
-                if (ec!=fit_container_type::NO_ERRORS)
-                {
-                  assert(false);
-                }
-                else
-                {
-                  // set the C0 constraint
-                  col_type T;
-                  mat_type N;
-                  eli::geom::utility::bezier_T(T, t[indexes[i]], n);
-                  eli::geom::utility::bezier_N(N, n);
-                  B.row(bi)=T.transpose()*N;
-                  d.row(bi)=pts[indexes[i]];
-                  ++bi;
-
-                  // set the C1 constraint
-                  if (ci.using_fp()!=fit_container_type::constraint_info::NOT_USED)
-                  {
-                    col_type Tp;
-
-                    eli::geom::utility::bezier_T_p(Tp, t[indexes[i]], n);
-                    B.row(bi)=Tp.transpose()*N;
-                    d.row(bi)=ci.get_fp();
-                    ++bi;
-                  }
-
-                  // set the C2 constraint
-                  if (ci.using_fpp()!=fit_container_type::constraint_info::NOT_USED)
-                  {
-                    col_type Tpp;
-
-                    eli::geom::utility::bezier_T_pp(Tpp, t[indexes[i]], n);
-                    B.row(bi)=Tpp.transpose()*N;
-                    d.row(bi)=ci.get_fpp();
-                    ++bi;
-                  }
-                }
-              }
-
-              // add the closed constraint if needed
-              switch(fcon.get_end_flag())
-              {
-                case(eli::geom::general::C2):
-                {
-                  B(bi,2)=1.0;
-                  B(bi,1)=-2.0;
-                  B(bi,0)=1.0;
-                  B(bi,n)=-1.0;
-                  B(bi,n-1)=2.0;
-                  B(bi,n-2)=-1.0;
-                  ++bi;
-                }
-                case(eli::geom::general::C1):
-                {
-                  B(bi,1)=1.0;
-                  B(bi,0)=-1.0;
-                  B(bi,n)=-1.0;
-                  B(bi,n-1)=1.0;
-                  ++bi;
-                }
-                case(eli::geom::general::C0):
-                {
-                  B(bi,0)=1.0;
-                  B(bi,n)=-1.0;
-                  ++bi;
-                }
-                default:
-                {
-                  // no need to do anything
-                  assert(bi==ncon);
-                }
-              }
-
-              // determine the coefficients
-              eli::mutil::opt::least_squares_eqcon(x, A, b, B, d);
-            }
-
-            // extract the control points and set them
-            control_point_matrix_type ctrl(n+1, dim__);
-            for (i=0; i<n+1; ++i)
-              ctrl.row(i)=x.row(i);
-
-            // ensure that the last control point and first are the same
-            if (fcon.closed())
-              ctrl.row(n)=ctrl.row(0);
-
-            B=ctrl;
-
-            // calculate the error at the point
-            data_type err(0);
-            for (i=0; i<pts.size(); ++i)
-            {
-              err+=eli::geom::intersect::minimum_distance(t[i], *this, pts[i]);
-            }
-
-            return err;
+          data_type fit_with_error(std::vector<data_type> &t, const fit_container_type &fcon, const index_type &deg_in)
+          {
+            fit_only(t, fcon, deg_in);
+            return est_fit_error(t, fcon);
           }
 
           void interpolate(const fit_container_type &fcon)
@@ -895,6 +738,191 @@ namespace eli
 
             for (i=0; i<npts; ++i)
               t[i]/=len;
+          }
+
+          // This method is private because the t value returned in the first parameter is not the result of a nearest
+          // neighbor fit as would be expected from the fit_with_error methods.
+          void fit_only(std::vector<data_type> &t, const fit_container_type &fcon, const index_type &deg_in)
+          {
+            size_t i, npts(fcon.number_points()), n, nclosed;
+            std::vector<point_type, Eigen::aligned_allocator<point_type> > pts(npts);
+
+            // get the points from the container
+            fcon.get_points(pts.begin());
+
+            // account for the closed constraints
+            switch(fcon.get_end_flag())
+            {
+              case(eli::geom::general::C2):
+              {
+                nclosed=3;
+                break;
+              }
+              case(eli::geom::general::C1):
+              {
+                nclosed=2;
+                break;
+              }
+              case(eli::geom::general::C0):
+              {
+                nclosed=1;
+                break;
+              }
+              default:
+              {
+                nclosed=0;
+                break;
+              }
+            }
+
+            // calculate the t corresponding to input points via approximate arc-length
+            determine_t(t, pts, fcon.closed());
+
+            // determine the actual degree of curve
+            n=internal::determine_n(deg_in, fcon.number_constraints()+nclosed, npts);
+
+            // build the fit terms from points
+            mat_type A, x;
+            row_pts_type b;
+            internal::build_fit_Ab(A, b, t, pts, n, dim__);
+
+            // handle special case of unconstrained optimization problem
+            if ((fcon.number_constraints()==0) && (fcon.open()))
+            {
+              // determine the coefficients
+              eli::mutil::opt::least_squares_uncon(x, A, b);
+            }
+            else
+            {
+              // now becomes a constrained least squares problem
+              // the constraints come from closed flag and/or constraint collection
+              size_t bi, ncon=fcon.number_constraints()+nclosed;
+
+              mat_type B(ncon, n+1);
+              row_pts_type d(ncon, dim__);
+
+              // construct the system of constraints
+              B.setZero();
+              d.setZero();
+
+              size_t nconpts=fcon.number_constraint_points();
+              std::vector<typename fit_container_type::index_type> indexes(nconpts);
+
+              // cycle through all of the constraints
+              fcon.get_constraint_indexes(indexes.begin());
+              bi=0;
+              for (size_t i=0; i<nconpts; ++i)
+              {
+                point_type pt;
+                typename fit_container_type::constraint_info ci;
+                typename fit_container_type::error_code ec;
+
+                ec=fcon.get_constraint(indexes[i], ci);
+                if (ec!=fit_container_type::NO_ERRORS)
+                {
+                  assert(false);
+                }
+                else
+                {
+                  // set the C0 constraint
+                  col_type T;
+                  mat_type N;
+                  eli::geom::utility::bezier_T(T, t[indexes[i]], n);
+                  eli::geom::utility::bezier_N(N, n);
+                  B.row(bi)=T.transpose()*N;
+                  d.row(bi)=pts[indexes[i]];
+                  ++bi;
+
+                  // set the C1 constraint
+                  if (ci.using_fp()!=fit_container_type::constraint_info::NOT_USED)
+                  {
+                    col_type Tp;
+
+                    eli::geom::utility::bezier_T_p(Tp, t[indexes[i]], n);
+                    B.row(bi)=Tp.transpose()*N;
+                    d.row(bi)=ci.get_fp();
+                    ++bi;
+                  }
+
+                  // set the C2 constraint
+                  if (ci.using_fpp()!=fit_container_type::constraint_info::NOT_USED)
+                  {
+                    col_type Tpp;
+
+                    eli::geom::utility::bezier_T_pp(Tpp, t[indexes[i]], n);
+                    B.row(bi)=Tpp.transpose()*N;
+                    d.row(bi)=ci.get_fpp();
+                    ++bi;
+                  }
+                }
+              }
+
+              // add the closed constraint if needed
+              switch(fcon.get_end_flag())
+              {
+                case(eli::geom::general::C2):
+                {
+                  B(bi,2)=1.0;
+                  B(bi,1)=-2.0;
+                  B(bi,0)=1.0;
+                  B(bi,n)=-1.0;
+                  B(bi,n-1)=2.0;
+                  B(bi,n-2)=-1.0;
+                  ++bi;
+                }
+                case(eli::geom::general::C1):
+                {
+                  B(bi,1)=1.0;
+                  B(bi,0)=-1.0;
+                  B(bi,n)=-1.0;
+                  B(bi,n-1)=1.0;
+                  ++bi;
+                }
+                case(eli::geom::general::C0):
+                {
+                  B(bi,0)=1.0;
+                  B(bi,n)=-1.0;
+                  ++bi;
+                }
+                default:
+                {
+                  // no need to do anything
+                  assert(bi==ncon);
+                }
+              }
+
+              // determine the coefficients
+              eli::mutil::opt::least_squares_eqcon(x, A, b, B, d);
+            }
+
+            // extract the control points and set them
+            control_point_matrix_type ctrl(n+1, dim__);
+            for (i=0; i<n+1; ++i)
+              ctrl.row(i)=x.row(i);
+
+            // ensure that the last control point and first are the same
+            if (fcon.closed())
+              ctrl.row(n)=ctrl.row(0);
+
+            B=ctrl;
+          }
+
+          data_type est_fit_error(std::vector<data_type> &t, const fit_container_type &fcon)
+          {
+            size_t i, npts(fcon.number_points());
+            std::vector<point_type, Eigen::aligned_allocator<point_type> > pts(npts);
+
+            // get the points from the container
+            fcon.get_points(pts.begin());
+
+            // calculate the error at the point
+            data_type err(0);
+            for (i=0; i<pts.size(); ++i)
+            {
+              err+=eli::geom::intersect::minimum_distance(t[i], *this, pts[i]);
+            }
+
+            return err;
           }
 
       };
