@@ -179,8 +179,7 @@ class piecewise_four_digit_creator_test_suite : public Test::Suite
 
     void create_airfoil_test()
     {
-#if 0
-      airfoil_type af;
+      point_creator_type af;
 
       data_type th, cam, cam_loc;
       bool rtn;
@@ -202,10 +201,19 @@ class piecewise_four_digit_creator_test_suite : public Test::Suite
       // test the name
       std::string name, name_ref;
 
+      af.set_sharp_trailing_edge(true);
+
       name_ref="NACA "+std::to_string((int)round(cam))+std::to_string((int)round(cam_loc))+std::to_string((int)round(th));
       name=af.get_name();
       TEST_ASSERT(name==name_ref);
-#endif
+
+
+      piecewise_curve_type af_pwc;
+
+      af.create(af_pwc);
+
+//      octave_print(1, af_pwc);
+
     }
 };
 
