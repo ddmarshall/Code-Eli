@@ -48,19 +48,19 @@ class piecewise_general_creator_test_suite : public Test::Suite
     {
       // add the tests
       TEST_ADD(piecewise_general_creator_test_suite<float>::create_joint_test);
-      TEST_ADD(piecewise_general_creator_test_suite<float>::create_simple_general_test);
+      TEST_ADD(piecewise_general_creator_test_suite<float>::create_single_curve_test);
     }
     void AddTests(const double &)
     {
       // add the tests
       TEST_ADD(piecewise_general_creator_test_suite<double>::create_joint_test);
-      TEST_ADD(piecewise_general_creator_test_suite<double>::create_simple_general_test);
+      TEST_ADD(piecewise_general_creator_test_suite<double>::create_single_curve_test);
     }
     void AddTests(const long double &)
     {
       // add the tests
       TEST_ADD(piecewise_general_creator_test_suite<long double>::create_joint_test);
-      TEST_ADD(piecewise_general_creator_test_suite<long double>::create_simple_general_test);
+      TEST_ADD(piecewise_general_creator_test_suite<long double>::create_single_curve_test);
     }
 
   public:
@@ -668,18 +668,12 @@ class piecewise_general_creator_test_suite : public Test::Suite
       }
     }
 
-    void create_simple_general_test()
+    void create_single_curve_test()
     {
-#if 0
-      //
-      // test open cases
-      //
-
       // simple line connecting 2 points
       {
         index_type nsegs(1);
         std::vector<typename general_creator_type::joint_data> joints(nsegs+1);
-        std::vector<typename general_creator_type::joint_continuity> joint_cont(nsegs-1);
         std::vector<typename general_creator_type::index_type> max_degree(nsegs);
         point_type p;
         general_creator_type gc;
@@ -692,30 +686,98 @@ class piecewise_general_creator_test_suite : public Test::Suite
         p << 0, 0, -1;
         joints[1].set_f(p);
 
-        // set the joint continuities
-        /* no need to since no internal joint */
-
         // set the maximum degrees of each segment
         max_degree[0]=4;
 
         // create curve
-        rtn_flag=gc.set_conditions(joints, joint_cont, max_degree, false);
+        rtn_flag=gc.set_conditions(joints, max_degree, false);
         TEST_ASSERT(rtn_flag);
         rtn_flag=gc.create(c);
         TEST_ASSERT(rtn_flag);
 
         // test to make sure got correct curve
-        if (typeid(data_type)==typeid(double))
+        if (rtn_flag && (typeid(data_type)==typeid(double)))
           octave_print(1, c);
       }
 
-      //
-      // test closed cases
-      //
+      // simple 2nd degree curve
       {
-        typename general_creator_type::joint_continuity closed_cont;
+        index_type nsegs(1);
+        std::vector<typename general_creator_type::joint_data> joints(nsegs+1);
+        std::vector<typename general_creator_type::index_type> max_degree(nsegs);
+        point_type p;
+        general_creator_type gc;
+        piecewise_curve_type c;
+        bool rtn_flag;
+
+        // set the joints
+        p << 1, 1, 0;
+        joints[0].set_f(p);
+        p << 0, 0, -1;
+        joints[1].set_f(p);
+
+        // set joint slope
+        p << 1, -1, 1;
+        joints[0].set_right_fp(p);
+
+        // set the maximum degrees of each segment
+        max_degree[0]=4;
+
+        // create curve
+        rtn_flag=gc.set_conditions(joints, max_degree, false);
+        TEST_ASSERT(rtn_flag);
+        rtn_flag=gc.create(c);
+        TEST_ASSERT(rtn_flag);
+
+        // test to make sure got correct curve
+        if (rtn_flag && (typeid(data_type)==typeid(double)))
+          octave_print(1, c);
       }
-#endif
+
+      // simple 3rd degree curve
+      {
+        index_type nsegs(1);
+        std::vector<typename general_creator_type::joint_data> joints(nsegs+1);
+        std::vector<typename general_creator_type::index_type> max_degree(nsegs);
+        point_type p;
+        general_creator_type gc;
+        piecewise_curve_type c;
+        bool rtn_flag;
+
+        // set the joints
+        p << 1, 1, 0;
+        joints[0].set_f(p);
+        p << 0, 0, -1;
+        joints[1].set_f(p);
+
+        // set joint slopes
+        p << 1, -1, 1;
+        joints[0].set_right_fp(p);
+        p << 1, 0, 0;
+        joints[1].set_left_fp(p);
+
+        // set the maximum degrees of each segment to be too small
+        max_degree[0]=2;
+
+        // create curve
+        rtn_flag=gc.set_conditions(joints, max_degree, false);
+        TEST_ASSERT(rtn_flag);
+        rtn_flag=gc.create(c);
+        TEST_ASSERT(!rtn_flag);
+
+        // set the maximum degrees of each segment
+        max_degree[0]=4;
+
+        // create curve
+        rtn_flag=gc.set_conditions(joints, max_degree, false);
+        TEST_ASSERT(rtn_flag);
+        rtn_flag=gc.create(c);
+        TEST_ASSERT(rtn_flag);
+
+        // test to make sure got correct curve
+        if (rtn_flag && (typeid(data_type)==typeid(double)))
+          octave_print(1, c);
+      }
     }
 };
 

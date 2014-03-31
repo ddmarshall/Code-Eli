@@ -17,6 +17,8 @@
 
 #include "eli/geom/general/continuity.hpp"
 
+#include "eli/geom/utility/bezier.hpp"
+
 #include "eli/geom/curve/piecewise_creator_base.hpp"
 #include "eli/geom/curve/piecewise.hpp"
 #include "eli/geom/curve/bezier.hpp"
@@ -331,49 +333,63 @@ namespace eli
         public:
           piecewise_general_creator()
             : piecewise_creator_base<data_type, dim__, tolerance_type>(1, 0), joints(2),
-              joint_cont(1), max_degree(1), closed(false)
+              max_degree(1), closed(false)
           {
           }
           piecewise_general_creator(const index_type &ns)
             : piecewise_creator_base<data_type, dim__, tolerance_type>(ns, 0), joints(ns+1),
-              joint_cont(ns), max_degree(ns), closed_cont(C0), closed(false)
+              max_degree(ns), closed(false)
           {
           }
           piecewise_general_creator(const piecewise_general_creator<data_type, dim__, tolerance_type> &pcc)
             : piecewise_creator_base<data_type, dim__, tolerance_type>(pcc), joints(pcc.joints),
-              joint_cont(pcc.joint_cont), max_degree(pcc.max_degree()), closed(pcc.closed)
+              max_degree(pcc.max_degree()), closed(pcc.closed)
           {
           }
           virtual ~piecewise_general_creator()
           {
           };
 
-          void set_closed_continuity(const joint_continuity &cnt)
-          {
-            closed=true;
-            closed_cont=cnt;
-          }
+          void set_closed() {closed=true;}
           void set_open() {closed=false;}
           bool is_closed() const {return closed;}
           bool is_open() const {return !closed;}
 
-
-          bool set_conditions(const std::vector<joint_data> &jnts, const std::vector<joint_continuity> &cnt,
-                              const std::vector<index_type> &maxd, bool cl=false)
+          bool set_conditions(const std::vector<joint_data> &jnts, const std::vector<index_type> &maxd, bool cl=false)
           {
-            index_type nsegs(static_cast<index_type>(maxd.size()));
+            index_type i, nsegs(static_cast<index_type>(maxd.size())), njnts(jnts.size());
 
             // ensure input vectors are correct size
-            if (jnts.size()!=(nsegs+1))
+            if (!cl && (njnts!=(nsegs+1)))
               return false;
-            if (nsegs!=(cnt.size()+1))
+            if (cl && (njnts!=nsegs))
               return false;
+
+            // check to make sure have valid end conditions
+            if (!cl)
+            {
+              if (jnts[0].use_left_fp() || jnts[0].use_left_fpp() || jnts[0].get_continuity()!=C0)
+              {
+                return false;
+              }
+              if (jnts[nsegs].use_right_fp() || jnts[nsegs].use_right_fpp() || jnts[nsegs].get_continuity()!=C0)
+              {
+                return false;
+              }
+            }
+
+            // make sure joints are in valid state
+            for (i=0; i<njnts; ++i)
+            {
+              if (!jnts[i].check_state())
+                return false;
+            }
 
             // reset the number of segments
-            set_number_segments(nsegs);
+            this->set_number_segments(nsegs);
 
             joints=jnts;
-            joint_cont=cnt;
+            max_degree=maxd;
             closed=cl;
 
             return true;
@@ -388,70 +404,233 @@ namespace eli
 
             index_type nsegs(this->get_number_segments()), i;
             std::vector<index_type> seg_degree(nsegs);
+            std::vector<joint_data> joint_states(joints);
 
             pc.clear();
-#if 0
+
+            // fix: cannot handle closed curves
+            assert(!closed);
+
             // cycle through each segment to find the minimum degree for each segment
             for (i=0; i<nsegs; ++i)
             {
               seg_degree[i]=1;
-              switch (joints[i].fp_state())
-              {
-                case(NOT_SET):
-                {
-                  break;
-                }
-                case(VALUE_SET):
-                {
-                  seg_degree[i]+=1;
-                  break;
-                }
-                default:
-                {
-                  // should not get here
-                  assert(false);
+              if (joint_states[i].use_right_fp())
+                seg_degree[i]+=1;
+              if (joint_states[i+1].use_left_fp())
+                seg_degree[i]+=1;
+              if (joint_states[i].use_right_fpp())
+                seg_degree[i]+=1;
+              if (joint_states[i+1].use_left_fpp())
+                seg_degree[i]+=1;
 
-                  return false;
-                  break;
-                }
-              }
-              switch (joints[i].fpp_state())
-              {
-                case(NOT_SET):
-                {
-                  break;
-                }
-                case(VALUE_SET):
-                {
-                  seg_degree[i]+=1;
-                  break;
-                }
-                default:
-                {
-                  // should not get here
-                  assert(false);
-
-                  return false;
-                  break;
-                }
-              }
-
-              if (seg_degree[i]>max_degree[i])
+              // check against maximum degree
+              if (!valid_degree(seg_degree[i], max_degree[i]))
               {
                 std::cerr << "Required degree for segment " << i << " is " << seg_degree[i]
                           << " but maximum requested degree is only " << max_degree[i] << std::endl;
                 return false;
               }
             }
-#endif
+
+            // cycle through each joint to find final degrees
+            for (i=0; i<=nsegs; ++i)
+            {
+              switch (joint_states[i].get_continuity())
+              {
+                // don't need to do anything for C0 case
+                case (C0):
+                {
+                  break;
+                }
+                // increase degrees by at most two
+                case (C2):
+                // increase degrees by at most one
+                case (C1):
+                {
+                  // handle C1 continuity
+                  if (joint_states[i].use_left_fp())
+                  {
+                    // only need to increase degree if right is not in use
+                    if (!joint_states[i].use_right_fp())
+                    {
+                      joint_states[i].set_right_fp(joint_states[i].get_left_fp());
+                      // NOTE: Here is a place that needs to be modified if closed curve
+                      seg_degree[i]+=1;
+                    }
+                  }
+                  else
+                  {
+                    if (joint_states[i].use_right_fp())
+                    {
+                      joint_states[i].set_left_fp(joint_states[i].get_right_fp());
+                      // NOTE: Here is a place that needs to be modified if closed curve
+                      seg_degree[i-1]+=1;
+                    }
+                    else
+                    {
+                      // raise the degree of the lower degreed segment
+                      if ((i==0) & (!closed))
+                      {
+                        seg_degree[i]+=1;
+                      }
+                      else if ((i==nsegs) && (!closed))
+                      {
+                        seg_degree[i-1]+=1;
+                      }
+                      // NOTE: Here is a place that needs to be modified if closed curve
+                      else if ( (seg_degree[i-1]<max_degree[i-1]) && (seg_degree[i-1]<=seg_degree[i]) )
+                      {
+                        seg_degree[i-1]+=1;
+                      }
+                      else
+                      {
+                        seg_degree[i]+=1;
+                      }
+                    }
+                  }
+
+                  if (joint_states[i].get_continuity()==C1)
+                    break;
+
+                  // handle C2 continuity
+                  if (joint_states[i].use_left_fpp())
+                  {
+                    // only need to increase degree if right is not in use
+                    if (!joint_states[i].use_right_fpp())
+                    {
+                      joint_states[i].set_right_fpp(joint_states[i].get_left_fpp());
+                      // NOTE: Here is a place that needs to be modified if closed curve
+                      seg_degree[i]+=1;
+                    }
+                  }
+                  else
+                  {
+                    if (joint_states[i].use_right_fpp())
+                    {
+                      joint_states[i].set_left_fpp(joint_states[i].get_right_fpp());
+                      // NOTE: Here is a place that needs to be modified if closed curve
+                      seg_degree[i-1]+=1;
+                    }
+                    else
+                    {
+                      // raise the degree of the lower degreed segment
+                      if ((i==0) && (!closed))
+                      {
+                        seg_degree[i]+=1;
+                      }
+                      else if ((i==nsegs) && (!closed))
+                      {
+                        seg_degree[i-1]+=1;
+                      }
+                      // NOTE: Here is a place that needs to be modified if closed curve
+                      if (seg_degree[i-1]<=seg_degree[i])
+                      {
+                        seg_degree[i-1]+=1;
+                      }
+                      else
+                      {
+                        seg_degree[i]+=1;
+                      }
+                    }
+                  }
+
+                  break;
+                }
+                // all cases should be handled by above
+                default:
+                {
+                  assert(false);
+                  break;
+                }
+              }
+            }
+
+            // final check of maximum degree and determine number of unknowns
+            std::vector<index_type> seg_ind(nsegs+1);
+
+            seg_ind[0]=0;
+            for (i=0; i<nsegs; ++i)
+            {
+              // debugging stuff
+              std::cout << "segment[" << i << "] is degree " << seg_degree[i]
+                        << " and maximum degree is " << max_degree[i] << std::endl;
+
+              if (!valid_degree(seg_degree[i], max_degree[i]))
+              {
+                std::cerr << "Required degree for segment " << i << " is " << seg_degree[i]
+                          << " but maximum requested degree is only " << max_degree[i] << std::endl;
+                return false;
+              }
+
+              seg_ind[i+1]=seg_ind[i]+seg_degree[i]+1;
+            }
+
+            // build segments based on joint information
+            Eigen::Matrix<data_type, Eigen::Dynamic, Eigen::Dynamic> coef(seg_ind[nsegs]*dim__, seg_ind[nsegs]*dim__), rows(dim__, seg_ind[nsegs]*dim__);
+            Eigen::Matrix<data_type, Eigen::Dynamic, 1> x(seg_ind[nsegs]*dim__, 1), rhs(seg_ind[nsegs]*dim__, 1), rhs_seg(dim__, 1);
+            index_type cond_no(0);
+
+            for (i=0; i<nsegs; ++i)
+            {
+              assert(cond_no<coef.rows());
+              set_point_condition(rows, rhs_seg, seg_ind[i], seg_degree[i], joints[i].get_f(), true);
+              coef.block(cond_no*dim__, 0, dim__, coef.cols())=rows;
+              rhs.block(cond_no*dim__, 0, dim__, 1)=rhs_seg;
+              ++cond_no;
+
+              assert(cond_no<coef.rows());
+              set_point_condition(rows, rhs_seg, seg_ind[i], seg_degree[i], joints[i+1].get_f(), false);
+              coef.block(cond_no*dim__, 0, dim__, coef.cols())=rows;
+              rhs.block(cond_no*dim__, 0, dim__, 1)=rhs_seg;
+              ++cond_no;
+            }
+            std::cout << "coef=" << std::endl << coef << std::endl;
+            std::cout << "rhs=" << std::endl << rhs << std::endl;
+            assert(cond_no==coef.rows());
+
             return false;
+          }
+
+        protected:
+          static bool valid_degree(const index_type &deg, const index_type &max_deg)
+          {
+            if (max_deg<=0)
+              return true;
+            if (deg<=max_deg)
+              return true;
+
+            return false;
+          }
+
+          template<typename Derived1, typename Derived2>
+          void set_point_condition(Eigen::MatrixBase<Derived1> &rows, Eigen::MatrixBase<Derived2> &rhs,
+                                   const index_type start_index, const index_type &seg_degree,
+                                   const point_type &p, bool segment_start) const
+          {
+            // set terms
+            index_type ind;
+
+            if (segment_start)
+            {
+              ind=start_index*dim__;
+            }
+            else
+            {
+              ind=(start_index+seg_degree)*dim__;
+            }
+
+            rows.setConstant(0);
+            rows.block(0, ind, dim__, dim__).setIdentity();
+            rhs=p.transpose();
+//            std::cout << "\trows=" << rows << std::endl;
+//            std::cout << "\trhs=" << rhs << std::endl;
+//            std::cout << "\tp=" << p << std::endl;
           }
 
         private:
           std::vector<joint_data> joints;
-          std::vector<joint_continuity> joint_cont;
           std::vector<index_type> max_degree;
-          joint_continuity closed_cont;
           bool closed;
       };
     }
