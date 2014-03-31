@@ -573,6 +573,7 @@ namespace eli
 
             for (i=0; i<nsegs; ++i)
             {
+              // set the end point conditions
               assert(cond_no<coef.rows());
               set_point_condition(rows, rhs_seg, seg_ind[i], seg_degree[i], joints[i].get_f(), true);
               coef.block(cond_no*dim__, 0, dim__, coef.cols())=rows;
@@ -584,10 +585,48 @@ namespace eli
               coef.block(cond_no*dim__, 0, dim__, coef.cols())=rows;
               rhs.block(cond_no*dim__, 0, dim__, 1)=rhs_seg;
               ++cond_no;
+
+              // set the end point 1st derivative conditions
+              if (joints[i].use_right_fp())
+              {
+                assert(cond_no<coef.rows());
+                set_fp_condition(rows, rhs_seg, seg_ind[i], seg_degree[i], joints[i].get_right_fp(), true);
+                coef.block(cond_no*dim__, 0, dim__, coef.cols())=rows;
+                rhs.block(cond_no*dim__, 0, dim__, 1)=rhs_seg;
+                ++cond_no;
+              }
+
+              if (joints[i+1].use_left_fp())
+              {
+                assert(cond_no<coef.rows());
+                set_fp_condition(rows, rhs_seg, seg_ind[i], seg_degree[i], joints[i+1].get_left_fp(), false);
+                coef.block(cond_no*dim__, 0, dim__, coef.cols())=rows;
+                rhs.block(cond_no*dim__, 0, dim__, 1)=rhs_seg;
+                ++cond_no;
+              }
+
+              // set the end point 2nd derivative conditions
+              if (joints[i].use_right_fpp())
+              {
+                assert(cond_no<coef.rows());
+                set_fpp_condition(rows, rhs_seg, seg_ind[i], seg_degree[i], joints[i].get_right_fpp(), true);
+                coef.block(cond_no*dim__, 0, dim__, coef.cols())=rows;
+                rhs.block(cond_no*dim__, 0, dim__, 1)=rhs_seg;
+                ++cond_no;
+              }
+
+              if (joints[i+1].use_left_fpp())
+              {
+                assert(cond_no<coef.rows());
+                set_fpp_condition(rows, rhs_seg, seg_ind[i], seg_degree[i], joints[i+1].get_left_fpp(), false);
+                coef.block(cond_no*dim__, 0, dim__, coef.cols())=rows;
+                rhs.block(cond_no*dim__, 0, dim__, 1)=rhs_seg;
+                ++cond_no;
+              }
             }
             std::cout << "coef=" << std::endl << coef << std::endl;
             std::cout << "rhs=" << std::endl << rhs << std::endl;
-            assert(cond_no==coef.rows());
+            assert(cond_no*dim__==coef.rows());
 
             return false;
           }
@@ -623,9 +662,72 @@ namespace eli
             rows.setConstant(0);
             rows.block(0, ind, dim__, dim__).setIdentity();
             rhs=p.transpose();
-//            std::cout << "\trows=" << rows << std::endl;
-//            std::cout << "\trhs=" << rhs << std::endl;
+//            std::cout << "\trows=" << std::endl << rows << std::endl;
+//            std::cout << "\trhs^T=" << rhs.transpose() << std::endl;
 //            std::cout << "\tp=" << p << std::endl;
+          }
+
+          template<typename Derived1, typename Derived2>
+          void set_fp_condition(Eigen::MatrixBase<Derived1> &rows, Eigen::MatrixBase<Derived2> &rhs,
+                                const index_type start_index, const index_type &seg_degree,
+                                const point_type &fp, bool segment_start) const
+          {
+            assert(seg_degree>1);
+
+            // set terms
+            index_type ind;
+            Eigen::Matrix<data_type, dim__, dim__> coef;
+
+            if (segment_start)
+            {
+              ind=start_index*dim__;
+            }
+            else
+            {
+              ind=(start_index+seg_degree-1)*dim__;
+            }
+
+            coef.setIdentity();
+            coef*=seg_degree;
+            rows.setConstant(0);
+            rows.block(0, ind, dim__, dim__)=-coef;
+            rows.block(0, ind+dim__, dim__, dim__)=coef;
+            rhs=fp.transpose();
+//            std::cout << "\trows=" << std::endl << rows << std::endl;
+//            std::cout << "\trhs^T=" << rhs.transpose() << std::endl;
+//            std::cout << "\tp=" << fp << std::endl;
+          }
+
+          template<typename Derived1, typename Derived2>
+          void set_fpp_condition(Eigen::MatrixBase<Derived1> &rows, Eigen::MatrixBase<Derived2> &rhs,
+                                 const index_type start_index, const index_type &seg_degree,
+                                 const point_type &fpp, bool segment_start) const
+          {
+            assert(seg_degree>1);
+
+            // set terms
+            index_type ind;
+            Eigen::Matrix<data_type, dim__, dim__> coef;
+
+            if (segment_start)
+            {
+              ind=start_index*dim__;
+            }
+            else
+            {
+              ind=(start_index+seg_degree-2)*dim__;
+            }
+
+            coef.setIdentity();
+            coef*=seg_degree*(seg_degree-1);
+            rows.setConstant(0);
+            rows.block(0, ind, dim__, dim__)=coef;
+            rows.block(0, ind+dim__, dim__, dim__)=-2*coef;
+            rows.block(0, ind+2*dim__, dim__, dim__)=coef;
+            rhs=fpp.transpose();
+//            std::cout << "\trows=" << std::endl << rows << std::endl;
+//            std::cout << "\trhs^T=" << rhs.transpose() << std::endl;
+//            std::cout << "\tp=" << fpp << std::endl;
           }
 
         private:

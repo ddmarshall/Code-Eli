@@ -700,7 +700,7 @@ class piecewise_general_creator_test_suite : public Test::Suite
           octave_print(1, c);
       }
 
-      // simple 2nd degree curve
+      // simple 2nd degree curve with 1st derivative specified
       {
         index_type nsegs(1);
         std::vector<typename general_creator_type::joint_data> joints(nsegs+1);
@@ -716,7 +716,7 @@ class piecewise_general_creator_test_suite : public Test::Suite
         p << 0, 0, -1;
         joints[1].set_f(p);
 
-        // set joint slope
+        // set joint 1st derivative
         p << 1, -1, 1;
         joints[0].set_right_fp(p);
 
@@ -734,7 +734,7 @@ class piecewise_general_creator_test_suite : public Test::Suite
           octave_print(1, c);
       }
 
-      // simple 3rd degree curve
+      // simple 2nd degree curve with 2nd derivative specified
       {
         index_type nsegs(1);
         std::vector<typename general_creator_type::joint_data> joints(nsegs+1);
@@ -750,7 +750,41 @@ class piecewise_general_creator_test_suite : public Test::Suite
         p << 0, 0, -1;
         joints[1].set_f(p);
 
-        // set joint slopes
+        // set joint 2nd derivative
+        p << 1, -1, 1;
+        joints[0].set_right_fpp(p);
+
+        // set the maximum degrees of each segment
+        max_degree[0]=4;
+
+        // create curve
+        rtn_flag=gc.set_conditions(joints, max_degree, false);
+        TEST_ASSERT(rtn_flag);
+        rtn_flag=gc.create(c);
+        TEST_ASSERT(rtn_flag);
+
+        // test to make sure got correct curve
+        if (rtn_flag && (typeid(data_type)==typeid(double)))
+          octave_print(1, c);
+      }
+
+      // simple 3rd degree curve with both 1st derivatives specified
+      {
+        index_type nsegs(1);
+        std::vector<typename general_creator_type::joint_data> joints(nsegs+1);
+        std::vector<typename general_creator_type::index_type> max_degree(nsegs);
+        point_type p;
+        general_creator_type gc;
+        piecewise_curve_type c;
+        bool rtn_flag;
+
+        // set the joints
+        p << 1, 1, 0;
+        joints[0].set_f(p);
+        p << 0, 0, -1;
+        joints[1].set_f(p);
+
+        // set joint 1st derivatives
         p << 1, -1, 1;
         joints[0].set_right_fp(p);
         p << 1, 0, 0;
@@ -767,6 +801,48 @@ class piecewise_general_creator_test_suite : public Test::Suite
 
         // set the maximum degrees of each segment
         max_degree[0]=4;
+
+        // create curve
+        rtn_flag=gc.set_conditions(joints, max_degree, false);
+        TEST_ASSERT(rtn_flag);
+        rtn_flag=gc.create(c);
+        TEST_ASSERT(rtn_flag);
+
+        // test to make sure got correct curve
+        if (rtn_flag && (typeid(data_type)==typeid(double)))
+          octave_print(1, c);
+      }
+
+      // simple 5th degree curve with both 1st and 2nd derivatives specified
+      {
+        index_type nsegs(1);
+        std::vector<typename general_creator_type::joint_data> joints(nsegs+1);
+        std::vector<typename general_creator_type::index_type> max_degree(nsegs);
+        point_type p;
+        general_creator_type gc;
+        piecewise_curve_type c;
+        bool rtn_flag;
+
+        // set the joints
+        p << 1, 1, 0;
+        joints[0].set_f(p);
+        p << 0, 0, -1;
+        joints[1].set_f(p);
+
+        // set joint 1st derivatives
+        p << 1, -1, 1;
+        joints[0].set_right_fp(p);
+        p << 1, 0, 0;
+        joints[1].set_left_fp(p);
+
+        // set joint 2nd derivatives
+        p << 0, -1, 0;
+        joints[0].set_right_fpp(p);
+        p << 0, 1, 0;
+        joints[1].set_left_fpp(p);
+
+        // set the maximum degrees of each segment
+        max_degree[0]=6;
 
         // create curve
         rtn_flag=gc.set_conditions(joints, max_degree, false);
