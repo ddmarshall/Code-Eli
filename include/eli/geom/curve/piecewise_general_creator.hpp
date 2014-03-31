@@ -427,8 +427,8 @@ namespace eli
               // check against maximum degree
               if (!valid_degree(seg_degree[i], max_degree[i]))
               {
-                std::cerr << "Required degree for segment " << i << " is " << seg_degree[i]
-                          << " but maximum requested degree is only " << max_degree[i] << std::endl;
+//                std::cerr << "Required degree for segment " << i << " is " << seg_degree[i]
+//                          << " but maximum requested degree is only " << max_degree[i] << std::endl;
                 return false;
               }
             }
@@ -553,13 +553,13 @@ namespace eli
             for (i=0; i<nsegs; ++i)
             {
               // debugging stuff
-              std::cout << "segment[" << i << "] is degree " << seg_degree[i]
-                        << " and maximum degree is " << max_degree[i] << std::endl;
+//              std::cout << "segment[" << i << "] is degree " << seg_degree[i]
+//                        << " and maximum degree is " << max_degree[i] << std::endl;
 
               if (!valid_degree(seg_degree[i], max_degree[i]))
               {
-                std::cerr << "Required degree for segment " << i << " is " << seg_degree[i]
-                          << " but maximum requested degree is only " << max_degree[i] << std::endl;
+//                std::cerr << "Required degree for segment " << i << " is " << seg_degree[i]
+//                          << " but maximum requested degree is only " << max_degree[i] << std::endl;
                 return false;
               }
 
@@ -624,8 +624,8 @@ namespace eli
                 ++cond_no;
               }
             }
-            std::cout << "coef=" << std::endl << coef << std::endl;
-            std::cout << "rhs=" << std::endl << rhs << std::endl;
+//            std::cout << "coef=" << std::endl << coef << std::endl;
+//            std::cout << "rhs=" << std::endl << rhs << std::endl;
             assert(cond_no*dim__==coef.rows());
 
             return false;
