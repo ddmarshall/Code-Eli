@@ -590,7 +590,7 @@ namespace eli
               if (joints[i].use_right_fp())
               {
                 assert(cond_no<coef.rows());
-                set_fp_condition(rows, rhs_seg, seg_ind[i], seg_degree[i], joints[i].get_right_fp(), true);
+                set_fp_condition(rows, rhs_seg, seg_ind[i], seg_degree[i], joints[i].get_right_fp(), this->get_segment_dt(i), true);
                 coef.block(cond_no*dim__, 0, dim__, coef.cols())=rows;
                 rhs.block(cond_no*dim__, 0, dim__, 1)=rhs_seg;
                 ++cond_no;
@@ -599,7 +599,7 @@ namespace eli
               if (joints[i+1].use_left_fp())
               {
                 assert(cond_no<coef.rows());
-                set_fp_condition(rows, rhs_seg, seg_ind[i], seg_degree[i], joints[i+1].get_left_fp(), false);
+                set_fp_condition(rows, rhs_seg, seg_ind[i], seg_degree[i], joints[i+1].get_left_fp(), this->get_segment_dt(i), false);
                 coef.block(cond_no*dim__, 0, dim__, coef.cols())=rows;
                 rhs.block(cond_no*dim__, 0, dim__, 1)=rhs_seg;
                 ++cond_no;
@@ -609,7 +609,7 @@ namespace eli
               if (joints[i].use_right_fpp())
               {
                 assert(cond_no<coef.rows());
-                set_fpp_condition(rows, rhs_seg, seg_ind[i], seg_degree[i], joints[i].get_right_fpp(), true);
+                set_fpp_condition(rows, rhs_seg, seg_ind[i], seg_degree[i], joints[i].get_right_fpp(), this->get_segment_dt(i), true);
                 coef.block(cond_no*dim__, 0, dim__, coef.cols())=rows;
                 rhs.block(cond_no*dim__, 0, dim__, 1)=rhs_seg;
                 ++cond_no;
@@ -618,7 +618,7 @@ namespace eli
               if (joints[i+1].use_left_fpp())
               {
                 assert(cond_no<coef.rows());
-                set_fpp_condition(rows, rhs_seg, seg_ind[i], seg_degree[i], joints[i+1].get_left_fpp(), false);
+                set_fpp_condition(rows, rhs_seg, seg_ind[i], seg_degree[i], joints[i+1].get_left_fpp(), this->get_segment_dt(i), false);
                 coef.block(cond_no*dim__, 0, dim__, coef.cols())=rows;
                 rhs.block(cond_no*dim__, 0, dim__, 1)=rhs_seg;
                 ++cond_no;
@@ -670,7 +670,7 @@ namespace eli
           template<typename Derived1, typename Derived2>
           void set_fp_condition(Eigen::MatrixBase<Derived1> &rows, Eigen::MatrixBase<Derived2> &rhs,
                                 const index_type start_index, const index_type &seg_degree,
-                                const point_type &fp, bool segment_start) const
+                                const point_type &fp, const data_type &dt, bool segment_start) const
           {
             assert(seg_degree>1);
 
@@ -688,7 +688,7 @@ namespace eli
             }
 
             coef.setIdentity();
-            coef*=seg_degree;
+            coef*=seg_degree/dt;
             rows.setConstant(0);
             rows.block(0, ind, dim__, dim__)=-coef;
             rows.block(0, ind+dim__, dim__, dim__)=coef;
@@ -701,7 +701,7 @@ namespace eli
           template<typename Derived1, typename Derived2>
           void set_fpp_condition(Eigen::MatrixBase<Derived1> &rows, Eigen::MatrixBase<Derived2> &rhs,
                                  const index_type start_index, const index_type &seg_degree,
-                                 const point_type &fpp, bool segment_start) const
+                                 const point_type &fpp, const data_type &dt, bool segment_start) const
           {
             assert(seg_degree>1);
 
@@ -719,7 +719,7 @@ namespace eli
             }
 
             coef.setIdentity();
-            coef*=seg_degree*(seg_degree-1);
+            coef*=seg_degree*(seg_degree-1)/dt/dt;
             rows.setConstant(0);
             rows.block(0, ind, dim__, dim__)=coef;
             rows.block(0, ind+dim__, dim__, dim__)=-2*coef;
