@@ -695,9 +695,22 @@ class piecewise_general_creator_test_suite : public Test::Suite
         rtn_flag=gc.create(c);
         TEST_ASSERT(rtn_flag);
 
-        // test to make sure got correct curve
-        if (rtn_flag && (typeid(data_type)==typeid(double)))
-          octave_print(1, c);
+        // test the resulting curve
+        point_type p_test;
+
+        p_test=c.f(0);
+        TEST_ASSERT(joints[0].get_f()==p_test);
+//        std::cout << "p=" << joints[0].get_f()
+//                  << "\tp_test=" << p_test << "\tdiff="
+//                  << (joints[0].get_f()-p_test).norm() << std::endl;
+        p_test=c.f(1);
+        TEST_ASSERT(joints[1].get_f()==p_test);
+//        std::cout << "p=" << joints[1].get_f()
+//                  << "\tp_test=" << p_test << "\tdiff="
+//                  << (joints[1].get_f()-p_test).norm() << std::endl;
+
+//        if (rtn_flag && (typeid(data_type)==typeid(double)))
+//          octave_print(1, c);
       }
 
       // simple 2nd degree curve with 1st derivative specified
@@ -729,9 +742,27 @@ class piecewise_general_creator_test_suite : public Test::Suite
         rtn_flag=gc.create(c);
         TEST_ASSERT(rtn_flag);
 
-        // test to make sure got correct curve
-        if (rtn_flag && (typeid(data_type)==typeid(double)))
-          octave_print(1, c);
+        // test the resulting curve
+        point_type p_test;
+
+        p_test=c.f(0);
+        TEST_ASSERT(joints[0].get_f()==p_test);
+//        std::cout << "p=" << joints[0].get_f()
+//                  << "\tp_test=" << p_test << "\tdiff="
+//                  << (joints[0].get_f()-p_test).norm() << std::endl;
+        p_test=c.f(1);
+        TEST_ASSERT(joints[1].get_f()==p_test);
+//        std::cout << "p=" << joints[1].get_f()
+//                  << "\tp_test=" << p_test << "\tdiff="
+//                  << (joints[1].get_f()-p_test).norm() << std::endl;
+        p_test=c.fp(0);
+        TEST_ASSERT(joints[0].get_right_fp()==p_test);
+//        std::cout << "p=" << joints[0].get_right_fp()
+//                  << "\tp_test=" << p_test << "\tdiff="
+//                  << (joints[0].get_right_fp()-p_test).norm() << std::endl;
+
+//        if (rtn_flag && (typeid(data_type)==typeid(double)))
+//          octave_print(1, c);
       }
 
       // simple 2nd degree curve with 2nd derivative specified
@@ -763,9 +794,27 @@ class piecewise_general_creator_test_suite : public Test::Suite
         rtn_flag=gc.create(c);
         TEST_ASSERT(rtn_flag);
 
-        // test to make sure got correct curve
-        if (rtn_flag && (typeid(data_type)==typeid(double)))
-          octave_print(1, c);
+        // test the resulting curve
+        point_type p_test;
+
+        p_test=c.f(0);
+        TEST_ASSERT(joints[0].get_f()==p_test);
+//        std::cout << "p=" << joints[0].get_f()
+//                  << "\tp_test=" << p_test << "\tdiff="
+//                  << (joints[0].get_f()-p_test).norm() << std::endl;
+        p_test=c.f(1);
+        TEST_ASSERT(joints[1].get_f()==p_test);
+//        std::cout << "p=" << joints[1].get_f()
+//                  << "\tp_test=" << p_test << "\tdiff="
+//                  << (joints[1].get_f()-p_test).norm() << std::endl;
+        p_test=c.fpp(0);
+        TEST_ASSERT(joints[0].get_right_fpp()==p_test);
+//        std::cout << "p=" << joints[0].get_right_fpp()
+//                  << "\tp_test=" << p_test << "\tdiff="
+//                  << (joints[0].get_right_fpp()-p_test).norm() << std::endl;
+
+//        if (rtn_flag && (typeid(data_type)==typeid(double)))
+//          octave_print(1, c);
       }
 
       // simple 3rd degree curve with both 1st derivatives specified
@@ -808,9 +857,32 @@ class piecewise_general_creator_test_suite : public Test::Suite
         rtn_flag=gc.create(c);
         TEST_ASSERT(rtn_flag);
 
-        // test to make sure got correct curve
-        if (rtn_flag && (typeid(data_type)==typeid(double)))
-          octave_print(1, c);
+        // test the resulting curve
+        point_type p_test;
+
+        p_test=c.f(0);
+        TEST_ASSERT(joints[0].get_f()==p_test);
+//        std::cout << "p=" << joints[0].get_f()
+//                  << "\tp_test=" << p_test << "\tdiff="
+//                  << (joints[0].get_f()-p_test).norm() << std::endl;
+        p_test=c.f(1);
+        TEST_ASSERT(joints[1].get_f()==p_test);
+//        std::cout << "p=" << joints[1].get_f()
+//                  << "\tp_test=" << p_test << "\tdiff="
+//                  << (joints[1].get_f()-p_test).norm() << std::endl;
+        p_test=c.fp(0);
+        TEST_ASSERT(tol.approximately_equal(joints[0].get_right_fp(), p_test));
+//        std::cout << "p=" << joints[0].get_right_fp()
+//                  << "\tp_test=" << p_test << "\tdiff="
+//                  << (joints[0].get_right_fp()-p_test).norm() << std::endl;
+        p_test=c.fp(1);
+        TEST_ASSERT(joints[1].get_left_fp()==p_test);
+//        std::cout << "p=" << joints[1].get_left_fp()
+//                  << "\tp_test=" << p_test << "\tdiff="
+//                  << (joints[1].get_left_fp()-p_test).norm() << std::endl;
+
+//        if (rtn_flag && (typeid(data_type)==typeid(double)))
+//          octave_print(1, c);
       }
 
       // simple 5th degree curve with both 1st and 2nd derivatives specified
@@ -850,9 +922,42 @@ class piecewise_general_creator_test_suite : public Test::Suite
         rtn_flag=gc.create(c);
         TEST_ASSERT(rtn_flag);
 
-        // test to make sure got correct curve
-        if (rtn_flag && (typeid(data_type)==typeid(double)))
-          octave_print(1, c);
+        // test the resulting curve
+        point_type p_test;
+
+        p_test=c.f(0);
+        TEST_ASSERT(joints[0].get_f()==p_test);
+//        std::cout << "p=" << joints[0].get_f()
+//                  << "\tp_test=" << p_test << "\tdiff="
+//                  << (joints[0].get_f()-p_test).norm() << std::endl;
+        p_test=c.f(1);
+        TEST_ASSERT(joints[1].get_f()==p_test);
+//        std::cout << "p=" << joints[1].get_f()
+//                  << "\tp_test=" << p_test << "\tdiff="
+//                  << (joints[1].get_f()-p_test).norm() << std::endl;
+        p_test=c.fp(0);
+        TEST_ASSERT(tol.approximately_equal(joints[0].get_right_fp(), p_test));
+//        std::cout << "p=" << joints[0].get_right_fp()
+//                  << "\tp_test=" << p_test << "\tdiff="
+//                  << (joints[0].get_right_fp()-p_test).norm() << std::endl;
+        p_test=c.fp(1);
+        TEST_ASSERT(joints[1].get_left_fp()==p_test);
+//        std::cout << "p=" << joints[1].get_left_fp()
+//                  << "\tp_test=" << p_test << "\tdiff="
+//                  << (joints[1].get_left_fp()-p_test).norm() << std::endl;
+        p_test=c.fpp(0);
+        TEST_ASSERT(tol.approximately_equal(joints[0].get_right_fpp(), p_test));
+//        std::cout << "p=" << joints[0].get_right_fpp()
+//                  << "\tp_test=" << p_test << "\tdiff="
+//                  << (joints[0].get_right_fpp()-p_test).norm() << std::endl;
+        p_test=c.fpp(1);
+        TEST_ASSERT(joints[1].get_left_fpp()==p_test);
+//        std::cout << "p=" << joints[1].get_left_fpp()
+//                  << "\tp_test=" << p_test << "\tdiff="
+//                  << (joints[1].get_left_fpp()-p_test).norm() << std::endl;
+
+//        if (rtn_flag && (typeid(data_type)==typeid(double)))
+//          octave_print(1, c);
       }
     }
 };

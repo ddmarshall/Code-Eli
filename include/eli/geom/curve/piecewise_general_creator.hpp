@@ -397,11 +397,6 @@ namespace eli
 
           virtual bool create(piecewise<bezier, data_type, dim__, tolerance_type> &pc) const
           {
-            typedef piecewise<bezier, data_type, dim__, tolerance_type> piecewise_curve_type;
-            typedef typename piecewise_curve_type::curve_type curve_type;
-            typedef typename piecewise_curve_type::error_code error_code;
-            typedef typename curve_type::control_point_type control_point_type;
-
             index_type nsegs(this->get_number_segments()), i;
             std::vector<index_type> seg_degree(nsegs);
             std::vector<joint_data> joint_states(joints);
@@ -628,7 +623,40 @@ namespace eli
 //            std::cout << "rhs=" << std::endl << rhs << std::endl;
             assert(cond_no*dim__==coef.rows());
 
-            return false;
+            // solve for the control points
+            x=coef.lu().solve(rhs);
+
+            // extract them into control points for each segment
+            typedef piecewise<bezier, data_type, dim__, tolerance_type> piecewise_curve_type;
+            typedef typename piecewise_curve_type::curve_type curve_type;
+            typedef typename piecewise_curve_type::error_code error_code;
+            typedef typename curve_type::control_point_type control_point_type;
+
+            // set curve t0
+            pc.set_t0(this->get_t0());
+
+            for (i=0; i<nsegs; ++i)
+            {
+              curve_type c(seg_degree[i]);
+              control_point_type cp;
+              error_code err;
+
+              for (index_type j=0; j<=seg_degree[i]; ++j)
+              {
+                cp=x.block(seg_ind[i]+j*dim__, 0, dim__, 1).transpose();
+                c.set_control_point(cp, j);
+              }
+
+              err=pc.push_back(c, this->get_segment_dt(i));
+              if (err!=piecewise_curve_type::NO_ERRORS)
+              {
+                pc.clear();
+                pc.set_t0(0);
+                return false;
+              }
+            }
+
+            return true;
           }
 
         protected:
