@@ -678,6 +678,7 @@ class piecewise_general_creator_test_suite : public Test::Suite
         point_type p;
         general_creator_type gc;
         piecewise_curve_type c;
+        data_type t0(2), t1(4);
         bool rtn_flag;
 
         // set the joints
@@ -692,19 +693,21 @@ class piecewise_general_creator_test_suite : public Test::Suite
         // create curve
         rtn_flag=gc.set_conditions(joints, max_degree, false);
         TEST_ASSERT(rtn_flag);
+        gc.set_t0(t0);
+        gc.set_segment_dt(t1-t0, 0);
         rtn_flag=gc.create(c);
         TEST_ASSERT(rtn_flag);
 
         // test the resulting curve
         point_type p_test;
 
-        p_test=c.f(0);
-        TEST_ASSERT(joints[0].get_f()==p_test);
+        p_test=c.f(t0);
+        TEST_ASSERT(tol.approximately_equal(joints[0].get_f(), p_test));
 //        std::cout << "p=" << joints[0].get_f()
 //                  << "\tp_test=" << p_test << "\tdiff="
 //                  << (joints[0].get_f()-p_test).norm() << std::endl;
-        p_test=c.f(1);
-        TEST_ASSERT(joints[1].get_f()==p_test);
+        p_test=c.f(t1);
+        TEST_ASSERT(tol.approximately_equal(joints[1].get_f(), p_test));
 //        std::cout << "p=" << joints[1].get_f()
 //                  << "\tp_test=" << p_test << "\tdiff="
 //                  << (joints[1].get_f()-p_test).norm() << std::endl;
@@ -721,6 +724,7 @@ class piecewise_general_creator_test_suite : public Test::Suite
         point_type p;
         general_creator_type gc;
         piecewise_curve_type c;
+        data_type t0(2), t1(4);
         bool rtn_flag;
 
         // set the joints
@@ -739,24 +743,26 @@ class piecewise_general_creator_test_suite : public Test::Suite
         // create curve
         rtn_flag=gc.set_conditions(joints, max_degree, false);
         TEST_ASSERT(rtn_flag);
+        gc.set_t0(t0);
+        gc.set_segment_dt(t1-t0, 0);
         rtn_flag=gc.create(c);
         TEST_ASSERT(rtn_flag);
 
         // test the resulting curve
         point_type p_test;
 
-        p_test=c.f(0);
-        TEST_ASSERT(joints[0].get_f()==p_test);
+        p_test=c.f(t0);
+        TEST_ASSERT(tol.approximately_equal(joints[0].get_f(), p_test));
 //        std::cout << "p=" << joints[0].get_f()
 //                  << "\tp_test=" << p_test << "\tdiff="
 //                  << (joints[0].get_f()-p_test).norm() << std::endl;
-        p_test=c.f(1);
-        TEST_ASSERT(joints[1].get_f()==p_test);
+        p_test=c.f(t1);
+        TEST_ASSERT(tol.approximately_equal(joints[1].get_f(), p_test));
 //        std::cout << "p=" << joints[1].get_f()
 //                  << "\tp_test=" << p_test << "\tdiff="
 //                  << (joints[1].get_f()-p_test).norm() << std::endl;
-        p_test=c.fp(0);
-        TEST_ASSERT(joints[0].get_right_fp()==p_test);
+        p_test=c.fp(t0);
+        TEST_ASSERT(tol.approximately_equal(joints[0].get_right_fp(), p_test));
 //        std::cout << "p=" << joints[0].get_right_fp()
 //                  << "\tp_test=" << p_test << "\tdiff="
 //                  << (joints[0].get_right_fp()-p_test).norm() << std::endl;
@@ -773,6 +779,7 @@ class piecewise_general_creator_test_suite : public Test::Suite
         point_type p;
         general_creator_type gc;
         piecewise_curve_type c;
+        data_type t0(2), t1(4);
         bool rtn_flag;
 
         // set the joints
@@ -791,24 +798,26 @@ class piecewise_general_creator_test_suite : public Test::Suite
         // create curve
         rtn_flag=gc.set_conditions(joints, max_degree, false);
         TEST_ASSERT(rtn_flag);
+        gc.set_t0(t0);
+        gc.set_segment_dt(t1-t0, 0);
         rtn_flag=gc.create(c);
         TEST_ASSERT(rtn_flag);
 
         // test the resulting curve
         point_type p_test;
 
-        p_test=c.f(0);
-        TEST_ASSERT(joints[0].get_f()==p_test);
+        p_test=c.f(t0);
+        TEST_ASSERT(tol.approximately_equal(joints[0].get_f(), p_test));
 //        std::cout << "p=" << joints[0].get_f()
 //                  << "\tp_test=" << p_test << "\tdiff="
 //                  << (joints[0].get_f()-p_test).norm() << std::endl;
-        p_test=c.f(1);
-        TEST_ASSERT(joints[1].get_f()==p_test);
+        p_test=c.f(t1);
+        TEST_ASSERT(tol.approximately_equal(joints[1].get_f(), p_test));
 //        std::cout << "p=" << joints[1].get_f()
 //                  << "\tp_test=" << p_test << "\tdiff="
 //                  << (joints[1].get_f()-p_test).norm() << std::endl;
-        p_test=c.fpp(0);
-        TEST_ASSERT(joints[0].get_right_fpp()==p_test);
+        p_test=c.fpp(t0);
+        TEST_ASSERT(tol.approximately_equal(joints[0].get_right_fpp(), p_test));
 //        std::cout << "p=" << joints[0].get_right_fpp()
 //                  << "\tp_test=" << p_test << "\tdiff="
 //                  << (joints[0].get_right_fpp()-p_test).norm() << std::endl;
@@ -825,6 +834,7 @@ class piecewise_general_creator_test_suite : public Test::Suite
         point_type p;
         general_creator_type gc;
         piecewise_curve_type c;
+        data_type t0(2), t1(4);
         bool rtn_flag;
 
         // set the joints
@@ -845,6 +855,8 @@ class piecewise_general_creator_test_suite : public Test::Suite
         // create curve
         rtn_flag=gc.set_conditions(joints, max_degree, false);
         TEST_ASSERT(rtn_flag);
+        gc.set_t0(t0);
+        gc.set_segment_dt(t1-t0, 0);
         rtn_flag=gc.create(c);
         TEST_ASSERT(!rtn_flag);
 
@@ -854,29 +866,31 @@ class piecewise_general_creator_test_suite : public Test::Suite
         // create curve
         rtn_flag=gc.set_conditions(joints, max_degree, false);
         TEST_ASSERT(rtn_flag);
+        gc.set_t0(t0);
+        gc.set_segment_dt(t1-t0, 0);
         rtn_flag=gc.create(c);
         TEST_ASSERT(rtn_flag);
 
         // test the resulting curve
         point_type p_test;
 
-        p_test=c.f(0);
-        TEST_ASSERT(joints[0].get_f()==p_test);
+        p_test=c.f(t0);
+        TEST_ASSERT(tol.approximately_equal(joints[0].get_f(), p_test));
 //        std::cout << "p=" << joints[0].get_f()
 //                  << "\tp_test=" << p_test << "\tdiff="
 //                  << (joints[0].get_f()-p_test).norm() << std::endl;
-        p_test=c.f(1);
-        TEST_ASSERT(joints[1].get_f()==p_test);
+        p_test=c.f(t1);
+        TEST_ASSERT(tol.approximately_equal(joints[1].get_f(), p_test));
 //        std::cout << "p=" << joints[1].get_f()
 //                  << "\tp_test=" << p_test << "\tdiff="
 //                  << (joints[1].get_f()-p_test).norm() << std::endl;
-        p_test=c.fp(0);
+        p_test=c.fp(t0);
         TEST_ASSERT(tol.approximately_equal(joints[0].get_right_fp(), p_test));
 //        std::cout << "p=" << joints[0].get_right_fp()
 //                  << "\tp_test=" << p_test << "\tdiff="
 //                  << (joints[0].get_right_fp()-p_test).norm() << std::endl;
-        p_test=c.fp(1);
-        TEST_ASSERT(joints[1].get_left_fp()==p_test);
+        p_test=c.fp(t1);
+        TEST_ASSERT(tol.approximately_equal(joints[1].get_left_fp(), p_test));
 //        std::cout << "p=" << joints[1].get_left_fp()
 //                  << "\tp_test=" << p_test << "\tdiff="
 //                  << (joints[1].get_left_fp()-p_test).norm() << std::endl;
@@ -893,6 +907,7 @@ class piecewise_general_creator_test_suite : public Test::Suite
         point_type p;
         general_creator_type gc;
         piecewise_curve_type c;
+        data_type t0(2), t1(4);
         bool rtn_flag;
 
         // set the joints
@@ -919,39 +934,41 @@ class piecewise_general_creator_test_suite : public Test::Suite
         // create curve
         rtn_flag=gc.set_conditions(joints, max_degree, false);
         TEST_ASSERT(rtn_flag);
+        gc.set_t0(t0);
+        gc.set_segment_dt(t1-t0, 0);
         rtn_flag=gc.create(c);
         TEST_ASSERT(rtn_flag);
 
         // test the resulting curve
         point_type p_test;
 
-        p_test=c.f(0);
-        TEST_ASSERT(joints[0].get_f()==p_test);
+        p_test=c.f(t0);
+        TEST_ASSERT(tol.approximately_equal(joints[0].get_f(), p_test));
 //        std::cout << "p=" << joints[0].get_f()
 //                  << "\tp_test=" << p_test << "\tdiff="
 //                  << (joints[0].get_f()-p_test).norm() << std::endl;
-        p_test=c.f(1);
-        TEST_ASSERT(joints[1].get_f()==p_test);
+        p_test=c.f(t1);
+        TEST_ASSERT(tol.approximately_equal(joints[1].get_f(), p_test));
 //        std::cout << "p=" << joints[1].get_f()
 //                  << "\tp_test=" << p_test << "\tdiff="
 //                  << (joints[1].get_f()-p_test).norm() << std::endl;
-        p_test=c.fp(0);
+        p_test=c.fp(t0);
         TEST_ASSERT(tol.approximately_equal(joints[0].get_right_fp(), p_test));
 //        std::cout << "p=" << joints[0].get_right_fp()
 //                  << "\tp_test=" << p_test << "\tdiff="
 //                  << (joints[0].get_right_fp()-p_test).norm() << std::endl;
-        p_test=c.fp(1);
-        TEST_ASSERT(joints[1].get_left_fp()==p_test);
+        p_test=c.fp(t1);
+        TEST_ASSERT(tol.approximately_equal(joints[1].get_left_fp(), p_test));
 //        std::cout << "p=" << joints[1].get_left_fp()
 //                  << "\tp_test=" << p_test << "\tdiff="
 //                  << (joints[1].get_left_fp()-p_test).norm() << std::endl;
-        p_test=c.fpp(0);
+        p_test=c.fpp(t0);
         TEST_ASSERT(tol.approximately_equal(joints[0].get_right_fpp(), p_test));
 //        std::cout << "p=" << joints[0].get_right_fpp()
 //                  << "\tp_test=" << p_test << "\tdiff="
 //                  << (joints[0].get_right_fpp()-p_test).norm() << std::endl;
-        p_test=c.fpp(1);
-        TEST_ASSERT(joints[1].get_left_fpp()==p_test);
+        p_test=c.fpp(t1);
+        TEST_ASSERT(tol.approximately_equal(joints[1].get_left_fpp(), p_test));
 //        std::cout << "p=" << joints[1].get_left_fpp()
 //                  << "\tp_test=" << p_test << "\tdiff="
 //                  << (joints[1].get_left_fpp()-p_test).norm() << std::endl;
