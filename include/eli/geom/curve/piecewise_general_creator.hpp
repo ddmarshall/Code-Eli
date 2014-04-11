@@ -625,6 +625,8 @@ namespace eli
 
             // solve for the control points
             x=coef.lu().solve(rhs);
+//            if (nsegs>1)
+//              std::cout << "x=" << std::endl << x << std::endl;
 
             // extract them into control points for each segment
             typedef piecewise<bezier, data_type, dim__, tolerance_type> piecewise_curve_type;
@@ -643,7 +645,7 @@ namespace eli
 
               for (index_type j=0; j<=seg_degree[i]; ++j)
               {
-                cp=x.block(seg_ind[i]+j*dim__, 0, dim__, 1).transpose();
+                cp=x.block((seg_ind[i]+j)*dim__, 0, dim__, 1).transpose();
                 c.set_control_point(cp, j);
               }
 
