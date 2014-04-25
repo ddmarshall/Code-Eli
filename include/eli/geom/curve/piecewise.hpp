@@ -380,6 +380,18 @@ namespace eli
             printf("End report\n");
           }
 
+          void get_pmap( std::vector < data_type > &pmap )
+          {
+            pmap.clear();
+
+            typename segment_collection_type::const_iterator it;
+            for (it=segments.begin(); it!=segments.end(); ++it)
+            {
+              pmap.push_back( it->first );
+            }
+            pmap.push_back( tmax );
+          }
+
           index_type number_segments() const {return static_cast<index_type>(segments.size());}
 
           void degree(index_type &mind, index_type &maxd) const

@@ -166,6 +166,22 @@ namespace eli
             vkey.parameter_report();
           }
 
+          void get_pmap_u( std::vector < data_type > &pmap )
+          {
+            ukey.get_pmap( pmap );
+          }
+
+          void get_pmap_v( std::vector < data_type > &pmap )
+          {
+            vkey.get_pmap( pmap );
+          }
+
+          void get_pmap_uv( std::vector < data_type > &upmap, std::vector < data_type > &vpmap )
+          {
+            ukey.get_pmap( upmap );
+            vkey.get_pmap( vpmap );
+          }
+
           void init_u(const index_type &nsegu, const data_type &du = 1, const data_type &u0 = 0)
           {
             patches.clear();
@@ -1067,6 +1083,18 @@ namespace eli
               }
               printf(" pmax: %f\n", pmax);
               printf("End report\n");
+            }
+
+            void get_pmap( std::vector < data_type > &pmap )
+            {
+              pmap.clear();
+
+              typename keymap_type::iterator it;
+              for (it=key.begin(); it!=key.end(); ++it)
+              {
+                pmap.push_back( it->first );
+              }
+              pmap.push_back( pmax );
             }
 
             void reverse_keymap()
