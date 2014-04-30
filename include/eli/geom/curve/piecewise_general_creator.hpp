@@ -149,12 +149,28 @@ namespace eli
               {
                 fp_left=fpl;
                 conditions|=LEFT_FP_SET;
+
+                // if already wanting C1 continuous then set right as well
+                if (get_continuity()>C0)
+                {
+                  fp_right=fpl;
+                  conditions|=RIGHT_FP_SET;
+                }
+
                 return check_state();
               }
               bool set_right_fp(const point_type &fpr)
               {
                 fp_right=fpr;
                 conditions|=RIGHT_FP_SET;
+
+                // if already wanting C1 continuous then set left as well
+                if (get_continuity()>C0)
+                {
+                  fp_left=fpr;
+                  conditions|=LEFT_FP_SET;
+                }
+
                 return check_state();
               }
               bool set_fp(const point_type &p)
@@ -211,12 +227,28 @@ namespace eli
               {
                 fpp_left=fppl;
                 conditions|=LEFT_FPP_SET;
+
+                // if already wanting C2 continuous then set right as well
+                if (get_continuity()>C1)
+                {
+                  fpp_right=fppl;
+                  conditions|=RIGHT_FPP_SET;
+                }
+
                 return check_state();
               }
               bool set_right_fpp(const point_type &fppr)
               {
                 fpp_right=fppr;
                 conditions|=RIGHT_FPP_SET;
+
+                // if already wanting C2 continuous then set left as well
+                if (get_continuity()>C1)
+                {
+                  fpp_left=fppr;
+                  conditions|=LEFT_FPP_SET;
+                }
+
                 return check_state();
               }
               bool set_fpp(const point_type &p)

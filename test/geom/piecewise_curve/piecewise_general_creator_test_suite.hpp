@@ -447,16 +447,18 @@ class piecewise_general_creator_test_suite : public Test::Suite
 
         // add left fp
         rtn_flag=joint.set_left_fp(p2);
-        TEST_ASSERT(!rtn_flag);
+        TEST_ASSERT(rtn_flag);
         TEST_ASSERT(joint.get_continuity()==general_creator_type::C1);
         TEST_ASSERT(joint.use_f());
         TEST_ASSERT(joint.use_left_fp());
-        TEST_ASSERT(!joint.use_right_fp());
+        TEST_ASSERT(joint.use_right_fp());
         TEST_ASSERT(!joint.use_left_fpp());
         TEST_ASSERT(!joint.use_right_fpp());
 
         // unset left fp
         rtn_flag=joint.unset_left_fp();
+        TEST_ASSERT(!rtn_flag);
+        rtn_flag=joint.unset_right_fp();
         TEST_ASSERT(rtn_flag);
         TEST_ASSERT(joint.get_continuity()==general_creator_type::C1);
         TEST_ASSERT(joint.use_f());
@@ -467,15 +469,17 @@ class piecewise_general_creator_test_suite : public Test::Suite
 
         // add right fp
         rtn_flag=joint.set_right_fp(p2);
-        TEST_ASSERT(!rtn_flag);
+        TEST_ASSERT(rtn_flag);
         TEST_ASSERT(joint.get_continuity()==general_creator_type::C1);
         TEST_ASSERT(joint.use_f());
-        TEST_ASSERT(!joint.use_left_fp());
+        TEST_ASSERT(joint.use_left_fp());
         TEST_ASSERT(joint.use_right_fp());
         TEST_ASSERT(!joint.use_left_fpp());
         TEST_ASSERT(!joint.use_right_fpp());
 
         // change continuity
+        rtn_flag=joint.unset_left_fp();
+        TEST_ASSERT(!rtn_flag);
         rtn_flag=joint.set_continuity(general_creator_type::C0);
         TEST_ASSERT(rtn_flag);
         TEST_ASSERT(joint.get_continuity()==general_creator_type::C0);
@@ -515,9 +519,11 @@ class piecewise_general_creator_test_suite : public Test::Suite
         TEST_ASSERT(!joint.use_left_fpp());
         TEST_ASSERT(!joint.use_right_fpp());
 
-        // set left fp to discontinuous value
+        // set left fp to change left and right value
         rtn_flag=joint.set_left_fp(p2);
-        TEST_ASSERT(!rtn_flag);
+        TEST_ASSERT(rtn_flag);
+        TEST_ASSERT(joint.get_left_fp()==p2);
+        TEST_ASSERT(joint.get_right_fp()==p2);
         TEST_ASSERT(joint.get_continuity()==general_creator_type::C1);
         TEST_ASSERT(joint.use_f());
         TEST_ASSERT(joint.use_left_fp());
@@ -604,9 +610,9 @@ class piecewise_general_creator_test_suite : public Test::Suite
         TEST_ASSERT(!joint.use_left_fpp());
         TEST_ASSERT(joint.use_right_fpp());
 
-        // set left fpp to discontinuous value
+        // set left fpp to set both left and right values
         rtn_flag=joint.set_left_fpp(p2);
-        TEST_ASSERT(!rtn_flag);
+        TEST_ASSERT(rtn_flag);
         TEST_ASSERT(joint.get_continuity()==general_creator_type::C2);
         TEST_ASSERT(joint.use_f());
         TEST_ASSERT(!joint.use_left_fp());
