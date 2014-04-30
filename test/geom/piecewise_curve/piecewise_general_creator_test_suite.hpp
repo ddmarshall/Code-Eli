@@ -99,9 +99,9 @@ class piecewise_general_creator_test_suite : public Test::Suite
           if (i<bez.degree())
             std::cout << ", ";
           else if (pp<ns-1)
-            std::cout << "; ";
+            std::cout << ", ";
         }
-        std::cout << std::endl;
+//        std::cout << std::endl;
       }
       std::cout << "];" << std::endl;
 
@@ -116,9 +116,9 @@ class piecewise_general_creator_test_suite : public Test::Suite
           if (i<bez.degree())
             std::cout << ", ";
           else if (pp<ns-1)
-            std::cout << "; ";
+            std::cout << ", ";
         }
-        std::cout << std::endl;
+//        std::cout << std::endl;
       }
       std::cout << "];" << std::endl;
 
@@ -133,9 +133,9 @@ class piecewise_general_creator_test_suite : public Test::Suite
           if (i<bez.degree())
             std::cout << ", ";
           else if (pp<ns-1)
-            std::cout << "; ";
+            std::cout << ", ";
         }
-        std::cout << std::endl;
+//        std::cout << std::endl;
       }
       std::cout << "];" << std::endl;
 
