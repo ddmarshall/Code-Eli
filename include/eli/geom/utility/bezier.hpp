@@ -10,8 +10,8 @@
 *    David D. Marshall - initial code and implementation
 ********************************************************************************/
 
-#ifndef eli_geom_curve_utility_bezier_hpp
-#define eli_geom_curve_utility_bezier_hpp
+#ifndef eli_geom_utility_bezier_hpp
+#define eli_geom_utility_bezier_hpp
 
 #ifdef Success  // X11 #define collides with Eigen
 #undef Success
