@@ -1176,6 +1176,9 @@ class fit_container_test_suite : public Test::Suite
       constraint_info ciout;
       std::vector<point_type> points(20);
 
+      v1[0]=0; v2[1]=2; v2[2]=4;
+      v2[0]=1; v2[1]=3; v2[2]=5;
+
       // set points
       create_points(points.begin(), points.size());
       ccon.set_points(points.begin(), points.end());
