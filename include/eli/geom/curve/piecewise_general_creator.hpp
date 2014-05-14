@@ -454,8 +454,6 @@ namespace eli
               // check against maximum degree
               if (!valid_degree(seg_degree[i], max_degree[i]))
               {
-//                std::cerr << "Required degree for segment " << i << " is " << seg_degree[i]
-//                          << " but maximum requested degree is only " << max_degree[i] << std::endl;
                 return false;
               }
             }
@@ -496,6 +494,9 @@ namespace eli
                     }
                     else
                     {
+                      bool hit_max_im1(max_degree[i-1]>0 && seg_degree[i-1]>=max_degree[i-1]);
+                      bool hit_max_i(max_degree[i]>0 && seg_degree[i]>=max_degree[i]);
+
                       // raise the degree of the lower degreed segment
                       if ((i==0) & (!closed))
                       {
@@ -506,7 +507,7 @@ namespace eli
                         seg_degree[i-1]+=1;
                       }
                       // NOTE: Here is a place that needs to be modified if closed curve
-                      else if ( (seg_degree[i-1]<max_degree[i-1]) && (seg_degree[i-1]<=seg_degree[i]) )
+                      else if ( hit_max_i || (!hit_max_im1 && (seg_degree[i-1]<=seg_degree[i])) )
                       {
                         seg_degree[i-1]+=1;
                       }
@@ -541,6 +542,9 @@ namespace eli
                     }
                     else
                     {
+                      bool hit_max_im1(max_degree[i-1]>0 && seg_degree[i-1]>=max_degree[i-1]);
+                      bool hit_max_i(max_degree[i]>0 && seg_degree[i]>=max_degree[i]);
+
                       // raise the degree of the lower degreed segment
                       if ((i==0) && (!closed))
                       {
@@ -551,13 +555,15 @@ namespace eli
                         seg_degree[i-1]+=1;
                       }
                       // NOTE: Here is a place that needs to be modified if closed curve
-                      if (seg_degree[i-1]<=seg_degree[i])
+                      if ( hit_max_i || (!hit_max_im1 && (seg_degree[i-1]<=seg_degree[i])) )
                       {
                         seg_degree[i-1]+=1;
+                        assert(max_degree[i-1]<=0 || (seg_degree[i-1]<=max_degree[i-1]));
                       }
                       else
                       {
                         seg_degree[i]+=1;
+                        assert(max_degree[i]<=0 || (seg_degree[i]<=max_degree[i]));
                       }
                     }
                   }
@@ -579,14 +585,8 @@ namespace eli
             seg_ind[0]=0;
             for (i=0; i<nsegs; ++i)
             {
-              // debugging stuff
-//              std::cout << "segment[" << i << "] is degree " << seg_degree[i]
-//                        << " and maximum degree is " << max_degree[i] << std::endl;
-
               if (!valid_degree(seg_degree[i], max_degree[i]))
               {
-//                std::cerr << "Required degree for segment " << i << " is " << seg_degree[i]
-//                          << " but maximum requested degree is only " << max_degree[i] << std::endl;
                 return false;
               }
 
@@ -652,9 +652,6 @@ namespace eli
               }
             }
 
-// TODO: Remove when done debugging
-            bool cont(false);
-
             // cycle through each interior joint to set derivative continuity conditions
             // FIX: This needs to be changed for closed curves
             for (i=0; i<nsegs; ++i)
@@ -662,9 +659,6 @@ namespace eli
               // set the 1st derivative continuous without specifying value
               if ( (joint_states[i].get_continuity()>C0) && !joint_states[i].use_left_fp() && !joint_states[i].use_right_fp() )
               {
-                // this state should not be set
-                assert(!joint_states[i].use_left_fp());
-
                 assert(cond_no<coef.rows());
                 set_fp_continuous_condition(rows, rhs_seg, seg_ind[i-1], seg_degree[i-1], seg_degree[i], this->get_segment_dt(i-1), this->get_segment_dt(i));
                 coef.block(cond_no*dim__, 0, dim__, coef.cols())=rows;
@@ -675,25 +669,18 @@ namespace eli
               // set the 2nd derivative continuous without specifying value
               if ( (joint_states[i].get_continuity()>C1) && !joint_states[i].use_left_fpp() && !joint_states[i].use_right_fpp() )
               {
-                cont=true;
-
-                // not implemented
-                assert(false);
+                assert(cond_no<coef.rows());
+                set_fpp_continuous_condition(rows, rhs_seg, seg_ind[i-1], seg_degree[i-1], seg_degree[i], this->get_segment_dt(i-1), this->get_segment_dt(i));
+                coef.block(cond_no*dim__, 0, dim__, coef.cols())=rows;
+                rhs.block(cond_no*dim__, 0, dim__, 1)=rhs_seg;
+                ++cond_no;
               }
-            }
-
-            if (cont)
-            {
-              std::cout << "coef=" << std::endl << coef << std::endl;
-              std::cout << "rhs=" << std::endl << rhs << std::endl;
             }
 
             assert(cond_no*dim__==coef.rows());
 
             // solve for the control points
             x=coef.lu().solve(rhs);
-//            if (nsegs>1)
-//              std::cout << "x=" << std::endl << x << std::endl;
 
             // extract them into control points for each segment
             typedef piecewise<bezier, data_type, dim__, tolerance_type> piecewise_curve_type;
@@ -759,9 +746,6 @@ namespace eli
             rows.setConstant(0);
             rows.block(0, ind, dim__, dim__).setIdentity();
             rhs=p.transpose();
-//            std::cout << "\trows=" << std::endl << rows << std::endl;
-//            std::cout << "\trhs^T=" << rhs.transpose() << std::endl;
-//            std::cout << "\tp=" << p << std::endl;
           }
 
           template<typename Derived1, typename Derived2>
@@ -774,6 +758,10 @@ namespace eli
             // set terms
             index_type ind;
             Eigen::Matrix<data_type, dim__, dim__> coef;
+
+            // initialize rows & rhs to zero
+            rhs.setConstant(0);
+            rows.setConstant(0);
 
             if (segment_start)
             {
@@ -790,9 +778,6 @@ namespace eli
             rows.block(0, ind, dim__, dim__)=-coef;
             rows.block(0, ind+dim__, dim__, dim__)=coef;
             rhs=fp.transpose();
-//            std::cout << "\trows=" << std::endl << rows << std::endl;
-//            std::cout << "\trhs^T=" << rhs.transpose() << std::endl;
-//            std::cout << "\tp=" << fp << std::endl;
           }
 
           template<typename Derived1, typename Derived2>
@@ -807,6 +792,10 @@ namespace eli
             index_type l_ind, r_ind;
             Eigen::Matrix<data_type, dim__, dim__> coef;
 
+            // initialize rows & rhs to zero
+            rhs.setConstant(0);
+            rows.setConstant(0);
+
             l_ind=(start_index+l_seg_degree-1)*dim__;
             r_ind=(start_index+l_seg_degree+1)*dim__;
 
@@ -819,10 +808,6 @@ namespace eli
             coef*=r_seg_degree/r_dt;
             rows.block(0, r_ind, dim__, dim__)=coef;
             rows.block(0, r_ind+dim__, dim__, dim__)=-coef;
-
-            rhs.setConstant(0);
-//            std::cout << "\trows=" << std::endl << rows << std::endl;
-//            std::cout << "\trhs^T=" << rhs.transpose() << std::endl;
           }
 
           template<typename Derived1, typename Derived2>
@@ -835,6 +820,10 @@ namespace eli
             // set terms
             index_type ind;
             Eigen::Matrix<data_type, dim__, dim__> coef;
+
+            // initialize rows & rhs to zero
+            rhs.setConstant(0);
+            rows.setConstant(0);
 
             if (segment_start)
             {
@@ -852,9 +841,46 @@ namespace eli
             rows.block(0, ind+dim__, dim__, dim__)=-2*coef;
             rows.block(0, ind+2*dim__, dim__, dim__)=coef;
             rhs=fpp.transpose();
-//            std::cout << "\trows=" << std::endl << rows << std::endl;
-//            std::cout << "\trhs^T=" << rhs.transpose() << std::endl;
-//            std::cout << "\tp=" << fpp << std::endl;
+          }
+
+          template<typename Derived1, typename Derived2>
+          void set_fpp_continuous_condition(Eigen::MatrixBase<Derived1> &rows, Eigen::MatrixBase<Derived2> &rhs,
+                                            const index_type &start_index, const index_type &l_seg_degree,
+                                            const index_type &r_seg_degree, const data_type &l_dt,
+                                            const data_type &r_dt) const
+          {
+            assert( ((l_seg_degree>1) && (r_seg_degree>=1)) || ((r_seg_degree>1) && (l_seg_degree>=1)) );
+
+            // set terms
+            index_type l_ind, r_ind;
+            Eigen::Matrix<data_type, dim__, dim__> coef;
+
+            // initialize rows & rhs to zero
+            rhs.setConstant(0);
+            rows.setConstant(0);
+
+            l_ind=(start_index+l_seg_degree-2)*dim__;
+            r_ind=(start_index+l_seg_degree+1)*dim__;
+
+            // only set this if have enough control points to calculate the second derivative
+            if (l_seg_degree>1)
+            {
+              coef.setIdentity();
+              coef*=l_seg_degree*(l_seg_degree-1)/l_dt/l_dt;
+              rows.block(0, l_ind, dim__, dim__)=coef;
+              rows.block(0, l_ind+dim__, dim__, dim__)=-2*coef;
+              rows.block(0, l_ind+2*dim__, dim__, dim__)=coef;
+            }
+
+            // only set this if have enough control points to calculate the second derivative
+            if (r_seg_degree>1)
+            {
+            coef.setIdentity();
+            coef*=r_seg_degree*(r_seg_degree-1)/r_dt/r_dt;
+            rows.block(0, r_ind, dim__, dim__)=-coef;
+            rows.block(0, r_ind+dim__, dim__, dim__)=2*coef;
+            rows.block(0, r_ind+2*dim__, dim__, dim__)=-coef;
+            }
           }
 
         private:
