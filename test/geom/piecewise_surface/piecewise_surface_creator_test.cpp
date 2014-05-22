@@ -20,7 +20,7 @@
 
 #include <cpptest.h> // CppTest Framework
 
-#include "piecewise_surface_creator_test_suite.hpp"  // piecewise_surface_creator_test_suite
+#include "piecewise_body_of_revolution_creator_test_suite.hpp"  // piecewise_body_of_revolution_creator_test_suite
 
 enum TestType {testTypeText, testTypeCompiler, testTypeHTML};
 
@@ -151,9 +151,9 @@ int main(int argc, char *argv[])
     std::string ostr_filename("piecewise_surface_creator_test_results.html");
 
     // add the cppack test suites
-    ts.add(std::auto_ptr<Test::Suite>(new piecewise_surface_creator_test_suite<float>()));
-    ts.add(std::auto_ptr<Test::Suite>(new piecewise_surface_creator_test_suite<double>()));
-    ts.add(std::auto_ptr<Test::Suite>(new piecewise_surface_creator_test_suite<long double>()));
+    ts.add(std::auto_ptr<Test::Suite>(new piecewise_body_of_revolution_creator_test_suite<float>()));
+    ts.add(std::auto_ptr<Test::Suite>(new piecewise_body_of_revolution_creator_test_suite<double>()));
+    ts.add(std::auto_ptr<Test::Suite>(new piecewise_body_of_revolution_creator_test_suite<long double>()));
 
     //
     // NOTE: End of section that should be changed

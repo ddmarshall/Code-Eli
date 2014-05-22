@@ -27,7 +27,7 @@
 
 #include "eli/geom/surface/bezier.hpp"
 #include "eli/geom/surface/piecewise.hpp"
-#include "eli/geom/surface/piecewise_creator.hpp"
+#include "eli/geom/surface/piecewise_body_of_revolution_creator.hpp"
 
 typedef eli::geom::curve::piecewise<eli::geom::curve::bezier, double, 3> piecewise_curve_type;
 typedef piecewise_curve_type::curve_type curve_type;
@@ -280,7 +280,7 @@ int main(int /*argc*/, char * /*argv*/[])
   piecewise_surface_type ps;
 
   // create the pod surface from the piecewise curve
-  eli::geom::surface::create_body_of_revolution(ps, pc1, 0, eli::geom::surface::OUTWARD_NORMAL);
+  eli::geom::surface::create_body_of_revolution(ps, pc1, 0, true);
 
   // print out octave code
   octave_print(std::cout, "bez_c", pc1);

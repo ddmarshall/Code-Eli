@@ -10,8 +10,8 @@
 *    David D. Marshall - initial code and implementation
 ********************************************************************************/
 
-#ifndef piecewise_surface_creator_test_suite_suite_hpp
-#define piecewise_surface_creator_test_suite_suite_hpp
+#ifndef piecewise_skinning_surface_creator_test_suite_suite_hpp
+#define piecewise_skinning_surface_creator_test_suite_suite_hpp
 
 #include "eli/code_eli.hpp"
 
@@ -20,7 +20,7 @@
 #include "eli/geom/curve/piecewise.hpp"
 
 #include "eli/geom/surface/piecewise.hpp"
-#include "eli/geom/surface/piecewise_creator.hpp"
+#include "eli/geom/surface/piecewise_body_of_revolution_creator.hpp"
 
 #include <cmath>    // std::pow, std::exp
 #include <cassert>  // assert()
@@ -32,7 +32,7 @@
 #include <limits>   // std::numeric_limits
 
 template<typename data__>
-class piecewise_surface_creator_test_suite : public Test::Suite
+class piecewise_skinning_surface_creator_test_suite : public Test::Suite
 {
   private:
     typedef eli::geom::surface::piecewise<eli::geom::surface::bezier, data__, 3> piecewise_surface_type;
@@ -49,25 +49,25 @@ class piecewise_surface_creator_test_suite : public Test::Suite
     void AddTests(const float &)
     {
       // add the tests
-      TEST_ADD(piecewise_surface_creator_test_suite<float>::create_body_of_revolution_test);
+      TEST_ADD(piecewise_skinning_surface_creator_test_suite<float>::create_body_of_revolution_test);
     }
     void AddTests(const double &)
     {
       // add the tests
-      TEST_ADD(piecewise_surface_creator_test_suite<double>::create_body_of_revolution_test);
+      TEST_ADD(piecewise_skinning_surface_creator_test_suite<double>::create_body_of_revolution_test);
     }
     void AddTests(const long double &)
     {
       // add the tests
-      TEST_ADD(piecewise_surface_creator_test_suite<long double>::create_body_of_revolution_test);
+      TEST_ADD(piecewise_skinning_surface_creator_test_suite<long double>::create_body_of_revolution_test);
     }
 
   public:
-    piecewise_surface_creator_test_suite() : tol()
+    piecewise_skinning_surface_creator_test_suite() : tol()
     {
       AddTests(data__());
     }
-    ~piecewise_surface_creator_test_suite()
+    ~piecewise_skinning_surface_creator_test_suite()
     {
     }
 
@@ -268,7 +268,7 @@ class piecewise_surface_creator_test_suite : public Test::Suite
 
         piecewise_surface_type ps;
 
-        TEST_ASSERT(eli::geom::surface::create_body_of_revolution(ps, pc, 0, eli::geom::surface::OUTWARD_NORMAL));
+        TEST_ASSERT(eli::geom::surface::create_body_of_revolution(ps, pc, 0, true));
 
 //         if (typeid(data_type)==typeid(double))
 //           octave_print(2, ps);
