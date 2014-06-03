@@ -875,11 +875,11 @@ namespace eli
             // only set this if have enough control points to calculate the second derivative
             if (r_seg_degree>1)
             {
-            coef.setIdentity();
-            coef*=r_seg_degree*(r_seg_degree-1)/r_dt/r_dt;
-            rows.block(0, r_ind, dim__, dim__)=-coef;
-            rows.block(0, r_ind+dim__, dim__, dim__)=2*coef;
-            rows.block(0, r_ind+2*dim__, dim__, dim__)=-coef;
+              coef.setIdentity();
+              coef*=r_seg_degree*(r_seg_degree-1)/r_dt/r_dt;
+              rows.block(0, r_ind, dim__, dim__)=-coef;
+              rows.block(0, r_ind+dim__, dim__, dim__)=2*coef;
+              rows.block(0, r_ind+2*dim__, dim__, dim__)=-coef;
             }
           }
 
