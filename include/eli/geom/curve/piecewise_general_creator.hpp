@@ -380,7 +380,7 @@ namespace eli
           }
           virtual ~piecewise_general_creator()
           {
-          };
+          }
 
           void set_closed() {closed=true;}
           void set_open() {closed=false;}
