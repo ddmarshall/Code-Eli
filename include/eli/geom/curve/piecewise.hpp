@@ -364,6 +364,18 @@ namespace eli
             tmax_out = tmax;
           }
 
+          template<typename it__>
+          void get_parameters(it__ itt) const
+          {
+            typename segment_collection_type::const_iterator its;
+
+            for (its=segments.begin(); its!=segments.end(); ++its)
+            {
+              (*itt)=its->first;++itt;
+            }
+            (*itt)=tmax;
+          }
+
           void parameter_report() const
           {
             printf("Parameter report:\n");
