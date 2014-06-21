@@ -417,6 +417,18 @@ namespace eli
             }
           }
 
+          template<typename it__>
+          void degrees(it__ itd)
+          {
+            typename segment_collection_type::const_iterator it;
+
+            // cycle through all segments to get each degree
+            for (it=segments.begin(); it!=segments.end(); ++it, ++itd)
+            {
+              (*itd) = it->second.degree();
+            }
+          }
+
           void get_bounding_box(bounding_box_type &bb) const
           {
             typename segment_collection_type::const_iterator it;
