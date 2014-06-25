@@ -35,7 +35,7 @@ add_test(NAME ${PIECEWISE_SURFACE_TEST_EXE} COMMAND $<TARGET_FILE:${PIECEWISE_SU
 set (PIECEWISE_SURFACE_CREATOR_TEST_EXE PiecewiseSurfaceCreatorTest)
 set (PIECEWISE_SURFACE_CREATOR_TEST_SOURCE ${PROJECT_SOURCE_DIR}/piecewise_surface_creator_test.cpp)
 set (PIECEWISE_SURFACE_CREATOR_TEST_HEADER ${PROJECT_SOURCE_DIR}/piecewise_body_of_revolution_creator_test_suite.hpp
-                                           ${PROJECT_SOURCE_DIR}/piecewise_skinning_surface_creator_test_suite.hpp
+                                           ${PROJECT_SOURCE_DIR}/piecewise_general_skinning_surface_creator_test_suite.hpp
                                            ${ELI_SOURCE_DIR}/include/eli/constants/math.hpp
                                            ${ELI_SOURCE_DIR}/include/eli/util/tolerance.hpp
                                            ${ELI_SOURCE_DIR}/include/eli/geom/general/continuity.hpp
@@ -47,8 +47,9 @@ set (PIECEWISE_SURFACE_CREATOR_TEST_HEADER ${PROJECT_SOURCE_DIR}/piecewise_body_
                                            ${ELI_SOURCE_DIR}/include/eli/geom/surface/bezier.hpp
                                            ${ELI_SOURCE_DIR}/include/eli/geom/surface/curvature.hpp
                                            ${ELI_SOURCE_DIR}/include/eli/geom/surface/piecewise.hpp
+                                           ${ELI_SOURCE_DIR}/include/eli/geom/surface/piecewise_creator_base.hpp
                                            ${ELI_SOURCE_DIR}/include/eli/geom/surface/piecewise_body_of_revolution_creator.hpp
-                                           ${ELI_SOURCE_DIR}/include/eli/geom/surface/piecewise_skinning_surface_creator.hpp)
+                                           ${ELI_SOURCE_DIR}/include/eli/geom/surface/piecewise_general_skinning_surface_creator.hpp)
 
 add_executable(${PIECEWISE_SURFACE_CREATOR_TEST_EXE} ${PIECEWISE_SURFACE_CREATOR_TEST_SOURCE} ${PIECEWISE_SURFACE_CREATOR_TEST_HEADER})
 target_link_libraries(${PIECEWISE_SURFACE_CREATOR_TEST_EXE} ${_ELI_TEST_LIBRARIES_LIST})
