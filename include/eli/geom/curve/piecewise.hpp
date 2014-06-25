@@ -710,6 +710,52 @@ namespace eli
             return get(curve, dt, index);
           }
 
+          error_code degree_promote()
+          {
+            typename segment_collection_type::const_iterator scit;
+            for (scit=segments.begin(); scit!=segments.end(); ++scit)
+            {
+              scit->second.degree_promote();
+            }
+
+            return NO_ERRORS;
+          }
+
+          error_code degree_promote(const index_type &index)
+          {
+            if (index>=number_segments())
+              return INVALID_INDEX;
+
+            typename segment_collection_type::iterator scit;
+            find_segment(scit, index);
+
+            scit->second.degree_promote();
+            return NO_ERRORS;
+          }
+
+          error_code degree_promote_to(const index_type &deg)
+          {
+            typename segment_collection_type::const_iterator scit;
+            for (scit=segments.begin(); scit!=segments.end(); ++scit)
+            {
+              scit->second.degree_promote_to(deg);
+            }
+
+            return NO_ERRORS;
+          }
+
+          error_code degree_promote_to(const index_type &index, const index_type &deg)
+          {
+            if (index>=number_segments())
+              return INVALID_INDEX;
+
+            typename segment_collection_type::iterator scit;
+            find_segment(scit, index);
+
+            scit->second.degree_promote_to(deg);
+            return NO_ERRORS;
+          }
+
           error_code get(curve_type &curve, data_type &dt, const index_type &index) const
           {
             if (index>=number_segments())
