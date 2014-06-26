@@ -1231,8 +1231,6 @@ namespace eli
                   max_jdegs[i]=jdegs[i];
                 }
               }
-
-              eli::octave_print(1, rib_states[i].get_f(), std::string("rib"+std::to_string(i)), i<(nribs-1));
             }
 
             // set degree in u-direction for each rib segment strip
@@ -1329,7 +1327,6 @@ namespace eli
 
                   for (i=0; i<=crv.degree(); ++i)
                   {
-                    std::cout << "cp=" << crv.get_control_point(i) << std::endl;
                     surfs[u].set_control_point(crv.get_control_point(i), i, j);
                   }
                 }
