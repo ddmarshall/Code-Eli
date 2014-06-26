@@ -1,116 +1,4 @@
 /*********************************************************************************
-* Copyright (c) 2014 David D. Marshall <ddmarsha@calpoly.edu>
-*
-* All rights reserved. This program and the accompanying materials
-* are made available under the terms of the Eclipse Public License v1.0
-* which accompanies this distribution, and is available at
-* http://www.eclipse.org/legal/epl-v10.html
-*
-* Contributors:
-*    David D. Marshall - initial code and implementation
-********************************************************************************/
-
-#ifndef eli_geom_curve_piecewise_line_creator_hpp
-#define eli_geom_curve_piecewise_line_creator_hpp
-
-#include <vector>
-
-#include "Eigen/Eigen"
-
-#include "eli/geom/curve/piecewise_creator_base.hpp"
-#include "eli/geom/curve/piecewise.hpp"
-#include "eli/geom/curve/bezier.hpp"
-
-namespace eli
-{
-  namespace geom
-  {
-    namespace curve
-    {
-      template<typename data__, unsigned short dim__, typename tol__>
-      class piecewise_line_creator : public piecewise_creator_base<data__, dim__, tol__>
-      {
-        public:
-          typedef piecewise_creator_base<data__, dim__, tol__> base_class_type;
-          typedef typename base_class_type::data_type data_type;
-          typedef typename base_class_type::point_type point_type;
-          typedef typename base_class_type::index_type index_type;
-          typedef typename base_class_type::tolerance_type tolerance_type;
-
-          piecewise_line_creator() : piecewise_creator_base<data_type, dim__, tolerance_type>(2, 0), pt(2) {}
-          piecewise_line_creator(const index_type &ns) : piecewise_creator_base<data_type, dim__, tolerance_type>(ns, 0), pt(ns+1) {}
-          piecewise_line_creator(const piecewise_polygon_creator<data_type, dim__, tolerance_type> &ppc)
-            : piecewise_creator_base<data_type, dim__, tolerance_type>(ppc), pt(ppc.corner) {}
-          ~piecewise_line_creator() {}
-
-          void set_point(const point_type &c, const index_type &i)
-          {
-            if ((i>=0) && (i<static_cast<index_type>(pt.size())))
-              pt[i]=c;
-            else
-              assert(false);
-          }
-          point_type get_point(const index_type &i) const
-          {
-            if ((i<0) || (i>=static_cast<index_type>(pt.size())))
-            {
-              return pt[0];
-              assert(false);
-            }
-            return pt[i];
-          }
-
-          virtual bool create(piecewise<bezier, data_type, dim__, tolerance_type> &pc) const
-          {
-            typedef piecewise<bezier, data_type, dim__, tolerance_type> piecewise_curve_type;
-            typedef typename piecewise_curve_type::curve_type curve_type;
-            typedef typename piecewise_curve_type::error_code error_code;
-
-            pc.clear();
-
-            curve_type c(1);
-            error_code err;
-            index_type nsegs(this->get_number_segments());
-
-            // do sanity check
-            if (pt.size()!=static_cast<size_t>(nsegs+1))
-            {
-              assert(false);
-              return false;
-            }
-
-            // set the start parameter
-            pc.set_t0(this->get_t0());
-
-            // set the lines
-            for (index_type i=0; i<nsegs; ++i)
-            {
-              c.set_control_point(pt[i], 0);
-              c.set_control_point(pt[i+1], 1);
-              err=pc.push_back(c, this->get_segment_dt(i));
-              if (err!=piecewise_curve_type::NO_ERRORS)
-              {
-                pc.clear();
-                pc.set_t0(0);
-                return false;
-              }
-            }
-
-            return true;
-          }
-
-        private:
-          void number_segments_changed() {pt.resize(this->get_number_segments()+1);}
-
-        private:
-          std::vector<point_type, Eigen::aligned_allocator<point_type>> pt;
-      };
-    }
-  }
-}
-#endif
-
-/*********************************************************************************
 * Copyright (c) 2013 David D. Marshall <ddmarsha@calpoly.edu>
 *
 * All rights reserved. This program and the accompanying materials
@@ -130,8 +18,7 @@ namespace eli
 #include "eli/constants/math.hpp"
 
 #include "eli/geom/curve/piecewise.hpp"
-// TODO: Add this to type of piecewise curve creators
-//#include "eli/geom/curve/piecewise_line_creator.hpp"
+#include "eli/geom/curve/piecewise_linear_creator.hpp"
 
 #include "eli/geom/surface/piecewise.hpp"
 #include "eli/geom/surface/piecewise_general_skinning_surface_creator.hpp"
@@ -159,7 +46,7 @@ class piecewise_general_skinning_surface_creator_test_suite : public Test::Suite
     typedef typename piecewise_surface_type::tolerance_type tolerance_type;
     typedef typename eli::geom::surface::connection_data<data__, 3, tolerance_type> rib_data_type;
     typedef typename rib_data_type::curve_type rib_curve_type;
-    typedef typename eli::geom::curve::piecewise_line_creator<data__, 3, tolerance_type> piecewise_line_creator_type;
+    typedef typename eli::geom::curve::piecewise_linear_creator<data__, 3, tolerance_type> piecewise_line_creator_type;
     typedef typename eli::geom::surface::general_skinning_surface_creator<data__, 3, tolerance_type> general_creator_type;
 
     tolerance_type tol;
@@ -207,16 +94,16 @@ class piecewise_general_skinning_surface_creator_test_suite : public Test::Suite
       // create three rib curves
       piecewise_line_creator_type plc(1);
 
-      plc.set_point(p1, 0);
-      plc.set_point(p2, 1);
+      plc.set_corner(p1, 0);
+      plc.set_corner(p2, 1);
       plc.create(rc1);
 
-      plc.set_point(p1, 0);
-      plc.set_point(p3, 1);
+      plc.set_corner(p1, 0);
+      plc.set_corner(p3, 1);
       plc.create(rc2);
 
-      plc.set_point(p3, 0);
-      plc.set_point(p2, 1);
+      plc.set_corner(p3, 0);
+      plc.set_corner(p2, 1);
       plc.create(rc3);
 
       // set rib
@@ -853,14 +740,14 @@ class piecewise_general_skinning_surface_creator_test_suite : public Test::Suite
         // create two rib curves
         piecewise_line_creator_type plc(1);
 
-        plc.set_point(p00, 0);
-        plc.set_point(p01, 1);
+        plc.set_corner(p00, 0);
+        plc.set_corner(p01, 1);
         plc.set_t0(v0);
         plc.set_segment_dt(v1-v0, 0);
         plc.create(rc1);
 
-        plc.set_point(p10, 0);
-        plc.set_point(p11, 1);
+        plc.set_corner(p10, 0);
+        plc.set_corner(p11, 1);
         plc.set_t0(v0);
         plc.set_segment_dt(v1-v0, 0);
         plc.create(rc2);
@@ -946,26 +833,26 @@ class piecewise_general_skinning_surface_creator_test_suite : public Test::Suite
         // create two rib curves && two slope curves
         piecewise_line_creator_type plc(1);
 
-        plc.set_point(p00, 0);
-        plc.set_point(p01, 1);
+        plc.set_corner(p00, 0);
+        plc.set_corner(p01, 1);
         plc.set_t0(v0);
         plc.set_segment_dt(v1-v0, 0);
         plc.create(rc1);
 
-        plc.set_point(s00, 0);
-        plc.set_point(s01, 1);
+        plc.set_corner(s00, 0);
+        plc.set_corner(s01, 1);
         plc.set_t0(v0);
         plc.set_segment_dt(v1-v0, 0);
         plc.create(rs1);
 
-        plc.set_point(p10, 0);
-        plc.set_point(p11, 1);
+        plc.set_corner(p10, 0);
+        plc.set_corner(p11, 1);
         plc.set_t0(v0);
         plc.set_segment_dt(v1-v0, 0);
         plc.create(rc2);
 
-        plc.set_point(s10, 0);
-        plc.set_point(s11, 1);
+        plc.set_corner(s10, 0);
+        plc.set_corner(s11, 1);
         plc.set_t0(v0);
         plc.set_segment_dt(v1-v0, 0);
         plc.create(rs2);
@@ -1072,38 +959,38 @@ class piecewise_general_skinning_surface_creator_test_suite : public Test::Suite
         // create two rib curves && two slope curves
         piecewise_line_creator_type plc(1);
 
-        plc.set_point(p00, 0);
-        plc.set_point(p01, 1);
+        plc.set_corner(p00, 0);
+        plc.set_corner(p01, 1);
         plc.set_t0(v0);
         plc.set_segment_dt(v1-v0, 0);
         plc.create(rc1);
 
-        plc.set_point(s00, 0);
-        plc.set_point(s01, 1);
+        plc.set_corner(s00, 0);
+        plc.set_corner(s01, 1);
         plc.set_t0(v0);
         plc.set_segment_dt(v1-v0, 0);
         plc.create(rs1);
 
-        plc.set_point(a00, 0);
-        plc.set_point(a01, 1);
+        plc.set_corner(a00, 0);
+        plc.set_corner(a01, 1);
         plc.set_t0(v0);
         plc.set_segment_dt(v1-v0, 0);
         plc.create(ra1);
 
-        plc.set_point(p10, 0);
-        plc.set_point(p11, 1);
+        plc.set_corner(p10, 0);
+        plc.set_corner(p11, 1);
         plc.set_t0(v0);
         plc.set_segment_dt(v1-v0, 0);
         plc.create(rc2);
 
-        plc.set_point(s10, 0);
-        plc.set_point(s11, 1);
+        plc.set_corner(s10, 0);
+        plc.set_corner(s11, 1);
         plc.set_t0(v0);
         plc.set_segment_dt(v1-v0, 0);
         plc.create(rs2);
 
-        plc.set_point(a10, 0);
-        plc.set_point(a11, 1);
+        plc.set_corner(a10, 0);
+        plc.set_corner(a11, 1);
         plc.set_t0(v0);
         plc.set_segment_dt(v1-v0, 0);
         plc.create(ra2);
