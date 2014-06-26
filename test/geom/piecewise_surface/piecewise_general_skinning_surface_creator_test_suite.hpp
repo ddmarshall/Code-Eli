@@ -920,7 +920,7 @@ class piecewise_general_skinning_surface_creator_test_suite : public Test::Suite
 //        }
       }
 
-      // simple surface connecting 2 lines
+      // surface connecting 2 lines with specified slopes
       {
         index_type nsegs(1);
         std::vector<rib_data_type> ribs(nsegs+1);
@@ -1029,6 +1029,158 @@ class piecewise_general_skinning_surface_creator_test_suite : public Test::Suite
 //                  << "\tp_test=" << p_test << "\tdiff="
 //                  << (p_ref-p_test).norm() << std::endl;
 
+//        if (rtn_flag && (typeid(data_type)==typeid(float)))
+//        {
+//          std::cout.flush();
+//          eli::octave_start(1);
+//          eli::octave_print(1, s, "surf", false);
+//          eli::octave_print(1, ribs[0].get_f(), "rib0", true);
+//          eli::octave_print(1, ribs[1].get_f(), "rib1", true);
+//          eli::octave_print(1, ribs[0].get_f(), ribs[0].get_right_fp(), "rve0");
+//          eli::octave_print(1, ribs[1].get_f(), ribs[1].get_left_fp(), "lve1");
+//          eli::octave_finish(1);
+//        }
+      }
+
+      // surface connecting 2 lines with specified 1st and 2nd derivatives
+      {
+        index_type nsegs(1);
+        std::vector<rib_data_type> ribs(nsegs+1);
+        std::vector<typename general_creator_type::index_type> max_degree(nsegs);
+        point_type p;
+        rib_curve_type rc1, rc2, rs1, rs2, ra1, ra2;
+        general_creator_type gc;
+        piecewise_surface_type s;
+        point_type p00, p01, p10, p11, s00, s01, s10, s11, a00, a01, a10, a11;
+        data_type u0(2), v0(1), u1(4), v1(5), v;
+        bool rtn_flag;
+
+        // four corners of surface
+        p00 << 1, 1, 1;
+        p01 << 2, 3, 1;
+        p10 << 3, 2, 3;
+        p11 << 4, 4, 4;
+        s00 << 2, 2, 0;
+        s01 << 1, 3, 2;
+        s10 << 2, 1, 0;
+        s11 << 2, 0, 1;
+        a00 << 0, 1, 0;
+        a01 << 1, 0, 1;
+        a10 << 1, 0, 1;
+        a11 << 0, 1, 0;
+
+        // create two rib curves && two slope curves
+        piecewise_line_creator_type plc(1);
+
+        plc.set_point(p00, 0);
+        plc.set_point(p01, 1);
+        plc.set_t0(v0);
+        plc.set_segment_dt(v1-v0, 0);
+        plc.create(rc1);
+
+        plc.set_point(s00, 0);
+        plc.set_point(s01, 1);
+        plc.set_t0(v0);
+        plc.set_segment_dt(v1-v0, 0);
+        plc.create(rs1);
+
+        plc.set_point(a00, 0);
+        plc.set_point(a01, 1);
+        plc.set_t0(v0);
+        plc.set_segment_dt(v1-v0, 0);
+        plc.create(ra1);
+
+        plc.set_point(p10, 0);
+        plc.set_point(p11, 1);
+        plc.set_t0(v0);
+        plc.set_segment_dt(v1-v0, 0);
+        plc.create(rc2);
+
+        plc.set_point(s10, 0);
+        plc.set_point(s11, 1);
+        plc.set_t0(v0);
+        plc.set_segment_dt(v1-v0, 0);
+        plc.create(rs2);
+
+        plc.set_point(a10, 0);
+        plc.set_point(a11, 1);
+        plc.set_t0(v0);
+        plc.set_segment_dt(v1-v0, 0);
+        plc.create(ra2);
+
+        // set the rib data
+        ribs[0].set_f(rc1);
+        ribs[0].set_right_fp(rs1);
+        ribs[0].set_right_fpp(ra1);
+        ribs[1].set_f(rc2);
+        ribs[1].set_left_fp(rs2);
+        ribs[1].set_left_fpp(ra2);
+
+        // set the maximum degrees of each segment
+        max_degree[0]=0;
+
+        // create surface
+        rtn_flag=gc.set_conditions(ribs, max_degree, false);
+        TEST_ASSERT(rtn_flag);
+        gc.set_u0(u0);
+        gc.set_v0(v0);
+        gc.set_segment_du(u1-u0, 0);
+        rtn_flag=gc.create(s);
+        TEST_ASSERT(rtn_flag);
+
+        // test the resulting curve
+        point_type p_test, p_ref;
+
+        p_test=s.f(u0, v0);
+        TEST_ASSERT(tol.approximately_equal(p00, p_test));
+//        std::cout << "p=" << p00
+//                  << "\tpc=" << ribs[0].get_f().f(v0)
+//                  << "\tp_test=" << p_test << "\tdiff="
+//                  << (ribs[0].get_f().f(v0)-p_test).norm() << std::endl;
+        p_test=s.f(u1, v0);
+        TEST_ASSERT(tol.approximately_equal(p10, p_test));
+//        std::cout << "p=" << p10
+//                  << "\tpc=" << ribs[1].get_f().f(v0)
+//                  << "\tp_test=" << p_test << "\tdiff="
+//                  << (p10-p_test).norm() << std::endl;
+        p_test=s.f(u0, v1);
+        TEST_ASSERT(tol.approximately_equal(p01, p_test));
+//        std::cout << "p=" << p01
+//                  << "\tpc=" << ribs[0].get_f().f(v1)
+//                  << "\tp_test=" << p_test << "\tdiff="
+//                  << (p01-p_test).norm() << std::endl;
+        p_test=s.f(u1, v1);
+        TEST_ASSERT(tol.approximately_equal(p11, p_test));
+//        std::cout << "p=" << p11
+//                  << "\tpc=" << ribs[1].get_f().f(v1)
+//                  << "\tp_test=" << p_test << "\tdiff="
+//                  << (p11-p_test).norm() << std::endl;
+        v=(v0+v1)/2;
+        p_test=s.f_u(u0, v);
+        p_ref=ribs[0].get_right_fp().f(v);
+        TEST_ASSERT(tol.approximately_equal(p_test, p_ref));
+//        std::cout << "p=" << p_ref
+//                  << "\tp_test=" << p_test << "\tdiff="
+//                  << (p_ref-p_test).norm() << std::endl;
+        p_test=s.f_uu(u0, v);
+        p_ref=ribs[0].get_right_fpp().f(v);
+        TEST_ASSERT(tol.approximately_equal(p_test, p_ref));
+//        std::cout << "p=" << p_ref
+//                  << "\tp_test=" << p_test << "\tdiff="
+//                  << (p_ref-p_test).norm() << std::endl;
+        p_test=s.f_u(u1, v);
+        p_ref=ribs[1].get_left_fp().f(v);
+        TEST_ASSERT(tol.approximately_equal(p_test, p_ref));
+//        std::cout << "p=" << p_ref
+//                  << "\tp_test=" << p_test << "\tdiff="
+//                  << (p_ref-p_test).norm() << std::endl;
+        p_test=s.f_uu(u1, v);
+        p_ref=ribs[1].get_left_fpp().f(v);
+        TEST_ASSERT(tol.approximately_equal(p_test, p_ref));
+//        std::cout << "p=" << p_ref
+//                  << "\tp_test=" << p_test << "\tdiff="
+//                  << (p_ref-p_test).norm() << std::endl;
+
         if (rtn_flag && (typeid(data_type)==typeid(float)))
         {
           std::cout.flush();
@@ -1041,269 +1193,6 @@ class piecewise_general_skinning_surface_creator_test_suite : public Test::Suite
           eli::octave_finish(1);
         }
       }
-
-#if 0
-      // simple 2nd degree curve with 1st derivative specified
-      {
-        index_type nsegs(1);
-        std::vector<typename general_creator_type::joint_data> joints(nsegs+1);
-        std::vector<typename general_creator_type::index_type> max_degree(nsegs);
-        point_type p;
-        general_creator_type gc;
-        piecewise_curve_type c;
-        data_type t0(2), t1(4);
-        bool rtn_flag;
-
-        // set the joints
-        p << 1, 1, 0;
-        joints[0].set_f(p);
-        p << 0, 0, -1;
-        joints[1].set_f(p);
-
-        // set joint 1st derivative
-        p << 1, -1, 1;
-        joints[0].set_right_fp(p);
-
-        // set the maximum degrees of each segment
-        max_degree[0]=4;
-
-        // create curve
-        rtn_flag=gc.set_conditions(joints, max_degree, false);
-        TEST_ASSERT(rtn_flag);
-        gc.set_t0(t0);
-        gc.set_segment_dt(t1-t0, 0);
-        rtn_flag=gc.create(c);
-        TEST_ASSERT(rtn_flag);
-
-        // test the resulting curve
-        point_type p_test;
-
-        p_test=c.f(t0);
-        TEST_ASSERT(tol.approximately_equal(joints[0].get_f(), p_test));
-//        std::cout << "p=" << joints[0].get_f()
-//                  << "\tp_test=" << p_test << "\tdiff="
-//                  << (joints[0].get_f()-p_test).norm() << std::endl;
-        p_test=c.f(t1);
-        TEST_ASSERT(tol.approximately_equal(joints[1].get_f(), p_test));
-//        std::cout << "p=" << joints[1].get_f()
-//                  << "\tp_test=" << p_test << "\tdiff="
-//                  << (joints[1].get_f()-p_test).norm() << std::endl;
-        p_test=c.fp(t0);
-        TEST_ASSERT(tol.approximately_equal(joints[0].get_right_fp(), p_test));
-//        std::cout << "p=" << joints[0].get_right_fp()
-//                  << "\tp_test=" << p_test << "\tdiff="
-//                  << (joints[0].get_right_fp()-p_test).norm() << std::endl;
-
-//        if (rtn_flag && (typeid(data_type)==typeid(double)))
-//          octave_print(1, c);
-      }
-
-      // simple 2nd degree curve with 2nd derivative specified
-      {
-        index_type nsegs(1);
-        std::vector<typename general_creator_type::joint_data> joints(nsegs+1);
-        std::vector<typename general_creator_type::index_type> max_degree(nsegs);
-        point_type p;
-        general_creator_type gc;
-        piecewise_curve_type c;
-        data_type t0(2), t1(4);
-        bool rtn_flag;
-
-        // set the joints
-        p << 1, 1, 0;
-        joints[0].set_f(p);
-        p << 0, 0, -1;
-        joints[1].set_f(p);
-
-        // set joint 2nd derivative
-        p << 1, -1, 1;
-        joints[0].set_right_fpp(p);
-
-        // set the maximum degrees of each segment
-        max_degree[0]=4;
-
-        // create curve
-        rtn_flag=gc.set_conditions(joints, max_degree, false);
-        TEST_ASSERT(rtn_flag);
-        gc.set_t0(t0);
-        gc.set_segment_dt(t1-t0, 0);
-        rtn_flag=gc.create(c);
-        TEST_ASSERT(rtn_flag);
-
-        // test the resulting curve
-        point_type p_test;
-
-        p_test=c.f(t0);
-        TEST_ASSERT(tol.approximately_equal(joints[0].get_f(), p_test));
-//        std::cout << "p=" << joints[0].get_f()
-//                  << "\tp_test=" << p_test << "\tdiff="
-//                  << (joints[0].get_f()-p_test).norm() << std::endl;
-        p_test=c.f(t1);
-        TEST_ASSERT(tol.approximately_equal(joints[1].get_f(), p_test));
-//        std::cout << "p=" << joints[1].get_f()
-//                  << "\tp_test=" << p_test << "\tdiff="
-//                  << (joints[1].get_f()-p_test).norm() << std::endl;
-        p_test=c.fpp(t0);
-        TEST_ASSERT(tol.approximately_equal(joints[0].get_right_fpp(), p_test));
-//        std::cout << "p=" << joints[0].get_right_fpp()
-//                  << "\tp_test=" << p_test << "\tdiff="
-//                  << (joints[0].get_right_fpp()-p_test).norm() << std::endl;
-
-//        if (rtn_flag && (typeid(data_type)==typeid(double)))
-//          octave_print(1, c);
-      }
-
-      // simple 3rd degree curve with both 1st derivatives specified
-      {
-        index_type nsegs(1);
-        std::vector<typename general_creator_type::joint_data> joints(nsegs+1);
-        std::vector<typename general_creator_type::index_type> max_degree(nsegs);
-        point_type p;
-        general_creator_type gc;
-        piecewise_curve_type c;
-        data_type t0(2), t1(4);
-        bool rtn_flag;
-
-        // set the joints
-        p << 1, 1, 0;
-        joints[0].set_f(p);
-        p << 0, 0, -1;
-        joints[1].set_f(p);
-
-        // set joint 1st derivatives
-        p << 1, -1, 1;
-        joints[0].set_right_fp(p);
-        p << 1, 0, 0;
-        joints[1].set_left_fp(p);
-
-        // set the maximum degrees of each segment to be too small
-        max_degree[0]=2;
-
-        // create curve
-        rtn_flag=gc.set_conditions(joints, max_degree, false);
-        TEST_ASSERT(rtn_flag);
-        gc.set_t0(t0);
-        gc.set_segment_dt(t1-t0, 0);
-        rtn_flag=gc.create(c);
-        TEST_ASSERT(!rtn_flag);
-
-        // set the maximum degrees of each segment
-        max_degree[0]=4;
-
-        // create curve
-        rtn_flag=gc.set_conditions(joints, max_degree, false);
-        TEST_ASSERT(rtn_flag);
-        gc.set_t0(t0);
-        gc.set_segment_dt(t1-t0, 0);
-        rtn_flag=gc.create(c);
-        TEST_ASSERT(rtn_flag);
-
-        // test the resulting curve
-        point_type p_test;
-
-        p_test=c.f(t0);
-        TEST_ASSERT(tol.approximately_equal(joints[0].get_f(), p_test));
-//        std::cout << "p=" << joints[0].get_f()
-//                  << "\tp_test=" << p_test << "\tdiff="
-//                  << (joints[0].get_f()-p_test).norm() << std::endl;
-        p_test=c.f(t1);
-        TEST_ASSERT(tol.approximately_equal(joints[1].get_f(), p_test));
-//        std::cout << "p=" << joints[1].get_f()
-//                  << "\tp_test=" << p_test << "\tdiff="
-//                  << (joints[1].get_f()-p_test).norm() << std::endl;
-        p_test=c.fp(t0);
-        TEST_ASSERT(tol.approximately_equal(joints[0].get_right_fp(), p_test));
-//        std::cout << "p=" << joints[0].get_right_fp()
-//                  << "\tp_test=" << p_test << "\tdiff="
-//                  << (joints[0].get_right_fp()-p_test).norm() << std::endl;
-        p_test=c.fp(t1);
-        TEST_ASSERT(tol.approximately_equal(joints[1].get_left_fp(), p_test));
-//        std::cout << "p=" << joints[1].get_left_fp()
-//                  << "\tp_test=" << p_test << "\tdiff="
-//                  << (joints[1].get_left_fp()-p_test).norm() << std::endl;
-
-//        if (rtn_flag && (typeid(data_type)==typeid(double)))
-//          octave_print(1, c);
-      }
-
-      // simple 5th degree curve with both 1st and 2nd derivatives specified
-      {
-        index_type nsegs(1);
-        std::vector<typename general_creator_type::joint_data> joints(nsegs+1);
-        std::vector<typename general_creator_type::index_type> max_degree(nsegs);
-        point_type p;
-        general_creator_type gc;
-        piecewise_curve_type c;
-        data_type t0(2), t1(4);
-        bool rtn_flag;
-
-        // set the joints
-        p << 1, 1, 0;
-        joints[0].set_f(p);
-        p << 0, 0, -1;
-        joints[1].set_f(p);
-
-        // set joint 1st derivatives
-        p << 1, -1, 1;
-        joints[0].set_right_fp(p);
-        p << 1, 0, 0;
-        joints[1].set_left_fp(p);
-
-        // set joint 2nd derivatives
-        p << 0, -1, 0;
-        joints[0].set_right_fpp(p);
-        p << 0, 1, 0;
-        joints[1].set_left_fpp(p);
-
-        // set the maximum degrees of each segment
-        max_degree[0]=6;
-
-        // create curve
-        rtn_flag=gc.set_conditions(joints, max_degree, false);
-        TEST_ASSERT(rtn_flag);
-        gc.set_t0(t0);
-        gc.set_segment_dt(t1-t0, 0);
-        rtn_flag=gc.create(c);
-        TEST_ASSERT(rtn_flag);
-
-        // test the resulting curve
-        point_type p_test;
-
-        p_test=c.f(t0);
-        TEST_ASSERT(tol.approximately_equal(joints[0].get_f(), p_test));
-//        std::cout << "p=" << joints[0].get_f()
-//                  << "\tp_test=" << p_test << "\tdiff="
-//                  << (joints[0].get_f()-p_test).norm() << std::endl;
-        p_test=c.f(t1);
-        TEST_ASSERT(tol.approximately_equal(joints[1].get_f(), p_test));
-//        std::cout << "p=" << joints[1].get_f()
-//                  << "\tp_test=" << p_test << "\tdiff="
-//                  << (joints[1].get_f()-p_test).norm() << std::endl;
-        p_test=c.fp(t0);
-        TEST_ASSERT(tol.approximately_equal(joints[0].get_right_fp(), p_test));
-//        std::cout << "p=" << joints[0].get_right_fp()
-//                  << "\tp_test=" << p_test << "\tdiff="
-//                  << (joints[0].get_right_fp()-p_test).norm() << std::endl;
-        p_test=c.fp(t1);
-        TEST_ASSERT(tol.approximately_equal(joints[1].get_left_fp(), p_test));
-//        std::cout << "p=" << joints[1].get_left_fp()
-//                  << "\tp_test=" << p_test << "\tdiff="
-//                  << (joints[1].get_left_fp()-p_test).norm() << std::endl;
-        p_test=c.fpp(t0);
-        TEST_ASSERT(tol.approximately_equal(joints[0].get_right_fpp(), p_test));
-//        std::cout << "p=" << joints[0].get_right_fpp()
-//                  << "\tp_test=" << p_test << "\tdiff="
-//                  << (joints[0].get_right_fpp()-p_test).norm() << std::endl;
-        p_test=c.fpp(t1);
-        TEST_ASSERT(tol.approximately_equal(joints[1].get_left_fpp(), p_test));
-//        std::cout << "p=" << joints[1].get_left_fpp()
-//                  << "\tp_test=" << p_test << "\tdiff="
-//                  << (joints[1].get_left_fpp()-p_test).norm() << std::endl;
-
-//        if (rtn_flag && (typeid(data_type)==typeid(double)))
-//          octave_print(1, c);
-      }
-#endif
     }
 
 };
