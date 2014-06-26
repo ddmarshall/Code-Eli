@@ -194,165 +194,6 @@ class piecewise_general_skinning_surface_creator_test_suite : public Test::Suite
     }
 
   private:
-    void octave_print(int figno, const piecewise_surface_type &ps) const
-    {
-      index_type i, j, pp, qq, nup, nvp;
-      data_type umin, vmin, umax, vmax;
-
-      nup=ps.number_u_patches();
-      nvp=ps.number_v_patches();
-      ps.get_parameter_min(umin, vmin);
-      ps.get_parameter_max(umax, vmax);
-
-      std::cout << "figure(" << figno << ");" << std::endl;
-      std::cout << "cp_x=[" << std::endl;
-      for (pp=0; pp<nup; ++pp)
-      {
-        for (qq=0; qq<nvp; ++qq)
-        {
-          surface_type bez;
-          ps.get(bez, pp, qq);
-          for (i=0; i<=bez.degree_u(); ++i)
-          {
-            std::cout << bez.get_control_point(i, 0).x();
-            for (j=1; j<bez.degree_v(); ++j)
-            {
-              std::cout << ", " << bez.get_control_point(i, j).x();
-            }
-            j=bez.degree_v();
-            std::cout << ", " << bez.get_control_point(i, j).x();
-            if (i<bez.degree_u())
-              std::cout << "; ";
-            else if (pp<nup-1)
-              std::cout << "; ";
-            else if (qq<nvp-1)
-              std::cout << "; ";
-          }
-          std::cout << std::endl;
-        }
-      }
-      std::cout << "];" << std::endl;
-
-      std::cout << "cp_y=[";
-      for (pp=0; pp<nup; ++pp)
-      {
-        for (qq=0; qq<nvp; ++qq)
-        {
-          surface_type bez;
-          ps.get(bez, pp, qq);
-          for (i=0; i<=bez.degree_u(); ++i)
-          {
-            std::cout << bez.get_control_point(i, 0).y();
-            for (j=1; j<bez.degree_v(); ++j)
-            {
-              std::cout << ", " << bez.get_control_point(i, j).y();
-            }
-            j=bez.degree_v();
-            std::cout << ", " << bez.get_control_point(i, j).y();
-            if (i<bez.degree_u())
-              std::cout << "; ";
-            else if (pp<nup-1)
-              std::cout << "; ";
-            else if (qq<nvp-1)
-              std::cout << "; ";
-          }
-          std::cout << std::endl;
-        }
-      }
-      std::cout << "];" << std::endl;
-
-      std::cout << "cp_z=[";
-      for (pp=0; pp<nup; ++pp)
-      {
-        for (qq=0; qq<nvp; ++qq)
-        {
-          surface_type bez;
-          ps.get(bez, pp, qq);
-          for (i=0; i<=bez.degree_u(); ++i)
-          {
-            std::cout << bez.get_control_point(i, 0).z();
-            for (j=1; j<bez.degree_v(); ++j)
-            {
-              std::cout << ", " << bez.get_control_point(i, j).z();
-            }
-            j=bez.degree_v();
-            std::cout << ", " << bez.get_control_point(i, j).z();
-            if (i<bez.degree_u())
-              std::cout << "; ";
-            else if (pp<nup-1)
-              std::cout << "; ";
-            else if (qq<nvp-1)
-              std::cout << "; ";
-          }
-          std::cout << std::endl;
-        }
-      }
-      std::cout << "];" << std::endl;
-
-      // initialize the u & v parameters
-      std::vector<data__> u(11), v(11);
-      for (i=0; i<static_cast<index_type>(u.size()); ++i)
-      {
-        u[i]=umin+(umax-umin)*static_cast<data__>(i)/(u.size()-1);
-      }
-      for (j=0; j<static_cast<index_type>(v.size()); ++j)
-      {
-        v[j]=vmin+(vmax-vmin)*static_cast<data__>(j)/(v.size()-1);
-      }
-
-      // set the surface points
-      std::cout << "surf_x=[";
-      for (i=0; i<static_cast<index_type>(u.size()); ++i)
-      {
-        std::cout << ps.f(u[i], v[0]).x();
-        for (j=1; j<static_cast<index_type>(v.size()-1); ++j)
-        {
-          std::cout << ", " << ps.f(u[i], v[j]).x();
-        }
-        j=static_cast<index_type>(v.size()-1);
-        std::cout << ", " << ps.f(u[i], v[j]).x();
-        if (i<static_cast<index_type>(u.size()-1))
-          std::cout << "; " << std::endl;
-      }
-      std::cout << "];" << std::endl;
-
-      std::cout << "surf_y=[";
-      for (i=0; i<static_cast<index_type>(u.size()); ++i)
-      {
-        std::cout << ps.f(u[i], v[0]).y();
-        for (j=1; j<static_cast<index_type>(v.size()-1); ++j)
-        {
-          std::cout << ", " << ps.f(u[i], v[j]).y();
-        }
-        j=static_cast<index_type>(v.size()-1);
-        std::cout << ", " << ps.f(u[i], v[j]).y();
-        if (i<static_cast<index_type>(u.size()-1))
-          std::cout << "; " << std::endl;
-      }
-      std::cout << "];" << std::endl;
-
-      std::cout << "surf_z=[";
-      for (i=0; i<static_cast<index_type>(u.size()); ++i)
-      {
-        std::cout << ps.f(u[i], v[0]).z();
-        for (j=1; j<static_cast<index_type>(v.size()-1); ++j)
-        {
-          std::cout << ", " << ps.f(u[i], v[j]).z();
-        }
-        j=static_cast<index_type>(v.size()-1);
-        std::cout << ", " << ps.f(u[i], v[j]).z();
-        if (i<static_cast<index_type>(u.size()-1))
-          std::cout << "; " << std::endl;
-      }
-      std::cout << "];" << std::endl;
-
-      std::cout << "setenv('GNUTERM', 'x11');" << std::endl;
-      std::cout << "mesh(surf_x, surf_y, surf_z, zeros(size(surf_z)), 'EdgeColor', [0 0 0]);" << std::endl;
-      std::cout << "hold on;" << std::endl;
-      std::cout << "plot3(cp_x, cp_y, cp_z, 'ok', 'MarkerFaceColor', [0 0 0]);" << std::endl;
-      std::cout << "hold off;" << std::endl;
-    }
-
     void create_rib_test()
     {
       rib_curve_type rc1, rc2, rc3;
@@ -990,7 +831,7 @@ class piecewise_general_skinning_surface_creator_test_suite : public Test::Suite
 
     void create_single_surface_test()
     {
-      // simple surface connecting 2 curves
+      // simple surface connecting 2 lines
       {
         index_type nsegs(1);
         std::vector<rib_data_type> ribs(nsegs+1);
@@ -1043,33 +884,162 @@ class piecewise_general_skinning_surface_creator_test_suite : public Test::Suite
         // test the resulting curve
         point_type p_test;
 
-        octave_print(2, s);
-        
         p_test=s.f(u0, v0);
         TEST_ASSERT(tol.approximately_equal(p00, p_test));
-        std::cout << "p=" << p00
-                  << "\tpc=" << ribs[0].get_f().f(v0)
-                  << "\tp_test=" << p_test << "\tdiff="
-                  << (ribs[0].get_f().f(v0)-p_test).norm() << std::endl;
+//        std::cout << "p=" << p00
+//                  << "\tpc=" << ribs[0].get_f().f(v0)
+//                  << "\tp_test=" << p_test << "\tdiff="
+//                  << (ribs[0].get_f().f(v0)-p_test).norm() << std::endl;
         p_test=s.f(u1, v0);
         TEST_ASSERT(tol.approximately_equal(p10, p_test));
-        std::cout << "p=" << p10
-                  << "\tpc=" << ribs[1].get_f().f(v0)
-                  << "\tp_test=" << p_test << "\tdiff="
-                  << (p10-p_test).norm() << std::endl;
+//        std::cout << "p=" << p10
+//                  << "\tpc=" << ribs[1].get_f().f(v0)
+//                  << "\tp_test=" << p_test << "\tdiff="
+//                  << (p10-p_test).norm() << std::endl;
         p_test=s.f(u0, v1);
         TEST_ASSERT(tol.approximately_equal(p01, p_test));
-//        std::cout << "p=" << joints[0].get_f()
+//        std::cout << "p=" << p01
+//                  << "\tpc=" << ribs[0].get_f().f(v1)
 //                  << "\tp_test=" << p_test << "\tdiff="
-//                  << (joints[0].get_f()-p_test).norm() << std::endl;
+//                  << (p01-p_test).norm() << std::endl;
         p_test=s.f(u1, v1);
         TEST_ASSERT(tol.approximately_equal(p11, p_test));
-//        std::cout << "p=" << joints[0].get_f()
+//        std::cout << "p=" << p11
+//                  << "\tpc=" << ribs[1].get_f().f(v1)
 //                  << "\tp_test=" << p_test << "\tdiff="
-//                  << (joints[0].get_f()-p_test).norm() << std::endl;
+//                  << (p11-p_test).norm() << std::endl;
 
-//        if (rtn_flag && (typeid(data_type)==typeid(double)))
-//          octave_print(1, c);
+//        if (rtn_flag && (typeid(data_type)==typeid(float)))
+//        {
+//          std::cout.flush();
+//          eli::octave_start(1);
+//          eli::octave_print(1, s, "surf", true);
+//          eli::octave_print(1, ribs[0].get_f(), "rib0", true);
+//          eli::octave_print(1, ribs[1].get_f(), "rib1", true);
+//          eli::octave_finish(1);
+//        }
+      }
+
+      // simple surface connecting 2 lines
+      {
+        index_type nsegs(1);
+        std::vector<rib_data_type> ribs(nsegs+1);
+        std::vector<typename general_creator_type::index_type> max_degree(nsegs);
+        point_type p;
+        rib_curve_type rc1, rc2, rs1, rs2;
+        general_creator_type gc;
+        piecewise_surface_type s;
+        point_type p00, p01, p10, p11, s00, s01, s10, s11;
+        data_type u0(2), v0(1), u1(4), v1(5), v;
+        bool rtn_flag;
+
+        // four corners of surface
+        p00 << 1, 1, 1;
+        p01 << 2, 3, 1;
+        p10 << 3, 2, 3;
+        p11 << 4, 4, 4;
+        s00 << 2, 2, 0;
+        s01 << 1, 3, 2;
+        s10 << 2, 1, 0;
+        s11 << 2, 0, 1;
+
+        // create two rib curves && two slope curves
+        piecewise_line_creator_type plc(1);
+
+        plc.set_point(p00, 0);
+        plc.set_point(p01, 1);
+        plc.set_t0(v0);
+        plc.set_segment_dt(v1-v0, 0);
+        plc.create(rc1);
+
+        plc.set_point(s00, 0);
+        plc.set_point(s01, 1);
+        plc.set_t0(v0);
+        plc.set_segment_dt(v1-v0, 0);
+        plc.create(rs1);
+
+        plc.set_point(p10, 0);
+        plc.set_point(p11, 1);
+        plc.set_t0(v0);
+        plc.set_segment_dt(v1-v0, 0);
+        plc.create(rc2);
+
+        plc.set_point(s10, 0);
+        plc.set_point(s11, 1);
+        plc.set_t0(v0);
+        plc.set_segment_dt(v1-v0, 0);
+        plc.create(rs2);
+
+        // set the rib data
+        ribs[0].set_f(rc1);
+        ribs[0].set_right_fp(rs1);
+        ribs[1].set_f(rc2);
+        ribs[1].set_left_fp(rs2);
+
+        // set the maximum degrees of each segment
+        max_degree[0]=0;
+
+        // create surface
+        rtn_flag=gc.set_conditions(ribs, max_degree, false);
+        TEST_ASSERT(rtn_flag);
+        gc.set_u0(u0);
+        gc.set_v0(v0);
+        gc.set_segment_du(u1-u0, 0);
+        rtn_flag=gc.create(s);
+        TEST_ASSERT(rtn_flag);
+
+        // test the resulting curve
+        point_type p_test, p_ref;
+
+        p_test=s.f(u0, v0);
+        TEST_ASSERT(tol.approximately_equal(p00, p_test));
+//        std::cout << "p=" << p00
+//                  << "\tpc=" << ribs[0].get_f().f(v0)
+//                  << "\tp_test=" << p_test << "\tdiff="
+//                  << (ribs[0].get_f().f(v0)-p_test).norm() << std::endl;
+        p_test=s.f(u1, v0);
+        TEST_ASSERT(tol.approximately_equal(p10, p_test));
+//        std::cout << "p=" << p10
+//                  << "\tpc=" << ribs[1].get_f().f(v0)
+//                  << "\tp_test=" << p_test << "\tdiff="
+//                  << (p10-p_test).norm() << std::endl;
+        p_test=s.f(u0, v1);
+        TEST_ASSERT(tol.approximately_equal(p01, p_test));
+//        std::cout << "p=" << p01
+//                  << "\tpc=" << ribs[0].get_f().f(v1)
+//                  << "\tp_test=" << p_test << "\tdiff="
+//                  << (p01-p_test).norm() << std::endl;
+        p_test=s.f(u1, v1);
+        TEST_ASSERT(tol.approximately_equal(p11, p_test));
+//        std::cout << "p=" << p11
+//                  << "\tpc=" << ribs[1].get_f().f(v1)
+//                  << "\tp_test=" << p_test << "\tdiff="
+//                  << (p11-p_test).norm() << std::endl;
+        v=(v0+v1)/2;
+        p_test=s.f_u(u0, v);
+        p_ref=ribs[0].get_right_fp().f(v);
+        TEST_ASSERT(tol.approximately_equal(p_test, p_ref));
+//        std::cout << "p=" << p_ref
+//                  << "\tp_test=" << p_test << "\tdiff="
+//                  << (p_ref-p_test).norm() << std::endl;
+        p_test=s.f_u(u1, v);
+        p_ref=ribs[1].get_left_fp().f(v);
+        TEST_ASSERT(tol.approximately_equal(p_test, p_ref));
+//        std::cout << "p=" << p_ref
+//                  << "\tp_test=" << p_test << "\tdiff="
+//                  << (p_ref-p_test).norm() << std::endl;
+
+        if (rtn_flag && (typeid(data_type)==typeid(float)))
+        {
+          std::cout.flush();
+          eli::octave_start(1);
+          eli::octave_print(1, s, "surf", false);
+          eli::octave_print(1, ribs[0].get_f(), "rib0", true);
+          eli::octave_print(1, ribs[1].get_f(), "rib1", true);
+          eli::octave_print(1, ribs[0].get_f(), ribs[0].get_right_fp(), "rve0");
+          eli::octave_print(1, ribs[1].get_f(), ribs[1].get_left_fp(), "lve1");
+          eli::octave_finish(1);
+        }
       }
 
 #if 0
