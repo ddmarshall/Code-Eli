@@ -677,9 +677,27 @@ namespace eli
       return str;
   }
 
+  void octave_start(int figno)
+  {
+    std::cout << "clf(" << figno << ", 'reset');" << std::endl;
+    std::cout << "figure(" << figno << ");" << std::endl;
+    std::cout << "hold on;" << std::endl;
+    std::cout << "grid on;" << std::endl;
+  }
+
+  void octave_finish(int figno)
+  {
+    std::cout << "figure(" << figno << ");" << std::endl;
+    std::cout << "hold off;" << std::endl;
+    std::cout << "rotate3d on;" << std::endl;
+    std::cout << "xlabel('x');" << std::endl;
+    std::cout << "ylabel('y');" << std::endl;
+    std::cout << "zlabel('z');" << std::endl;
+  }
+
   template<typename data__>
   void octave_print(int figno, const eli::geom::curve::piecewise<eli::geom::curve::bezier, data__, 3> &pc,
-                    const std::string &name="", bool hold_on=true)
+                    const std::string &name="", bool show_control_points=true)
   {
     typedef eli::geom::curve::piecewise<eli::geom::curve::bezier, data__, 3> piecewise_curve_type;
     typedef typename piecewise_curve_type::curve_type curve_type;
@@ -707,32 +725,35 @@ namespace eli
       nm=name;
     }
 
-    // get control points and print
-    cpxbuf=nm+"_cp_x=[";
-    cpybuf=nm+"_cp_y=[";
-    cpzbuf=nm+"_cp_z=[";
-    for (pp=0; pp<ns; ++pp)
+    // set control points
+    if (show_control_points)
     {
-      index_type bez_deg;
-      curve_type bez;
-      pc.get(bez, pp);
-      bez_deg=bez.degree();
-      for (i=0; i<=bez_deg; ++i)
+      cpxbuf=nm+"_curv_cp_x=[";
+      cpybuf=nm+"_curv_cp_y=[";
+      cpzbuf=nm+"_curv_cp_z=[";
+      for (pp=0; pp<ns; ++pp)
       {
-        cpxbuf+=std::to_string(bez.get_control_point(i).x());
-        cpybuf+=std::to_string(bez.get_control_point(i).y());
-        cpzbuf+=std::to_string(bez.get_control_point(i).z());
-        if ((pp<(ns-1)) || (pp==(ns-1)) && (i<bez_deg))
+        index_type bez_deg;
+        curve_type bez;
+        pc.get(bez, pp);
+        bez_deg=bez.degree();
+        for (i=0; i<=bez_deg; ++i)
         {
-          cpxbuf+=", ";
-          cpybuf+=", ";
-          cpzbuf+=", ";
+          cpxbuf+=std::to_string(bez.get_control_point(i).x());
+          cpybuf+=std::to_string(bez.get_control_point(i).y());
+          cpzbuf+=std::to_string(bez.get_control_point(i).z());
+          if ((pp<(ns-1)) || (pp==(ns-1)) && (i<bez_deg))
+          {
+            cpxbuf+=", ";
+            cpybuf+=", ";
+            cpzbuf+=", ";
+          }
         }
       }
+      cpxbuf+="];";
+      cpybuf+="];";
+      cpzbuf+="];";
     }
-    cpxbuf+="];";
-    cpybuf+="];";
-    cpzbuf+="];";
 
     // initialize the t parameters
     index_type nt(129);
@@ -742,10 +763,10 @@ namespace eli
       t[i]=tmin+(tmax-tmin)*static_cast<data__>(i)/(nt-1);
     }
 
-    // set the surface points
-    cxbuf=nm+"_surf_x=[";
-    cybuf=nm+"_surf_y=[";
-    czbuf=nm+"_surf_z=[";
+    // set the curve points
+    cxbuf=nm+"_curv_x=[";
+    cybuf=nm+"_curv_y=[";
+    czbuf=nm+"_curv_z=[";
     for (i=0; i<nt; ++i)
     {
       cxbuf+=std::to_string(pc.f(t[i]).x());
@@ -764,25 +785,274 @@ namespace eli
 
     std::cout << "% curve: " << nm << std::endl;
     std::cout << "figure(" << figno << ");" << std::endl;
-    std::cout << cpxbuf << std::endl;
-    std::cout << cpybuf << std::endl;
-    std::cout << cpzbuf << std::endl;
     std::cout << cxbuf << std::endl;
     std::cout << cybuf << std::endl;
     std::cout << czbuf << std::endl;
+    if (show_control_points)
+    {
+      std::cout << cpxbuf << std::endl;
+      std::cout << cpybuf << std::endl;
+      std::cout << cpzbuf << std::endl;
+    }
     std::cout << "setenv('GNUTERM', 'x11');" << std::endl;
-    std::cout << "plot3(" << nm << "_surf_x, "
-                          << nm << "_surf_y, "
-                          << nm << "_surf_z, '-k');" << std::endl;
-    if (hold_on)
-      std::cout << "hold on;" << std::endl;
-    std::cout << "plot3(" << nm << "_cp_x', "
-                          << nm << "_cp_y', "
-                          << nm << "_cp_z', '-ok', 'MarkerFaceColor', [0 0 0]);" << std::endl;
-    if (!hold_on)
-      std::cout << "hold off;" << std::endl;
+    std::cout << "plot3(" << nm << "_curv_x, "
+                          << nm << "_curv_y, "
+                          << nm << "_curv_z, '-g');" << std::endl;
+    if (show_control_points)
+    {
+      std::cout << "plot3(" << nm << "_curv_cp_x', "
+                            << nm << "_curv_cp_y', "
+                            << nm << "_curv_cp_z', '-og', 'MarkerFaceColor', [0 1 0]);" << std::endl;
+    }
+  }
+
+  template<typename data__>
+  void octave_print(int figno, const eli::geom::curve::piecewise<eli::geom::curve::bezier, data__, 3> &pc,
+                    const eli::geom::curve::piecewise<eli::geom::curve::bezier, data__, 3> &vec,
+                    const std::string &name="")
+  {
+    typedef eli::geom::curve::piecewise<eli::geom::curve::bezier, data__, 3> piecewise_curve_type;
+    typedef typename piecewise_curve_type::curve_type curve_type;
+    typedef typename piecewise_curve_type::point_type point_type;
+    typedef typename piecewise_curve_type::data_type data_type;
+    typedef typename piecewise_curve_type::index_type index_type;
+    typedef typename piecewise_curve_type::tolerance_type tolerance_type;
+
+    std::string nm(random_string(5)), vecxbuf, vecybuf, veczbuf, cxbuf, cybuf, czbuf;
+
+    index_type i, pp, ns;
+    data_type tmin, tmax;
+
+    tolerance_type tol;
+
+    ns=pc.number_segments();
+    pc.get_parameter_min(tmin);
+    pc.get_parameter_max(tmax);
+
+    // check parameterization of vec curve
+    if (!tol.approximately_equal(vec.get_t0(), tmin))
+    {
+      return;
+    }
+    if (!tol.approximately_equal(vec.get_tmax(), tmax))
+    {
+      return;
+    }
+
+    // build name
+    if (name=="")
+    {
+      nm=random_string(5);
+    }
+    else
+    {
+      nm=name;
+    }
+
+    // initialize the t parameters
+    index_type nt(11);
+    std::vector<data__> t(nt);
+    for (i=0; i<nt; ++i)
+    {
+      t[i]=tmin+(tmax-tmin)*static_cast<data__>(i)/(nt-1);
+    }
+
+    // set the surface points
+    cxbuf=nm+"_loc_x=[";
+    cybuf=nm+"_loc_y=[";
+    czbuf=nm+"_loc_z=[";
+    vecxbuf=nm+"_vec_x=[";
+    vecybuf=nm+"_vec_y=[";
+    veczbuf=nm+"_vec_z=[";
+    for (i=0; i<nt; ++i)
+    {
+      cxbuf+=std::to_string(pc.f(t[i]).x());
+      cybuf+=std::to_string(pc.f(t[i]).y());
+      czbuf+=std::to_string(pc.f(t[i]).z());
+      vecxbuf+=std::to_string(vec.f(t[i]).x());
+      vecybuf+=std::to_string(vec.f(t[i]).y());
+      veczbuf+=std::to_string(vec.f(t[i]).z());
+      if (i<nt)
+      {
+        cxbuf+=", ";
+        cybuf+=", ";
+        czbuf+=", ";
+        vecxbuf+=", ";
+        vecybuf+=", ";
+        veczbuf+=", ";
+      }
+    }
+    cxbuf+="];";
+    cybuf+="];";
+    czbuf+="];";
+    vecxbuf+="];";
+    vecybuf+="];";
+    veczbuf+="];";
+
+    std::cout << "% curve: " << nm << std::endl;
+    std::cout << "figure(" << figno << ");" << std::endl;
+    std::cout << cxbuf << std::endl;
+    std::cout << cybuf << std::endl;
+    std::cout << czbuf << std::endl;
+    std::cout << vecxbuf << std::endl;
+    std::cout << vecybuf << std::endl;
+    std::cout << veczbuf << std::endl;
+    std::cout << "setenv('GNUTERM', 'x11');" << std::endl;
+    std::cout << "quiver3(" << nm << "_loc_x, "
+                            << nm << "_loc_y, "
+                            << nm << "_loc_z, "
+                            << nm << "_vec_x, "
+                            << nm << "_vec_y, "
+                            << nm << "_vec_z, "
+                            << "'r');" << std::endl;
+  }
+
+  template<typename data__>
+  void octave_print(int figno, const const eli::geom::surface::piecewise<eli::geom::surface::bezier, data__, 3> &ps,
+                    const std::string &name="", bool show_control_points=true)
+  {
+    typedef eli::geom::surface::piecewise<eli::geom::surface::bezier, data__, 3> piecewise_surface_type;
+    typedef typename piecewise_surface_type::surface_type surface_type;
+    typedef typename piecewise_surface_type::point_type point_type;
+    typedef typename piecewise_surface_type::data_type data_type;
+    typedef typename piecewise_surface_type::index_type index_type;
+    typedef typename piecewise_surface_type::tolerance_type tolerance_type;
+
+    std::string nm, cpxbuf, cpybuf, cpzbuf, sxbuf, sybuf, szbuf;
+
+    index_type i, j, pp, qq, nup, nvp;
+    data_type umin, vmin, umax, vmax;
+
+    nup=ps.number_u_patches();
+    nvp=ps.number_v_patches();
+    ps.get_parameter_min(umin, vmin);
+    ps.get_parameter_max(umax, vmax);
+
+
+    // build name
+    if (name=="")
+    {
+      nm=random_string(5);
+    }
+    else
+    {
+      nm=name;
+    }
+
+    // set control points
+    if (show_control_points)
+    {
+      assert(false); // Need to create separate control point surfaces for each patch
+      cpxbuf=nm+"_surf_cp_x=[";
+      cpybuf=nm+"_surf_cp_y=[";
+      cpzbuf=nm+"_surf_cp_z=[";
+      for (pp=0; pp<nup; ++pp)
+      {
+        for (qq=0; qq<nvp; ++qq)
+        {
+          surface_type bez;
+          ps.get(bez, pp, qq);
+          for (i=0; i<=bez.degree_u(); ++i)
+          {
+            for (j=0; j<=bez.degree_v(); ++j)
+            {
+              cpxbuf+=std::to_string(bez.get_control_point(i, j).x());
+              cpybuf+=std::to_string(bez.get_control_point(i, j).y());
+              cpzbuf+=std::to_string(bez.get_control_point(i, j).z());
+
+              if ((pp<(nup-1)) || (qq<(nvp-1)))
+              {
+                cpxbuf+=", ";
+                cpybuf+=", ";
+                cpzbuf+=", ";
+              }
+              else
+              {
+                if ((i<bez.degree_u()) || (j<bez.degree_v()))
+                {
+                  cpxbuf+=", ";
+                  cpybuf+=", ";
+                  cpzbuf+=", ";
+                }
+              }
+            }
+          }
+        }
+      }
+      cpxbuf+="];";
+      cpybuf+="];";
+      cpzbuf+="];";
+    }
+
+    // initialize the u & v parameters
+    index_type nu(21), nv(21);
+    std::vector<data__> u(nu), v(nv);
+    for (i=0; i<static_cast<index_type>(u.size()); ++i)
+    {
+      u[i]=umin+(umax-umin)*static_cast<data__>(i)/(u.size()-1);
+    }
+    for (j=0; j<static_cast<index_type>(v.size()); ++j)
+    {
+      v[j]=vmin+(vmax-vmin)*static_cast<data__>(j)/(v.size()-1);
+    }
+
+    // set the curve points
+    sxbuf=nm+"_surf_x=[";
+    sybuf=nm+"_surf_y=[";
+    szbuf=nm+"_surf_z=[";
+    for (i=0; i<nu; ++i)
+    {
+      for (j=0; j<nv; ++j)
+      {
+        sxbuf+=std::to_string(ps.f(u[i], v[j]).x());
+        sybuf+=std::to_string(ps.f(u[i], v[j]).y());
+        szbuf+=std::to_string(ps.f(u[i], v[j]).z());
+        if (j==(nv-1))
+        {
+          if (i<(nu-1))
+          {
+            sxbuf+=";\n";
+            sybuf+=";\n";
+            szbuf+=";\n";
+          }
+        }
+        else
+        {
+          sxbuf+=", ";
+          sybuf+=", ";
+          szbuf+=", ";
+        }
+      }
+    }
+    sxbuf+="];";
+    sybuf+="];";
+    szbuf+="];";
+
+    std::cout << "% surface: " << nm << std::endl;
+    std::cout << "figure(" << figno << ");" << std::endl;
+    std::cout << sxbuf << std::endl;
+    std::cout << sybuf << std::endl;
+    std::cout << szbuf << std::endl;
+    if (show_control_points)
+    {
+      std::cout << cpxbuf << std::endl;
+      std::cout << cpybuf << std::endl;
+      std::cout << cpzbuf << std::endl;
+    }
+    std::cout << "setenv('GNUTERM', 'x11');" << std::endl;
+    std::cout << "mesh(" << nm << "_surf_x, "
+                         << nm << "_surf_y, "
+                         << nm << "_surf_z, "
+                         << "zeros(size(surf_z)), 'EdgeColor', [0 0 0]);" << std::endl;
+    if (show_control_points)
+    {
+      std::cout << "mesh(" << nm << "_surf_cp_x', "
+                           << nm << "_surf_cp_y', "
+                           << nm << "_surf_cp_z', 'EdgeColor', [0 0 0]);" << std::endl;
+    }
   }
 }
+
 
 namespace eli
 {
