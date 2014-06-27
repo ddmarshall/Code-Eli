@@ -802,7 +802,7 @@ namespace eli
     {
       std::cout << "plot3(" << nm << "_curv_cp_x', "
                             << nm << "_curv_cp_y', "
-                            << nm << "_curv_cp_z', '-og', 'MarkerFaceColor', [0 1 0]);" << std::endl;
+                            << nm << "_curv_cp_z', '-o', 'Color', [0 0.5 0], 'MarkerFaceColor', [0 0.5 0]);" << std::endl;
     }
   }
 
@@ -918,7 +918,8 @@ namespace eli
     typedef typename piecewise_surface_type::index_type index_type;
     typedef typename piecewise_surface_type::tolerance_type tolerance_type;
 
-    std::string nm, cpxbuf, cpybuf, cpzbuf, sxbuf, sybuf, szbuf;
+    std::string nm, sxbuf, sybuf, szbuf;
+    std::vector<std::string> cpxbuf, cpybuf, cpzbuf;
 
     index_type i, j, pp, qq, nup, nvp;
     data_type umin, vmin, umax, vmax;
@@ -942,50 +943,57 @@ namespace eli
     // set control points
     if (show_control_points)
     {
-      assert(false); // Need to create separate control point surfaces for each patch
-      cpxbuf=nm+"_surf_cp_x=[";
-      cpybuf=nm+"_surf_cp_y=[";
-      cpzbuf=nm+"_surf_cp_z=[";
+      cpxbuf.resize(nup*nvp);
+      cpybuf.resize(nup*nvp);
+      cpzbuf.resize(nup*nvp);
+
       for (pp=0; pp<nup; ++pp)
       {
         for (qq=0; qq<nvp; ++qq)
         {
           surface_type bez;
           ps.get(bez, pp, qq);
+          index_type ppqq;
+
+          ppqq=qq*nup+pp;
+          cpxbuf[ppqq]=nm+"_surf_cp"+std::to_string(pp)+std::to_string(qq)+"_x=[";
+          cpybuf[ppqq]=nm+"_surf_cp"+std::to_string(pp)+std::to_string(qq)+"_y=[";
+          cpzbuf[ppqq]=nm+"_surf_cp"+std::to_string(pp)+std::to_string(qq)+"_z=[";
+
           for (i=0; i<=bez.degree_u(); ++i)
           {
             for (j=0; j<=bez.degree_v(); ++j)
             {
-              cpxbuf+=std::to_string(bez.get_control_point(i, j).x());
-              cpybuf+=std::to_string(bez.get_control_point(i, j).y());
-              cpzbuf+=std::to_string(bez.get_control_point(i, j).z());
+              cpxbuf[ppqq]+=std::to_string(bez.get_control_point(i, j).x());
+              cpybuf[ppqq]+=std::to_string(bez.get_control_point(i, j).y());
+              cpzbuf[ppqq]+=std::to_string(bez.get_control_point(i, j).z());
 
-              if ((pp<(nup-1)) || (qq<(nvp-1)))
+              if ((i==bez.degree_u()) && (j==bez.degree_v()))
               {
-                cpxbuf+=", ";
-                cpybuf+=", ";
-                cpzbuf+=", ";
+              }
+              else if ((j==bez.degree_v()) && (i<bez.degree_u()))
+              {
+                cpxbuf[ppqq]+="; ";
+                cpybuf[ppqq]+="; ";
+                cpzbuf[ppqq]+="; ";
               }
               else
               {
-                if ((i<bez.degree_u()) || (j<bez.degree_v()))
-                {
-                  cpxbuf+=", ";
-                  cpybuf+=", ";
-                  cpzbuf+=", ";
-                }
+                cpxbuf[ppqq]+=", ";
+                cpybuf[ppqq]+=", ";
+                cpzbuf[ppqq]+=", ";
               }
             }
           }
+          cpxbuf[ppqq]+="];";
+          cpybuf[ppqq]+="];";
+          cpzbuf[ppqq]+="];";
         }
       }
-      cpxbuf+="];";
-      cpybuf+="];";
-      cpzbuf+="];";
     }
 
     // initialize the u & v parameters
-    index_type nu(21), nv(21);
+    index_type nu(10*nup+1), nv(10*nvp+1);
     std::vector<data__> u(nu), v(nv);
     for (i=0; i<static_cast<index_type>(u.size()); ++i)
     {
@@ -996,7 +1004,7 @@ namespace eli
       v[j]=vmin+(vmax-vmin)*static_cast<data__>(j)/(v.size()-1);
     }
 
-    // set the curve points
+    // set the surface points
     sxbuf=nm+"_surf_x=[";
     sybuf=nm+"_surf_y=[";
     szbuf=nm+"_surf_z=[";
@@ -1033,12 +1041,6 @@ namespace eli
     std::cout << sxbuf << std::endl;
     std::cout << sybuf << std::endl;
     std::cout << szbuf << std::endl;
-    if (show_control_points)
-    {
-      std::cout << cpxbuf << std::endl;
-      std::cout << cpybuf << std::endl;
-      std::cout << cpzbuf << std::endl;
-    }
     std::cout << "setenv('GNUTERM', 'x11');" << std::endl;
     std::cout << "mesh(" << nm << "_surf_x, "
                          << nm << "_surf_y, "
@@ -1046,9 +1048,27 @@ namespace eli
                          << "zeros(size(surf_z)), 'EdgeColor', [0 0 0]);" << std::endl;
     if (show_control_points)
     {
-      std::cout << "mesh(" << nm << "_surf_cp_x', "
-                           << nm << "_surf_cp_y', "
-                           << nm << "_surf_cp_z', 'EdgeColor', [0 0 0]);" << std::endl;
+      for (pp=0; pp<nup; ++pp)
+      {
+        for (qq=0; qq<nvp; ++qq)
+        {
+          index_type ppqq;
+
+          ppqq=qq*nup+pp;
+          std::cout << cpxbuf[ppqq] << std::endl;
+          std::cout << cpybuf[ppqq] << std::endl;
+          std::cout << cpzbuf[ppqq] << std::endl;
+
+          std::cout << "mesh(" << nm << "_surf_cp" << std::to_string(pp) << std::to_string(qq) <<  "_x', "
+                               << nm << "_surf_cp" << std::to_string(pp) << std::to_string(qq) <<  "_y', "
+                               << nm << "_surf_cp" << std::to_string(pp) << std::to_string(qq) <<  "_z', "
+                               << "'EdgeColor', [0.5 0.5 0.5], 'FaceColor', 'none');" << std::endl;
+          std::cout << "plot3(" << nm << "_surf_cp" << std::to_string(pp) << std::to_string(qq) <<  "_x', "
+                                << nm << "_surf_cp" << std::to_string(pp) << std::to_string(qq) <<  "_y', "
+                                << nm << "_surf_cp" << std::to_string(pp) << std::to_string(qq) <<  "_z', "
+                                << "'o', 'MarkerEdgeColor', [0.5 0.5 0.5],'MarkerFaceColor', [0.5 0.5 0.5]);" << std::endl;
+        }
+      }
     }
   }
 }
@@ -1353,119 +1373,6 @@ namespace eli
           std::vector<index_type> max_degree;
           bool closed;
       };
-#if 0
-                                   (piecewise<bezier, data__, dim__, tol__> &ps,
-                                   const std::vector<eli::geom::curve::piecewise<eli::geom::curve::bezier, data__, dim__, tol__> > &pc,
-                                   bool outward_normal)
-        typedef piecewise<bezier, data__, dim__, tol__> piecewise_surface_type;
-        typedef eli::geom::curve::piecewise<eli::geom::curve::bezier, data__, dim__, tol__> piecewise_curve_type;
-        typedef eli::geom::curve::piecewise_circle_creator<data__, dim__, tol__> circle_creator_type;
-        typedef typename piecewise_curve_type::curve_type curve_type;
-        typedef typename piecewise_surface_type::surface_type surface_type;
-        typedef typename curve_type::point_type point_type;
-        typedef typename curve_type::data_type data_type;
-        typedef typename curve_type::index_type index_type;
-
-
-        // not implemented
-        assert(false);
-
-        // make sure each curve is parameterized the same way
-
-        // for each strip of surfaces need to sub-divide edge curves so that all edge curves have
-        // the same number of segments with joints at same parameter values
-
-        // 
-        return false;
-
-        curve_type c, arc;
-        surface_type s[4];
-        piecewise_curve_type pc_circle;
-        point_type origin, normal, start;
-        data_type du, dv;
-        index_type i, j, pp, qq, nu=pc.number_segments(), nv=4, udim, vdim;
-
-        // resize the surface
-        ps.init_uv(nu, nv);
-
-        // set the axis of rotation
-        switch(axis)
-        {
-          case(0):
-          {
-            normal << 1, 0, 0;
-            break;
-          }
-          case(1):
-          {
-            normal << 0, 1, 0;
-            break;
-          }
-          case(2):
-          {
-            normal << 0, 0, 1;
-            break;
-          }
-          default:
-          {
-            assert(false);
-            return false;
-          }
-        }
-        if (outward_normal)
-        {
-          normal*=-1;
-        }
-
-        // cycle through each curve segment
-        circle_creator_type circle_creator;
-        for (pp=0; pp<nu; ++pp)
-        {
-          // resize the surface patch
-          udim=c.dimension();
-          vdim=3;
-          pc.get(c, du, pp);
-          s[0].resize(udim, vdim);
-          s[1].resize(udim, vdim);
-          s[2].resize(udim, vdim);
-          s[3].resize(udim, vdim);
-
-          // cycle through each control point in current curve and create patch control points
-          for (i=0; i<=udim; ++i)
-          {
-            // set up the vectors for this circle
-            start=c.get_control_point(i);
-            origin=normal.dot(start)*normal;
-
-            // get the circle
-            circle_creator.set(start, origin, normal);
-            if (!circle_creator.create(pc_circle))
-            {
-              assert(false);
-              return false;
-            }
-
-            // for each segment of circle set the control points
-            for (qq=0; qq<4; ++qq)
-            {
-              pc_circle.get(arc, dv, qq);
-              for (j=0; j<4; ++j)
-              {
-                s[qq].set_control_point(arc.get_control_point(j), i, j);
-              }
-            }
-          }
-
-          // set the surface patches
-          for (qq=0; qq<4; ++qq)
-          {
-            ps.set(s[qq], pp, qq);
-          }
-        }
-
-        return true;
-      }
-#endif
     }
   }
 }
