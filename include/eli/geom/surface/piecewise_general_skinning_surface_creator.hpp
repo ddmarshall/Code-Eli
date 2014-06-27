@@ -1246,9 +1246,9 @@ namespace eli
               rib_states[i].split(joints.begin(), joints.end(), std::back_inserter(jdegs));
               for (j=0; j<(njoints-1); ++j)
               {
-                if (jdegs[i]>max_jdegs[i])
+                if (jdegs[j]>max_jdegs[j])
                 {
-                  max_jdegs[i]=jdegs[i];
+                  max_jdegs[j]=jdegs[j];
                 }
               }
             }
