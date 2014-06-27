@@ -1267,26 +1267,26 @@ namespace eli
                 {
                   curve_type jcrv;
 
-                  ribs[u].get_f().get(jcrv, v);
+                  rib_states[u].get_f().get(jcrv, v);
                   joints[u].set_f(jcrv.get_control_point(j));
-                  if (ribs[u].use_left_fp())
+                  if (rib_states[u].use_left_fp())
                   {
-                    ribs[u].get_left_fp().get(jcrv, v);
+                    rib_states[u].get_left_fp().get(jcrv, v);
                     joints[u].set_left_fp(jcrv.get_control_point(j));
                   }
-                  if (ribs[u].use_right_fp())
+                  if (rib_states[u].use_right_fp())
                   {
-                    ribs[u].get_right_fp().get(jcrv, v);
+                    rib_states[u].get_right_fp().get(jcrv, v);
                     joints[u].set_right_fp(jcrv.get_control_point(j));
                   }
-                  if (ribs[u].use_left_fpp())
+                  if (rib_states[u].use_left_fpp())
                   {
-                    ribs[u].get_left_fpp().get(jcrv, v);
+                    rib_states[u].get_left_fpp().get(jcrv, v);
                     joints[u].set_left_fpp(jcrv.get_control_point(j));
                   }
-                  if (ribs[u].use_right_fpp())
+                  if (rib_states[u].use_right_fpp())
                   {
-                    ribs[u].get_right_fpp().get(jcrv, v);
+                    rib_states[u].get_right_fpp().get(jcrv, v);
                     joints[u].set_right_fpp(jcrv.get_control_point(j));
                   }
                 }
