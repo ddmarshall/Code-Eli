@@ -58,6 +58,7 @@ class piecewise_general_skinning_surface_creator_test_suite : public Test::Suite
       TEST_ADD(piecewise_general_skinning_surface_creator_test_suite<float>::create_rib_test);
       TEST_ADD(piecewise_general_skinning_surface_creator_test_suite<float>::create_single_surface_test);
       TEST_ADD(piecewise_general_skinning_surface_creator_test_suite<float>::create_multijoint_rib_single_surface_test);
+      TEST_ADD(piecewise_general_skinning_surface_creator_test_suite<float>::create_multirib_surface_test);
     }
     void AddTests(const double &)
     {
@@ -65,6 +66,7 @@ class piecewise_general_skinning_surface_creator_test_suite : public Test::Suite
       TEST_ADD(piecewise_general_skinning_surface_creator_test_suite<double>::create_rib_test);
       TEST_ADD(piecewise_general_skinning_surface_creator_test_suite<double>::create_single_surface_test);
       TEST_ADD(piecewise_general_skinning_surface_creator_test_suite<double>::create_multijoint_rib_single_surface_test);
+      TEST_ADD(piecewise_general_skinning_surface_creator_test_suite<double>::create_multirib_surface_test);
     }
     void AddTests(const long double &)
     {
@@ -72,6 +74,7 @@ class piecewise_general_skinning_surface_creator_test_suite : public Test::Suite
       TEST_ADD(piecewise_general_skinning_surface_creator_test_suite<long double>::create_rib_test);
       TEST_ADD(piecewise_general_skinning_surface_creator_test_suite<long double>::create_single_surface_test);
       TEST_ADD(piecewise_general_skinning_surface_creator_test_suite<long double>::create_multijoint_rib_single_surface_test);
+      TEST_ADD(piecewise_general_skinning_surface_creator_test_suite<long double>::create_multirib_surface_test);
     }
 
   public:
@@ -2542,6 +2545,1095 @@ class piecewise_general_skinning_surface_creator_test_suite : public Test::Suite
       }
     }
 
+    void create_multirib_surface_test()
+    {
+      // surface connecting 3 ribs made of 1 line segment each
+      {
+        index_type nsegs(2);
+        std::vector<rib_data_type> ribs(nsegs+1);
+        std::vector<typename general_creator_type::index_type> max_degree(nsegs);
+        point_type p;
+        rib_curve_type rc1, rc2, rc3;
+        general_creator_type gc;
+        piecewise_surface_type s;
+        point_type p00, p01, p10, p11, p20, p21;
+        data_type u0(2), v0(1), u1(4), v1(5), u2(7), v;
+        bool rtn_flag;
+
+        // four corners of surface
+        p00 << 1, 1, 1;
+        p01 << 2, 3, 1;
+        p10 << 3, 2, 3;
+        p11 << 4, 4, 4;
+        p20 << 5, 2, 5;
+        p21 << 5, 5, 6;
+
+        // create two rib curves
+        piecewise_line_creator_type plc(1);
+
+        plc.set_corner(p00, 0);
+        plc.set_corner(p01, 1);
+        plc.set_t0(v0);
+        plc.set_segment_dt(v1-v0, 0);
+        plc.create(rc1);
+//        rc1.split((v0+v1)/2);
+
+        plc.set_corner(p10, 0);
+        plc.set_corner(p11, 1);
+        plc.set_t0(v0);
+        plc.set_segment_dt(v1-v0, 0);
+        plc.create(rc2);
+//        rc2.split((v0+v1)/2);
+
+        plc.set_corner(p20, 0);
+        plc.set_corner(p21, 1);
+        plc.set_t0(v0);
+        plc.set_segment_dt(v1-v0, 0);
+        plc.create(rc3);
+//        rc3.split((v0+v1)/2);
+
+        // set the rib data
+        ribs[0].set_f(rc1);
+        ribs[1].set_f(rc2);
+        ribs[2].set_f(rc3);
+
+        // set the maximum degrees of each segment
+        max_degree[0]=0;
+
+        // create surface
+        rtn_flag=gc.set_conditions(ribs, max_degree, false);
+        TEST_ASSERT(rtn_flag);
+        gc.set_u0(u0);
+        gc.set_segment_du(u1-u0, 0);
+        gc.set_segment_du(u2-u1, 1);
+        rtn_flag=gc.create(s);
+        TEST_ASSERT(rtn_flag);
+
+        // test the resulting curve
+        point_type p_test, p_ref;
+
+        p_test=s.f(u0, v0);
+        TEST_ASSERT(tol.approximately_equal(p00, p_test));
+//        std::cout << "p=" << p00
+//                  << "\tpc=" << ribs[0].get_f().f(v0)
+//                  << "\tp_test=" << p_test << "\tdiff="
+//                  << (ribs[0].get_f().f(v0)-p_test).norm() << std::endl;
+        p_test=s.f(u1, v0);
+        TEST_ASSERT(tol.approximately_equal(p10, p_test));
+//        std::cout << "p=" << p10
+//                  << "\tpc=" << ribs[1].get_f().f(v0)
+//                  << "\tp_test=" << p_test << "\tdiff="
+//                  << (p10-p_test).norm() << std::endl;
+        p_test=s.f(u2, v0);
+        TEST_ASSERT(tol.approximately_equal(p20, p_test));
+//        std::cout << "p=" << p20
+//                  << "\tpc=" << ribs[2].get_f().f(v0)
+//                  << "\tp_test=" << p_test << "\tdiff="
+//                  << (p20-p_test).norm() << std::endl;
+        p_test=s.f(u0, v1);
+        TEST_ASSERT(tol.approximately_equal(p01, p_test));
+//        std::cout << "p=" << p01
+//                  << "\tpc=" << ribs[0].get_f().f(v1)
+//                  << "\tp_test=" << p_test << "\tdiff="
+//                  << (p01-p_test).norm() << std::endl;
+        p_test=s.f(u1, v1);
+        TEST_ASSERT(tol.approximately_equal(p11, p_test));
+//        std::cout << "p=" << p11
+//                  << "\tpc=" << ribs[1].get_f().f(v1)
+//                  << "\tp_test=" << p_test << "\tdiff="
+//                  << (p11-p_test).norm() << std::endl;
+        p_test=s.f(u2, v1);
+        TEST_ASSERT(tol.approximately_equal(p21, p_test));
+//        std::cout << "p=" << p21
+//                  << "\tpc=" << ribs[2].get_f().f(v1)
+//                  << "\tp_test=" << p_test << "\tdiff="
+//                  << (p21-p_test).norm() << std::endl;
+        v=v0+(v1-v0)/2;
+        p_test=s.f(u0, v);
+        p_ref=ribs[0].get_f().f(v);
+        TEST_ASSERT(tol.approximately_equal(p_test, p_ref));
+//        std::cout << "p=" << p_ref
+//                  << "\tp_test=" << p_test << "\tdiff="
+//                  << (p_ref-p_test).norm() << std::endl;
+        p_test=s.f(u1, v);
+        p_ref=ribs[1].get_f().f(v);
+        TEST_ASSERT(tol.approximately_equal(p_test, p_ref));
+//        std::cout << "p=" << p_ref
+//                  << "\tp_test=" << p_test << "\tdiff="
+//                  << (p_ref-p_test).norm() << std::endl;
+        p_test=s.f(u2, v);
+        p_ref=ribs[2].get_f().f(v);
+        TEST_ASSERT(tol.approximately_equal(p_test, p_ref));
+//        std::cout << "p=" << p_ref
+//                  << "\tp_test=" << p_test << "\tdiff="
+//                  << (p_ref-p_test).norm() << std::endl;
+
+//        if (rtn_flag && (typeid(data_type)==typeid(float)))
+//        {
+//          std::cout.flush();
+//          eli::octave_start(1);
+//          eli::octave_print(1, s, "surf", true);
+//          eli::octave_print(1, ribs[0].get_f(), "rib0", true);
+//          eli::octave_print(1, ribs[1].get_f(), "rib1", true);
+//          eli::octave_finish(1);
+//        }
+      }
+
+#if 0
+      // surface connecting ribs made of 2 cubic segments each
+      {
+        index_type nsegs(1);
+        std::vector<rib_data_type> ribs(nsegs+1);
+        std::vector<typename general_creator_type::index_type> max_degree(nsegs);
+        point_type p;
+        rib_curve_type rc1, rc2;
+        general_creator_type gc;
+        piecewise_surface_type s;
+        point_type p00, p01, p10, p11;
+        data_type u0(2), v0(1), u1(4), v1(5), v;
+        bool rtn_flag;
+
+        // four corners of surface
+        p00 << 1, 1, 1;
+        p01 << 2, 3, 1;
+        p10 << 3, 2, 3;
+        p11 << 4, 4, 4;
+
+        // create two rib curves && two slope curves
+        typename rib_curve_type::curve_type curve(3);
+        typename rib_curve_type::control_point_type cp[4];
+
+        // manually create cubic curves for ribs
+        cp[0]=p00;
+        cp[1] << 0, 2, 1;
+        cp[2] << 1, 3, 1;
+        cp[3]=p01;
+        for (index_type i=0; i<4; ++i)
+        {
+          curve.set_control_point(cp[i], i);
+        }
+        rc1.push_front(curve, v1-v0);
+        rc1.set_t0(v0);
+        rc1.split((v0+v1)/2);
+
+        cp[0]=p10;
+        cp[1] << 1, 2, 3;
+        cp[2] << 2, 3, 4;
+        cp[3]=p11;
+        for (index_type i=0; i<4; ++i)
+        {
+          curve.set_control_point(cp[i], i);
+        }
+        rc2.push_front(curve, v1-v0);
+        rc2.set_t0(v0);
+        rc2.split((v0+v1)/2);
+
+        // set the rib data
+        ribs[0].set_f(rc1);
+        ribs[1].set_f(rc2);
+
+        // set the maximum degrees of each segment
+        max_degree[0]=0;
+
+        // create surface
+        rtn_flag=gc.set_conditions(ribs, max_degree, false);
+        TEST_ASSERT(rtn_flag);
+        gc.set_u0(u0);
+        gc.set_segment_du(u1-u0, 0);
+        rtn_flag=gc.create(s);
+        TEST_ASSERT(rtn_flag);
+
+        // test the resulting curve
+        point_type p_test, p_ref;
+
+        p_test=s.f(u0, v0);
+        TEST_ASSERT(tol.approximately_equal(p00, p_test));
+//        std::cout << "p=" << p00
+//                  << "\tpc=" << ribs[0].get_f().f(v0)
+//                  << "\tp_test=" << p_test << "\tdiff="
+//                  << (ribs[0].get_f().f(v0)-p_test).norm() << std::endl;
+        p_test=s.f(u1, v0);
+        TEST_ASSERT(tol.approximately_equal(p10, p_test));
+//        std::cout << "p=" << p10
+//                  << "\tpc=" << ribs[1].get_f().f(v0)
+//                  << "\tp_test=" << p_test << "\tdiff="
+//                  << (p10-p_test).norm() << std::endl;
+        p_test=s.f(u0, v1);
+        TEST_ASSERT(tol.approximately_equal(p01, p_test));
+//        std::cout << "p=" << p01
+//                  << "\tpc=" << ribs[0].get_f().f(v1)
+//                  << "\tp_test=" << p_test << "\tdiff="
+//                  << (p01-p_test).norm() << std::endl;
+        p_test=s.f(u1, v1);
+        TEST_ASSERT(tol.approximately_equal(p11, p_test));
+//        std::cout << "p=" << p11
+//                  << "\tpc=" << ribs[1].get_f().f(v1)
+//                  << "\tp_test=" << p_test << "\tdiff="
+//                  << (p11-p_test).norm() << std::endl;
+        v=v0+(v1-v0)/4;
+        p_test=s.f(u0, v);
+        p_ref=ribs[0].get_f().f(v);
+        TEST_ASSERT(tol.approximately_equal(p_test, p_ref));
+//        std::cout << "p=" << p_ref
+//                  << "\tp_test=" << p_test << "\tdiff="
+//                  << (p_ref-p_test).norm() << std::endl;
+        p_test=s.f(u1, v);
+        p_ref=ribs[1].get_f().f(v);
+        TEST_ASSERT(tol.approximately_equal(p_test, p_ref));
+//        std::cout << "p=" << p_ref
+//                  << "\tp_test=" << p_test << "\tdiff="
+//                  << (p_ref-p_test).norm() << std::endl;
+        v=v0+3*(v1-v0)/4;
+        p_test=s.f(u0, v);
+        p_ref=ribs[0].get_f().f(v);
+        TEST_ASSERT(tol.approximately_equal(p_test, p_ref));
+//        std::cout << "p=" << p_ref
+//                  << "\tp_test=" << p_test << "\tdiff="
+//                  << (p_ref-p_test).norm() << std::endl;
+        p_test=s.f(u1, v);
+        p_ref=ribs[1].get_f().f(v);
+        TEST_ASSERT(tol.approximately_equal(p_test, p_ref));
+//        std::cout << "p=" << p_ref
+//                  << "\tp_test=" << p_test << "\tdiff="
+//                  << (p_ref-p_test).norm() << std::endl;
+
+//        if (rtn_flag && (typeid(data_type)==typeid(float)))
+//        {
+//          std::cout.flush();
+//          eli::octave_start(1);
+//          eli::octave_print(1, s, "surf", true);
+//          eli::octave_print(1, ribs[0].get_f(), "rib0", true);
+//          eli::octave_print(1, ribs[1].get_f(), "rib1", true);
+//          eli::octave_finish(1);
+//        }
+      }
+
+      // surface connecting ribs made of 2 cubic segments each, specified 1st
+      {
+        index_type nsegs(1);
+        std::vector<rib_data_type> ribs(nsegs+1);
+        std::vector<typename general_creator_type::index_type> max_degree(nsegs);
+        point_type p;
+        rib_curve_type rc1, rc2, rs1, rs2;
+        general_creator_type gc;
+        piecewise_surface_type s;
+        point_type p00, p01, p10, p11, s00, s01, s10, s11;
+        data_type u0(2), v0(1), u1(4), v1(5), v;
+        bool rtn_flag;
+
+        // four corners of surface
+        p00 << 1, 1, 1;
+        p01 << 2, 3, 1;
+        p10 << 3, 2, 3;
+        p11 << 4, 4, 4;
+        s00 << 2, 2, 0;
+        s01 << 1, 3, 2;
+        s10 << 2, 1, 0;
+        s11 << 2, 0, 1;
+
+        // create two rib curves && two slope curves
+        typename rib_curve_type::curve_type curve(3);
+        typename rib_curve_type::control_point_type cp[4];
+
+        // manually create cubic curves for ribs
+        cp[0]=p00;
+        cp[1] << 0, 2, 1;
+        cp[2] << 1, 3, 1;
+        cp[3]=p01;
+        for (index_type i=0; i<4; ++i)
+        {
+          curve.set_control_point(cp[i], i);
+        }
+        rc1.push_front(curve, v1-v0);
+        rc1.set_t0(v0);
+        rc1.split((v0+v1)/2);
+
+        cp[0]=p10;
+        cp[1] << 1, 2, 3;
+        cp[2] << 2, 3, 4;
+        cp[3]=p11;
+        for (index_type i=0; i<4; ++i)
+        {
+          curve.set_control_point(cp[i], i);
+        }
+        rc2.push_front(curve, v1-v0);
+        rc2.set_t0(v0);
+        rc2.split((v0+v1)/2);
+
+        // create two two slope curves
+        piecewise_line_creator_type plc(1);
+
+        plc.set_corner(s00/2, 0);
+        plc.set_corner(s01/2, 1);
+        plc.set_t0(v0);
+        plc.set_segment_dt(v1-v0, 0);
+        plc.create(rs1);
+
+        plc.set_corner(s10/2, 0);
+        plc.set_corner(s11/2, 1);
+        plc.set_t0(v0);
+        plc.set_segment_dt(v1-v0, 0);
+        plc.create(rs2);
+
+        // set the rib data
+        ribs[0].set_f(rc1);
+        ribs[0].set_right_fp(rs1);
+        ribs[1].set_f(rc2);
+        ribs[1].set_left_fp(rs2);
+
+        // set the maximum degrees of each segment
+        max_degree[0]=0;
+
+        // create surface
+        rtn_flag=gc.set_conditions(ribs, max_degree, false);
+        TEST_ASSERT(rtn_flag);
+        gc.set_u0(u0);
+        gc.set_segment_du(u1-u0, 0);
+        rtn_flag=gc.create(s);
+        TEST_ASSERT(rtn_flag);
+
+        // test the resulting curve
+        point_type p_test, p_ref;
+
+        p_test=s.f(u0, v0);
+        TEST_ASSERT(tol.approximately_equal(p00, p_test));
+//        std::cout << "p=" << p00
+//                  << "\tpc=" << ribs[0].get_f().f(v0)
+//                  << "\tp_test=" << p_test << "\tdiff="
+//                  << (ribs[0].get_f().f(v0)-p_test).norm() << std::endl;
+        p_test=s.f(u1, v0);
+        TEST_ASSERT(tol.approximately_equal(p10, p_test));
+//        std::cout << "p=" << p10
+//                  << "\tpc=" << ribs[1].get_f().f(v0)
+//                  << "\tp_test=" << p_test << "\tdiff="
+//                  << (p10-p_test).norm() << std::endl;
+        p_test=s.f(u0, v1);
+        TEST_ASSERT(tol.approximately_equal(p01, p_test));
+//        std::cout << "p=" << p01
+//                  << "\tpc=" << ribs[0].get_f().f(v1)
+//                  << "\tp_test=" << p_test << "\tdiff="
+//                  << (p01-p_test).norm() << std::endl;
+        p_test=s.f(u1, v1);
+        TEST_ASSERT(tol.approximately_equal(p11, p_test));
+//        std::cout << "p=" << p11
+//                  << "\tpc=" << ribs[1].get_f().f(v1)
+//                  << "\tp_test=" << p_test << "\tdiff="
+//                  << (p11-p_test).norm() << std::endl;
+        v=v0+(v1-v0)/4;
+        p_test=s.f(u0, v);
+        p_ref=ribs[0].get_f().f(v);
+        TEST_ASSERT(tol.approximately_equal(p_test, p_ref));
+//        std::cout << "p=" << p_ref
+//                  << "\tp_test=" << p_test << "\tdiff="
+//                  << (p_ref-p_test).norm() << std::endl;
+        p_test=s.f(u1, v);
+        p_ref=ribs[1].get_f().f(v);
+        TEST_ASSERT(tol.approximately_equal(p_test, p_ref));
+//        std::cout << "p=" << p_ref
+//                  << "\tp_test=" << p_test << "\tdiff="
+//                  << (p_ref-p_test).norm() << std::endl;
+        p_test=s.f_u(u0, v);
+        p_ref=ribs[0].get_right_fp().f(v);
+        TEST_ASSERT(tol.approximately_equal(p_test, p_ref));
+//        std::cout << "p=" << p_ref
+//                  << "\tp_test=" << p_test << "\tdiff="
+//                  << (p_ref-p_test).norm() << std::endl;
+        p_test=s.f_u(u1, v);
+        p_ref=ribs[1].get_left_fp().f(v);
+        TEST_ASSERT(tol.approximately_equal(p_test, p_ref));
+//        std::cout << "p=" << p_ref
+//                  << "\tp_test=" << p_test << "\tdiff="
+//                  << (p_ref-p_test).norm() << std::endl;
+        v=v0+3*(v1-v0)/4;
+        p_test=s.f(u0, v);
+        p_ref=ribs[0].get_f().f(v);
+        TEST_ASSERT(tol.approximately_equal(p_test, p_ref));
+//        std::cout << "p=" << p_ref
+//                  << "\tp_test=" << p_test << "\tdiff="
+//                  << (p_ref-p_test).norm() << std::endl;
+        p_test=s.f(u1, v);
+        p_ref=ribs[1].get_f().f(v);
+        TEST_ASSERT(tol.approximately_equal(p_test, p_ref));
+//        std::cout << "p=" << p_ref
+//                  << "\tp_test=" << p_test << "\tdiff="
+//                  << (p_ref-p_test).norm() << std::endl;
+        p_test=s.f_u(u0, v);
+        p_ref=ribs[0].get_right_fp().f(v);
+        TEST_ASSERT(tol.approximately_equal(p_test, p_ref));
+//        std::cout << "p=" << p_ref
+//                  << "\tp_test=" << p_test << "\tdiff="
+//                  << (p_ref-p_test).norm() << std::endl;
+        p_test=s.f_u(u1, v);
+        p_ref=ribs[1].get_left_fp().f(v);
+        TEST_ASSERT(tol.approximately_equal(p_test, p_ref));
+//        std::cout << "p=" << p_ref
+//                  << "\tp_test=" << p_test << "\tdiff="
+//                  << (p_ref-p_test).norm() << std::endl;
+
+//        if (rtn_flag && (typeid(data_type)==typeid(float)))
+//        {
+//          std::cout.flush();
+//          eli::octave_start(1);
+//          eli::octave_print(1, s, "surf", true);
+//          eli::octave_print(1, ribs[0].get_f(), "rib0", true);
+//          eli::octave_print(1, ribs[1].get_f(), "rib1", true);
+//          eli::octave_print(1, ribs[0].get_f(), ribs[0].get_right_fp(), "rve0");
+//          eli::octave_print(1, ribs[1].get_f(), ribs[1].get_left_fp(), "lve1");
+//          eli::octave_finish(1);
+//        }
+      }
+
+      // surface connecting ribs made of 2 cubic segments each, specified 1st and 2nd derivatives
+      {
+        index_type nsegs(1);
+        std::vector<rib_data_type> ribs(nsegs+1);
+        std::vector<typename general_creator_type::index_type> max_degree(nsegs);
+        point_type p;
+        rib_curve_type rc1, rc2, rs1, rs2, ra1, ra2;
+        general_creator_type gc;
+        piecewise_surface_type s;
+        point_type p00, p01, p10, p11, s00, s01, s10, s11, a00, a01, a10, a11;
+        data_type u0(2), v0(1), u1(4), v1(5), v;
+        bool rtn_flag;
+
+        // four corners of surface
+        p00 << 1, 1, 1;
+        p01 << 2, 3, 1;
+        p10 << 3, 2, 3;
+        p11 << 4, 4, 4;
+        s00 << 2, 2, 0;
+        s01 << 1, 3, 2;
+        s10 << 2, 1, 0;
+        s11 << 2, 0, 1;
+        a00 << 0, 1, 0;
+        a01 << 1, 0, 1;
+        a10 << 1, 0, 1;
+        a11 << 0, 1, 0;
+
+        // create two rib curves && two slope curves
+        typename rib_curve_type::curve_type curve(3);
+        typename rib_curve_type::control_point_type cp[4];
+
+        // manually create cubic curves for ribs
+        cp[0]=p00;
+        cp[1] << 0, 2, 1;
+        cp[2] << 1, 3, 1;
+        cp[3]=p01;
+        for (index_type i=0; i<4; ++i)
+        {
+          curve.set_control_point(cp[i], i);
+        }
+        rc1.push_front(curve, v1-v0);
+        rc1.set_t0(v0);
+        rc1.split((v0+v1)/2);
+
+        cp[0]=p10;
+        cp[1] << 1, 2, 3;
+        cp[2] << 2, 3, 4;
+        cp[3]=p11;
+        for (index_type i=0; i<4; ++i)
+        {
+          curve.set_control_point(cp[i], i);
+        }
+        rc2.push_front(curve, v1-v0);
+        rc2.set_t0(v0);
+        rc2.split((v0+v1)/2);
+
+        // create two two slope curves
+        piecewise_line_creator_type plc(1);
+
+        plc.set_corner(s00/2, 0);
+        plc.set_corner(s01/2, 1);
+        plc.set_t0(v0);
+        plc.set_segment_dt(v1-v0, 0);
+        plc.create(rs1);
+
+        plc.set_corner(a00, 0);
+        plc.set_corner(a01, 1);
+        plc.set_t0(v0);
+        plc.set_segment_dt(v1-v0, 0);
+        plc.create(ra1);
+
+        plc.set_corner(s10/2, 0);
+        plc.set_corner(s11/2, 1);
+        plc.set_t0(v0);
+        plc.set_segment_dt(v1-v0, 0);
+        plc.create(rs2);
+
+        plc.set_corner(a10, 0);
+        plc.set_corner(a11, 1);
+        plc.set_t0(v0);
+        plc.set_segment_dt(v1-v0, 0);
+        plc.create(ra2);
+
+        // set the rib data
+        ribs[0].set_f(rc1);
+        ribs[0].set_right_fp(rs1);
+        ribs[0].set_right_fpp(ra1);
+        ribs[1].set_f(rc2);
+        ribs[1].set_left_fp(rs2);
+        ribs[1].set_left_fpp(ra2);
+
+        // set the maximum degrees of each segment
+        max_degree[0]=0;
+
+        // create surface
+        rtn_flag=gc.set_conditions(ribs, max_degree, false);
+        TEST_ASSERT(rtn_flag);
+        gc.set_u0(u0);
+        gc.set_segment_du(u1-u0, 0);
+        rtn_flag=gc.create(s);
+        TEST_ASSERT(rtn_flag);
+
+        // test the resulting curve
+        point_type p_test, p_ref;
+
+        p_test=s.f(u0, v0);
+        TEST_ASSERT(tol.approximately_equal(p00, p_test));
+//        std::cout << "p=" << p00
+//                  << "\tpc=" << ribs[0].get_f().f(v0)
+//                  << "\tp_test=" << p_test << "\tdiff="
+//                  << (ribs[0].get_f().f(v0)-p_test).norm() << std::endl;
+        p_test=s.f(u1, v0);
+        TEST_ASSERT(tol.approximately_equal(p10, p_test));
+//        std::cout << "p=" << p10
+//                  << "\tpc=" << ribs[1].get_f().f(v0)
+//                  << "\tp_test=" << p_test << "\tdiff="
+//                  << (p10-p_test).norm() << std::endl;
+        p_test=s.f(u0, v1);
+        TEST_ASSERT(tol.approximately_equal(p01, p_test));
+//        std::cout << "p=" << p01
+//                  << "\tpc=" << ribs[0].get_f().f(v1)
+//                  << "\tp_test=" << p_test << "\tdiff="
+//                  << (p01-p_test).norm() << std::endl;
+        p_test=s.f(u1, v1);
+        TEST_ASSERT(tol.approximately_equal(p11, p_test));
+//        std::cout << "p=" << p11
+//                  << "\tpc=" << ribs[1].get_f().f(v1)
+//                  << "\tp_test=" << p_test << "\tdiff="
+//                  << (p11-p_test).norm() << std::endl;
+        v=v0+(v1-v0)/4;
+        p_test=s.f(u0, v);
+        p_ref=ribs[0].get_f().f(v);
+        TEST_ASSERT(tol.approximately_equal(p_test, p_ref));
+//        std::cout << "p=" << p_ref
+//                  << "\tp_test=" << p_test << "\tdiff="
+//                  << (p_ref-p_test).norm() << std::endl;
+        p_test=s.f(u1, v);
+        p_ref=ribs[1].get_f().f(v);
+        TEST_ASSERT(tol.approximately_equal(p_test, p_ref));
+//        std::cout << "p=" << p_ref
+//                  << "\tp_test=" << p_test << "\tdiff="
+//                  << (p_ref-p_test).norm() << std::endl;
+        p_test=s.f_u(u0, v);
+        p_ref=ribs[0].get_right_fp().f(v);
+        TEST_ASSERT(tol.approximately_equal(p_test, p_ref));
+//        std::cout << "p=" << p_ref
+//                  << "\tp_test=" << p_test << "\tdiff="
+//                  << (p_ref-p_test).norm() << std::endl;
+        p_test=s.f_u(u1, v);
+        p_ref=ribs[1].get_left_fp().f(v);
+        TEST_ASSERT(tol.approximately_equal(p_test, p_ref));
+//        std::cout << "p=" << p_ref
+//                  << "\tp_test=" << p_test << "\tdiff="
+//                  << (p_ref-p_test).norm() << std::endl;
+        p_test=s.f_uu(u0, v);
+        p_ref=ribs[0].get_right_fpp().f(v);
+        TEST_ASSERT(tol.approximately_equal(p_test, p_ref));
+//        std::cout << "p=" << p_ref
+//                  << "\tp_test=" << p_test << "\tdiff="
+//                  << (p_ref-p_test).norm() << std::endl;
+        p_test=s.f_uu(u1, v);
+        p_ref=ribs[1].get_left_fpp().f(v);
+        TEST_ASSERT(tol.approximately_equal(p_test, p_ref));
+//        std::cout << "p=" << p_ref
+//                  << "\tp_test=" << p_test << "\tdiff="
+//                  << (p_ref-p_test).norm() << std::endl;
+        v=v0+3*(v1-v0)/4;
+        p_test=s.f(u0, v);
+        p_ref=ribs[0].get_f().f(v);
+        TEST_ASSERT(tol.approximately_equal(p_test, p_ref));
+//        std::cout << "p=" << p_ref
+//                  << "\tp_test=" << p_test << "\tdiff="
+//                  << (p_ref-p_test).norm() << std::endl;
+        p_test=s.f(u1, v);
+        p_ref=ribs[1].get_f().f(v);
+        TEST_ASSERT(tol.approximately_equal(p_test, p_ref));
+//        std::cout << "p=" << p_ref
+//                  << "\tp_test=" << p_test << "\tdiff="
+//                  << (p_ref-p_test).norm() << std::endl;
+        p_test=s.f_u(u0, v);
+        p_ref=ribs[0].get_right_fp().f(v);
+        TEST_ASSERT(tol.approximately_equal(p_test, p_ref));
+//        std::cout << "p=" << p_ref
+//                  << "\tp_test=" << p_test << "\tdiff="
+//                  << (p_ref-p_test).norm() << std::endl;
+        p_test=s.f_u(u1, v);
+        p_ref=ribs[1].get_left_fp().f(v);
+        TEST_ASSERT(tol.approximately_equal(p_test, p_ref));
+//        std::cout << "p=" << p_ref
+//                  << "\tp_test=" << p_test << "\tdiff="
+//                  << (p_ref-p_test).norm() << std::endl;
+        p_test=s.f_uu(u0, v);
+        p_ref=ribs[0].get_right_fpp().f(v);
+        TEST_ASSERT(tol.approximately_equal(p_test, p_ref));
+//        std::cout << "p=" << p_ref
+//                  << "\tp_test=" << p_test << "\tdiff="
+//                  << (p_ref-p_test).norm() << std::endl;
+        p_test=s.f_uu(u1, v);
+        p_ref=ribs[1].get_left_fpp().f(v);
+        TEST_ASSERT(tol.approximately_equal(p_test, p_ref));
+//        std::cout << "p=" << p_ref
+//                  << "\tp_test=" << p_test << "\tdiff="
+//                  << (p_ref-p_test).norm() << std::endl;
+
+//        if (rtn_flag && (typeid(data_type)==typeid(float)))
+//        {
+//          std::cout.flush();
+//          eli::octave_start(1);
+//          eli::octave_print(1, s, "surf", true);
+//          eli::octave_print(1, ribs[0].get_f(), "rib0", true);
+//          eli::octave_print(1, ribs[1].get_f(), "rib1", true);
+//          eli::octave_print(1, ribs[0].get_f(), ribs[0].get_right_fp(), "rve0");
+//          eli::octave_print(1, ribs[1].get_f(), ribs[1].get_left_fp(), "lve1");
+//          eli::octave_finish(1);
+//        }
+      }
+
+      // surface connecting 1 rib with 1 cubic segment and 1 rib made of 2 cubic segments, specified 1st and 2nd derivatives
+      {
+        index_type nsegs(1);
+        std::vector<rib_data_type> ribs(nsegs+1);
+        std::vector<typename general_creator_type::index_type> max_degree(nsegs);
+        point_type p;
+        rib_curve_type rc1, rc2, rs1, rs2, ra1, ra2;
+        general_creator_type gc;
+        piecewise_surface_type s;
+        point_type p00, p01, p10, p11, s00, s01, s10, s11, a00, a01, a10, a11;
+        data_type u0(2), v0(1), u1(4), v1(5), v;
+        bool rtn_flag;
+
+        // four corners of surface
+        p00 << 1, 1, 1;
+        p01 << 2, 3, 1;
+        p10 << 3, 2, 3;
+        p11 << 4, 4, 4;
+        s00 << 2, 2, 0;
+        s01 << 1, 3, 2;
+        s10 << 2, 1, 0;
+        s11 << 2, 0, 1;
+        a00 << 0, 1, 0;
+        a01 << 1, 0, 1;
+        a10 << 1, 0, 1;
+        a11 << 0, 1, 0;
+
+        // create two rib curves && two slope curves
+        typename rib_curve_type::curve_type curve(3);
+        typename rib_curve_type::control_point_type cp[4];
+
+        // manually create cubic curves for ribs
+        cp[0]=p00;
+        cp[1] << 0, 2, 1;
+        cp[2] << 1, 3, 1;
+        cp[3]=p01;
+        for (index_type i=0; i<4; ++i)
+        {
+          curve.set_control_point(cp[i], i);
+        }
+        rc1.push_front(curve, v1-v0);
+        rc1.set_t0(v0);
+        rc1.split((v0+v1)/2);
+
+        cp[0]=p10;
+        cp[1] << 1, 2, 3;
+        cp[2] << 2, 3, 4;
+        cp[3]=p11;
+        for (index_type i=0; i<4; ++i)
+        {
+          curve.set_control_point(cp[i], i);
+        }
+        rc2.push_front(curve, v1-v0);
+        rc2.set_t0(v0);
+
+        // create two two slope curves
+        piecewise_line_creator_type plc(1);
+
+        plc.set_corner(s00/2, 0);
+        plc.set_corner(s01/2, 1);
+        plc.set_t0(v0);
+        plc.set_segment_dt(v1-v0, 0);
+        plc.create(rs1);
+
+        plc.set_corner(a00, 0);
+        plc.set_corner(a01, 1);
+        plc.set_t0(v0);
+        plc.set_segment_dt(v1-v0, 0);
+        plc.create(ra1);
+
+        plc.set_corner(s10/2, 0);
+        plc.set_corner(s11/2, 1);
+        plc.set_t0(v0);
+        plc.set_segment_dt(v1-v0, 0);
+        plc.create(rs2);
+
+        plc.set_corner(a10, 0);
+        plc.set_corner(a11, 1);
+        plc.set_t0(v0);
+        plc.set_segment_dt(v1-v0, 0);
+        plc.create(ra2);
+
+        // set the rib data
+        ribs[0].set_f(rc1);
+        ribs[0].set_right_fp(rs1);
+        ribs[0].set_right_fpp(ra1);
+        ribs[1].set_f(rc2);
+        ribs[1].set_left_fp(rs2);
+        ribs[1].set_left_fpp(ra2);
+
+        // set the maximum degrees of each segment
+        max_degree[0]=0;
+
+        // create surface
+        rtn_flag=gc.set_conditions(ribs, max_degree, false);
+        TEST_ASSERT(rtn_flag);
+        gc.set_u0(u0);
+        gc.set_segment_du(u1-u0, 0);
+        rtn_flag=gc.create(s);
+        TEST_ASSERT(rtn_flag);
+
+        // test the resulting curve
+        point_type p_test, p_ref;
+
+        p_test=s.f(u0, v0);
+        TEST_ASSERT(tol.approximately_equal(p00, p_test));
+//        std::cout << "p=" << p00
+//                  << "\tpc=" << ribs[0].get_f().f(v0)
+//                  << "\tp_test=" << p_test << "\tdiff="
+//                  << (ribs[0].get_f().f(v0)-p_test).norm() << std::endl;
+        p_test=s.f(u1, v0);
+        TEST_ASSERT(tol.approximately_equal(p10, p_test));
+//        std::cout << "p=" << p10
+//                  << "\tpc=" << ribs[1].get_f().f(v0)
+//                  << "\tp_test=" << p_test << "\tdiff="
+//                  << (p10-p_test).norm() << std::endl;
+        p_test=s.f(u0, v1);
+        TEST_ASSERT(tol.approximately_equal(p01, p_test));
+//        std::cout << "p=" << p01
+//                  << "\tpc=" << ribs[0].get_f().f(v1)
+//                  << "\tp_test=" << p_test << "\tdiff="
+//                  << (p01-p_test).norm() << std::endl;
+        p_test=s.f(u1, v1);
+        TEST_ASSERT(tol.approximately_equal(p11, p_test));
+//        std::cout << "p=" << p11
+//                  << "\tpc=" << ribs[1].get_f().f(v1)
+//                  << "\tp_test=" << p_test << "\tdiff="
+//                  << (p11-p_test).norm() << std::endl;
+        v=v0+(v1-v0)/4;
+        p_test=s.f(u0, v);
+        p_ref=ribs[0].get_f().f(v);
+        TEST_ASSERT(tol.approximately_equal(p_test, p_ref));
+//        std::cout << "p=" << p_ref
+//                  << "\tp_test=" << p_test << "\tdiff="
+//                  << (p_ref-p_test).norm() << std::endl;
+        p_test=s.f(u1, v);
+        p_ref=ribs[1].get_f().f(v);
+        TEST_ASSERT(tol.approximately_equal(p_test, p_ref));
+//        std::cout << "p=" << p_ref
+//                  << "\tp_test=" << p_test << "\tdiff="
+//                  << (p_ref-p_test).norm() << std::endl;
+        p_test=s.f_u(u0, v);
+        p_ref=ribs[0].get_right_fp().f(v);
+        TEST_ASSERT(tol.approximately_equal(p_test, p_ref));
+//        std::cout << "p=" << p_ref
+//                  << "\tp_test=" << p_test << "\tdiff="
+//                  << (p_ref-p_test).norm() << std::endl;
+        p_test=s.f_u(u1, v);
+        p_ref=ribs[1].get_left_fp().f(v);
+        TEST_ASSERT(tol.approximately_equal(p_test, p_ref));
+//        std::cout << "p=" << p_ref
+//                  << "\tp_test=" << p_test << "\tdiff="
+//                  << (p_ref-p_test).norm() << std::endl;
+        p_test=s.f_uu(u0, v);
+        p_ref=ribs[0].get_right_fpp().f(v);
+        TEST_ASSERT(tol.approximately_equal(p_test, p_ref));
+//        std::cout << "p=" << p_ref
+//                  << "\tp_test=" << p_test << "\tdiff="
+//                  << (p_ref-p_test).norm() << std::endl;
+        p_test=s.f_uu(u1, v);
+        p_ref=ribs[1].get_left_fpp().f(v);
+        TEST_ASSERT(tol.approximately_equal(p_test, p_ref));
+//        std::cout << "p=" << p_ref
+//                  << "\tp_test=" << p_test << "\tdiff="
+//                  << (p_ref-p_test).norm() << std::endl;
+        v=v0+3*(v1-v0)/4;
+        p_test=s.f(u0, v);
+        p_ref=ribs[0].get_f().f(v);
+        TEST_ASSERT(tol.approximately_equal(p_test, p_ref));
+//        std::cout << "p=" << p_ref
+//                  << "\tp_test=" << p_test << "\tdiff="
+//                  << (p_ref-p_test).norm() << std::endl;
+        p_test=s.f(u1, v);
+        p_ref=ribs[1].get_f().f(v);
+        TEST_ASSERT(tol.approximately_equal(p_test, p_ref));
+//        std::cout << "p=" << p_ref
+//                  << "\tp_test=" << p_test << "\tdiff="
+//                  << (p_ref-p_test).norm() << std::endl;
+        p_test=s.f_u(u0, v);
+        p_ref=ribs[0].get_right_fp().f(v);
+        TEST_ASSERT(tol.approximately_equal(p_test, p_ref));
+//        std::cout << "p=" << p_ref
+//                  << "\tp_test=" << p_test << "\tdiff="
+//                  << (p_ref-p_test).norm() << std::endl;
+        p_test=s.f_u(u1, v);
+        p_ref=ribs[1].get_left_fp().f(v);
+        TEST_ASSERT(tol.approximately_equal(p_test, p_ref));
+//        std::cout << "p=" << p_ref
+//                  << "\tp_test=" << p_test << "\tdiff="
+//                  << (p_ref-p_test).norm() << std::endl;
+        p_test=s.f_uu(u0, v);
+        p_ref=ribs[0].get_right_fpp().f(v);
+        TEST_ASSERT(tol.approximately_equal(p_test, p_ref));
+//        std::cout << "p=" << p_ref
+//                  << "\tp_test=" << p_test << "\tdiff="
+//                  << (p_ref-p_test).norm() << std::endl;
+        p_test=s.f_uu(u1, v);
+        p_ref=ribs[1].get_left_fpp().f(v);
+        TEST_ASSERT(tol.approximately_equal(p_test, p_ref));
+//        std::cout << "p=" << p_ref
+//                  << "\tp_test=" << p_test << "\tdiff="
+//                  << (p_ref-p_test).norm() << std::endl;
+
+//        if (rtn_flag && (typeid(data_type)==typeid(float)))
+//        {
+//          std::cout.flush();
+//          eli::octave_start(1);
+//          eli::octave_print(1, s, "surf", true);
+//          eli::octave_print(1, ribs[0].get_f(), "rib0", true);
+//          eli::octave_print(1, ribs[1].get_f(), "rib1", true);
+//          eli::octave_print(1, ribs[0].get_f(), ribs[0].get_right_fp(), "rve0");
+//          eli::octave_print(1, ribs[1].get_f(), ribs[1].get_left_fp(), "lve1");
+//          eli::octave_finish(1);
+//        }
+      }
+
+      // surface connecting ribs made of 2 cubic segments each with different split locations, specified 1st and 2nd derivatives
+      {
+        index_type nsegs(1);
+        std::vector<rib_data_type> ribs(nsegs+1);
+        std::vector<typename general_creator_type::index_type> max_degree(nsegs);
+        point_type p;
+        rib_curve_type rc1, rc2, rs1, rs2, ra1, ra2;
+        general_creator_type gc;
+        piecewise_surface_type s;
+        point_type p00, p01, p10, p11, s00, s01, s10, s11, a00, a01, a10, a11;
+        data_type u0(2), v0(1), u1(4), v1(5), v;
+        bool rtn_flag;
+
+        // four corners of surface
+        p00 << 1, 1, 1;
+        p01 << 2, 3, 1;
+        p10 << 3, 2, 3;
+        p11 << 4, 4, 4;
+        s00 << 2, 2, 0;
+        s01 << 1, 3, 2;
+        s10 << 2, 1, 0;
+        s11 << 2, 0, 1;
+        a00 << 0, 1, 0;
+        a01 << 1, 0, 1;
+        a10 << 1, 0, 1;
+        a11 << 0, 1, 0;
+
+        // create two rib curves && two slope curves
+        typename rib_curve_type::curve_type curve(3);
+        typename rib_curve_type::control_point_type cp[4];
+
+        // manually create cubic curves for ribs
+        cp[0]=p00;
+        cp[1] << 0, 2, 1;
+        cp[2] << 1, 3, 1;
+        cp[3]=p01;
+        for (index_type i=0; i<4; ++i)
+        {
+          curve.set_control_point(cp[i], i);
+        }
+        rc1.push_front(curve, v1-v0);
+        rc1.set_t0(v0);
+        rc1.split(v0+(v1-v0)/4);
+
+        cp[0]=p10;
+        cp[1] << 1, 2, 3;
+        cp[2] << 2, 3, 4;
+        cp[3]=p11;
+        for (index_type i=0; i<4; ++i)
+        {
+          curve.set_control_point(cp[i], i);
+        }
+        rc2.push_front(curve, v1-v0);
+        rc2.set_t0(v0);
+        rc2.split(v0+3*(v1-v0)/4);
+
+        // create two two slope curves
+        piecewise_line_creator_type plc(1);
+
+        plc.set_corner(s00/2, 0);
+        plc.set_corner(s01/2, 1);
+        plc.set_t0(v0);
+        plc.set_segment_dt(v1-v0, 0);
+        plc.create(rs1);
+
+        plc.set_corner(a00, 0);
+        plc.set_corner(a01, 1);
+        plc.set_t0(v0);
+        plc.set_segment_dt(v1-v0, 0);
+        plc.create(ra1);
+
+        plc.set_corner(s10/2, 0);
+        plc.set_corner(s11/2, 1);
+        plc.set_t0(v0);
+        plc.set_segment_dt(v1-v0, 0);
+        plc.create(rs2);
+
+        plc.set_corner(a10, 0);
+        plc.set_corner(a11, 1);
+        plc.set_t0(v0);
+        plc.set_segment_dt(v1-v0, 0);
+        plc.create(ra2);
+
+        // set the rib data
+        ribs[0].set_f(rc1);
+        ribs[0].set_right_fp(rs1);
+        ribs[0].set_right_fpp(ra1);
+        ribs[1].set_f(rc2);
+        ribs[1].set_left_fp(rs2);
+        ribs[1].set_left_fpp(ra2);
+
+        // set the maximum degrees of each segment
+        max_degree[0]=0;
+
+        // create surface
+        rtn_flag=gc.set_conditions(ribs, max_degree, false);
+        TEST_ASSERT(rtn_flag);
+        gc.set_u0(u0);
+        gc.set_segment_du(u1-u0, 0);
+        rtn_flag=gc.create(s);
+        TEST_ASSERT(rtn_flag);
+
+        // test the resulting curve
+        point_type p_test, p_ref;
+
+        p_test=s.f(u0, v0);
+        TEST_ASSERT(tol.approximately_equal(p00, p_test));
+//        std::cout << "p=" << p00
+//                  << "\tpc=" << ribs[0].get_f().f(v0)
+//                  << "\tp_test=" << p_test << "\tdiff="
+//                  << (ribs[0].get_f().f(v0)-p_test).norm() << std::endl;
+        p_test=s.f(u1, v0);
+        TEST_ASSERT(tol.approximately_equal(p10, p_test));
+//        std::cout << "p=" << p10
+//                  << "\tpc=" << ribs[1].get_f().f(v0)
+//                  << "\tp_test=" << p_test << "\tdiff="
+//                  << (p10-p_test).norm() << std::endl;
+        p_test=s.f(u0, v1);
+        TEST_ASSERT(tol.approximately_equal(p01, p_test));
+//        std::cout << "p=" << p01
+//                  << "\tpc=" << ribs[0].get_f().f(v1)
+//                  << "\tp_test=" << p_test << "\tdiff="
+//                  << (p01-p_test).norm() << std::endl;
+        p_test=s.f(u1, v1);
+        TEST_ASSERT(tol.approximately_equal(p11, p_test));
+//        std::cout << "p=" << p11
+//                  << "\tpc=" << ribs[1].get_f().f(v1)
+//                  << "\tp_test=" << p_test << "\tdiff="
+//                  << (p11-p_test).norm() << std::endl;
+        v=v0+(v1-v0)/8;
+        p_test=s.f(u0, v);
+        p_ref=ribs[0].get_f().f(v);
+        TEST_ASSERT(tol.approximately_equal(p_test, p_ref));
+//        std::cout << "p=" << p_ref
+//                  << "\tp_test=" << p_test << "\tdiff="
+//                  << (p_ref-p_test).norm() << std::endl;
+        p_test=s.f(u1, v);
+        p_ref=ribs[1].get_f().f(v);
+        TEST_ASSERT(tol.approximately_equal(p_test, p_ref));
+//        std::cout << "p=" << p_ref
+//                  << "\tp_test=" << p_test << "\tdiff="
+//                  << (p_ref-p_test).norm() << std::endl;
+        p_test=s.f_u(u0, v);
+        p_ref=ribs[0].get_right_fp().f(v);
+        TEST_ASSERT(tol.approximately_equal(p_test, p_ref));
+//        std::cout << "p=" << p_ref
+//                  << "\tp_test=" << p_test << "\tdiff="
+//                  << (p_ref-p_test).norm() << std::endl;
+        p_test=s.f_u(u1, v);
+        p_ref=ribs[1].get_left_fp().f(v);
+        TEST_ASSERT(tol.approximately_equal(p_test, p_ref));
+//        std::cout << "p=" << p_ref
+//                  << "\tp_test=" << p_test << "\tdiff="
+//                  << (p_ref-p_test).norm() << std::endl;
+        p_test=s.f_uu(u0, v);
+        p_ref=ribs[0].get_right_fpp().f(v);
+        TEST_ASSERT(tol.approximately_equal(p_test, p_ref));
+//        std::cout << "p=" << p_ref
+//                  << "\tp_test=" << p_test << "\tdiff="
+//                  << (p_ref-p_test).norm() << std::endl;
+        p_test=s.f_uu(u1, v);
+        p_ref=ribs[1].get_left_fpp().f(v);
+        TEST_ASSERT(tol.approximately_equal(p_test, p_ref));
+//        std::cout << "p=" << p_ref
+//                  << "\tp_test=" << p_test << "\tdiff="
+//                  << (p_ref-p_test).norm() << std::endl;
+        v=v0+3*(v1-v0)/4;
+        p_test=s.f(u0, v);
+        p_ref=ribs[0].get_f().f(v);
+        TEST_ASSERT(tol.approximately_equal(p_test, p_ref));
+//        std::cout << "p=" << p_ref
+//                  << "\tp_test=" << p_test << "\tdiff="
+//                  << (p_ref-p_test).norm() << std::endl;
+        p_test=s.f(u1, v);
+        p_ref=ribs[1].get_f().f(v);
+        TEST_ASSERT(tol.approximately_equal(p_test, p_ref));
+//        std::cout << "p=" << p_ref
+//                  << "\tp_test=" << p_test << "\tdiff="
+//                  << (p_ref-p_test).norm() << std::endl;
+        p_test=s.f_u(u0, v);
+        p_ref=ribs[0].get_right_fp().f(v);
+        TEST_ASSERT(tol.approximately_equal(p_test, p_ref));
+//        std::cout << "p=" << p_ref
+//                  << "\tp_test=" << p_test << "\tdiff="
+//                  << (p_ref-p_test).norm() << std::endl;
+        p_test=s.f_u(u1, v);
+        p_ref=ribs[1].get_left_fp().f(v);
+        TEST_ASSERT(tol.approximately_equal(p_test, p_ref));
+//        std::cout << "p=" << p_ref
+//                  << "\tp_test=" << p_test << "\tdiff="
+//                  << (p_ref-p_test).norm() << std::endl;
+        p_test=s.f_uu(u0, v);
+        p_ref=ribs[0].get_right_fpp().f(v);
+        TEST_ASSERT(tol.approximately_equal(p_test, p_ref));
+//        std::cout << "p=" << p_ref
+//                  << "\tp_test=" << p_test << "\tdiff="
+//                  << (p_ref-p_test).norm() << std::endl;
+        p_test=s.f_uu(u1, v);
+        p_ref=ribs[1].get_left_fpp().f(v);
+        TEST_ASSERT(tol.approximately_equal(p_test, p_ref));
+//        std::cout << "p=" << p_ref
+//                  << "\tp_test=" << p_test << "\tdiff="
+//                  << (p_ref-p_test).norm() << std::endl;
+
+//        if (rtn_flag && (typeid(data_type)==typeid(float)))
+//        {
+//          std::cout.flush();
+//          eli::octave_start(1);
+//          eli::octave_print(1, s, "surf", true);
+//          eli::octave_print(1, ribs[0].get_f(), "rib0", true);
+//          eli::octave_print(1, ribs[1].get_f(), "rib1", true);
+//          eli::octave_print(1, ribs[0].get_f(), ribs[0].get_right_fp(), "rve0");
+//          eli::octave_print(1, ribs[1].get_f(), ribs[1].get_left_fp(), "lve1");
+//          eli::octave_finish(1);
+//        }
+      }
+#endif
+    }
 };
 
 #endif
