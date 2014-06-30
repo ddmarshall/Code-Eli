@@ -2576,21 +2576,18 @@ class piecewise_general_skinning_surface_creator_test_suite : public Test::Suite
         plc.set_t0(v0);
         plc.set_segment_dt(v1-v0, 0);
         plc.create(rc1);
-//        rc1.split((v0+v1)/2);
 
         plc.set_corner(p10, 0);
         plc.set_corner(p11, 1);
         plc.set_t0(v0);
         plc.set_segment_dt(v1-v0, 0);
         plc.create(rc2);
-//        rc2.split((v0+v1)/2);
 
         plc.set_corner(p20, 0);
         plc.set_corner(p21, 1);
         plc.set_t0(v0);
         plc.set_segment_dt(v1-v0, 0);
         plc.create(rc3);
-//        rc3.split((v0+v1)/2);
 
         // set the rib data
         ribs[0].set_f(rc1);
