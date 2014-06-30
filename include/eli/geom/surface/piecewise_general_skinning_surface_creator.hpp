@@ -1147,13 +1147,13 @@ namespace eli
             }
 
             // make sure ribs are in valid state
-            data_type v_start(ribs[0].get_t0()), v_end(ribs[0].get_tmax());
+            data_type v_start(rbs[0].get_t0()), v_end(rbs[0].get_tmax());
             tolerance_type tol;
             for (i=0; i<nribs; ++i)
             {
               if (!rbs[i].check_state())
                 return false;
-              if (!tol.approximately_equal(ribs[i].get_t0(), v_start) || !tol.approximately_equal(ribs[i].get_tmax(), v_end))
+              if (!tol.approximately_equal(rbs[i].get_t0(), v_start) || !tol.approximately_equal(rbs[i].get_tmax(), v_end))
                 return false;
             }
 
