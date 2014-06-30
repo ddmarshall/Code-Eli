@@ -58,10 +58,7 @@ namespace eli
             return static_cast<index_type>(dv.size());
           }
 
-          void set_u0(const data_type &uu0) {u0=uu0;}
           data_type get_u0() const {return u0;}
-
-          void set_v0(const data_type &vv0) {v0=vv0;}
           data_type get_v0() const {return v0;}
 
           data_type get_segment_du(const index_type &i) const
@@ -165,6 +162,9 @@ namespace eli
               assert(false);
             }
           }
+
+          void set_initial_u(const data_type &uu0) {u0=uu0;}
+          void set_initial_v(const data_type &vv0) {v0=vv0;}
 
           void set_du(const data_type &duu, const index_type &i)
           {

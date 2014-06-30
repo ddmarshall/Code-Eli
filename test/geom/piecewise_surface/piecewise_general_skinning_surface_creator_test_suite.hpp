@@ -766,7 +766,6 @@ class piecewise_general_skinning_surface_creator_test_suite : public Test::Suite
         rtn_flag=gc.set_conditions(ribs, max_degree, false);
         TEST_ASSERT(rtn_flag);
         gc.set_u0(u0);
-        gc.set_v0(v0);
         gc.set_segment_du(u1-u0, 0);
         rtn_flag=gc.create(s);
         TEST_ASSERT(rtn_flag);
@@ -886,7 +885,6 @@ class piecewise_general_skinning_surface_creator_test_suite : public Test::Suite
         rtn_flag=gc.set_conditions(ribs, max_degree, false);
         TEST_ASSERT(rtn_flag);
         gc.set_u0(u0);
-        gc.set_v0(v0);
         gc.set_segment_du(u1-u0, 0);
         rtn_flag=gc.create(s);
         TEST_ASSERT(rtn_flag);
@@ -1038,7 +1036,6 @@ class piecewise_general_skinning_surface_creator_test_suite : public Test::Suite
         rtn_flag=gc.set_conditions(ribs, max_degree, false);
         TEST_ASSERT(rtn_flag);
         gc.set_u0(u0);
-        gc.set_v0(v0);
         gc.set_segment_du(u1-u0, 0);
         rtn_flag=gc.create(s);
         TEST_ASSERT(rtn_flag);
@@ -1217,7 +1214,6 @@ class piecewise_general_skinning_surface_creator_test_suite : public Test::Suite
         rtn_flag=gc.set_conditions(ribs, max_degree, false);
         TEST_ASSERT(rtn_flag);
         gc.set_u0(u0);
-        gc.set_v0(v0);
         gc.set_segment_du(u1-u0, 0);
         rtn_flag=gc.create(s);
         TEST_ASSERT(rtn_flag);
@@ -1391,7 +1387,6 @@ class piecewise_general_skinning_surface_creator_test_suite : public Test::Suite
         rtn_flag=gc.set_conditions(ribs, max_degree, false);
         TEST_ASSERT(rtn_flag);
         gc.set_u0(u0);
-        gc.set_v0(v0);
         gc.set_segment_du(u1-u0, 0);
         rtn_flag=gc.create(s);
         TEST_ASSERT(rtn_flag);
@@ -1524,7 +1519,6 @@ class piecewise_general_skinning_surface_creator_test_suite : public Test::Suite
         rtn_flag=gc.set_conditions(ribs, max_degree, false);
         TEST_ASSERT(rtn_flag);
         gc.set_u0(u0);
-        gc.set_v0(v0);
         gc.set_segment_du(u1-u0, 0);
         rtn_flag=gc.create(s);
         TEST_ASSERT(rtn_flag);
@@ -1653,7 +1647,6 @@ class piecewise_general_skinning_surface_creator_test_suite : public Test::Suite
         rtn_flag=gc.set_conditions(ribs, max_degree, false);
         TEST_ASSERT(rtn_flag);
         gc.set_u0(u0);
-        gc.set_v0(v0);
         gc.set_segment_du(u1-u0, 0);
         rtn_flag=gc.create(s);
         TEST_ASSERT(rtn_flag);
@@ -1803,7 +1796,6 @@ class piecewise_general_skinning_surface_creator_test_suite : public Test::Suite
         rtn_flag=gc.set_conditions(ribs, max_degree, false);
         TEST_ASSERT(rtn_flag);
         gc.set_u0(u0);
-        gc.set_v0(v0);
         gc.set_segment_du(u1-u0, 0);
         rtn_flag=gc.create(s);
         TEST_ASSERT(rtn_flag);
@@ -1997,7 +1989,6 @@ class piecewise_general_skinning_surface_creator_test_suite : public Test::Suite
         rtn_flag=gc.set_conditions(ribs, max_degree, false);
         TEST_ASSERT(rtn_flag);
         gc.set_u0(u0);
-        gc.set_v0(v0);
         gc.set_segment_du(u1-u0, 0);
         rtn_flag=gc.create(s);
         TEST_ASSERT(rtn_flag);
@@ -2214,7 +2205,6 @@ class piecewise_general_skinning_surface_creator_test_suite : public Test::Suite
         rtn_flag=gc.set_conditions(ribs, max_degree, false);
         TEST_ASSERT(rtn_flag);
         gc.set_u0(u0);
-        gc.set_v0(v0);
         gc.set_segment_du(u1-u0, 0);
         rtn_flag=gc.create(s);
         TEST_ASSERT(rtn_flag);
@@ -2432,7 +2422,6 @@ class piecewise_general_skinning_surface_creator_test_suite : public Test::Suite
         rtn_flag=gc.set_conditions(ribs, max_degree, false);
         TEST_ASSERT(rtn_flag);
         gc.set_u0(u0);
-        gc.set_v0(v0);
         gc.set_segment_du(u1-u0, 0);
         rtn_flag=gc.create(s);
         TEST_ASSERT(rtn_flag);

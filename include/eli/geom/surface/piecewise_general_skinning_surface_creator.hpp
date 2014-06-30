@@ -1116,6 +1116,8 @@ namespace eli
           bool is_closed() const {return closed;}
           bool is_open() const {return !closed;}
 
+          void set_u0(const data_type &uu0) {this->set_initial_u(uu0);}
+
           void set_segment_du(const data_type &duu, const index_type &i)
           {
             this->set_du(duu, i);
@@ -1187,7 +1189,7 @@ namespace eli
 
             // set the v-parameterization
             this->set_number_v_segments(njoints-1);
-            this->set_v0(joints[0]);
+            this->set_initial_v(joints[0]);
             for (j=0; j<(njoints-1); ++j)
             {
               this->set_dv(joints[j+1]-joints[j], j);
