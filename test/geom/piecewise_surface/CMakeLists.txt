@@ -49,6 +49,7 @@ set (PIECEWISE_SURFACE_CREATOR_TEST_HEADER ${PROJECT_SOURCE_DIR}/piecewise_body_
                                            ${ELI_SOURCE_DIR}/include/eli/geom/surface/piecewise.hpp
                                            ${ELI_SOURCE_DIR}/include/eli/geom/surface/piecewise_creator_base.hpp
                                            ${ELI_SOURCE_DIR}/include/eli/geom/surface/piecewise_body_of_revolution_creator.hpp
+                                           ${ELI_SOURCE_DIR}/include/eli/geom/surface/piecewise_connection_data.hpp
                                            ${ELI_SOURCE_DIR}/include/eli/geom/surface/piecewise_general_skinning_surface_creator.hpp)
 
 add_executable(${PIECEWISE_SURFACE_CREATOR_TEST_EXE} ${PIECEWISE_SURFACE_CREATOR_TEST_SOURCE} ${PIECEWISE_SURFACE_CREATOR_TEST_HEADER})
