@@ -364,6 +364,18 @@ namespace eli
             tmax_out = tmax;
           }
 
+          template<typename it__>
+          void get_parameters(it__ itt) const
+          {
+            typename segment_collection_type::const_iterator its;
+
+            for (its=segments.begin(); its!=segments.end(); ++its)
+            {
+              (*itt)=its->first;++itt;
+            }
+            (*itt)=tmax;
+          }
+
           void parameter_report() const
           {
             printf("Parameter report:\n");
@@ -402,6 +414,18 @@ namespace eli
                 mind=d;
               if(d>maxd)
                 maxd=d;
+            }
+          }
+
+          template<typename it__>
+          void degrees(it__ itd)
+          {
+            typename segment_collection_type::const_iterator it;
+
+            // cycle through all segments to get each degree
+            for (it=segments.begin(); it!=segments.end(); ++it, ++itd)
+            {
+              (*itd) = it->second.degree();
             }
           }
 
@@ -684,6 +708,52 @@ namespace eli
           {
             data_type dt;
             return get(curve, dt, index);
+          }
+
+          error_code degree_promote()
+          {
+            typename segment_collection_type::const_iterator scit;
+            for (scit=segments.begin(); scit!=segments.end(); ++scit)
+            {
+              scit->second.degree_promote();
+            }
+
+            return NO_ERRORS;
+          }
+
+          error_code degree_promote(const index_type &index)
+          {
+            if (index>=number_segments())
+              return INVALID_INDEX;
+
+            typename segment_collection_type::iterator scit;
+            find_segment(scit, index);
+
+            scit->second.degree_promote();
+            return NO_ERRORS;
+          }
+
+          error_code degree_promote_to(const index_type &deg)
+          {
+            typename segment_collection_type::const_iterator scit;
+            for (scit=segments.begin(); scit!=segments.end(); ++scit)
+            {
+              scit->second.degree_promote_to(deg);
+            }
+
+            return NO_ERRORS;
+          }
+
+          error_code degree_promote_to(const index_type &index, const index_type &deg)
+          {
+            if (index>=number_segments())
+              return INVALID_INDEX;
+
+            typename segment_collection_type::iterator scit;
+            find_segment(scit, index);
+
+            scit->second.degree_promote_to(deg);
+            return NO_ERRORS;
           }
 
           error_code get(curve_type &curve, data_type &dt, const index_type &index) const
