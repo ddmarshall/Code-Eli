@@ -279,7 +279,7 @@ namespace eli
   }
 
   template<typename data__>
-  void octave_print(int figno, const const eli::geom::surface::piecewise<eli::geom::surface::bezier, data__, 3> &ps,
+  void octave_print(int figno, const eli::geom::surface::piecewise<eli::geom::surface::bezier, data__, 3> &ps,
                     const std::string &name="", bool show_control_points=true)
   {
     typedef eli::geom::surface::piecewise<eli::geom::surface::bezier, data__, 3> piecewise_surface_type;
