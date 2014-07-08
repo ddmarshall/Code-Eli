@@ -50,8 +50,8 @@ namespace eli
 
   void octave_start(int figno)
   {
-    std::cout << "clf(" << figno << ", 'reset');" << std::endl;
     std::cout << "figure(" << figno << ");" << std::endl;
+    std::cout << "clf(" << figno << ", 'reset');" << std::endl;
     std::cout << "hold on;" << std::endl;
     std::cout << "grid on;" << std::endl;
   }
@@ -416,7 +416,7 @@ namespace eli
     std::cout << "mesh(" << nm << "_surf_x, "
                          << nm << "_surf_y, "
                          << nm << "_surf_z, "
-                         << "zeros(size(surf_z)), 'EdgeColor', [0 0 0]);" << std::endl;
+                         << "'EdgeColor', [0 0 0]);" << std::endl;
     if (show_control_points)
     {
       for (pp=0; pp<nup; ++pp)
