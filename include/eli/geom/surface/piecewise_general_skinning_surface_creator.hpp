@@ -660,6 +660,8 @@ namespace eli
                 {
                   curve_type jcrv;
 
+                  joints[u].set_continuity(static_cast<typename piecewise_curve_creator_type::joint_continuity>(rib_states[u].get_continuity()));
+
                   rib_states[u].get_f().get(jcrv, v);
                   joints[u].set_f(jcrv.get_control_point(j));
                   if (rib_states[u].use_left_fp())
