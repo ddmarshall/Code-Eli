@@ -72,10 +72,8 @@ namespace eli
   {
     typedef eli::geom::curve::piecewise<eli::geom::curve::bezier, data__, 3> piecewise_curve_type;
     typedef typename piecewise_curve_type::curve_type curve_type;
-    typedef typename piecewise_curve_type::point_type point_type;
     typedef typename piecewise_curve_type::data_type data_type;
     typedef typename piecewise_curve_type::index_type index_type;
-    typedef typename piecewise_curve_type::tolerance_type tolerance_type;
 
     std::string nm, cpxbuf, cpybuf, cpzbuf, cxbuf, cybuf, czbuf;
 
@@ -183,8 +181,6 @@ namespace eli
                     const std::string &name="")
   {
     typedef eli::geom::curve::piecewise<eli::geom::curve::bezier, data__, 3> piecewise_curve_type;
-    typedef typename piecewise_curve_type::curve_type curve_type;
-    typedef typename piecewise_curve_type::point_type point_type;
     typedef typename piecewise_curve_type::data_type data_type;
     typedef typename piecewise_curve_type::index_type index_type;
     typedef typename piecewise_curve_type::tolerance_type tolerance_type;
@@ -284,10 +280,8 @@ namespace eli
   {
     typedef eli::geom::surface::piecewise<eli::geom::surface::bezier, data__, 3> piecewise_surface_type;
     typedef typename piecewise_surface_type::surface_type surface_type;
-    typedef typename piecewise_surface_type::point_type point_type;
     typedef typename piecewise_surface_type::data_type data_type;
     typedef typename piecewise_surface_type::index_type index_type;
-    typedef typename piecewise_surface_type::tolerance_type tolerance_type;
 
     std::string nm, sxbuf, sybuf, szbuf;
     std::vector<std::string> cpxbuf, cpybuf, cpzbuf;
@@ -580,8 +574,6 @@ namespace eli
           {
             typedef piecewise<bezier, data_type, dim__, tolerance_type> piecewise_surface_type;
             typedef typename piecewise_surface_type::surface_type surface_type;
-            typedef typename rib_data_type::curve_type curve_type;
-            typedef typename rib_data_type::tolerance_type;
 
             index_type nribs(this->get_number_u_segments()+1), i, j;
             std::vector<index_type> seg_degree(nribs-1);
