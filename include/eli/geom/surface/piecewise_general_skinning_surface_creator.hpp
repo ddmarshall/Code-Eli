@@ -113,7 +113,7 @@ namespace eli
           cpxbuf+=std::to_string(bez.get_control_point(i).x());
           cpybuf+=std::to_string(bez.get_control_point(i).y());
           cpzbuf+=std::to_string(bez.get_control_point(i).z());
-          if ((pp<(ns-1)) || (pp==(ns-1)) && (i<bez_deg))
+          if ((pp<(ns-1)) || ((pp==(ns-1)) && (i<bez_deg)))
           {
             cpxbuf+=", ";
             cpybuf+=", ";
