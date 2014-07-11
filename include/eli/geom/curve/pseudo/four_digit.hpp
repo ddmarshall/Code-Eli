@@ -101,8 +101,7 @@ namespace eli
 
               // get first character and eat preceding white space
               istr >> std::setw(4) >> buffer;
-//              std::transform(buffer.begin(), buffer.end(), buffer.begin(), toupper);
-              if (buffer == "NACA")
+              if ((buffer == "NACA") || (buffer == "naca") || (buffer=="Naca"))
               {
                 unsigned short mm, pp;
                 char buf[3] = "\n\n";
