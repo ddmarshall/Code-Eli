@@ -170,17 +170,18 @@ class piecewise_four_digit_creator_test_suite : public Test::Suite
       std::cout << "];" << std::endl;
 
       std::cout << "setenv('GNUTERM', 'x11');" << std::endl;
-      std::cout << "plot3(surf_x, surf_y, surf_z, '-k');" << std::endl;
+      std::cout << "plot(surf_x, surf_y, '-k');" << std::endl;
       std::cout << "hold on;" << std::endl;
-      std::cout << "plot3(cp_x', cp_y', cp_z', '-ok', 'MarkerFaceColor', [0 0 0]);" << std::endl;
+      std::cout << "plot(cp_x', cp_y', '-ok', 'MarkerFaceColor', [0 0 0]);" << std::endl;
       std::cout << "hold off;" << std::endl;
+      std::cout << "axis equal;" << std::endl;
     }
 
     void create_airfoil_test()
     {
-#if 0
-      airfoil_type af;
-      aifoil_parameter_type th, cam, cam_loc;
+      point_creator_type af;
+
+      data_type th, cam, cam_loc;
       bool rtn;
 
       // set airfoil thickness
@@ -200,10 +201,19 @@ class piecewise_four_digit_creator_test_suite : public Test::Suite
       // test the name
       std::string name, name_ref;
 
-      name_ref="NACA "+std::to_string(cam)+std::to_string(cam_loc)+std::to_string(th);
+      af.set_sharp_trailing_edge(true);
+
+      name_ref="NACA "+std::to_string((int)round(cam))+std::to_string((int)round(cam_loc))+std::to_string((int)round(th));
       name=af.get_name();
       TEST_ASSERT(name==name_ref);
-#endif
+
+
+      piecewise_curve_type af_pwc;
+
+      af.create(af_pwc);
+
+//      octave_print(1, af_pwc);
+
     }
 };
 

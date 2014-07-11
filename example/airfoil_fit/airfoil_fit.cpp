@@ -122,7 +122,7 @@ data_type example_fit_1(bezier_type &bez, const std::vector<point_type, Eigen::a
   fcon.set_points(pts.begin(), pts.end());
 
   // do fit
-  return bez.fit(fcon, dim);
+  return bez.fit_with_error(fcon, dim);
 }
 
 data_type example_fit_2(bezier_type &bez, const std::vector<point_type, Eigen::aligned_allocator<point_type> > &pts, const size_t dim)
@@ -134,7 +134,7 @@ data_type example_fit_2(bezier_type &bez, const std::vector<point_type, Eigen::a
   fcon.add_end_C0_constraint();
 
   // do fit
-  return bez.fit(fcon, dim);
+  return bez.fit_with_error(fcon, dim);
 }
 
 data_type example_fit_3(bezier_type &bez, constraint_info_type ci[2], const std::vector<point_type, Eigen::aligned_allocator<point_type> > &pts, const size_t dim)
@@ -148,7 +148,7 @@ data_type example_fit_3(bezier_type &bez, constraint_info_type ci[2], const std:
   fcon.get_end_constraint(ci[1]);
 
   // do fit
-  return bez.fit(fcon, dim);
+  return bez.fit_with_error(fcon, dim);
 }
 
 data_type example_fit_4(bezier_type &bez, constraint_info_type ci[2], const std::vector<point_type, Eigen::aligned_allocator<point_type> > &pts, const size_t dim, const int &index)
@@ -163,7 +163,7 @@ data_type example_fit_4(bezier_type &bez, constraint_info_type ci[2], const std:
   fcon.get_end_constraint(ci[1]);
 
   // do fit
-  return bez.fit(fcon, dim);
+  return bez.fit_with_error(fcon, dim);
 }
 
 data_type example_fit_5(bezier_type &bez, constraint_info_type ci[2], const std::vector<point_type, Eigen::aligned_allocator<point_type> > &pts, const size_t dim, const int index[3])
@@ -180,7 +180,7 @@ data_type example_fit_5(bezier_type &bez, constraint_info_type ci[2], const std:
   fcon.get_end_constraint(ci[1]);
 
   // do fit
-  return bez.fit(fcon, dim);
+  return bez.fit_with_error(fcon, dim);
 }
 
 void example_fit_6(bezier_type bez[4], data_type err[4], bezier_type::fit_container_type::constraint_info ci[6], const std::vector<point_type, Eigen::aligned_allocator<point_type> > &pts, const bezier_type::dimension_type dim[4])
@@ -195,7 +195,7 @@ void example_fit_6(bezier_type bez[4], data_type err[4], bezier_type::fit_contai
     fcon.set_points(pts.begin(), pts.end());
 
     // do fit
-    err[i]=bez[i].fit(fcon, dim[i]);
+    err[i]=bez[i].fit_with_error(fcon, dim[i]);
   }
 
   // default fit
@@ -207,7 +207,7 @@ void example_fit_6(bezier_type bez[4], data_type err[4], bezier_type::fit_contai
     fcon.set_end_flag(eli::geom::general::C2);
 
     // do fit
-    err[i]=bez[i].fit(fcon, dim[i]);
+    err[i]=bez[i].fit_with_error(fcon, dim[i]);
   }
 
   // C2-closed fit
@@ -219,7 +219,7 @@ void example_fit_6(bezier_type bez[4], data_type err[4], bezier_type::fit_contai
     fcon.set_end_flag(eli::geom::general::C2);
 
     // do fit
-    err[i]=bez[i].fit(fcon, dim[i]);
+    err[i]=bez[i].fit_with_error(fcon, dim[i]);
   }
 
   // C2-closed fit with C1 at start specified
@@ -238,7 +238,7 @@ void example_fit_6(bezier_type bez[4], data_type err[4], bezier_type::fit_contai
     fcon.get_constraint(0, ci[i]); // constraint on point 0
 
     // do fit
-    err[i]=bez[i].fit(fcon, dim[i]);
+    err[i]=bez[i].fit_with_error(fcon, dim[i]);
   }
 
   // C2-closed fit with C2 at start specified
@@ -259,7 +259,7 @@ void example_fit_6(bezier_type bez[4], data_type err[4], bezier_type::fit_contai
     fcon.get_constraint(0, ci[i]); // constraint on point 0
 
     // do fit
-    err[i]=bez[i].fit(fcon, dim[i]);
+    err[i]=bez[i].fit_with_error(fcon, dim[i]);
   }
 
   // C2-closed fit with C2 at start specified
@@ -280,7 +280,7 @@ void example_fit_6(bezier_type bez[4], data_type err[4], bezier_type::fit_contai
     fcon.get_constraint(0, ci[i]); // constraint on point 0
 
     // do fit
-    err[i]=bez[i].fit(fcon, dim[i]);
+    err[i]=bez[i].fit_with_error(fcon, dim[i]);
   }
 
 }
@@ -566,7 +566,7 @@ int main(int /*argc*/, char * /*argv*/[])
       fcon.set_points(pts.begin(), pts.end());
 
       // do fit
-      err=bez.fit(t, fcon, d);
+      err=bez.fit_with_error(t, fcon, d);
     }
 
     af_pts.resize(t.size());
@@ -591,7 +591,7 @@ int main(int /*argc*/, char * /*argv*/[])
       fcon.add_end_C0_constraint();
 
       // do fit
-      err=bez.fit(t, fcon, d);
+      err=bez.fit_with_error(t, fcon, d);
     }
 
     af_pts.resize(t.size());
@@ -620,7 +620,7 @@ int main(int /*argc*/, char * /*argv*/[])
       fcon.get_end_constraint(ci[1]);
 
       // do fit
-      err=bez.fit(t, fcon, d);
+      err=bez.fit_with_error(t, fcon, d);
     }
 
     af_pts.resize(t.size());
@@ -656,7 +656,7 @@ int main(int /*argc*/, char * /*argv*/[])
       fcon.get_end_constraint(ci[1]);
 
       // do fit
-      err=bez.fit(t, fcon, d);
+      err=bez.fit_with_error(t, fcon, d);
     }
 
     af_pts.resize(t.size());
@@ -694,7 +694,7 @@ int main(int /*argc*/, char * /*argv*/[])
       fcon.get_end_constraint(ci[1]);
 
       // do fit
-      err=bez.fit(t, fcon, d);
+      err=bez.fit_with_error(t, fcon, d);
     }
 
     af_pts.resize(t.size());

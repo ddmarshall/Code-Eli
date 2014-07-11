@@ -651,7 +651,7 @@ class bezier_curve_fit_test_suite : public Test::Suite
 
         // fit points
         data_type err;
-        err=bez.fit(t, fcon, deg);
+        err=bez.fit_with_error(t, fcon, deg);
 
         TEST_ASSERT(bez.closed());
         TEST_ASSERT(err < 0.393);
@@ -681,7 +681,7 @@ class bezier_curve_fit_test_suite : public Test::Suite
 
         // fit points
         data_type err;
-        err=bez.fit(t, fcon, deg);
+        err=bez.fit_with_error(t, fcon, deg);
 
         TEST_ASSERT(bez.closed());
         TEST_ASSERT(err < 0.0312);
@@ -711,7 +711,7 @@ class bezier_curve_fit_test_suite : public Test::Suite
 
         // fit points
         data_type err;
-        err=bez.fit(t, fcon, deg);
+        err=bez.fit_with_error(t, fcon, deg);
 
         TEST_ASSERT(bez.closed());
         TEST_ASSERT(err < 0.0343);
@@ -742,7 +742,7 @@ class bezier_curve_fit_test_suite : public Test::Suite
 
         // fit points
         data_type err;
-        err=bez.fit(t, fcon, deg);
+        err=bez.fit_with_error(t, fcon, deg);
 
         TEST_ASSERT(bez.closed());
         TEST_ASSERT(err < 0.0185);
@@ -778,7 +778,7 @@ class bezier_curve_fit_test_suite : public Test::Suite
 
         // fit points
         data_type err;
-        err=bez.fit(t, fcon, deg);
+        err=bez.fit_with_error(t, fcon, deg);
 
         TEST_ASSERT(bez.closed());
         TEST_ASSERT(err < 0.0395);
@@ -818,7 +818,7 @@ class bezier_curve_fit_test_suite : public Test::Suite
 
         // fit points
         data_type err;
-        err=bez.fit(t, fcon, deg);
+        err=bez.fit_with_error(t, fcon, deg);
 
         TEST_ASSERT(bez.closed());
         TEST_ASSERT(err < 0.141);
@@ -856,7 +856,7 @@ class bezier_curve_fit_test_suite : public Test::Suite
 
         // fit points
         data_type err;
-        err=bez.fit(t, fcon, deg);
+        err=bez.fit_with_error(t, fcon, deg);
 
         TEST_ASSERT(bez.closed());
         TEST_ASSERT(err < 0.0180);
@@ -893,7 +893,7 @@ class bezier_curve_fit_test_suite : public Test::Suite
 
         // fit points
         data_type err;
-        err=bez.fit(t, fcon, deg);
+        err=bez.fit_with_error(t, fcon, deg);
 
         TEST_ASSERT(bez.closed());
         TEST_ASSERT(err < 0.0316);
@@ -930,7 +930,7 @@ class bezier_curve_fit_test_suite : public Test::Suite
         fcon.add_C0_constraint(ci);
 
         // fit points
-        err=bez.fit(t, fcon, deg);
+        err=bez.fit_with_error(t, fcon, deg);
 
         TEST_ASSERT(bez.closed());
         TEST_ASSERT(err < 0.0353);
