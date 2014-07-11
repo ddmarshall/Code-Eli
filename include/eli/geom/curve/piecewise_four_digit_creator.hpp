@@ -255,7 +255,11 @@ namespace eli
 
               // Push back to piecewise curve.
               error_code err = pc.push_back(bez, this->get_segment_dt(i));
-              assert(err==piecewise_curve_type::NO_ERRORS);
+              if (err!=piecewise_curve_type::NO_ERRORS)
+              {
+                assert(false);
+                return false;
+              }
 
               istart = iend;
 //              d1start = d1end;
