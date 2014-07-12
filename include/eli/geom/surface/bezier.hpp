@@ -395,7 +395,6 @@ namespace eli
           {
             point_type ans, tmp;
             index_type i, n(degree_u()), m(degree_v());
-            Eigen::Matrix<data_type, Eigen::Dynamic, dim__> temp_cp, B_up(n+1-1, dim__);
 
             // check to make sure have valid curve
             assert(n>=0);
@@ -410,6 +409,8 @@ namespace eli
               ans.setZero();
               return ans;
             }
+
+            Eigen::Matrix<data_type, Eigen::Dynamic, dim__> temp_cp, B_up(n+1-1, dim__);
 
             if ((n-1)<=m)
             {
@@ -445,7 +446,6 @@ namespace eli
           {
             point_type ans, tmp;
             index_type i, n(degree_u()), m(degree_v());
-            Eigen::Matrix<data_type, Eigen::Dynamic, dim__> temp_cp, B_vp(m+1-1, dim__);
 
             // check to make sure have valid curve
             assert(n>=0);
@@ -460,6 +460,8 @@ namespace eli
               ans.setZero();
               return ans;
             }
+
+            Eigen::Matrix<data_type, Eigen::Dynamic, dim__> temp_cp, B_vp(m+1-1, dim__);
 
             if (n<=(m-1))
             {
@@ -495,7 +497,6 @@ namespace eli
           {
             point_type ans, tmp;
             index_type i, n(degree_u()), m(degree_v());
-            Eigen::Matrix<data_type, Eigen::Dynamic, dim__> temp_cp, B_upp(n+1-2, dim__);
 
             // check to make sure have valid curve
             assert(n>=0);
@@ -510,6 +511,8 @@ namespace eli
               ans.setZero();
               return ans;
             }
+
+            Eigen::Matrix<data_type, Eigen::Dynamic, dim__> temp_cp, B_upp(n+1-2, dim__);
 
             if ((n-2)<=m)
             {
@@ -546,7 +549,6 @@ namespace eli
           {
             point_type ans, tmp;
             index_type i, n(degree_u()), m(degree_v());
-            Eigen::Matrix<data_type, Eigen::Dynamic, dim__> temp_cp, B_up(n+1-1, dim__), B_vp(m+1-1, dim__);
 
             // check to make sure have valid curve
             assert(n>=0);
@@ -561,6 +563,8 @@ namespace eli
               ans.setZero();
               return ans;
             }
+
+            Eigen::Matrix<data_type, Eigen::Dynamic, dim__> temp_cp, B_up(n+1-1, dim__), B_vp(m+1-1, dim__);
 
             if (n<=m)
             {
@@ -600,7 +604,6 @@ namespace eli
           {
             point_type ans, tmp;
             index_type i, n(degree_u()), m(degree_v());
-            Eigen::Matrix<data_type, Eigen::Dynamic, dim__> temp_cp, B_vpp(m+1-2, dim__);
 
             // check to make sure have valid curve
             assert(n>=0);
@@ -615,6 +618,8 @@ namespace eli
               ans.setZero();
               return ans;
             }
+
+            Eigen::Matrix<data_type, Eigen::Dynamic, dim__> temp_cp, B_vpp(m+1-2, dim__);
 
             if (n<=(m-2))
             {
@@ -651,7 +656,6 @@ namespace eli
 
             point_type ans, tmp;
             index_type i, n(degree_u()), m(degree_v());
-            Eigen::Matrix<data_type, Eigen::Dynamic, dim__> temp_cp, B_uppp(n+1-3, dim__);
 
             // check to make sure have valid curve
             assert(n>=0);
@@ -666,6 +670,8 @@ namespace eli
               ans.setZero();
               return ans;
             }
+
+            Eigen::Matrix<data_type, Eigen::Dynamic, dim__> temp_cp, B_uppp(n+1-3, dim__);
 
             if ((n-3)<=m)
             {
@@ -702,7 +708,6 @@ namespace eli
           {
             point_type ans, tmp;
             index_type i, n(degree_u()), m(degree_v());
-            Eigen::Matrix<data_type, Eigen::Dynamic, dim__> temp_cp, B_upp(n+1-2, dim__), B_vp(m+1-1, dim__);
 
             // check to make sure have valid curve
             assert(n>=0);
@@ -717,6 +722,8 @@ namespace eli
               ans.setZero();
               return ans;
             }
+
+            Eigen::Matrix<data_type, Eigen::Dynamic, dim__> temp_cp, B_upp(n+1-2, dim__), B_vp(m+1-1, dim__);
 
             if ((n-1)<=m)
             {
@@ -756,7 +763,6 @@ namespace eli
           {
             point_type ans, tmp;
             index_type i, n(degree_u()), m(degree_v());
-            Eigen::Matrix<data_type, Eigen::Dynamic, dim__> temp_cp, B_up(n+1-1, dim__), B_vpp(m+1-2, dim__);
 
             // check to make sure have valid curve
             assert(n>=0);
@@ -771,6 +777,8 @@ namespace eli
               ans.setZero();
               return ans;
             }
+
+            Eigen::Matrix<data_type, Eigen::Dynamic, dim__> temp_cp, B_up(n+1-1, dim__), B_vpp(m+1-2, dim__);
 
             if (n<=(m-1))
             {
@@ -810,7 +818,6 @@ namespace eli
           {
             point_type ans, tmp;
             index_type i, n(degree_u()), m(degree_v());
-            Eigen::Matrix<data_type, Eigen::Dynamic, dim__> temp_cp, B_vppp(m+1-3, dim__);
 
             // check to make sure have valid curve
             assert(n>=0);
@@ -825,6 +832,8 @@ namespace eli
               ans.setZero();
               return ans;
             }
+
+            Eigen::Matrix<data_type, Eigen::Dynamic, dim__> temp_cp, B_vppp(m+1-3, dim__);
 
             if (n<=(m-2))
             {
