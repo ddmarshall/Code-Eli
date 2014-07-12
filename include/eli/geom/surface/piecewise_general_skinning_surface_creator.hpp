@@ -32,6 +32,7 @@
 
 namespace eli
 {
+  inline
   std::string random_string( size_t length )
   {
       auto randchar = []() -> char
@@ -48,6 +49,7 @@ namespace eli
       return str;
   }
 
+  inline
   void octave_start(int figno)
   {
     std::cout << "figure(" << figno << ");" << std::endl;
@@ -56,6 +58,7 @@ namespace eli
     std::cout << "grid on;" << std::endl;
   }
 
+  inline
   void octave_finish(int figno)
   {
     std::cout << "figure(" << figno << ");" << std::endl;
