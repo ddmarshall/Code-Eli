@@ -2599,6 +2599,7 @@ class piecewise_general_skinning_surface_creator_test_suite : public Test::Suite
 
         // set the maximum degrees of each segment
         max_degree[0]=0;
+        max_degree[1]=0;
 
         // create surface
         rtn_flag=gc.set_conditions(ribs, max_degree, false);
@@ -2749,6 +2750,7 @@ class piecewise_general_skinning_surface_creator_test_suite : public Test::Suite
 
         // set the maximum degrees of each segment
         max_degree[0]=0;
+        max_degree[1]=0;
 
         // create surface
         rtn_flag=gc.set_conditions(ribs, max_degree, false);
@@ -2948,6 +2950,7 @@ class piecewise_general_skinning_surface_creator_test_suite : public Test::Suite
 
         // set the maximum degrees of each segment
         max_degree[0]=0;
+        max_degree[1]=0;
 
         // create surface
         rtn_flag=gc.set_conditions(ribs, max_degree, false);
@@ -3196,6 +3199,7 @@ class piecewise_general_skinning_surface_creator_test_suite : public Test::Suite
 
         // set the maximum degrees of each segment
         max_degree[0]=0;
+        max_degree[1]=0;
 
         // create surface
         rtn_flag=gc.set_conditions(ribs, max_degree, false);
@@ -3475,6 +3479,7 @@ class piecewise_general_skinning_surface_creator_test_suite : public Test::Suite
 
         // set the maximum degrees of each segment
         max_degree[0]=0;
+        max_degree[1]=0;
 
         // create surface
         rtn_flag=gc.set_conditions(ribs, max_degree, false);
@@ -3786,6 +3791,7 @@ class piecewise_general_skinning_surface_creator_test_suite : public Test::Suite
 
         // set the maximum degrees of each segment
         max_degree[0]=0;
+        max_degree[1]=0;
 
         // create surface
         rtn_flag=gc.set_conditions(ribs, max_degree, false);
@@ -4108,6 +4114,7 @@ class piecewise_general_skinning_surface_creator_test_suite : public Test::Suite
 
         // set the maximum degrees of each segment
         max_degree[0]=0;
+        max_degree[1]=0;
 
         // create surface
         rtn_flag=gc.set_conditions(ribs, max_degree, false);
@@ -4337,6 +4344,7 @@ class piecewise_general_skinning_surface_creator_test_suite : public Test::Suite
 
         // set the maximum degrees of each segment
         max_degree[0]=0;
+        max_degree[1]=0;
 
         // create surface
         rtn_flag=gc.set_conditions(ribs, max_degree, false);
@@ -4495,6 +4503,7 @@ class piecewise_general_skinning_surface_creator_test_suite : public Test::Suite
 
         // set the maximum degrees of each segment
         max_degree[0]=0;
+        max_degree[1]=0;
 
         // create surface
         rtn_flag=gc.set_conditions(ribs, max_degree, false);
@@ -4658,6 +4667,7 @@ class piecewise_general_skinning_surface_creator_test_suite : public Test::Suite
 
         // set the maximum degrees of each segment
         max_degree[0]=0;
+        max_degree[1]=0;
 
         // create surface
         rtn_flag=gc.set_conditions(ribs, max_degree, false);
@@ -4822,6 +4832,7 @@ class piecewise_general_skinning_surface_creator_test_suite : public Test::Suite
 
         // set the maximum degrees of each segment
         max_degree[0]=0;
+        max_degree[1]=0;
 
         // create surface
         rtn_flag=gc.set_conditions(ribs, max_degree, false);
