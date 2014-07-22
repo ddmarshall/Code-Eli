@@ -14,6 +14,7 @@
 #define eli_mutil_fd_d2o2_hpp
 
 #include <vector>
+#include <assert.h>
 
 namespace eli
 {
@@ -21,7 +22,7 @@ namespace eli
   {
     namespace fd
     {
-      template<typename __data>
+      template<typename data__>
       class d2o2
       {
         public:
@@ -39,18 +40,21 @@ namespace eli
           stencil st;
 
         protected:
-          template<typename __itc, typename __itphi> __data calculate_dot(__itc a, __itphi itphi) const
+          template<typename __itc, typename __itphi> data__ calculate_dot(__itc a, __itphi itphi) const
           {
-            __data d(static_cast<__data>(0));
+            data__ d(static_cast<data__>(0));
 
             for (size_t i=0; i<number_nodes(); ++i, ++itphi)
-              d+=a[i]*(*itphi);
+            {
+              if (a[i]!=0)
+                d+=a[i]*(*itphi);
+            }
 
             return d;
           }
 
         public:
-          d2o2() : nnodes(4), n_order(2), st(d2o2<__data>::LEFT_BIASED)
+          d2o2() : nnodes(4), n_order(2), st(d2o2<data__>::RIGHT_BIASED)
           {
           }
 
@@ -58,7 +62,7 @@ namespace eli
           {
           }
 
-          d2o2(const d2o2<__data> &d) : nnodes(4), n_order(2), st(d.st)
+          d2o2(const d2o2<data__> &d) : nnodes(4), n_order(2), st(d.st)
           {
           }
 
@@ -139,9 +143,9 @@ namespace eli
             return i0;
           }
 
-          template<typename __itphi> int evaluate(__data &d, __itphi itphi, const __data &dx) const
+          template<typename __itphi> int evaluate(data__ &d, __itphi itphi, const data__ &dx) const
           {
-            std::vector<__data> a(number_nodes());
+            std::vector<data__> a(number_nodes());
             int rtn;
 
             rtn=coefficients(a.begin(), dx);
@@ -151,9 +155,9 @@ namespace eli
             return rtn;
           }
 
-          template<typename __itphi, typename __itx> int evaluate(__data &d, __itphi itphi, __itx itx) const
+          template<typename __itphi, typename __itx> int evaluate(data__ &d, __itphi itphi, __itx itx) const
           {
-            std::vector<__data> a(number_nodes());
+            std::vector<data__> a(number_nodes());
             int rtn;
 
             rtn=coefficients(a.begin(), itx);
@@ -163,43 +167,43 @@ namespace eli
             return rtn;
           }
 
-          template<typename __itc> int coefficients(__itc itc, const __data &dx) const
+          template<typename __itc> int coefficients(__itc itc, const data__ &dx) const
           {
             switch(st)
             {
               case(LEFT):
               {
-                (*itc)=static_cast<__data>(-1)/dx/dx;++itc;
-                (*itc)=static_cast<__data>( 4)/dx/dx;++itc;
-                (*itc)=static_cast<__data>(-5)/dx/dx;++itc;
-                (*itc)=static_cast<__data>( 2)/dx/dx;
+                (*itc)=static_cast<data__>(-1)/dx/dx;++itc;
+                (*itc)=static_cast<data__>( 4)/dx/dx;++itc;
+                (*itc)=static_cast<data__>(-5)/dx/dx;++itc;
+                (*itc)=static_cast<data__>( 2)/dx/dx;
 
                 break;
               }
               case(LEFT_BIASED):
               {
-                (*itc)=static_cast<__data>( 0)/dx/dx;++itc;
-                (*itc)=static_cast<__data>( 1)/dx/dx;++itc;
-                (*itc)=static_cast<__data>(-2)/dx/dx;++itc;
-                (*itc)=static_cast<__data>( 1)/dx/dx;
+                (*itc)=static_cast<data__>( 0)/dx/dx;++itc;
+                (*itc)=static_cast<data__>( 1)/dx/dx;++itc;
+                (*itc)=static_cast<data__>(-2)/dx/dx;++itc;
+                (*itc)=static_cast<data__>( 1)/dx/dx;
 
                 break;
               }
               case(RIGHT_BIASED):
               {
-                (*itc)=static_cast<__data>( 1)/dx/dx;++itc;
-                (*itc)=static_cast<__data>(-2)/dx/dx;++itc;
-                (*itc)=static_cast<__data>( 1)/dx/dx;++itc;
-                (*itc)=static_cast<__data>( 0)/dx/dx;
+                (*itc)=static_cast<data__>( 1)/dx/dx;++itc;
+                (*itc)=static_cast<data__>(-2)/dx/dx;++itc;
+                (*itc)=static_cast<data__>( 1)/dx/dx;++itc;
+                (*itc)=static_cast<data__>( 0)/dx/dx;
 
                 break;
               }
               case(RIGHT):
               {
-                (*itc)=static_cast<__data>( 2)/dx/dx;++itc;
-                (*itc)=static_cast<__data>(-5)/dx/dx;++itc;
-                (*itc)=static_cast<__data>( 4)/dx/dx;++itc;
-                (*itc)=static_cast<__data>(-1)/dx/dx;
+                (*itc)=static_cast<data__>( 2)/dx/dx;++itc;
+                (*itc)=static_cast<data__>(-5)/dx/dx;++itc;
+                (*itc)=static_cast<data__>( 4)/dx/dx;++itc;
+                (*itc)=static_cast<data__>(-1)/dx/dx;
 
                 break;
               }
@@ -215,7 +219,7 @@ namespace eli
 
           template<typename __itc, typename __itx> int coefficients(__itc itc, __itx itx) const
           {
-            std::vector<__data> x(number_nodes());
+            std::vector<data__> x(number_nodes());
 
             // extract the x-locations
             for (size_t i=0; i<number_nodes(); ++i, ++itx)
@@ -225,7 +229,7 @@ namespace eli
             {
               case(LEFT):
               {
-                __data alphaim1, betaim2, gammaim3;
+                data__ alphaim1, betaim2, gammaim3;
                 alphaim1=x[3]-x[2];
                 betaim2=x[3]-x[1];
                 gammaim3=x[3]-x[0];
@@ -239,7 +243,7 @@ namespace eli
               }
               case(LEFT_BIASED):
               {
-                __data alphai, alphaim1, betaim2;
+                data__ alphai, alphaim1, betaim2;
                 alphai=x[3]-x[2];
                 alphaim1=x[2]-x[1];
                 betaim2=x[2]-x[0];
@@ -253,7 +257,7 @@ namespace eli
               }
               case(RIGHT_BIASED):
               {
-                __data alphai, alphaim1, betai;
+                data__ alphai, alphaim1, betai;
                 alphaim1=x[1]-x[0];
                 alphai=x[2]-x[1];
                 betai=x[3]-x[1];
@@ -268,7 +272,7 @@ namespace eli
               // FIX: Change for 3rd order
               case(RIGHT):
               {
-                __data alphai, betai, gammai;
+                data__ alphai, betai, gammai;
                 alphai=x[1]-x[0];
                 betai=x[2]-x[0];
                 gammai=x[3]-x[0];
@@ -290,7 +294,7 @@ namespace eli
             return 0;
           }
 
-          int truncation_error(__data &te, const __data &phi4, const __data &dx) const
+          int truncation_error(data__ &te, const data__ &phi4, const data__ &dx) const
           {
             switch(st)
             {
@@ -324,9 +328,9 @@ namespace eli
             return 0;
           }
 
-          template<typename __itx> int truncation_error(__data &te, const __data &phi4, __itx itx) const
+          template<typename __itx> int truncation_error(data__ &te, const data__ &phi4, __itx itx) const
           {
-            std::vector<__data> x(number_nodes());
+            std::vector<data__> x(number_nodes());
 
             // extract the x-locations
             for (size_t i=0; i<number_nodes(); ++i, ++itx)
@@ -336,43 +340,43 @@ namespace eli
             {
               case(LEFT):
               {
-                __data alphaim1, betaim2, gammaim3;
+                data__ alphaim1, betaim2, gammaim3;
                 alphaim1=x[3]-x[2];
                 betaim2=x[3]-x[1];
                 gammaim3=x[3]-x[0];
 
-                te=phi4*(alphaim1*gammaim3+betaim2*(alphaim1+gammaim3))/static_cast<__data>(12);
+                te=phi4*(alphaim1*gammaim3+betaim2*(alphaim1+gammaim3))/static_cast<data__>(12);
                 break;
               }
               // FIX: These need to be fixed for d2o2
               case(LEFT_BIASED):
               {
-                __data alphai, alphaim1, betaim2;
+                data__ alphai, alphaim1, betaim2;
                 alphai=x[3]-x[2];
                 alphaim1=x[2]-x[1];
                 betaim2=x[2]-x[0];
 
-                te=-phi4*(alphai*(alphaim1+betaim2)-alphaim1*betaim2)/static_cast<__data>(12);
+                te=-phi4*(alphai*(alphaim1+betaim2)-alphaim1*betaim2)/static_cast<data__>(12);
                 break;
               }
               case(RIGHT_BIASED):
               {
-                __data alphai, alphaim1, betai;
+                data__ alphai, alphaim1, betai;
                 alphaim1=x[1]-x[0];
                 alphai=x[2]-x[1];
                 betai=x[3]-x[1];
 
-                te=-phi4*(alphaim1*(alphai+betai)-alphai*betai)/static_cast<__data>(12);
+                te=-phi4*(alphaim1*(alphai+betai)-alphai*betai)/static_cast<data__>(12);
                 break;
               }
               case(RIGHT):
               {
-                __data alphai, betai, gammai;
+                data__ alphai, betai, gammai;
                 alphai=x[1]-x[0];
                 betai=x[2]-x[0];
                 gammai=x[3]-x[0];
 
-                te=phi4*(alphai*gammai+betai*(alphai+gammai))/static_cast<__data>(12);
+                te=phi4*(alphai*gammai+betai*(alphai+gammai))/static_cast<data__>(12);
                 break;
               }
               default:

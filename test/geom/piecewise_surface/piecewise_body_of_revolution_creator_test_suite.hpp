@@ -10,8 +10,8 @@
 *    David D. Marshall - initial code and implementation
 ********************************************************************************/
 
-#ifndef piecewise_surface_creator_test_suite_suite_hpp
-#define piecewise_surface_creator_test_suite_suite_hpp
+#ifndef piecewise_body_of_revolution_creator_test_suite_suite_hpp
+#define piecewise_body_of_revolution_creator_test_suite_suite_hpp
 
 #include "eli/code_eli.hpp"
 
@@ -20,7 +20,7 @@
 #include "eli/geom/curve/piecewise.hpp"
 
 #include "eli/geom/surface/piecewise.hpp"
-#include "eli/geom/surface/piecewise_creator.hpp"
+#include "eli/geom/surface/piecewise_body_of_revolution_creator.hpp"
 
 #include <cmath>    // std::pow, std::exp
 #include <cassert>  // assert()
@@ -32,7 +32,7 @@
 #include <limits>   // std::numeric_limits
 
 template<typename data__>
-class piecewise_surface_creator_test_suite : public Test::Suite
+class piecewise_body_of_revolution_creator_test_suite : public Test::Suite
 {
   private:
     typedef eli::geom::surface::piecewise<eli::geom::surface::bezier, data__, 3> piecewise_surface_type;
@@ -49,37 +49,25 @@ class piecewise_surface_creator_test_suite : public Test::Suite
     void AddTests(const float &)
     {
       // add the tests
-      TEST_ADD(piecewise_surface_creator_test_suite<float>::create_body_of_revolution_test);
+      TEST_ADD(piecewise_body_of_revolution_creator_test_suite<float>::create_body_of_revolution_test);
     }
     void AddTests(const double &)
     {
       // add the tests
-      TEST_ADD(piecewise_surface_creator_test_suite<double>::create_body_of_revolution_test);
+      TEST_ADD(piecewise_body_of_revolution_creator_test_suite<double>::create_body_of_revolution_test);
     }
     void AddTests(const long double &)
     {
       // add the tests
-      TEST_ADD(piecewise_surface_creator_test_suite<long double>::create_body_of_revolution_test);
-    }
-#ifdef ELI_USING_QD
-    void AddTests(const dd_real &)
-    {
-      // add the tests
-      TEST_ADD(piecewise_surface_creator_test_suite<dd_real>::create_body_of_revolution_test);
+      TEST_ADD(piecewise_body_of_revolution_creator_test_suite<long double>::create_body_of_revolution_test);
     }
 
-    void AddTests(const qd_real &)
-    {
-      // add the tests
-      TEST_ADD(piecewise_surface_creator_test_suite<qd_real>::create_body_of_revolution_test);
-    }
-#endif
   public:
-    piecewise_surface_creator_test_suite() : tol()
+    piecewise_body_of_revolution_creator_test_suite() : tol()
     {
       AddTests(data__());
     }
-    ~piecewise_surface_creator_test_suite()
+    ~piecewise_body_of_revolution_creator_test_suite()
     {
     }
 
@@ -265,7 +253,7 @@ class piecewise_surface_creator_test_suite : public Test::Suite
         {
           c.set_control_point(cp[i], i);
         }
-        TEST_ASSERT(pc.push_back(c, 0.25)==piecewise_curve_type::NO_ERROR);
+        TEST_ASSERT(pc.push_back(c, 0.25)==piecewise_curve_type::NO_ERRORS);
 
         // set 2nd quadrant curve
         cp[0] <<  0, 1, 0;
@@ -276,11 +264,11 @@ class piecewise_surface_creator_test_suite : public Test::Suite
         {
           c.set_control_point(cp[i], i);
         }
-        TEST_ASSERT(pc.push_back(c, 0.25)==piecewise_curve_type::NO_ERROR);
+        TEST_ASSERT(pc.push_back(c, 0.25)==piecewise_curve_type::NO_ERRORS);
 
         piecewise_surface_type ps;
 
-        TEST_ASSERT(eli::geom::surface::create_body_of_revolution(ps, pc, 0, eli::geom::surface::OUTWARD_NORMAL));
+        TEST_ASSERT(eli::geom::surface::create_body_of_revolution(ps, pc, 0, true));
 
 //         if (typeid(data_type)==typeid(double))
 //           octave_print(2, ps);

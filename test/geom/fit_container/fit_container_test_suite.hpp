@@ -72,33 +72,7 @@ class fit_container_test_suite : public Test::Suite
       TEST_ADD(fit_container_test_suite<long double>::list_constraints_test);
       TEST_ADD(fit_container_test_suite<long double>::closed_constraints_test);
     }
-#ifdef ELI_USING_QD
-    void AddTests(const dd_real &)
-    {
-      // add the tests
-      TEST_ADD(fit_container_test_suite<dd_real>::construction_test);
-      TEST_ADD(fit_container_test_suite<dd_real>::add_C0_constraints_test);
-      TEST_ADD(fit_container_test_suite<dd_real>::add_C1_constraints_test);
-      TEST_ADD(fit_container_test_suite<dd_real>::add_C2_constraints_test);
-      TEST_ADD(fit_container_test_suite<dd_real>::add_end_constraints_test);
-      TEST_ADD(fit_container_test_suite<dd_real>::remove_constraints_test);
-      TEST_ADD(fit_container_test_suite<dd_real>::list_constraints_test);
-      TEST_ADD(fit_container_test_suite<dd_real>::closed_constraints_test);
-    }
 
-    void AddTests(const qd_real &)
-    {
-      // add the tests
-      TEST_ADD(fit_container_test_suite<qd_real>::construction_test);
-      TEST_ADD(fit_container_test_suite<qd_real>::add_C0_constraints_test);
-      TEST_ADD(fit_container_test_suite<qd_real>::add_C1_constraints_test);
-      TEST_ADD(fit_container_test_suite<qd_real>::add_C2_constraints_test);
-      TEST_ADD(fit_container_test_suite<qd_real>::add_end_constraints_test);
-      TEST_ADD(fit_container_test_suite<qd_real>::remove_constraints_test);
-      TEST_ADD(fit_container_test_suite<qd_real>::list_constraints_test);
-      TEST_ADD(fit_container_test_suite<qd_real>::closed_constraints_test);
-    }
-#endif
   public:
     fit_container_test_suite()
     {
@@ -152,13 +126,13 @@ class fit_container_test_suite : public Test::Suite
 
       // add constraint
       ec=ccon.add_C0_constraint(index1);
-      TEST_ASSERT(ec==fit_container_type::NO_ERROR);
+      TEST_ASSERT(ec==fit_container_type::NO_ERRORS);
       TEST_ASSERT(ccon.number_constraint_points()==1);
       TEST_ASSERT(ccon.number_constraints()==1);
 
       // check for the constraint
       ec=ccon.get_constraint(index1, ciout);
-      TEST_ASSERT(ec==fit_container_type::NO_ERROR);
+      TEST_ASSERT(ec==fit_container_type::NO_ERRORS);
       TEST_ASSERT(ciout.using_fp()==constraint_info::NOT_USED);
       TEST_ASSERT(ciout.using_fpp()==constraint_info::NOT_USED);
 
@@ -168,25 +142,25 @@ class fit_container_test_suite : public Test::Suite
 
       // add another constraint
       ec=ccon.add_C0_constraint(index2);
-      TEST_ASSERT(ec==fit_container_type::NO_ERROR);
+      TEST_ASSERT(ec==fit_container_type::NO_ERRORS);
       TEST_ASSERT(ccon.number_constraint_points()==2);
       TEST_ASSERT(ccon.number_constraints()==2);
 
       // check for the constraint
       ec=ccon.get_constraint(index2, ciout);
-      TEST_ASSERT(ec==fit_container_type::NO_ERROR);
+      TEST_ASSERT(ec==fit_container_type::NO_ERRORS);
       TEST_ASSERT(ciout.using_fp()==constraint_info::NOT_USED);
       TEST_ASSERT(ciout.using_fpp()==constraint_info::NOT_USED);
 
       // replace constraint
       ec=ccon.add_C0_constraint(index1);
-      TEST_ASSERT(ec==fit_container_type::NO_ERROR);
+      TEST_ASSERT(ec==fit_container_type::NO_ERRORS);
       TEST_ASSERT(ccon.number_constraint_points()==2);
       TEST_ASSERT(ccon.number_constraints()==2);
 
       // check for the constraint
       ec=ccon.get_constraint(index1, ciout);
-      TEST_ASSERT(ec==fit_container_type::NO_ERROR);
+      TEST_ASSERT(ec==fit_container_type::NO_ERRORS);
       TEST_ASSERT(ciout.using_fp()==constraint_info::NOT_USED);
       TEST_ASSERT(ciout.using_fpp()==constraint_info::NOT_USED);
     }
@@ -207,14 +181,14 @@ class fit_container_test_suite : public Test::Suite
       // add constraint
       v[0]=1; v[1]=2; v[2]=3;
       ec=ccon.add_C1_constraint(index1, v);
-      TEST_ASSERT(ec==fit_container_type::NO_ERROR);
+      TEST_ASSERT(ec==fit_container_type::NO_ERRORS);
       TEST_ASSERT(ccon.number_constraint_points()==1);
       TEST_ASSERT(ccon.number_constraints()==2);
 
       // check for the constraint
       ec=ccon.get_constraint(index1, ciout);
       vout=ciout.get_fp();
-      TEST_ASSERT(ec==fit_container_type::NO_ERROR);
+      TEST_ASSERT(ec==fit_container_type::NO_ERRORS);
       TEST_ASSERT(ciout.using_fp()==constraint_info::SET);
       TEST_ASSERT((vout[0]==v[0]) && (vout[1]==v[1]) && (vout[2]==v[2]));
       TEST_ASSERT(ciout.using_fpp()==constraint_info::NOT_USED);
@@ -225,35 +199,35 @@ class fit_container_test_suite : public Test::Suite
 
       // add another constraint
       ec=ccon.add_C1_constraint(index2, v);
-      TEST_ASSERT(ec==fit_container_type::NO_ERROR);
+      TEST_ASSERT(ec==fit_container_type::NO_ERRORS);
       TEST_ASSERT(ccon.number_constraint_points()==2);
       TEST_ASSERT(ccon.number_constraints()==4);
 
       // check for the constraint
       ec=ccon.get_constraint(index2, ciout);
       vout=ciout.get_fp();
-      TEST_ASSERT(ec==fit_container_type::NO_ERROR);
+      TEST_ASSERT(ec==fit_container_type::NO_ERRORS);
       TEST_ASSERT(ciout.using_fp()==constraint_info::SET);
       TEST_ASSERT((vout[0]==v[0]) && (vout[1]==v[1]) && (vout[2]==v[2]));
       TEST_ASSERT(ciout.using_fpp()==constraint_info::NOT_USED);
 
       // replace constraint
       ec=ccon.add_C1_constraint(index1, v);
-      TEST_ASSERT(ec==fit_container_type::NO_ERROR);
+      TEST_ASSERT(ec==fit_container_type::NO_ERRORS);
       TEST_ASSERT(ccon.number_constraint_points()==2);
       TEST_ASSERT(ccon.number_constraints()==4);
 
       // check for the constraint
       ec=ccon.get_constraint(index1, ciout);
       vout=ciout.get_fp();
-      TEST_ASSERT(ec==fit_container_type::NO_ERROR);
+      TEST_ASSERT(ec==fit_container_type::NO_ERRORS);
       TEST_ASSERT(ciout.using_fp()==constraint_info::SET);
       TEST_ASSERT((vout[0]==v[0]) && (vout[1]==v[1]) && (vout[2]==v[2]));
       TEST_ASSERT(ciout.using_fpp()==constraint_info::NOT_USED);
 
       // add finite difference constraint
       ec=ccon.add_C1_constraint(index3);
-      TEST_ASSERT(ec==fit_container_type::NO_ERROR);
+      TEST_ASSERT(ec==fit_container_type::NO_ERRORS);
       TEST_ASSERT(ccon.number_constraint_points()==3);
       TEST_ASSERT(ccon.number_constraints()==6);
 
@@ -264,7 +238,7 @@ class fit_container_test_suite : public Test::Suite
       v[2]=0;
       ec=ccon.get_constraint(index3, ciout);
       vout=ciout.get_fp();
-      TEST_ASSERT(ec==fit_container_type::NO_ERROR);
+      TEST_ASSERT(ec==fit_container_type::NO_ERRORS);
       TEST_ASSERT(ciout.using_fp()==constraint_info::FD);
       TEST_ASSERT_DELTA(vout[0], v[0], 2e-2);
       TEST_ASSERT_DELTA(vout[1], v[1], 5e-3);
@@ -289,7 +263,7 @@ class fit_container_test_suite : public Test::Suite
       v1[0]=1; v1[1]=2; v1[2]=3;
       v2[0]=0; v2[1]=-1; v2[2]=-2;
       ec=ccon.add_C2_constraint(index1, v1, v2);
-      TEST_ASSERT(ec==fit_container_type::NO_ERROR);
+      TEST_ASSERT(ec==fit_container_type::NO_ERRORS);
       TEST_ASSERT(ccon.number_constraint_points()==1);
       TEST_ASSERT(ccon.number_constraints()==3);
 
@@ -297,7 +271,7 @@ class fit_container_test_suite : public Test::Suite
       ec=ccon.get_constraint(index1, ciout);
       v1out=ciout.get_fp();
       v2out=ciout.get_fpp();
-      TEST_ASSERT(ec==fit_container_type::NO_ERROR);
+      TEST_ASSERT(ec==fit_container_type::NO_ERRORS);
       TEST_ASSERT(ciout.using_fp()==constraint_info::SET);
       TEST_ASSERT((v1out[0]==v1[0]) && (v1out[1]==v1[1]) && (v1out[2]==v1[2]));
       TEST_ASSERT(ciout.using_fpp()==constraint_info::SET);
@@ -309,7 +283,7 @@ class fit_container_test_suite : public Test::Suite
 
       // add another constraint
       ec=ccon.add_C2_constraint(index2, v1, v2);
-      TEST_ASSERT(ec==fit_container_type::NO_ERROR);
+      TEST_ASSERT(ec==fit_container_type::NO_ERRORS);
       TEST_ASSERT(ccon.number_constraint_points()==2);
       TEST_ASSERT(ccon.number_constraints()==6);
 
@@ -317,7 +291,7 @@ class fit_container_test_suite : public Test::Suite
       ec=ccon.get_constraint(index2, ciout);
       v1out=ciout.get_fp();
       v2out=ciout.get_fpp();
-      TEST_ASSERT(ec==fit_container_type::NO_ERROR);
+      TEST_ASSERT(ec==fit_container_type::NO_ERRORS);
       TEST_ASSERT(ciout.using_fp()==constraint_info::SET);
       TEST_ASSERT((v1out[0]==v1[0]) && (v1out[1]==v1[1]) && (v1out[2]==v1[2]));
       TEST_ASSERT(ciout.using_fpp()==constraint_info::SET);
@@ -325,7 +299,7 @@ class fit_container_test_suite : public Test::Suite
 
       // replace constraint
       ec=ccon.add_C2_constraint(index1, v1, v2);
-      TEST_ASSERT(ec==fit_container_type::NO_ERROR);
+      TEST_ASSERT(ec==fit_container_type::NO_ERRORS);
       TEST_ASSERT(ccon.number_constraint_points()==2);
       TEST_ASSERT(ccon.number_constraints()==6);
 
@@ -333,7 +307,7 @@ class fit_container_test_suite : public Test::Suite
       ec=ccon.get_constraint(index1, ciout);
       v1out=ciout.get_fp();
       v2out=ciout.get_fpp();
-      TEST_ASSERT(ec==fit_container_type::NO_ERROR);
+      TEST_ASSERT(ec==fit_container_type::NO_ERRORS);
       TEST_ASSERT(ciout.using_fp()==constraint_info::SET);
       TEST_ASSERT((v1out[0]==v1[0]) && (v1out[1]==v1[1]) && (v1out[2]==v1[2]));
       TEST_ASSERT(ciout.using_fpp()==constraint_info::SET);
@@ -341,7 +315,7 @@ class fit_container_test_suite : public Test::Suite
 
       // add finite difference 2nd derivative constraint
       ec=ccon.add_C2_constraint(index3, v1);
-      TEST_ASSERT(ec==fit_container_type::NO_ERROR);
+      TEST_ASSERT(ec==fit_container_type::NO_ERRORS);
       TEST_ASSERT(ccon.number_constraint_points()==3);
       TEST_ASSERT(ccon.number_constraints()==9);
 
@@ -353,7 +327,7 @@ class fit_container_test_suite : public Test::Suite
       ec=ccon.get_constraint(index3, ciout);
       v1out=ciout.get_fp();
       v2out=ciout.get_fpp();
-      TEST_ASSERT(ec==fit_container_type::NO_ERROR);
+      TEST_ASSERT(ec==fit_container_type::NO_ERRORS);
       TEST_ASSERT(ciout.using_fp()==constraint_info::SET);
       TEST_ASSERT((v1out[0]==v1[0]) && (v1out[1]==v1[1]) && (v1out[2]==v1[2]));
       TEST_ASSERT(ciout.using_fpp()==constraint_info::FD);
@@ -363,7 +337,7 @@ class fit_container_test_suite : public Test::Suite
 
       // add finite difference 1st and 2nd derivative constraint
       ec=ccon.add_C2_constraint(index4);
-      TEST_ASSERT(ec==fit_container_type::NO_ERROR);
+      TEST_ASSERT(ec==fit_container_type::NO_ERRORS);
       TEST_ASSERT(ccon.number_constraint_points()==4);
       TEST_ASSERT(ccon.number_constraints()==12);
 
@@ -378,7 +352,7 @@ class fit_container_test_suite : public Test::Suite
       ec=ccon.get_constraint(index4, ciout);
       v1out=ciout.get_fp();
       v2out=ciout.get_fpp();
-      TEST_ASSERT(ec==fit_container_type::NO_ERROR);
+      TEST_ASSERT(ec==fit_container_type::NO_ERRORS);
       TEST_ASSERT(ciout.using_fp()==constraint_info::FD);
       TEST_ASSERT_DELTA(v1out[0], v1[0], 2e-2);
       TEST_ASSERT_DELTA(v1out[1], v1[1], 5e-3);
@@ -408,33 +382,33 @@ class fit_container_test_suite : public Test::Suite
 
       // add C0 constraint at start
       ec=ccon.add_start_C0_constraint();
-      TEST_ASSERT(ec==fit_container_type::NO_ERROR);
+      TEST_ASSERT(ec==fit_container_type::NO_ERRORS);
       TEST_ASSERT(ccon.number_constraint_points()==1);
       TEST_ASSERT(ccon.number_constraints()==1);
 
       // check for the constraint
       index=0;
       ec=ccon.get_constraint(index, ciout);
-      TEST_ASSERT(ec==fit_container_type::NO_ERROR);
+      TEST_ASSERT(ec==fit_container_type::NO_ERRORS);
       TEST_ASSERT(ciout.using_fp()==constraint_info::NOT_USED);
       TEST_ASSERT(ciout.using_fpp()==constraint_info::NOT_USED);
 
       // add C0 constraint at end
       ec=ccon.add_end_C0_constraint();
-      TEST_ASSERT(ec==fit_container_type::NO_ERROR);
+      TEST_ASSERT(ec==fit_container_type::NO_ERRORS);
       TEST_ASSERT(ccon.number_constraint_points()==2);
       TEST_ASSERT(ccon.number_constraints()==2);
 
       // check for the constraint
       index=static_cast<int>(ccon.number_points())-1;
       ec=ccon.get_constraint(index, ciout);
-      TEST_ASSERT(ec==fit_container_type::NO_ERROR);
+      TEST_ASSERT(ec==fit_container_type::NO_ERRORS);
       TEST_ASSERT(ciout.using_fp()==constraint_info::NOT_USED);
       TEST_ASSERT(ciout.using_fpp()==constraint_info::NOT_USED);
 
       // add C1 constraint at start
       ec=ccon.add_start_C1_constraint(v1);
-      TEST_ASSERT(ec==fit_container_type::NO_ERROR);
+      TEST_ASSERT(ec==fit_container_type::NO_ERRORS);
       TEST_ASSERT(ccon.number_constraint_points()==2);
       TEST_ASSERT(ccon.number_constraints()==3);
 
@@ -442,14 +416,14 @@ class fit_container_test_suite : public Test::Suite
       index=0;
       ec=ccon.get_constraint(index, ciout);
       v1out=ciout.get_fp();
-      TEST_ASSERT(ec==fit_container_type::NO_ERROR);
+      TEST_ASSERT(ec==fit_container_type::NO_ERRORS);
       TEST_ASSERT(ciout.using_fp()==constraint_info::SET);
       TEST_ASSERT((v1out[0]==v1[0]) && (v1out[1]==v1[1]) && (v1out[2]==v1[2]));
       TEST_ASSERT(ciout.using_fpp()==constraint_info::NOT_USED);
 
       // add C1 constraint at end
       ec=ccon.add_end_C1_constraint(v1);
-      TEST_ASSERT(ec==fit_container_type::NO_ERROR);
+      TEST_ASSERT(ec==fit_container_type::NO_ERRORS);
       TEST_ASSERT(ccon.number_constraint_points()==2);
       TEST_ASSERT(ccon.number_constraints()==4);
 
@@ -457,14 +431,14 @@ class fit_container_test_suite : public Test::Suite
       index=static_cast<int>(ccon.number_points())-1;
       ec=ccon.get_constraint(index, ciout);
       v1out=ciout.get_fp();
-      TEST_ASSERT(ec==fit_container_type::NO_ERROR);
+      TEST_ASSERT(ec==fit_container_type::NO_ERRORS);
       TEST_ASSERT(ciout.using_fp()==constraint_info::SET);
       TEST_ASSERT((v1out[0]==v1[0]) && (v1out[1]==v1[1]) && (v1out[2]==v1[2]));
       TEST_ASSERT(ciout.using_fpp()==constraint_info::NOT_USED);
 
       // add C2 constraint at start
       ec=ccon.add_start_C2_constraint(v1, v2);
-      TEST_ASSERT(ec==fit_container_type::NO_ERROR);
+      TEST_ASSERT(ec==fit_container_type::NO_ERRORS);
       TEST_ASSERT(ccon.number_constraint_points()==2);
       TEST_ASSERT(ccon.number_constraints()==5);
 
@@ -473,7 +447,7 @@ class fit_container_test_suite : public Test::Suite
       ec=ccon.get_constraint(index, ciout);
       v1out=ciout.get_fp();
       v2out=ciout.get_fpp();
-      TEST_ASSERT(ec==fit_container_type::NO_ERROR);
+      TEST_ASSERT(ec==fit_container_type::NO_ERRORS);
       TEST_ASSERT(ciout.using_fp()==constraint_info::SET);
       TEST_ASSERT((v1out[0]==v1[0]) && (v1out[1]==v1[1]) && (v1out[2]==v1[2]));
       TEST_ASSERT(ciout.using_fpp()==constraint_info::SET);
@@ -481,7 +455,7 @@ class fit_container_test_suite : public Test::Suite
 
       // add C2 constraint at end
       ec=ccon.add_end_C2_constraint(v1, v2);
-      TEST_ASSERT(ec==fit_container_type::NO_ERROR);
+      TEST_ASSERT(ec==fit_container_type::NO_ERRORS);
       TEST_ASSERT(ccon.number_constraint_points()==2);
       TEST_ASSERT(ccon.number_constraints()==6);
 
@@ -490,7 +464,7 @@ class fit_container_test_suite : public Test::Suite
       ec=ccon.get_constraint(index, ciout);
       v1out=ciout.get_fp();
       v2out=ciout.get_fpp();
-      TEST_ASSERT(ec==fit_container_type::NO_ERROR);
+      TEST_ASSERT(ec==fit_container_type::NO_ERRORS);
       TEST_ASSERT(ciout.using_fp()==constraint_info::SET);
       TEST_ASSERT((v1out[0]==v1[0]) && (v1out[1]==v1[1]) && (v1out[2]==v1[2]));
       TEST_ASSERT(ciout.using_fpp()==constraint_info::SET);
@@ -498,7 +472,7 @@ class fit_container_test_suite : public Test::Suite
 
       // add C1 start finite difference constraint
       ec=ccon.add_start_C1_constraint();
-      TEST_ASSERT(ec==fit_container_type::NO_ERROR);
+      TEST_ASSERT(ec==fit_container_type::NO_ERRORS);
       TEST_ASSERT(ccon.number_constraint_points()==2);
       TEST_ASSERT(ccon.number_constraints()==5);
 
@@ -509,7 +483,7 @@ class fit_container_test_suite : public Test::Suite
       v1[2]=0;
       ec=ccon.get_constraint(index, ciout);
       v1out=ciout.get_fp();
-      TEST_ASSERT(ec==fit_container_type::NO_ERROR);
+      TEST_ASSERT(ec==fit_container_type::NO_ERRORS);
       TEST_ASSERT(ciout.using_fp()==constraint_info::FD);
       TEST_ASSERT_DELTA(v1out[0], v1[0], 8e-3);
       TEST_ASSERT_DELTA(v1out[1], v1[1], 4e-2);
@@ -518,7 +492,7 @@ class fit_container_test_suite : public Test::Suite
 
       // add C1 end finite difference constraint
       ec=ccon.add_end_C1_constraint();
-      TEST_ASSERT(ec==fit_container_type::NO_ERROR);
+      TEST_ASSERT(ec==fit_container_type::NO_ERRORS);
       TEST_ASSERT(ccon.number_constraint_points()==2);
       TEST_ASSERT(ccon.number_constraints()==4);
 
@@ -529,7 +503,7 @@ class fit_container_test_suite : public Test::Suite
       v1[2]=0;
       ec=ccon.get_constraint(index, ciout);
       v1out=ciout.get_fp();
-      TEST_ASSERT(ec==fit_container_type::NO_ERROR);
+      TEST_ASSERT(ec==fit_container_type::NO_ERRORS);
       TEST_ASSERT(ciout.using_fp()==constraint_info::FD);
       TEST_ASSERT_DELTA(v1out[0], v1[0], 2e-2);
       TEST_ASSERT_DELTA(v1out[1], v1[1], 4e-2);
@@ -539,7 +513,7 @@ class fit_container_test_suite : public Test::Suite
       // add C2 start finite difference 2nd derivative constraint
       v1[0]=1; v1[1]=2; v1[2]=3;
       ec=ccon.add_start_C2_constraint(v1);
-      TEST_ASSERT(ec==fit_container_type::NO_ERROR);
+      TEST_ASSERT(ec==fit_container_type::NO_ERRORS);
       TEST_ASSERT(ccon.number_constraint_points()==2);
       TEST_ASSERT(ccon.number_constraints()==5);
 
@@ -551,7 +525,7 @@ class fit_container_test_suite : public Test::Suite
       ec=ccon.get_constraint(index, ciout);
       v1out=ciout.get_fp();
       v2out=ciout.get_fpp();
-      TEST_ASSERT(ec==fit_container_type::NO_ERROR);
+      TEST_ASSERT(ec==fit_container_type::NO_ERRORS);
       TEST_ASSERT(ciout.using_fp()==constraint_info::SET);
       TEST_ASSERT((v1out[0]==v1[0]) && (v1out[1]==v1[1]) && (v1out[2]==v1[2]));
       TEST_ASSERT(ciout.using_fpp()==constraint_info::FD);
@@ -562,7 +536,7 @@ class fit_container_test_suite : public Test::Suite
       // add C2 end finite difference 2nd derivative constraint
       v1[0]=1; v1[1]=2; v1[2]=3;
       ec=ccon.add_end_C2_constraint(v1);
-      TEST_ASSERT(ec==fit_container_type::NO_ERROR);
+      TEST_ASSERT(ec==fit_container_type::NO_ERRORS);
       TEST_ASSERT(ccon.number_constraint_points()==2);
       TEST_ASSERT(ccon.number_constraints()==6);
 
@@ -574,7 +548,7 @@ class fit_container_test_suite : public Test::Suite
       ec=ccon.get_constraint(index, ciout);
       v1out=ciout.get_fp();
       v2out=ciout.get_fpp();
-      TEST_ASSERT(ec==fit_container_type::NO_ERROR);
+      TEST_ASSERT(ec==fit_container_type::NO_ERRORS);
       TEST_ASSERT(ciout.using_fp()==constraint_info::SET);
       TEST_ASSERT((v1out[0]==v1[0]) && (v1out[1]==v1[1]) && (v1out[2]==v1[2]));
       TEST_ASSERT(ciout.using_fpp()==constraint_info::FD);
@@ -584,7 +558,7 @@ class fit_container_test_suite : public Test::Suite
 
       // add C2 start finite difference 1st and 2nd derivative constraint
       ec=ccon.add_start_C2_constraint();
-      TEST_ASSERT(ec==fit_container_type::NO_ERROR);
+      TEST_ASSERT(ec==fit_container_type::NO_ERRORS);
       TEST_ASSERT(ccon.number_constraint_points()==2);
       TEST_ASSERT(ccon.number_constraints()==6);
 
@@ -599,7 +573,7 @@ class fit_container_test_suite : public Test::Suite
       ec=ccon.get_constraint(index, ciout);
       v1out=ciout.get_fp();
       v2out=ciout.get_fpp();
-      TEST_ASSERT(ec==fit_container_type::NO_ERROR);
+      TEST_ASSERT(ec==fit_container_type::NO_ERRORS);
       TEST_ASSERT(ciout.using_fp()==constraint_info::FD);
       TEST_ASSERT_DELTA(v1out[0], v1[0], 8e-3);
       TEST_ASSERT_DELTA(v1out[1], v1[1], 4e-2);
@@ -611,7 +585,7 @@ class fit_container_test_suite : public Test::Suite
 
       // add C2 end finite difference 1st and 2nd derivative constraint
       ec=ccon.add_end_C2_constraint();
-      TEST_ASSERT(ec==fit_container_type::NO_ERROR);
+      TEST_ASSERT(ec==fit_container_type::NO_ERRORS);
       TEST_ASSERT(ccon.number_constraint_points()==2);
       TEST_ASSERT(ccon.number_constraints()==6);
 
@@ -626,7 +600,7 @@ class fit_container_test_suite : public Test::Suite
       ec=ccon.get_constraint(index, ciout);
       v1out=ciout.get_fp();
       v2out=ciout.get_fpp();
-      TEST_ASSERT(ec==fit_container_type::NO_ERROR);
+      TEST_ASSERT(ec==fit_container_type::NO_ERRORS);
       TEST_ASSERT(ciout.using_fp()==constraint_info::FD);
       TEST_ASSERT_DELTA(v1out[0], v1[0], 2e-2);
       TEST_ASSERT_DELTA(v1out[1], v1[1], 4e-2);
@@ -656,19 +630,19 @@ class fit_container_test_suite : public Test::Suite
         v1[0]=1; v1[1]=2; v1[2]=3;
         v2[0]=0; v2[1]=-1; v2[2]=-2;
         ec=ccon.add_C2_constraint(index1, v1, v2);
-        TEST_ASSERT(ec==fit_container_type::NO_ERROR);
+        TEST_ASSERT(ec==fit_container_type::NO_ERRORS);
         TEST_ASSERT(ccon.number_constraint_points()==1);
         TEST_ASSERT(ccon.number_constraints()==3);
 
         // add C2 constraint at start
         ec=ccon.add_start_C2_constraint(v1, v2);
-        TEST_ASSERT(ec==fit_container_type::NO_ERROR);
+        TEST_ASSERT(ec==fit_container_type::NO_ERRORS);
         TEST_ASSERT(ccon.number_constraint_points()==2);
         TEST_ASSERT(ccon.number_constraints()==6);
 
         // add C2 constraint at end
         ec=ccon.add_end_C2_constraint(v1, v2);
-        TEST_ASSERT(ec==fit_container_type::NO_ERROR);
+        TEST_ASSERT(ec==fit_container_type::NO_ERRORS);
         TEST_ASSERT(ccon.number_constraint_points()==3);
         TEST_ASSERT(ccon.number_constraints()==9);
 
@@ -676,7 +650,7 @@ class fit_container_test_suite : public Test::Suite
         ec=ccon.get_constraint(index1, ciout);
         v1out=ciout.get_fp();
         v2out=ciout.get_fpp();
-        TEST_ASSERT(ec==fit_container_type::NO_ERROR);
+        TEST_ASSERT(ec==fit_container_type::NO_ERRORS);
         TEST_ASSERT(ciout.using_fp()==constraint_info::SET);
         TEST_ASSERT((v1out[0]==v1[0]) && (v1out[1]==v1[1]) && (v1out[2]==v1[2]));
         TEST_ASSERT(ciout.using_fpp()==constraint_info::SET);
@@ -687,7 +661,7 @@ class fit_container_test_suite : public Test::Suite
         ec=ccon.get_constraint(index, ciout);
         v1out=ciout.get_fp();
         v2out=ciout.get_fpp();
-        TEST_ASSERT(ec==fit_container_type::NO_ERROR);
+        TEST_ASSERT(ec==fit_container_type::NO_ERRORS);
         TEST_ASSERT(ciout.using_fp()==constraint_info::SET);
         TEST_ASSERT((v1out[0]==v1[0]) && (v1out[1]==v1[1]) && (v1out[2]==v1[2]));
         TEST_ASSERT(ciout.using_fpp()==constraint_info::SET);
@@ -698,7 +672,7 @@ class fit_container_test_suite : public Test::Suite
         ec=ccon.get_constraint(index, ciout);
         v1out=ciout.get_fp();
         v2out=ciout.get_fpp();
-        TEST_ASSERT(ec==fit_container_type::NO_ERROR);
+        TEST_ASSERT(ec==fit_container_type::NO_ERRORS);
         TEST_ASSERT(ciout.using_fp()==constraint_info::SET);
         TEST_ASSERT((v1out[0]==v1[0]) && (v1out[1]==v1[1]) && (v1out[2]==v1[2]));
         TEST_ASSERT(ciout.using_fpp()==constraint_info::SET);
@@ -712,7 +686,7 @@ class fit_container_test_suite : public Test::Suite
         ec=ccon.get_constraint(index1, ciout);
         v1out=ciout.get_fp();
         v2out=ciout.get_fpp();
-        TEST_ASSERT(ec==fit_container_type::NO_ERROR);
+        TEST_ASSERT(ec==fit_container_type::NO_ERRORS);
         TEST_ASSERT(ciout.using_fp()==constraint_info::SET);
         TEST_ASSERT((v1out[0]==v1[0]) && (v1out[1]==v1[1]) && (v1out[2]==v1[2]));
         TEST_ASSERT(ciout.using_fpp()==constraint_info::SET);
@@ -722,7 +696,7 @@ class fit_container_test_suite : public Test::Suite
         ec=ccon.get_constraint(index, ciout);
         v1out=ciout.get_fp();
         v2out=ciout.get_fpp();
-        TEST_ASSERT(ec==fit_container_type::NO_ERROR);
+        TEST_ASSERT(ec==fit_container_type::NO_ERRORS);
         TEST_ASSERT(ciout.using_fp()==constraint_info::SET);
         TEST_ASSERT((v1out[0]==v1[0]) && (v1out[1]==v1[1]) && (v1out[2]==v1[2]));
         TEST_ASSERT(ciout.using_fpp()==constraint_info::SET);
@@ -733,7 +707,7 @@ class fit_container_test_suite : public Test::Suite
         ec=ccon.get_constraint(index, ciout);
         v1out=ciout.get_fp();
         v2out=ciout.get_fpp();
-        TEST_ASSERT(ec==fit_container_type::NO_ERROR);
+        TEST_ASSERT(ec==fit_container_type::NO_ERRORS);
         TEST_ASSERT(ciout.using_fp()==constraint_info::SET);
         TEST_ASSERT((v1out[0]==v1[0]) && (v1out[1]==v1[1]) && (v1out[2]==v1[2]));
         TEST_ASSERT(ciout.using_fpp()==constraint_info::SET);
@@ -778,32 +752,32 @@ class fit_container_test_suite : public Test::Suite
 
         // add C1 constraint at start
         ec=ccon.add_start_C1_constraint();
-        TEST_ASSERT(ec==fit_container_type::NO_ERROR);
+        TEST_ASSERT(ec==fit_container_type::NO_ERRORS);
         TEST_ASSERT(ccon.number_constraint_points()==1);
         TEST_ASSERT(ccon.number_constraints()==2);
 
         // add C1 constraint at start+1
         ec=ccon.add_C1_constraint(1);
-        TEST_ASSERT(ec==fit_container_type::NO_ERROR);
+        TEST_ASSERT(ec==fit_container_type::NO_ERRORS);
         TEST_ASSERT(ccon.number_constraint_points()==2);
         TEST_ASSERT(ccon.number_constraints()==4);
 
         // add C1 constraint at end-1
         ec=ccon.add_C1_constraint(static_cast<int>(points.size())-2);
-        TEST_ASSERT(ec==fit_container_type::NO_ERROR);
+        TEST_ASSERT(ec==fit_container_type::NO_ERRORS);
         TEST_ASSERT(ccon.number_constraint_points()==3);
         TEST_ASSERT(ccon.number_constraints()==6);
 
         // add C1 constraint at end
         ec=ccon.add_end_C1_constraint();
-        TEST_ASSERT(ec==fit_container_type::NO_ERROR);
+        TEST_ASSERT(ec==fit_container_type::NO_ERRORS);
         TEST_ASSERT(ccon.number_constraint_points()==4);
         TEST_ASSERT(ccon.number_constraints()==8);
 
         // check all derivatives
         ec=ccon.get_constraint(index0, ciout);
         vp=ciout.get_fp();
-        TEST_ASSERT(ec==fit_container_type::NO_ERROR);
+        TEST_ASSERT(ec==fit_container_type::NO_ERRORS);
         TEST_ASSERT(ciout.using_fp()==constraint_info::FD);
         TEST_ASSERT_DELTA(vp(0), vp0(0), 8e-3);
         TEST_ASSERT_DELTA(vp(1), vp0(1), 4e-2);
@@ -811,7 +785,7 @@ class fit_container_test_suite : public Test::Suite
         TEST_ASSERT(ciout.using_fpp()==constraint_info::NOT_USED);
         ec=ccon.get_constraint(index1, ciout);
         vp=ciout.get_fp();
-        TEST_ASSERT(ec==fit_container_type::NO_ERROR);
+        TEST_ASSERT(ec==fit_container_type::NO_ERRORS);
         TEST_ASSERT(ciout.using_fp()==constraint_info::FD);
         TEST_ASSERT_DELTA(vp(0), vp1(0), 4e-3);
         TEST_ASSERT_DELTA(vp(1), vp1(1), 2e-2);
@@ -819,7 +793,7 @@ class fit_container_test_suite : public Test::Suite
         TEST_ASSERT(ciout.using_fpp()==constraint_info::NOT_USED);
         ec=ccon.get_constraint(indexnm2, ciout);
         vp=ciout.get_fp();
-        TEST_ASSERT(ec==fit_container_type::NO_ERROR);
+        TEST_ASSERT(ec==fit_container_type::NO_ERRORS);
         TEST_ASSERT(ciout.using_fp()==constraint_info::FD);
         TEST_ASSERT_DELTA(vp(0), vpnm2(0), 8e-3);
         TEST_ASSERT_DELTA(vp(1), vpnm2(1), 1e-2);
@@ -827,7 +801,7 @@ class fit_container_test_suite : public Test::Suite
         TEST_ASSERT(ciout.using_fpp()==constraint_info::NOT_USED);
         ec=ccon.get_constraint(indexnm1, ciout);
         vp=ciout.get_fp();
-        TEST_ASSERT(ec==fit_container_type::NO_ERROR);
+        TEST_ASSERT(ec==fit_container_type::NO_ERRORS);
         TEST_ASSERT(ciout.using_fp()==constraint_info::FD);
         TEST_ASSERT_DELTA(vp(0), vpnm1(0), 2e-2);
         TEST_ASSERT_DELTA(vp(1), vpnm1(1), 4e-2);
@@ -841,7 +815,7 @@ class fit_container_test_suite : public Test::Suite
         // check all derivatives
         ec=ccon.get_constraint(index0, ciout);
         vp=ciout.get_fp();
-        TEST_ASSERT(ec==fit_container_type::NO_ERROR);
+        TEST_ASSERT(ec==fit_container_type::NO_ERRORS);
         TEST_ASSERT(ciout.using_fp()==constraint_info::FD);
         TEST_ASSERT_DELTA(vp(0), vp0(0), 4e-1);
         TEST_ASSERT_DELTA(vp(1), vp0(1), 2e-1);
@@ -849,7 +823,7 @@ class fit_container_test_suite : public Test::Suite
         TEST_ASSERT(ciout.using_fpp()==constraint_info::NOT_USED);
         ec=ccon.get_constraint(index1, ciout);
         vp=ciout.get_fp();
-        TEST_ASSERT(ec==fit_container_type::NO_ERROR);
+        TEST_ASSERT(ec==fit_container_type::NO_ERRORS);
         TEST_ASSERT(ciout.using_fp()==constraint_info::FD);
         TEST_ASSERT_DELTA(vp(0), vp1(0), 4e-3);
         TEST_ASSERT_DELTA(vp(1), vp1(1), 2e-2);
@@ -857,7 +831,7 @@ class fit_container_test_suite : public Test::Suite
         TEST_ASSERT(ciout.using_fpp()==constraint_info::NOT_USED);
         ec=ccon.get_constraint(indexnm2, ciout);
         vp=ciout.get_fp();
-        TEST_ASSERT(ec==fit_container_type::NO_ERROR);
+        TEST_ASSERT(ec==fit_container_type::NO_ERRORS);
         TEST_ASSERT(ciout.using_fp()==constraint_info::FD);
         TEST_ASSERT_DELTA(vp(0), vpnm2(0), 8e-3);
         TEST_ASSERT_DELTA(vp(1), vpnm2(1), 1e-2);
@@ -865,7 +839,7 @@ class fit_container_test_suite : public Test::Suite
         TEST_ASSERT(ciout.using_fpp()==constraint_info::NOT_USED);
         ec=ccon.get_constraint(indexnm1, ciout);
         vp=ciout.get_fp();
-        TEST_ASSERT(ec==fit_container_type::NO_ERROR);
+        TEST_ASSERT(ec==fit_container_type::NO_ERRORS);
         TEST_ASSERT(ciout.using_fp()==constraint_info::FD);
         TEST_ASSERT_DELTA(vp(0), vpnm1(0), 4e-1);
         TEST_ASSERT_DELTA(vp(1), vpnm1(1), 2e-1);
@@ -912,25 +886,25 @@ class fit_container_test_suite : public Test::Suite
 
         // add C2 constraint at start
         ec=ccon.add_start_C2_constraint(v1);
-        TEST_ASSERT(ec==fit_container_type::NO_ERROR);
+        TEST_ASSERT(ec==fit_container_type::NO_ERRORS);
         TEST_ASSERT(ccon.number_constraint_points()==1);
         TEST_ASSERT(ccon.number_constraints()==3);
 
         // add C2 constraint at start+1
         ec=ccon.add_C2_constraint(1, v1);
-        TEST_ASSERT(ec==fit_container_type::NO_ERROR);
+        TEST_ASSERT(ec==fit_container_type::NO_ERRORS);
         TEST_ASSERT(ccon.number_constraint_points()==2);
         TEST_ASSERT(ccon.number_constraints()==6);
 
         // add C2 constraint at end-1
         ec=ccon.add_C2_constraint(static_cast<int>(points.size())-2, v1);
-        TEST_ASSERT(ec==fit_container_type::NO_ERROR);
+        TEST_ASSERT(ec==fit_container_type::NO_ERRORS);
         TEST_ASSERT(ccon.number_constraint_points()==3);
         TEST_ASSERT(ccon.number_constraints()==9);
 
         // add C2 constraint at end
         ec=ccon.add_end_C2_constraint(v1);
-        TEST_ASSERT(ec==fit_container_type::NO_ERROR);
+        TEST_ASSERT(ec==fit_container_type::NO_ERRORS);
         TEST_ASSERT(ccon.number_constraint_points()==4);
         TEST_ASSERT(ccon.number_constraints()==12);
 
@@ -938,7 +912,7 @@ class fit_container_test_suite : public Test::Suite
         ec=ccon.get_constraint(index0, ciout);
         vp=ciout.get_fp();
         vpp=ciout.get_fpp();
-        TEST_ASSERT(ec==fit_container_type::NO_ERROR);
+        TEST_ASSERT(ec==fit_container_type::NO_ERRORS);
         TEST_ASSERT(ciout.using_fp()==constraint_info::SET);
         TEST_ASSERT((vp(0)==v1(0)) && (vp(1)==v1(1)) && (vp(2)==v1(2)));
         TEST_ASSERT(ciout.using_fpp()==constraint_info::FD);
@@ -948,7 +922,7 @@ class fit_container_test_suite : public Test::Suite
         ec=ccon.get_constraint(index1, ciout);
         vp=ciout.get_fp();
         vpp=ciout.get_fpp();
-        TEST_ASSERT(ec==fit_container_type::NO_ERROR);
+        TEST_ASSERT(ec==fit_container_type::NO_ERRORS);
         TEST_ASSERT(ciout.using_fp()==constraint_info::SET);
         TEST_ASSERT((vp(0)==v1(0)) && (vp(1)==v1(1)) && (vp(2)==v1(2)));
         TEST_ASSERT(ciout.using_fpp()==constraint_info::FD);
@@ -958,7 +932,7 @@ class fit_container_test_suite : public Test::Suite
         ec=ccon.get_constraint(indexnm2, ciout);
         vp=ciout.get_fp();
         vpp=ciout.get_fpp();
-        TEST_ASSERT(ec==fit_container_type::NO_ERROR);
+        TEST_ASSERT(ec==fit_container_type::NO_ERRORS);
         TEST_ASSERT(ciout.using_fp()==constraint_info::SET);
         TEST_ASSERT((vp(0)==v1(0)) && (vp(1)==v1(1)) && (vp(2)==v1(2)));
         TEST_ASSERT(ciout.using_fpp()==constraint_info::FD);
@@ -968,7 +942,7 @@ class fit_container_test_suite : public Test::Suite
         ec=ccon.get_constraint(indexnm1, ciout);
         vp=ciout.get_fp();
         vpp=ciout.get_fpp();
-        TEST_ASSERT(ec==fit_container_type::NO_ERROR);
+        TEST_ASSERT(ec==fit_container_type::NO_ERRORS);
         TEST_ASSERT(ciout.using_fp()==constraint_info::SET);
         TEST_ASSERT((vp(0)==v1(0)) && (vp(1)==v1(1)) && (vp(2)==v1(2)));
         TEST_ASSERT(ciout.using_fpp()==constraint_info::FD);
@@ -984,7 +958,7 @@ class fit_container_test_suite : public Test::Suite
         ec=ccon.get_constraint(index0, ciout);
         vp=ciout.get_fp();
         vpp=ciout.get_fpp();
-        TEST_ASSERT(ec==fit_container_type::NO_ERROR);
+        TEST_ASSERT(ec==fit_container_type::NO_ERRORS);
         TEST_ASSERT(ciout.using_fp()==constraint_info::SET);
         TEST_ASSERT((vp(0)==v1(0)) && (vp(1)==v1(1)) && (vp(2)==v1(2)));
         TEST_ASSERT(ciout.using_fpp()==constraint_info::FD);
@@ -994,7 +968,7 @@ class fit_container_test_suite : public Test::Suite
         ec=ccon.get_constraint(index1, ciout);
         vp=ciout.get_fp();
         vpp=ciout.get_fpp();
-        TEST_ASSERT(ec==fit_container_type::NO_ERROR);
+        TEST_ASSERT(ec==fit_container_type::NO_ERRORS);
         TEST_ASSERT(ciout.using_fp()==constraint_info::SET);
         TEST_ASSERT((vp(0)==v1(0)) && (vp(1)==v1(1)) && (vp(2)==v1(2)));
         TEST_ASSERT(ciout.using_fpp()==constraint_info::FD);
@@ -1004,7 +978,7 @@ class fit_container_test_suite : public Test::Suite
         ec=ccon.get_constraint(indexnm2, ciout);
         vp=ciout.get_fp();
         vpp=ciout.get_fpp();
-        TEST_ASSERT(ec==fit_container_type::NO_ERROR);
+        TEST_ASSERT(ec==fit_container_type::NO_ERRORS);
         TEST_ASSERT(ciout.using_fp()==constraint_info::SET);
         TEST_ASSERT((vp(0)==v1(0)) && (vp(1)==v1(1)) && (vp(2)==v1(2)));
         TEST_ASSERT(ciout.using_fpp()==constraint_info::FD);
@@ -1014,7 +988,7 @@ class fit_container_test_suite : public Test::Suite
         ec=ccon.get_constraint(indexnm1, ciout);
         vp=ciout.get_fp();
         vpp=ciout.get_fpp();
-        TEST_ASSERT(ec==fit_container_type::NO_ERROR);
+        TEST_ASSERT(ec==fit_container_type::NO_ERRORS);
         TEST_ASSERT(ciout.using_fp()==constraint_info::SET);
         TEST_ASSERT((vp(0)==v1(0)) && (vp(1)==v1(1)) && (vp(2)==v1(2)));
         TEST_ASSERT(ciout.using_fpp()==constraint_info::FD);
@@ -1073,25 +1047,25 @@ class fit_container_test_suite : public Test::Suite
 
         // add C2 constraint at start
         ec=ccon.add_start_C2_constraint();
-        TEST_ASSERT(ec==fit_container_type::NO_ERROR);
+        TEST_ASSERT(ec==fit_container_type::NO_ERRORS);
         TEST_ASSERT(ccon.number_constraint_points()==1);
         TEST_ASSERT(ccon.number_constraints()==3);
 
         // add C2 constraint at start+1
         ec=ccon.add_C2_constraint(1);
-        TEST_ASSERT(ec==fit_container_type::NO_ERROR);
+        TEST_ASSERT(ec==fit_container_type::NO_ERRORS);
         TEST_ASSERT(ccon.number_constraint_points()==2);
         TEST_ASSERT(ccon.number_constraints()==6);
 
         // add C2 constraint at end-1
         ec=ccon.add_C2_constraint(static_cast<int>(points.size())-2);
-        TEST_ASSERT(ec==fit_container_type::NO_ERROR);
+        TEST_ASSERT(ec==fit_container_type::NO_ERRORS);
         TEST_ASSERT(ccon.number_constraint_points()==3);
         TEST_ASSERT(ccon.number_constraints()==9);
 
         // add C2 constraint at end
         ec=ccon.add_end_C2_constraint();
-        TEST_ASSERT(ec==fit_container_type::NO_ERROR);
+        TEST_ASSERT(ec==fit_container_type::NO_ERRORS);
         TEST_ASSERT(ccon.number_constraint_points()==4);
         TEST_ASSERT(ccon.number_constraints()==12);
 
@@ -1099,7 +1073,7 @@ class fit_container_test_suite : public Test::Suite
         ec=ccon.get_constraint(index0, ciout);
         vp=ciout.get_fp();
         vpp=ciout.get_fpp();
-        TEST_ASSERT(ec==fit_container_type::NO_ERROR);
+        TEST_ASSERT(ec==fit_container_type::NO_ERRORS);
         TEST_ASSERT(ciout.using_fp()==constraint_info::FD);
         TEST_ASSERT_DELTA(vp(0), vp0(0), 8e-3);
         TEST_ASSERT_DELTA(vp(1), vp0(1), 4e-2);
@@ -1110,7 +1084,7 @@ class fit_container_test_suite : public Test::Suite
         ec=ccon.get_constraint(index1, ciout);
         vp=ciout.get_fp();
         vpp=ciout.get_fpp();
-        TEST_ASSERT(ec==fit_container_type::NO_ERROR);
+        TEST_ASSERT(ec==fit_container_type::NO_ERRORS);
         TEST_ASSERT(ciout.using_fp()==constraint_info::FD);
         TEST_ASSERT_DELTA(vp(0), vp1(0), 4e-3);
         TEST_ASSERT_DELTA(vp(1), vp1(1), 2e-2);
@@ -1121,7 +1095,7 @@ class fit_container_test_suite : public Test::Suite
         ec=ccon.get_constraint(indexnm2, ciout);
         vp=ciout.get_fp();
         vpp=ciout.get_fpp();
-        TEST_ASSERT(ec==fit_container_type::NO_ERROR);
+        TEST_ASSERT(ec==fit_container_type::NO_ERRORS);
         TEST_ASSERT(ciout.using_fp()==constraint_info::FD);
         TEST_ASSERT_DELTA(vp(0), vpnm2(0), 8e-3);
         TEST_ASSERT_DELTA(vp(1), vpnm2(1), 1e-2);
@@ -1132,7 +1106,7 @@ class fit_container_test_suite : public Test::Suite
         ec=ccon.get_constraint(indexnm1, ciout);
         vp=ciout.get_fp();
         vpp=ciout.get_fpp();
-        TEST_ASSERT(ec==fit_container_type::NO_ERROR);
+        TEST_ASSERT(ec==fit_container_type::NO_ERRORS);
         TEST_ASSERT(ciout.using_fp()==constraint_info::FD);
         TEST_ASSERT_DELTA(vp(0), vpnm1(0), 2e-2);
         TEST_ASSERT_DELTA(vp(1), vpnm1(1), 4e-2);
@@ -1149,7 +1123,7 @@ class fit_container_test_suite : public Test::Suite
         ec=ccon.get_constraint(index0, ciout);
         vp=ciout.get_fp();
         vpp=ciout.get_fpp();
-        TEST_ASSERT(ec==fit_container_type::NO_ERROR);
+        TEST_ASSERT(ec==fit_container_type::NO_ERRORS);
         TEST_ASSERT(ciout.using_fp()==constraint_info::FD);
         TEST_ASSERT_DELTA(vp(0), vp0(0), 4e-1);
         TEST_ASSERT_DELTA(vp(1), vp0(1), 2e-1);
@@ -1160,7 +1134,7 @@ class fit_container_test_suite : public Test::Suite
         ec=ccon.get_constraint(index1, ciout);
         vp=ciout.get_fp();
         vpp=ciout.get_fpp();
-        TEST_ASSERT(ec==fit_container_type::NO_ERROR);
+        TEST_ASSERT(ec==fit_container_type::NO_ERRORS);
         TEST_ASSERT(ciout.using_fp()==constraint_info::FD);
         TEST_ASSERT_DELTA(vp(0), vp1(0), 4e-3);
         TEST_ASSERT_DELTA(vp(1), vp1(1), 2e-2);
@@ -1171,7 +1145,7 @@ class fit_container_test_suite : public Test::Suite
         ec=ccon.get_constraint(indexnm2, ciout);
         vp=ciout.get_fp();
         vpp=ciout.get_fpp();
-        TEST_ASSERT(ec==fit_container_type::NO_ERROR);
+        TEST_ASSERT(ec==fit_container_type::NO_ERRORS);
         TEST_ASSERT(ciout.using_fp()==constraint_info::FD);
         TEST_ASSERT_DELTA(vp(0), vpnm2(0), 8e-3);
         TEST_ASSERT_DELTA(vp(1), vpnm2(1), 1e-2);
@@ -1182,7 +1156,7 @@ class fit_container_test_suite : public Test::Suite
         ec=ccon.get_constraint(indexnm1, ciout);
         vp=ciout.get_fp();
         vpp=ciout.get_fpp();
-        TEST_ASSERT(ec==fit_container_type::NO_ERROR);
+        TEST_ASSERT(ec==fit_container_type::NO_ERRORS);
         TEST_ASSERT(ciout.using_fp()==constraint_info::FD);
         TEST_ASSERT_DELTA(vp(0), vpnm1(0), 4e-1);
         TEST_ASSERT_DELTA(vp(1), vpnm1(1), 2e-1);
@@ -1202,25 +1176,28 @@ class fit_container_test_suite : public Test::Suite
       constraint_info ciout;
       std::vector<point_type> points(20);
 
+      v1[0]=0; v2[1]=2; v2[2]=4;
+      v2[0]=1; v2[1]=3; v2[2]=5;
+
       // set points
       create_points(points.begin(), points.size());
       ccon.set_points(points.begin(), points.end());
 
       // add some constraints
       ec=ccon.add_C0_constraint(index1);
-      TEST_ASSERT(ec==fit_container_type::NO_ERROR);
+      TEST_ASSERT(ec==fit_container_type::NO_ERRORS);
       ec=ccon.add_C0_constraint(index2);
-      TEST_ASSERT(ec==fit_container_type::NO_ERROR);
+      TEST_ASSERT(ec==fit_container_type::NO_ERRORS);
       ec=ccon.add_C1_constraint(index2-index1, v1);
-      TEST_ASSERT(ec==fit_container_type::NO_ERROR);
+      TEST_ASSERT(ec==fit_container_type::NO_ERRORS);
       ec=ccon.add_C2_constraint(index2+index1, v1, v2);
-      TEST_ASSERT(ec==fit_container_type::NO_ERROR);
+      TEST_ASSERT(ec==fit_container_type::NO_ERRORS);
       TEST_ASSERT(ccon.number_constraint_points()==4);
       TEST_ASSERT(ccon.number_constraints()==7);
 
       // remove constraint
       ec=ccon.remove_constraint(index2-index1);
-      TEST_ASSERT(ec==fit_container_type::NO_ERROR);
+      TEST_ASSERT(ec==fit_container_type::NO_ERRORS);
       TEST_ASSERT(ccon.number_constraint_points()==3);
       TEST_ASSERT(ccon.number_constraints()==5);
       ec=ccon.get_constraint(index2-index1, ciout);
@@ -1249,20 +1226,20 @@ class fit_container_test_suite : public Test::Suite
 
       // add some constraints
       ec=ccon.add_C0_constraint(index1);
-      TEST_ASSERT(ec==fit_container_type::NO_ERROR);
+      TEST_ASSERT(ec==fit_container_type::NO_ERRORS);
       ec=ccon.add_C0_constraint(index2);
-      TEST_ASSERT(ec==fit_container_type::NO_ERROR);
+      TEST_ASSERT(ec==fit_container_type::NO_ERRORS);
       ec=ccon.add_C1_constraint(index2-index1, v1);
-      TEST_ASSERT(ec==fit_container_type::NO_ERROR);
+      TEST_ASSERT(ec==fit_container_type::NO_ERRORS);
       ec=ccon.add_C2_constraint(index2+index1, v1, v2);
-      TEST_ASSERT(ec==fit_container_type::NO_ERROR);
+      TEST_ASSERT(ec==fit_container_type::NO_ERRORS);
       TEST_ASSERT(ccon.number_constraint_points()==4);
       TEST_ASSERT(ccon.number_constraints()==7);
 
       // get list of constraint indexes
       std::vector<int> indexes(ccon.number_constraint_points());
       ec=ccon.get_constraint_indexes(indexes.begin());
-      TEST_ASSERT(ec==fit_container_type::NO_ERROR);
+      TEST_ASSERT(ec==fit_container_type::NO_ERRORS);
       TEST_ASSERT(indexes[0]==index1);
       TEST_ASSERT(indexes[1]==(index2-index1));
       TEST_ASSERT(indexes[2]==index2);

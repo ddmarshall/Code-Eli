@@ -13,16 +13,32 @@
 project(UTIL)
 
 # add the tolerance test
-add_executable(ToleranceTest ${PROJECT_SOURCE_DIR}/tolerance_test.cpp)
-target_link_libraries(ToleranceTest ${_ELI_TEST_LIBRARIES_LIST})
-add_test(NAME ToleranceTest COMMAND $<TARGET_FILE:ToleranceTest> --text)
+set (TOLERANCE_TEST_EXE ToleranceTest)
+set (TOLERANCE_TEST_SOURCE ${PROJECT_SOURCE_DIR}/tolerance_test.cpp)
+set (TOLERANCE_TEST_HEADER ${PROJECT_SOURCE_DIR}/tolerance_test_suite.hpp
+                           ${ELI_SOURCE_DIR}/include/eli/util/tolerance.hpp)
+
+add_executable(${TOLERANCE_TEST_EXE} ${TOLERANCE_TEST_SOURCE} ${TOLERANCE_TEST_HEADER})
+target_link_libraries(${TOLERANCE_TEST_EXE} ${_ELI_TEST_LIBRARIES_LIST})
+add_test(NAME ${TOLERANCE_TEST_EXE} COMMAND $<TARGET_FILE:${TOLERANCE_TEST_EXE}> --text)
 
 # add the floating point test
-add_executable(FloatingPointTest ${PROJECT_SOURCE_DIR}/floating_point_test.cpp)
-target_link_libraries(FloatingPointTest ${_ELI_TEST_LIBRARIES_LIST})
-add_test(NAME FloatingPointTest COMMAND $<TARGET_FILE:FloatingPointTest> --text)
+set (FLOATING_POINT_TEST_EXE FloatingPointTest)
+set (FLOATING_POINT_TEST_SOURCE ${PROJECT_SOURCE_DIR}/floating_point_test.cpp)
+set (FLOATING_POINT_TEST_HEADER ${PROJECT_SOURCE_DIR}/floating_point_test_suite.hpp
+                                ${ELI_SOURCE_DIR}/include/eli/util/floating_point.hpp
+                                ${ELI_SOURCE_DIR}/include/eli/util/traits.hpp)
+
+add_executable(${FLOATING_POINT_TEST_EXE} ${FLOATING_POINT_TEST_SOURCE} ${FLOATING_POINT_TEST_HEADER})
+target_link_libraries(${FLOATING_POINT_TEST_EXE} ${_ELI_TEST_LIBRARIES_LIST})
+add_test(NAME ${FLOATING_POINT_TEST_EXE} COMMAND $<TARGET_FILE:${FLOATING_POINT_TEST_EXE}> --text)
 
 # add the traits test
-add_executable(TraitsTest ${PROJECT_SOURCE_DIR}/traits_test.cpp)
-target_link_libraries(TraitsTest ${_ELI_TEST_LIBRARIES_LIST})
-add_test(NAME TraitsTest COMMAND $<TARGET_FILE:TraitsTest> --text)
+set (TRAITS_TEST_EXE TraitsTest)
+set (TRAITS_TEST_SOURCE ${PROJECT_SOURCE_DIR}/traits_test.cpp)
+set (TRAITS_TEST_HEADER ${PROJECT_SOURCE_DIR}/traits_test_suite.hpp
+                        ${ELI_SOURCE_DIR}/include/eli/util/traits.hpp)
+
+add_executable(${TRAITS_TEST_EXE} ${TRAITS_TEST_SOURCE} ${TRAITS_TEST_HEADER})
+target_link_libraries(${TRAITS_TEST_EXE} ${_ELI_TEST_LIBRARIES_LIST})
+add_test(NAME ${TRAITS_TEST_EXE} COMMAND $<TARGET_FILE:${TRAITS_TEST_EXE}> --text)

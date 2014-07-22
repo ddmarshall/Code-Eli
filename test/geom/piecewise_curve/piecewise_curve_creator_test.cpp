@@ -24,6 +24,8 @@
 #include "piecewise_polygon_creator_test_suite.hpp"       // piecewise_polygon_creator_test_suite
 #include "piecewise_circle_creator_test_suite.hpp"        // piecewise_circle_creator_test_suite
 #include "piecewise_cubic_spline_creator_test_suite.hpp"  // piecewise_cubic_spline_creator_test_suite
+#include "piecewise_superellipse_creator_test_suite.hpp"  // piecewise_superellipse_creator_test_suite
+#include "piecewise_general_creator_test_suite.hpp"       // piecewise_general_creator_test_suite
 
 enum TestType {testTypeText, testTypeCompiler, testTypeHTML};
 
@@ -157,31 +159,21 @@ int main(int argc, char *argv[])
     ts.add(std::auto_ptr<Test::Suite>(new piecewise_point_creator_test_suite<float>()));
     ts.add(std::auto_ptr<Test::Suite>(new piecewise_point_creator_test_suite<double>()));
     ts.add(std::auto_ptr<Test::Suite>(new piecewise_point_creator_test_suite<long double>()));
-#ifdef ELI_USING_QD
-    ts.add(std::auto_ptr<Test::Suite>(new piecewise_point_creator_test_suite<dd_real>()));
-    ts.add(std::auto_ptr<Test::Suite>(new piecewise_point_creator_test_suite<qd_real>()));
-#endif
     ts.add(std::auto_ptr<Test::Suite>(new piecewise_polygon_creator_test_suite<float>()));
     ts.add(std::auto_ptr<Test::Suite>(new piecewise_polygon_creator_test_suite<double>()));
     ts.add(std::auto_ptr<Test::Suite>(new piecewise_polygon_creator_test_suite<long double>()));
-#ifdef ELI_USING_QD
-    ts.add(std::auto_ptr<Test::Suite>(new piecewise_polygon_creator_test_suite<dd_real>()));
-    ts.add(std::auto_ptr<Test::Suite>(new piecewise_polygon_creator_test_suite<qd_real>()));
-#endif
     ts.add(std::auto_ptr<Test::Suite>(new piecewise_circle_creator_test_suite<float>()));
     ts.add(std::auto_ptr<Test::Suite>(new piecewise_circle_creator_test_suite<double>()));
     ts.add(std::auto_ptr<Test::Suite>(new piecewise_circle_creator_test_suite<long double>()));
-#ifdef ELI_USING_QD
-    ts.add(std::auto_ptr<Test::Suite>(new piecewise_circle_creator_test_suite<dd_real>()));
-    ts.add(std::auto_ptr<Test::Suite>(new piecewise_circle_creator_test_suite<qd_real>()));
-#endif
     ts.add(std::auto_ptr<Test::Suite>(new piecewise_cubic_spline_creator_test_suite<float>()));
     ts.add(std::auto_ptr<Test::Suite>(new piecewise_cubic_spline_creator_test_suite<double>()));
     ts.add(std::auto_ptr<Test::Suite>(new piecewise_cubic_spline_creator_test_suite<long double>()));
-#ifdef ELI_USING_QD
-    ts.add(std::auto_ptr<Test::Suite>(new piecewise_cubic_spline_creator_test_suite<dd_real>()));
-    ts.add(std::auto_ptr<Test::Suite>(new piecewise_cubic_spline_creator_test_suite<qd_real>()));
-#endif
+    ts.add(std::auto_ptr<Test::Suite>(new piecewise_superellipse_creator_test_suite<float>()));
+    ts.add(std::auto_ptr<Test::Suite>(new piecewise_superellipse_creator_test_suite<double>()));
+    ts.add(std::auto_ptr<Test::Suite>(new piecewise_superellipse_creator_test_suite<long double>()));
+    ts.add(std::auto_ptr<Test::Suite>(new piecewise_general_creator_test_suite<float>()));
+    ts.add(std::auto_ptr<Test::Suite>(new piecewise_general_creator_test_suite<double>()));
+    ts.add(std::auto_ptr<Test::Suite>(new piecewise_general_creator_test_suite<long double>()));
 
     //
     // NOTE: End of section that should be changed

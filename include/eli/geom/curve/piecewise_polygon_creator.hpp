@@ -15,6 +15,10 @@
 
 #include <vector>
 
+#ifdef Success  // X11 #define collides with Eigen
+#undef Success
+#endif
+
 #include "Eigen/Eigen"
 
 #include "eli/geom/curve/piecewise_creator_base.hpp"
@@ -31,10 +35,11 @@ namespace eli
       class piecewise_polygon_creator : public piecewise_creator_base<data__, dim__, tol__>
       {
         public:
-          typedef data__  data_type;
-          typedef int index_type;
-          typedef Eigen::Matrix<data_type, 1, dim__> point_type;
-          typedef tol__ tolerance_type;
+          typedef piecewise_creator_base<data__, dim__, tol__> base_class_type;
+          typedef typename base_class_type::data_type data_type;
+          typedef typename base_class_type::point_type point_type;
+          typedef typename base_class_type::index_type index_type;
+          typedef typename base_class_type::tolerance_type tolerance_type;
 
           piecewise_polygon_creator() : piecewise_creator_base<data_type, dim__, tolerance_type>(4, 0), corner(4) {}
           piecewise_polygon_creator(const index_type &ns) : piecewise_creator_base<data_type, dim__, tolerance_type>(ns, 0), corner(ns) {}
@@ -87,7 +92,7 @@ namespace eli
               c.set_control_point(corner[i], 0);
               c.set_control_point(corner[i+1], 1);
               err=pc.push_back(c, this->get_segment_dt(i));
-              if (err!=piecewise_curve_type::NO_ERROR)
+              if (err!=piecewise_curve_type::NO_ERRORS)
               {
                 pc.clear();
                 pc.set_t0(0);
@@ -99,7 +104,7 @@ namespace eli
             c.set_control_point(corner[corner.size()-1], 0);
             c.set_control_point(corner[0], 1);
             err=pc.push_back(c, this->get_segment_dt(nsegs-1));
-            if (err!=piecewise_curve_type::NO_ERROR)
+            if (err!=piecewise_curve_type::NO_ERRORS)
             {
               pc.clear();
               pc.set_t0(0);

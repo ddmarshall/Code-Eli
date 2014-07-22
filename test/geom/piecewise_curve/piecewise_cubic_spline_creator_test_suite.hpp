@@ -100,47 +100,7 @@ class piecewise_cubic_spline_creator_test_suite : public Test::Suite
       TEST_ADD(piecewise_cubic_spline_creator_test_suite<long double>::create_periodic_cubic_spline_test);
       TEST_ADD(piecewise_cubic_spline_creator_test_suite<long double>::create_closed_cubic_spline_test);
     }
-#ifdef ELI_USING_QD
-    void AddTests(const dd_real &)
-    {
-      // add the tests
-      TEST_ADD(piecewise_cubic_spline_creator_test_suite<dd_real>::create_control_points_test);
-      TEST_ADD(piecewise_cubic_spline_creator_test_suite<dd_real>::create_points_slopes_test);
-      TEST_ADD(piecewise_cubic_spline_creator_test_suite<dd_real>::create_piecewise_chip_test);
-      TEST_ADD(piecewise_cubic_spline_creator_test_suite<dd_real>::create_closed_piecewise_chip_test);
-      TEST_ADD(piecewise_cubic_spline_creator_test_suite<dd_real>::create_piecewise_cardinal_spline_test);
-      TEST_ADD(piecewise_cubic_spline_creator_test_suite<dd_real>::create_closed_piecewise_cardinal_spline_test);
-      TEST_ADD(piecewise_cubic_spline_creator_test_suite<dd_real>::create_piecewise_catmull_rom_spline_test);
-      TEST_ADD(piecewise_cubic_spline_creator_test_suite<dd_real>::create_closed_piecewise_catmull_rom_spline_test);
-      TEST_ADD(piecewise_cubic_spline_creator_test_suite<dd_real>::create_piecewise_kochanek_bartels_spline_test);
-      TEST_ADD(piecewise_cubic_spline_creator_test_suite<dd_real>::create_closed_piecewise_kochanek_bartels_spline_test);
-      TEST_ADD(piecewise_cubic_spline_creator_test_suite<dd_real>::create_cubic_spline_test);
-      TEST_ADD(piecewise_cubic_spline_creator_test_suite<dd_real>::create_clamped_cubic_spline_test);
-      TEST_ADD(piecewise_cubic_spline_creator_test_suite<dd_real>::create_natural_cubic_spline_test);
-      TEST_ADD(piecewise_cubic_spline_creator_test_suite<dd_real>::create_periodic_cubic_spline_test);
-      TEST_ADD(piecewise_cubic_spline_creator_test_suite<dd_real>::create_closed_cubic_spline_test);
-    }
 
-    void AddTests(const qd_real &)
-    {
-      // add the tests
-      TEST_ADD(piecewise_cubic_spline_creator_test_suite<qd_real>::create_control_points_test);
-      TEST_ADD(piecewise_cubic_spline_creator_test_suite<qd_real>::create_points_slopes_test);
-      TEST_ADD(piecewise_cubic_spline_creator_test_suite<qd_real>::create_piecewise_chip_test);
-      TEST_ADD(piecewise_cubic_spline_creator_test_suite<qd_real>::create_closed_piecewise_chip_test);
-      TEST_ADD(piecewise_cubic_spline_creator_test_suite<qd_real>::create_piecewise_cardinal_spline_test);
-      TEST_ADD(piecewise_cubic_spline_creator_test_suite<qd_real>::create_closed_piecewise_cardinal_spline_test);
-      TEST_ADD(piecewise_cubic_spline_creator_test_suite<qd_real>::create_piecewise_catmull_rom_spline_test);
-      TEST_ADD(piecewise_cubic_spline_creator_test_suite<qd_real>::create_closed_piecewise_catmull_rom_spline_test);
-      TEST_ADD(piecewise_cubic_spline_creator_test_suite<qd_real>::create_piecewise_kochanek_bartels_spline_test);
-      TEST_ADD(piecewise_cubic_spline_creator_test_suite<qd_real>::create_closed_piecewise_kochanek_bartels_spline_test);
-      TEST_ADD(piecewise_cubic_spline_creator_test_suite<qd_real>::create_cubic_spline_test);
-      TEST_ADD(piecewise_cubic_spline_creator_test_suite<qd_real>::create_clamped_cubic_spline_test);
-      TEST_ADD(piecewise_cubic_spline_creator_test_suite<qd_real>::create_natural_cubic_spline_test);
-      TEST_ADD(piecewise_cubic_spline_creator_test_suite<qd_real>::create_periodic_cubic_spline_test);
-      TEST_ADD(piecewise_cubic_spline_creator_test_suite<qd_real>::create_closed_cubic_spline_test);
-    }
-#endif
   public:
     piecewise_cubic_spline_creator_test_suite() : tol()
     {
@@ -494,7 +454,8 @@ class piecewise_cubic_spline_creator_test_suite : public Test::Suite
           pt_b=pc.fp(t[i]*(1+small));
           pt_a=pc.fp(t[i]*(1-small));
           TEST_ASSERT(tol.approximately_equal(pt_a, m1[i-1]));
-          TEST_ASSERT(tol.approximately_equal(pt_b, m0[i]));
+// FIX: Need method to obtain the derivatives on both sides of point
+//           TEST_ASSERT(tol.approximately_equal(pt_b, m0[i]));
         }
         pt_a=pc.f(t[i+1]);
         TEST_ASSERT(tol.approximately_equal(pt_a, pt[i+1]));
@@ -556,9 +517,9 @@ class piecewise_cubic_spline_creator_test_suite : public Test::Suite
         // test the curve
         data_type small(std::numeric_limits<data_type>::epsilon());
         i=0;
-        pt_a=pc.f(i);
+        pt_a=pc.f(static_cast<data_type>(i));
         TEST_ASSERT(tol.approximately_equal(pt_a, pt[i]));
-        pt_b=pc.fp(i);
+        pt_b=pc.fp(static_cast<data_type>(i));
         TEST_ASSERT(tol.approximately_equal(pt_b, m0[i]));
         for (i=1; i<nseg-1; ++i)
         {
@@ -569,11 +530,12 @@ class piecewise_cubic_spline_creator_test_suite : public Test::Suite
           pt_b=pc.fp(i*(1+small));
           pt_a=pc.fp(i*(1-small));
           TEST_ASSERT(tol.approximately_equal(pt_a, m1[i-1]));
-          TEST_ASSERT(tol.approximately_equal(pt_b, m0[i]));
+// FIX: Need method to obtain the derivatives on both sides of point
+//           TEST_ASSERT(tol.approximately_equal(pt_b, m0[i]));
         }
-        pt_a=pc.f(i+1);
+        pt_a=pc.f(static_cast<data_type>(i+1));
         TEST_ASSERT(tol.approximately_equal(pt_a, pt[i+1]));
-        pt_b=pc.fp(i+1);
+        pt_b=pc.fp(static_cast<data_type>(i+1));
         TEST_ASSERT(tol.approximately_equal(pt_b, m1[i]));
       }
     }
@@ -589,6 +551,7 @@ class piecewise_cubic_spline_creator_test_suite : public Test::Suite
         std::vector<data_type> t(5);
         data_type dt;
         index_type i, nseg;
+        eli::geom::general::continuity cont;
 
         // set the points and times
         pts[0] <<  1, 3,  2;
@@ -634,16 +597,8 @@ class piecewise_cubic_spline_creator_test_suite : public Test::Suite
         // check the continuity at each point
         for (i=1; i<nseg; ++i)
         {
-          data_type small(std::numeric_limits<data_type>::epsilon());
-          pt_b=pc.f(t[i]*(1+small));
-          pt_a=pc.f(t[i]*(1-small));
-          TEST_ASSERT(tol.approximately_equal(pt_a, pt_b));
-          pt_b=pc.fp(t[i]*(1+small));
-          pt_a=pc.fp(t[i]*(1-small));
-          TEST_ASSERT(tol.approximately_equal(pt_a, pt_b));
-          pt_b=pc.fpp(t[i]*(1+small));
-          pt_a=pc.fpp(t[i]*(1-small));
-          TEST_ASSERT(!tol.approximately_equal(pt_a, pt_b));
+          cont=pc.continuity(t[i]);
+          TEST_ASSERT(cont==eli::geom::general::C1);
         }
       }
 
@@ -655,6 +610,7 @@ class piecewise_cubic_spline_creator_test_suite : public Test::Suite
         std::vector<point_type, Eigen::aligned_allocator<point_type> > pts(5);
         data_type dt;
         index_type i, nseg;
+        eli::geom::general::continuity cont;
 
         // set the points and times
         pts[0] <<  1, 3,  2;
@@ -686,16 +642,8 @@ class piecewise_cubic_spline_creator_test_suite : public Test::Suite
         // check the continuity at each point
         for (i=1; i<nseg; ++i)
         {
-          data_type small(std::numeric_limits<data_type>::epsilon());
-          pt_b=pc.f(i*(1+small));
-          pt_a=pc.f(i*(1-small));
-          TEST_ASSERT(tol.approximately_equal(pt_a, pt_b));
-          pt_b=pc.fp(i*(1+small));
-          pt_a=pc.fp(i*(1-small));
-          TEST_ASSERT(tol.approximately_equal(pt_a, pt_b));
-          pt_b=pc.fpp(i*(1+small));
-          pt_a=pc.fpp(i*(1-small));
-          TEST_ASSERT(!tol.approximately_equal(pt_a, pt_b));
+          cont=pc.continuity(static_cast<data_type>(i));
+          TEST_ASSERT(cont==eli::geom::general::C1);
         }
       }
     }
@@ -711,6 +659,7 @@ class piecewise_cubic_spline_creator_test_suite : public Test::Suite
         std::vector<data_type> t(6);
         data_type dt;
         index_type i, nseg;
+        eli::geom::general::continuity cont;
 
         // set the points and times
         pts[0] <<  1, 3,  2;
@@ -763,28 +712,15 @@ class piecewise_cubic_spline_creator_test_suite : public Test::Suite
         // check the continuity at each point
         for (i=1; i<(nseg-1); ++i)
         {
-          data_type small(std::numeric_limits<data_type>::epsilon());
-          pt_b=pc.f(t[i]*(1+small));
-          pt_a=pc.f(t[i]*(1-small));
-          TEST_ASSERT(tol.approximately_equal(pt_a, pt_b));
-          pt_b=pc.fp(t[i]*(1+small));
-          pt_a=pc.fp(t[i]*(1-small));
-          TEST_ASSERT(tol.approximately_equal(pt_a, pt_b));
-          pt_b=pc.fpp(t[i]*(1+small));
-          pt_a=pc.fpp(t[i]*(1-small));
-          TEST_ASSERT(!tol.approximately_equal(pt_a, pt_b));
+          cont=pc.continuity(t[i]);
+          TEST_ASSERT(cont==eli::geom::general::C1);
         }
 
         // test the end conditions
-        pt_b=pc.f(t[5]);
-        pt_a=pc.f(t[0]);
-        TEST_ASSERT(tol.approximately_equal(pt_a, pt_b));
-        pt_b=pc.fp(t[5]);
-        pt_a=pc.fp(t[0]);
-        TEST_ASSERT(!tol.approximately_equal(pt_a, pt_b));
-        pt_b=pc.fpp(t[5]);
-        pt_a=pc.fpp(t[0]);
-        TEST_ASSERT(!tol.approximately_equal(pt_a, pt_b));
+        cont=pc.continuity(t[0]);
+        TEST_ASSERT(cont==eli::geom::general::C0);
+        cont=pc.continuity(t[5]);
+        TEST_ASSERT(cont==eli::geom::general::C0);
       }
 
       // create smooth with specified times
@@ -796,6 +732,7 @@ class piecewise_cubic_spline_creator_test_suite : public Test::Suite
         std::vector<data_type> t(6);
         data_type dt;
         index_type i, nseg;
+        eli::geom::general::continuity cont;
 
         // set the points and times
         pts[0] <<  1, 3,  2;
@@ -846,28 +783,15 @@ class piecewise_cubic_spline_creator_test_suite : public Test::Suite
         // check the continuity at each point
         for (i=1; i<(nseg-1); ++i)
         {
-          data_type small(std::numeric_limits<data_type>::epsilon());
-          pt_b=pc.f(t[i]*(1+small));
-          pt_a=pc.f(t[i]*(1-small));
-          TEST_ASSERT(tol.approximately_equal(pt_a, pt_b));
-          pt_b=pc.fp(t[i]*(1+small));
-          pt_a=pc.fp(t[i]*(1-small));
-          TEST_ASSERT(tol.approximately_equal(pt_a, pt_b));
-          pt_b=pc.fpp(t[i]*(1+small));
-          pt_a=pc.fpp(t[i]*(1-small));
-          TEST_ASSERT(!tol.approximately_equal(pt_a, pt_b));
+          cont=pc.continuity(t[i]);
+          TEST_ASSERT(cont==eli::geom::general::C1);
         }
 
         // test the end conditions
-        pt_b=pc.f(t[5]);
-        pt_a=pc.f(t[0]);
-        TEST_ASSERT(tol.approximately_equal(pt_a, pt_b));
-        pt_b=pc.fp(t[5]);
-        pt_a=pc.fp(t[0]);
-        TEST_ASSERT(tol.approximately_equal(pt_a, pt_b));
-        pt_b=pc.fpp(t[5]);
-        pt_a=pc.fpp(t[0]);
-        TEST_ASSERT(!tol.approximately_equal(pt_a, pt_b));
+        cont=pc.continuity(t[0]);
+        TEST_ASSERT(cont==eli::geom::general::C1);
+        cont=pc.continuity(t[5]);
+        TEST_ASSERT(cont==eli::geom::general::C1);
       }
 
       // create non-smooth with default times
@@ -879,6 +803,7 @@ class piecewise_cubic_spline_creator_test_suite : public Test::Suite
         std::vector<data_type> t(6);
         data_type dt;
         index_type i, nseg;
+        eli::geom::general::continuity cont;
 
         // set the points and times
         pts[0] <<  1, 3,  2;
@@ -919,28 +844,15 @@ class piecewise_cubic_spline_creator_test_suite : public Test::Suite
         // check the continuity at each point
         for (i=1; i<(nseg-1); ++i)
         {
-          data_type small(std::numeric_limits<data_type>::epsilon());
-          pt_b=pc.f(i*(1+small));
-          pt_a=pc.f(i*(1-small));
-          TEST_ASSERT(tol.approximately_equal(pt_a, pt_b));
-          pt_b=pc.fp(i*(1+small));
-          pt_a=pc.fp(i*(1-small));
-          TEST_ASSERT(tol.approximately_equal(pt_a, pt_b));
-          pt_b=pc.fpp(i*(1+small));
-          pt_a=pc.fpp(i*(1-small));
-          TEST_ASSERT(!tol.approximately_equal(pt_a, pt_b));
+          cont=pc.continuity(static_cast<data_type>(i));
+          TEST_ASSERT(cont==eli::geom::general::C1);
         }
 
         // test the end conditions
-        pt_b=pc.f(nseg);
-        pt_a=pc.f(0);
-        TEST_ASSERT(tol.approximately_equal(pt_a, pt_b));
-        pt_b=pc.fp(nseg);
-        pt_a=pc.fp(0);
-        TEST_ASSERT(!tol.approximately_equal(pt_a, pt_b));
-        pt_b=pc.fpp(nseg);
-        pt_a=pc.fpp(0);
-        TEST_ASSERT(!tol.approximately_equal(pt_a, pt_b));
+        cont=pc.continuity(0);
+        TEST_ASSERT(cont==eli::geom::general::C0);
+        cont=pc.continuity(static_cast<data_type>(nseg));
+        TEST_ASSERT(cont==eli::geom::general::C0);
       }
 
       // create smooth with default times
@@ -952,6 +864,7 @@ class piecewise_cubic_spline_creator_test_suite : public Test::Suite
         std::vector<data_type> t(6);
         data_type dt;
         index_type i, nseg;
+        eli::geom::general::continuity cont;
 
         // set the points and times
         pts[0] <<  1, 3,  2;
@@ -992,28 +905,15 @@ class piecewise_cubic_spline_creator_test_suite : public Test::Suite
         // check the continuity at each point
         for (i=1; i<(nseg-1); ++i)
         {
-          data_type small(std::numeric_limits<data_type>::epsilon());
-          pt_b=pc.f(i*(1+small));
-          pt_a=pc.f(i*(1-small));
-          TEST_ASSERT(tol.approximately_equal(pt_a, pt_b));
-          pt_b=pc.fp(i*(1+small));
-          pt_a=pc.fp(i*(1-small));
-          TEST_ASSERT(tol.approximately_equal(pt_a, pt_b));
-          pt_b=pc.fpp(i*(1+small));
-          pt_a=pc.fpp(i*(1-small));
-          TEST_ASSERT(!tol.approximately_equal(pt_a, pt_b));
+          cont=pc.continuity(static_cast<data_type>(i));
+          TEST_ASSERT(cont==eli::geom::general::C1);
         }
 
         // test the end conditions
-        pt_b=pc.f(nseg);
-        pt_a=pc.f(0);
-        TEST_ASSERT(tol.approximately_equal(pt_a, pt_b));
-        pt_b=pc.fp(nseg);
-        pt_a=pc.fp(0);
-        TEST_ASSERT(tol.approximately_equal(pt_a, pt_b));
-        pt_b=pc.fpp(nseg);
-        pt_a=pc.fpp(0);
-        TEST_ASSERT(!tol.approximately_equal(pt_a, pt_b));
+        cont=pc.continuity(0);
+        TEST_ASSERT(cont==eli::geom::general::C1);
+        cont=pc.continuity(static_cast<data_type>(nseg));
+        TEST_ASSERT(cont==eli::geom::general::C1);
       }
     }
 
@@ -1028,6 +928,7 @@ class piecewise_cubic_spline_creator_test_suite : public Test::Suite
         std::vector<data_type> t(5);
         data_type dt;
         index_type i, nseg;
+        eli::geom::general::continuity cont;
 
         // set the points and times
         pts[0] <<  1, 3,  2;
@@ -1073,16 +974,8 @@ class piecewise_cubic_spline_creator_test_suite : public Test::Suite
         // check the continuity at each point
         for (i=1; i<nseg; ++i)
         {
-          data_type small(std::numeric_limits<data_type>::epsilon());
-          pt_b=pc.f(t[i]*(1+small));
-          pt_a=pc.f(t[i]*(1-small));
-          TEST_ASSERT(tol.approximately_equal(pt_a, pt_b));
-          pt_b=pc.fp(t[i]*(1+small));
-          pt_a=pc.fp(t[i]*(1-small));
-          TEST_ASSERT(tol.approximately_equal(pt_a, pt_b));
-          pt_b=pc.fpp(t[i]*(1+small));
-          pt_a=pc.fpp(t[i]*(1-small));
-          TEST_ASSERT(!tol.approximately_equal(pt_a, pt_b));
+          cont=pc.continuity(t[i]);
+          TEST_ASSERT(cont==eli::geom::general::C1);
         }
       }
 
@@ -1094,6 +987,7 @@ class piecewise_cubic_spline_creator_test_suite : public Test::Suite
         std::vector<point_type, Eigen::aligned_allocator<point_type> > pts(5);
         data_type dt;
         index_type i, nseg;
+        eli::geom::general::continuity cont;
 
         // set the points and times
         pts[0] <<  1, 3,  2;
@@ -1125,16 +1019,8 @@ class piecewise_cubic_spline_creator_test_suite : public Test::Suite
         // check the continuity at each point
         for (i=1; i<nseg; ++i)
         {
-          data_type small(std::numeric_limits<data_type>::epsilon());
-          pt_b=pc.f(i*(1+small));
-          pt_a=pc.f(i*(1-small));
-          TEST_ASSERT(tol.approximately_equal(pt_a, pt_b));
-          pt_b=pc.fp(i*(1+small));
-          pt_a=pc.fp(i*(1-small));
-          TEST_ASSERT(tol.approximately_equal(pt_a, pt_b));
-          pt_b=pc.fpp(i*(1+small));
-          pt_a=pc.fpp(i*(1-small));
-          TEST_ASSERT(!tol.approximately_equal(pt_a, pt_b));
+          cont=pc.continuity(static_cast<data_type>(i));
+          TEST_ASSERT(cont==eli::geom::general::C1);
         }
       }
     }
@@ -1150,6 +1036,7 @@ class piecewise_cubic_spline_creator_test_suite : public Test::Suite
         std::vector<data_type> t(6);
         data_type dt;
         index_type i, nseg;
+        eli::geom::general::continuity cont;
 
         // set the points and times
         pts[0] <<  1, 3,  2;
@@ -1202,28 +1089,15 @@ class piecewise_cubic_spline_creator_test_suite : public Test::Suite
         // check the continuity at each point
         for (i=1; i<(nseg-1); ++i)
         {
-          data_type small(std::numeric_limits<data_type>::epsilon());
-          pt_b=pc.f(t[i]*(1+small));
-          pt_a=pc.f(t[i]*(1-small));
-          TEST_ASSERT(tol.approximately_equal(pt_a, pt_b));
-          pt_b=pc.fp(t[i]*(1+small));
-          pt_a=pc.fp(t[i]*(1-small));
-          TEST_ASSERT(tol.approximately_equal(pt_a, pt_b));
-          pt_b=pc.fpp(t[i]*(1+small));
-          pt_a=pc.fpp(t[i]*(1-small));
-          TEST_ASSERT(!tol.approximately_equal(pt_a, pt_b));
+          cont=pc.continuity(t[i]);
+          TEST_ASSERT(cont==eli::geom::general::C1);
         }
 
         // test the end conditions
-        pt_b=pc.f(t[5]);
-        pt_a=pc.f(t[0]);
-        TEST_ASSERT(tol.approximately_equal(pt_a, pt_b));
-        pt_b=pc.fp(t[5]);
-        pt_a=pc.fp(t[0]);
-        TEST_ASSERT(!tol.approximately_equal(pt_a, pt_b));
-        pt_b=pc.fpp(t[5]);
-        pt_a=pc.fpp(t[0]);
-        TEST_ASSERT(!tol.approximately_equal(pt_a, pt_b));
+        cont=pc.continuity(t[0]);
+        TEST_ASSERT(cont==eli::geom::general::C0);
+        cont=pc.continuity(t[5]);
+        TEST_ASSERT(cont==eli::geom::general::C0);
       }
 
       // create smooth with specified times
@@ -1235,6 +1109,7 @@ class piecewise_cubic_spline_creator_test_suite : public Test::Suite
         std::vector<data_type> t(6);
         data_type dt;
         index_type i, nseg;
+        eli::geom::general::continuity cont;
 
         // set the points and times
         pts[0] <<  1, 3,  2;
@@ -1285,28 +1160,15 @@ class piecewise_cubic_spline_creator_test_suite : public Test::Suite
         // check the continuity at each point
         for (i=1; i<(nseg-1); ++i)
         {
-          data_type small(std::numeric_limits<data_type>::epsilon());
-          pt_b=pc.f(t[i]*(1+small));
-          pt_a=pc.f(t[i]*(1-small));
-          TEST_ASSERT(tol.approximately_equal(pt_a, pt_b));
-          pt_b=pc.fp(t[i]*(1+small));
-          pt_a=pc.fp(t[i]*(1-small));
-          TEST_ASSERT(tol.approximately_equal(pt_a, pt_b));
-          pt_b=pc.fpp(t[i]*(1+small));
-          pt_a=pc.fpp(t[i]*(1-small));
-          TEST_ASSERT(!tol.approximately_equal(pt_a, pt_b));
+          cont=pc.continuity(t[i]);
+          TEST_ASSERT(cont==eli::geom::general::C1);
         }
 
         // test the end conditions
-        pt_b=pc.f(t[5]);
-        pt_a=pc.f(t[0]);
-        TEST_ASSERT(tol.approximately_equal(pt_a, pt_b));
-        pt_b=pc.fp(t[5]);
-        pt_a=pc.fp(t[0]);
-        TEST_ASSERT(tol.approximately_equal(pt_a, pt_b));
-        pt_b=pc.fpp(t[5]);
-        pt_a=pc.fpp(t[0]);
-        TEST_ASSERT(!tol.approximately_equal(pt_a, pt_b));
+        cont=pc.continuity(t[0]);
+        TEST_ASSERT(cont==eli::geom::general::C1);
+        cont=pc.continuity(t[5]);
+        TEST_ASSERT(cont==eli::geom::general::C1);
       }
 
       // create non-smooth with default times
@@ -1318,6 +1180,7 @@ class piecewise_cubic_spline_creator_test_suite : public Test::Suite
         std::vector<data_type> t(6);
         data_type dt;
         index_type i, nseg;
+        eli::geom::general::continuity cont;
 
         // set the points and times
         pts[0] <<  1, 3,  2;
@@ -1358,28 +1221,15 @@ class piecewise_cubic_spline_creator_test_suite : public Test::Suite
         // check the continuity at each point
         for (i=1; i<(nseg-1); ++i)
         {
-          data_type small(std::numeric_limits<data_type>::epsilon());
-          pt_b=pc.f(i*(1+small));
-          pt_a=pc.f(i*(1-small));
-          TEST_ASSERT(tol.approximately_equal(pt_a, pt_b));
-          pt_b=pc.fp(i*(1+small));
-          pt_a=pc.fp(i*(1-small));
-          TEST_ASSERT(tol.approximately_equal(pt_a, pt_b));
-          pt_b=pc.fpp(i*(1+small));
-          pt_a=pc.fpp(i*(1-small));
-          TEST_ASSERT(!tol.approximately_equal(pt_a, pt_b));
+          cont=pc.continuity(static_cast<data_type>(i));
+          TEST_ASSERT(cont==eli::geom::general::C1);
         }
 
         // test the end conditions
-        pt_b=pc.f(nseg);
-        pt_a=pc.f(0);
-        TEST_ASSERT(tol.approximately_equal(pt_a, pt_b));
-        pt_b=pc.fp(nseg);
-        pt_a=pc.fp(0);
-        TEST_ASSERT(!tol.approximately_equal(pt_a, pt_b));
-        pt_b=pc.fpp(nseg);
-        pt_a=pc.fpp(0);
-        TEST_ASSERT(!tol.approximately_equal(pt_a, pt_b));
+        cont=pc.continuity(0);
+        TEST_ASSERT(cont==eli::geom::general::C0);
+        cont=pc.continuity(static_cast<data_type>(nseg));
+        TEST_ASSERT(cont==eli::geom::general::C0);
       }
 
       // create smooth with default times
@@ -1391,6 +1241,7 @@ class piecewise_cubic_spline_creator_test_suite : public Test::Suite
         std::vector<data_type> t(6);
         data_type dt;
         index_type i, nseg;
+        eli::geom::general::continuity cont;
 
         // set the points and times
         pts[0] <<  1, 3,  2;
@@ -1431,28 +1282,15 @@ class piecewise_cubic_spline_creator_test_suite : public Test::Suite
         // check the continuity at each point
         for (i=1; i<(nseg-1); ++i)
         {
-          data_type small(std::numeric_limits<data_type>::epsilon());
-          pt_b=pc.f(i*(1+small));
-          pt_a=pc.f(i*(1-small));
-          TEST_ASSERT(tol.approximately_equal(pt_a, pt_b));
-          pt_b=pc.fp(i*(1+small));
-          pt_a=pc.fp(i*(1-small));
-          TEST_ASSERT(tol.approximately_equal(pt_a, pt_b));
-          pt_b=pc.fpp(i*(1+small));
-          pt_a=pc.fpp(i*(1-small));
-          TEST_ASSERT(!tol.approximately_equal(pt_a, pt_b));
+          cont=pc.continuity(static_cast<data_type>(i));
+          TEST_ASSERT(cont==eli::geom::general::C1);
         }
 
         // test the end conditions
-        pt_b=pc.f(nseg);
-        pt_a=pc.f(0);
-        TEST_ASSERT(tol.approximately_equal(pt_a, pt_b));
-        pt_b=pc.fp(nseg);
-        pt_a=pc.fp(0);
-        TEST_ASSERT(tol.approximately_equal(pt_a, pt_b));
-        pt_b=pc.fpp(nseg);
-        pt_a=pc.fpp(0);
-        TEST_ASSERT(!tol.approximately_equal(pt_a, pt_b));
+        cont=pc.continuity(0);
+        TEST_ASSERT(cont==eli::geom::general::C1);
+        cont=pc.continuity(static_cast<data_type>(nseg));
+        TEST_ASSERT(cont==eli::geom::general::C1);
       }
     }
 
@@ -1467,6 +1305,7 @@ class piecewise_cubic_spline_creator_test_suite : public Test::Suite
         std::vector<data_type> t(5);
         data_type dt;
         index_type i, nseg;
+        eli::geom::general::continuity cont;
 
         // set the points and times
         pts[0] <<  1, 3,  2;
@@ -1512,16 +1351,8 @@ class piecewise_cubic_spline_creator_test_suite : public Test::Suite
         // check the continuity at each point
         for (i=1; i<nseg; ++i)
         {
-          data_type small(std::numeric_limits<data_type>::epsilon());
-          pt_b=pc.f(t[i]*(1+small));
-          pt_a=pc.f(t[i]*(1-small));
-          TEST_ASSERT(tol.approximately_equal(pt_a, pt_b));
-          pt_b=pc.fp(t[i]*(1+small));
-          pt_a=pc.fp(t[i]*(1-small));
-          TEST_ASSERT(tol.approximately_equal(pt_a, pt_b));
-          pt_b=pc.fpp(t[i]*(1+small));
-          pt_a=pc.fpp(t[i]*(1-small));
-          TEST_ASSERT(!tol.approximately_equal(pt_a, pt_b));
+          cont=pc.continuity(t[i]);
+          TEST_ASSERT(cont==eli::geom::general::C1);
         }
       }
 
@@ -1533,6 +1364,7 @@ class piecewise_cubic_spline_creator_test_suite : public Test::Suite
         std::vector<point_type, Eigen::aligned_allocator<point_type> > pts(5);
         data_type dt;
         index_type i, nseg;
+        eli::geom::general::continuity cont;
 
         // set the points and times
         pts[0] <<  1, 3,  2;
@@ -1564,16 +1396,8 @@ class piecewise_cubic_spline_creator_test_suite : public Test::Suite
         // check the continuity at each point
         for (i=1; i<nseg; ++i)
         {
-          data_type small(std::numeric_limits<data_type>::epsilon());
-          pt_b=pc.f(i*(1+small));
-          pt_a=pc.f(i*(1-small));
-          TEST_ASSERT(tol.approximately_equal(pt_a, pt_b));
-          pt_b=pc.fp(i*(1+small));
-          pt_a=pc.fp(i*(1-small));
-          TEST_ASSERT(tol.approximately_equal(pt_a, pt_b));
-          pt_b=pc.fpp(i*(1+small));
-          pt_a=pc.fpp(i*(1-small));
-          TEST_ASSERT(!tol.approximately_equal(pt_a, pt_b));
+          cont=pc.continuity(static_cast<data_type>(i));
+          TEST_ASSERT(cont==eli::geom::general::C1);
         }
       }
     }
@@ -1589,6 +1413,7 @@ class piecewise_cubic_spline_creator_test_suite : public Test::Suite
         std::vector<data_type> t(6);
         data_type dt;
         index_type i, nseg;
+        eli::geom::general::continuity cont;
 
         // set the points and times
         pts[0] <<  1, 3,  2;
@@ -1641,28 +1466,15 @@ class piecewise_cubic_spline_creator_test_suite : public Test::Suite
         // check the continuity at each point
         for (i=1; i<(nseg-1); ++i)
         {
-          data_type small(std::numeric_limits<data_type>::epsilon());
-          pt_b=pc.f(t[i]*(1+small));
-          pt_a=pc.f(t[i]*(1-small));
-          TEST_ASSERT(tol.approximately_equal(pt_a, pt_b));
-          pt_b=pc.fp(t[i]*(1+small));
-          pt_a=pc.fp(t[i]*(1-small));
-          TEST_ASSERT(tol.approximately_equal(pt_a, pt_b));
-          pt_b=pc.fpp(t[i]*(1+small));
-          pt_a=pc.fpp(t[i]*(1-small));
-          TEST_ASSERT(!tol.approximately_equal(pt_a, pt_b));
+          cont=pc.continuity(t[i]);
+          TEST_ASSERT(cont==eli::geom::general::C1);
         }
 
         // test the end conditions
-        pt_b=pc.f(t[5]);
-        pt_a=pc.f(t[0]);
-        TEST_ASSERT(tol.approximately_equal(pt_a, pt_b));
-        pt_b=pc.fp(t[5]);
-        pt_a=pc.fp(t[0]);
-        TEST_ASSERT(!tol.approximately_equal(pt_a, pt_b));
-        pt_b=pc.fpp(t[5]);
-        pt_a=pc.fpp(t[0]);
-        TEST_ASSERT(!tol.approximately_equal(pt_a, pt_b));
+        cont=pc.continuity(t[0]);
+        TEST_ASSERT(cont==eli::geom::general::C0);
+        cont=pc.continuity(t[5]);
+        TEST_ASSERT(cont==eli::geom::general::C0);
       }
 
       // create smooth with specified times
@@ -1674,6 +1486,7 @@ class piecewise_cubic_spline_creator_test_suite : public Test::Suite
         std::vector<data_type> t(6);
         data_type dt;
         index_type i, nseg;
+        eli::geom::general::continuity cont;
 
         // set the points and times
         pts[0] <<  1, 3,  2;
@@ -1724,28 +1537,14 @@ class piecewise_cubic_spline_creator_test_suite : public Test::Suite
         // check the continuity at each point
         for (i=1; i<(nseg-1); ++i)
         {
-          data_type small(std::numeric_limits<data_type>::epsilon());
-          pt_b=pc.f(t[i]*(1+small));
-          pt_a=pc.f(t[i]*(1-small));
-          TEST_ASSERT(tol.approximately_equal(pt_a, pt_b));
-          pt_b=pc.fp(t[i]*(1+small));
-          pt_a=pc.fp(t[i]*(1-small));
-          TEST_ASSERT(tol.approximately_equal(pt_a, pt_b));
-          pt_b=pc.fpp(t[i]*(1+small));
-          pt_a=pc.fpp(t[i]*(1-small));
-          TEST_ASSERT(!tol.approximately_equal(pt_a, pt_b));
+          cont=pc.continuity(t[i]);
+          TEST_ASSERT(cont==eli::geom::general::C1);
         }
 
         // test the end conditions
-        pt_b=pc.f(t[5]);
-        pt_a=pc.f(t[0]);
-        TEST_ASSERT(tol.approximately_equal(pt_a, pt_b));
-        pt_b=pc.fp(t[5]);
-        pt_a=pc.fp(t[0]);
-        TEST_ASSERT(tol.approximately_equal(pt_a, pt_b));
-        pt_b=pc.fpp(t[5]);
-        pt_a=pc.fpp(t[0]);
-        TEST_ASSERT(!tol.approximately_equal(pt_a, pt_b));
+        cont=pc.continuity(t[0]);
+        TEST_ASSERT(cont==eli::geom::general::C1);
+        cont=pc.continuity(t[5]);
       }
 
       // create non-smooth with default times
@@ -1757,6 +1556,7 @@ class piecewise_cubic_spline_creator_test_suite : public Test::Suite
         std::vector<data_type> t(6);
         data_type dt;
         index_type i, nseg;
+        eli::geom::general::continuity cont;
 
         // set the points and times
         pts[0] <<  1, 3,  2;
@@ -1797,28 +1597,15 @@ class piecewise_cubic_spline_creator_test_suite : public Test::Suite
         // check the continuity at each point
         for (i=1; i<(nseg-1); ++i)
         {
-          data_type small(std::numeric_limits<data_type>::epsilon());
-          pt_b=pc.f(i*(1+small));
-          pt_a=pc.f(i*(1-small));
-          TEST_ASSERT(tol.approximately_equal(pt_a, pt_b));
-          pt_b=pc.fp(i*(1+small));
-          pt_a=pc.fp(i*(1-small));
-          TEST_ASSERT(tol.approximately_equal(pt_a, pt_b));
-          pt_b=pc.fpp(i*(1+small));
-          pt_a=pc.fpp(i*(1-small));
-          TEST_ASSERT(!tol.approximately_equal(pt_a, pt_b));
+          cont=pc.continuity(static_cast<data_type>(i));
+          TEST_ASSERT(cont==eli::geom::general::C1);
         }
 
         // test the end conditions
-        pt_b=pc.f(nseg);
-        pt_a=pc.f(0);
-        TEST_ASSERT(tol.approximately_equal(pt_a, pt_b));
-        pt_b=pc.fp(nseg);
-        pt_a=pc.fp(0);
-        TEST_ASSERT(!tol.approximately_equal(pt_a, pt_b));
-        pt_b=pc.fpp(nseg);
-        pt_a=pc.fpp(0);
-        TEST_ASSERT(!tol.approximately_equal(pt_a, pt_b));
+        cont=pc.continuity(0);
+        TEST_ASSERT(cont==eli::geom::general::C0);
+        cont=pc.continuity(static_cast<data_type>(nseg));
+        TEST_ASSERT(cont==eli::geom::general::C0);
       }
 
       // create smooth with default times
@@ -1830,6 +1617,7 @@ class piecewise_cubic_spline_creator_test_suite : public Test::Suite
         std::vector<data_type> t(6);
         data_type dt;
         index_type i, nseg;
+        eli::geom::general::continuity cont;
 
         // set the points and times
         pts[0] <<  1, 3,  2;
@@ -1870,28 +1658,14 @@ class piecewise_cubic_spline_creator_test_suite : public Test::Suite
         // check the continuity at each point
         for (i=1; i<(nseg-1); ++i)
         {
-          data_type small(std::numeric_limits<data_type>::epsilon());
-          pt_b=pc.f(i*(1+small));
-          pt_a=pc.f(i*(1-small));
-          TEST_ASSERT(tol.approximately_equal(pt_a, pt_b));
-          pt_b=pc.fp(i*(1+small));
-          pt_a=pc.fp(i*(1-small));
-          TEST_ASSERT(tol.approximately_equal(pt_a, pt_b));
-          pt_b=pc.fpp(i*(1+small));
-          pt_a=pc.fpp(i*(1-small));
-          TEST_ASSERT(!tol.approximately_equal(pt_a, pt_b));
+          cont=pc.continuity(static_cast<data_type>(i));
+          TEST_ASSERT(cont==eli::geom::general::C1);
         }
 
         // test the end conditions
-        pt_b=pc.f(nseg);
-        pt_a=pc.f(0);
-        TEST_ASSERT(tol.approximately_equal(pt_a, pt_b));
-        pt_b=pc.fp(nseg);
-        pt_a=pc.fp(0);
-        TEST_ASSERT(tol.approximately_equal(pt_a, pt_b));
-        pt_b=pc.fpp(nseg);
-        pt_a=pc.fpp(0);
-        TEST_ASSERT(!tol.approximately_equal(pt_a, pt_b));
+        cont=pc.continuity(0);
+        TEST_ASSERT(cont==eli::geom::general::C1);
+        cont=pc.continuity(static_cast<data_type>(nseg));
       }
     }
 
@@ -1906,6 +1680,7 @@ class piecewise_cubic_spline_creator_test_suite : public Test::Suite
         std::vector<data_type> t(5);
         data_type dt, ten(0.75), bia(0.75), con(0);
         index_type i, nseg;
+        eli::geom::general::continuity cont;
 
         // set the points and times
         pts[0] <<  1, 3,  2;
@@ -1951,16 +1726,8 @@ class piecewise_cubic_spline_creator_test_suite : public Test::Suite
         // check the continuity at each point
         for (i=1; i<nseg; ++i)
         {
-          data_type small(std::numeric_limits<data_type>::epsilon());
-          pt_b=pc.f(t[i]*(1+small));
-          pt_a=pc.f(t[i]*(1-small));
-          TEST_ASSERT(tol.approximately_equal(pt_a, pt_b));
-          pt_b=pc.fp(t[i]*(1+small));
-          pt_a=pc.fp(t[i]*(1-small));
-          TEST_ASSERT(tol.approximately_equal(pt_a, pt_b));
-          pt_b=pc.fpp(t[i]*(1+small));
-          pt_a=pc.fpp(t[i]*(1-small));
-          TEST_ASSERT(!tol.approximately_equal(pt_a, pt_b));
+          cont=pc.continuity(t[i]);
+          TEST_ASSERT(cont==eli::geom::general::C1);
         }
       }
 
@@ -1972,6 +1739,7 @@ class piecewise_cubic_spline_creator_test_suite : public Test::Suite
         std::vector<point_type, Eigen::aligned_allocator<point_type> > pts(5);
         data_type dt, ten(0.75), bia(0.75), con(0);
         index_type i, nseg;
+        eli::geom::general::continuity cont;
 
         // set the points and times
         pts[0] <<  1, 3,  2;
@@ -2003,16 +1771,8 @@ class piecewise_cubic_spline_creator_test_suite : public Test::Suite
         // check the continuity at each point
         for (i=1; i<nseg; ++i)
         {
-          data_type small(std::numeric_limits<data_type>::epsilon());
-          pt_b=pc.f(i*(1+small));
-          pt_a=pc.f(i*(1-small));
-          TEST_ASSERT(tol.approximately_equal(pt_a, pt_b));
-          pt_b=pc.fp(i*(1+small));
-          pt_a=pc.fp(i*(1-small));
-          TEST_ASSERT(tol.approximately_equal(pt_a, pt_b));
-          pt_b=pc.fpp(i*(1+small));
-          pt_a=pc.fpp(i*(1-small));
-          TEST_ASSERT(!tol.approximately_equal(pt_a, pt_b));
+          cont=pc.continuity(static_cast<data_type>(i));
+          TEST_ASSERT(cont==eli::geom::general::C1);
         }
       }
     }
@@ -2028,6 +1788,7 @@ class piecewise_cubic_spline_creator_test_suite : public Test::Suite
         std::vector<data_type> t(6);
         data_type dt, ten(0.75), bia(0.75), con(0);
         index_type i, nseg;
+        eli::geom::general::continuity cont;
 
         // set the points and times
         pts[0] <<  1, 3,  2;
@@ -2078,28 +1839,15 @@ class piecewise_cubic_spline_creator_test_suite : public Test::Suite
         // check the continuity at each point
         for (i=1; i<(nseg-1); ++i)
         {
-          data_type small(std::numeric_limits<data_type>::epsilon());
-          pt_b=pc.f(t[i]*(1+small));
-          pt_a=pc.f(t[i]*(1-small));
-          TEST_ASSERT(tol.approximately_equal(pt_a, pt_b));
-          pt_b=pc.fp(t[i]*(1+small));
-          pt_a=pc.fp(t[i]*(1-small));
-          TEST_ASSERT(tol.approximately_equal(pt_a, pt_b));
-          pt_b=pc.fpp(t[i]*(1+small));
-          pt_a=pc.fpp(t[i]*(1-small));
-          TEST_ASSERT(!tol.approximately_equal(pt_a, pt_b));
+          cont=pc.continuity(t[i]);
+          TEST_ASSERT(cont==eli::geom::general::C1);
         }
 
         // test the end conditions
-        pt_b=pc.f(t[5]);
-        pt_a=pc.f(t[0]);
-        TEST_ASSERT(tol.approximately_equal(pt_a, pt_b));
-        pt_b=pc.fp(t[5]);
-        pt_a=pc.fp(t[0]);
-        TEST_ASSERT(!tol.approximately_equal(pt_a, pt_b));
-        pt_b=pc.fpp(t[5]);
-        pt_a=pc.fpp(t[0]);
-        TEST_ASSERT(!tol.approximately_equal(pt_a, pt_b));
+        cont=pc.continuity(t[0]);
+        TEST_ASSERT(cont==eli::geom::general::C0);
+        cont=pc.continuity(t[5]);
+        TEST_ASSERT(cont==eli::geom::general::C0);
       }
 
       // create smooth with specified times
@@ -2111,6 +1859,7 @@ class piecewise_cubic_spline_creator_test_suite : public Test::Suite
         std::vector<data_type> t(6);
         data_type dt, ten(0.75), bia(0.75), con(0);
         index_type i, nseg;
+        eli::geom::general::continuity cont;
 
         // set the points and times
         pts[0] <<  1, 3,  2;
@@ -2161,28 +1910,15 @@ class piecewise_cubic_spline_creator_test_suite : public Test::Suite
         // check the continuity at each point
         for (i=1; i<(nseg-1); ++i)
         {
-          data_type small(std::numeric_limits<data_type>::epsilon());
-          pt_b=pc.f(t[i]*(1+small));
-          pt_a=pc.f(t[i]*(1-small));
-          TEST_ASSERT(tol.approximately_equal(pt_a, pt_b));
-          pt_b=pc.fp(t[i]*(1+small));
-          pt_a=pc.fp(t[i]*(1-small));
-          TEST_ASSERT(tol.approximately_equal(pt_a, pt_b));
-          pt_b=pc.fpp(t[i]*(1+small));
-          pt_a=pc.fpp(t[i]*(1-small));
-          TEST_ASSERT(!tol.approximately_equal(pt_a, pt_b));
+          cont=pc.continuity(t[i]);
+          TEST_ASSERT(cont==eli::geom::general::C1);
         }
 
         // test the end conditions
-        pt_b=pc.f(t[5]);
-        pt_a=pc.f(t[0]);
-        TEST_ASSERT(tol.approximately_equal(pt_a, pt_b));
-        pt_b=pc.fp(t[5]);
-        pt_a=pc.fp(t[0]);
-        TEST_ASSERT(tol.approximately_equal(pt_a, pt_b));
-        pt_b=pc.fpp(t[5]);
-        pt_a=pc.fpp(t[0]);
-        TEST_ASSERT(!tol.approximately_equal(pt_a, pt_b));
+        cont=pc.continuity(t[0]);
+        TEST_ASSERT(cont==eli::geom::general::C1);
+        cont=pc.continuity(t[5]);
+        TEST_ASSERT(cont==eli::geom::general::C1);
       }
 
       // create non-smooth with default times
@@ -2193,6 +1929,7 @@ class piecewise_cubic_spline_creator_test_suite : public Test::Suite
         std::vector<point_type, Eigen::aligned_allocator<point_type> > pts(5);
         data_type dt, ten(0.75), bia(0.75), con(0);
         index_type i, nseg;
+        eli::geom::general::continuity cont;
 
         // set the points and times
         pts[0] <<  1, 3,  2;
@@ -2232,28 +1969,15 @@ class piecewise_cubic_spline_creator_test_suite : public Test::Suite
         // check the continuity at each point
         for (i=1; i<(nseg-1); ++i)
         {
-          data_type small(std::numeric_limits<data_type>::epsilon());
-          pt_b=pc.f(i*(1+small));
-          pt_a=pc.f(i*(1-small));
-          TEST_ASSERT(tol.approximately_equal(pt_a, pt_b));
-          pt_b=pc.fp(i*(1+small));
-          pt_a=pc.fp(i*(1-small));
-          TEST_ASSERT(tol.approximately_equal(pt_a, pt_b));
-          pt_b=pc.fpp(i*(1+small));
-          pt_a=pc.fpp(i*(1-small));
-          TEST_ASSERT(!tol.approximately_equal(pt_a, pt_b));
+          cont=pc.continuity(static_cast<data_type>(i));
+          TEST_ASSERT(cont==eli::geom::general::C1);
         }
 
         // test the end conditions
-        pt_b=pc.f(5);
-        pt_a=pc.f(0);
-        TEST_ASSERT(tol.approximately_equal(pt_a, pt_b));
-        pt_b=pc.fp(5);
-        pt_a=pc.fp(0);
-        TEST_ASSERT(!tol.approximately_equal(pt_a, pt_b));
-        pt_b=pc.fpp(5);
-        pt_a=pc.fpp(0);
-        TEST_ASSERT(!tol.approximately_equal(pt_a, pt_b));
+        cont=pc.continuity(0);
+        TEST_ASSERT(cont==eli::geom::general::C0);
+        cont=pc.continuity(5);
+        TEST_ASSERT(cont==eli::geom::general::C0);
       }
 
       // create smooth with default times
@@ -2264,6 +1988,7 @@ class piecewise_cubic_spline_creator_test_suite : public Test::Suite
         std::vector<point_type, Eigen::aligned_allocator<point_type> > pts(5);
         data_type dt, ten(0.75), bia(0.75), con(0);
         index_type i, nseg;
+        eli::geom::general::continuity cont;
 
         // set the points and times
         pts[0] <<  1, 3,  2;
@@ -2303,28 +2028,15 @@ class piecewise_cubic_spline_creator_test_suite : public Test::Suite
         // check the continuity at each point
         for (i=1; i<(nseg-1); ++i)
         {
-          data_type small(std::numeric_limits<data_type>::epsilon());
-          pt_b=pc.f(i*(1+small));
-          pt_a=pc.f(i*(1-small));
-          TEST_ASSERT(tol.approximately_equal(pt_a, pt_b));
-          pt_b=pc.fp(i*(1+small));
-          pt_a=pc.fp(i*(1-small));
-          TEST_ASSERT(tol.approximately_equal(pt_a, pt_b));
-          pt_b=pc.fpp(i*(1+small));
-          pt_a=pc.fpp(i*(1-small));
-          TEST_ASSERT(!tol.approximately_equal(pt_a, pt_b));
+          cont=pc.continuity(static_cast<data_type>(i));
+          TEST_ASSERT(cont==eli::geom::general::C1);
         }
 
         // test the end conditions
-        pt_b=pc.f(5);
-        pt_a=pc.f(0);
-        TEST_ASSERT(tol.approximately_equal(pt_a, pt_b));
-        pt_b=pc.fp(5);
-        pt_a=pc.fp(0);
-        TEST_ASSERT(tol.approximately_equal(pt_a, pt_b));
-        pt_b=pc.fpp(5);
-        pt_a=pc.fpp(0);
-        TEST_ASSERT(!tol.approximately_equal(pt_a, pt_b));
+        cont=pc.continuity(0);
+        TEST_ASSERT(cont==eli::geom::general::C1);
+        cont=pc.continuity(5);
+        TEST_ASSERT(cont==eli::geom::general::C1);
       }
     }
 
@@ -2339,6 +2051,7 @@ class piecewise_cubic_spline_creator_test_suite : public Test::Suite
         std::vector<data_type> t(5);
         data_type dt;
         index_type i, nseg;
+        eli::geom::general::continuity cont;
 
         // set the points and times
         pts[0] <<  1, 3,  2;
@@ -2384,28 +2097,20 @@ class piecewise_cubic_spline_creator_test_suite : public Test::Suite
         // check the continuity at each point
         for (i=1; i<nseg; ++i)
         {
-          data_type small(std::numeric_limits<data_type>::epsilon());
-          pt_b=pc.f(t[i]*(1+small));
-          pt_a=pc.f(t[i]*(1-small));
-          TEST_ASSERT(tol.approximately_equal(pt_a, pt_b));
-          pt_b=pc.fp(t[i]*(1+small));
-          pt_a=pc.fp(t[i]*(1-small));
-          TEST_ASSERT(tol.approximately_equal(pt_a, pt_b));
-          pt_b=pc.fpp(t[i]*(1+small));
-          pt_a=pc.fpp(t[i]*(1-small));
-          TEST_ASSERT(tol.approximately_equal(pt_a, pt_b));
+          cont=pc.continuity(t[i]);
+          if ((i==1) || (i==3))
+          {
+            TEST_ASSERT(cont==eli::geom::general::C3);
+          }
+          else
+          {
+            TEST_ASSERT(cont==eli::geom::general::C2);
+          }
         }
 
         // check the end points
-        data_type small(std::numeric_limits<data_type>::epsilon());
         TEST_ASSERT(tol.approximately_equal(pts[0], pc.f(t[0])));
-        pt_b=pc.fppp(t[1]*(1+small));
-        pt_a=pc.fppp(t[1]*(1-small));
-        TEST_ASSERT(tol.approximately_equal(pt_a, pt_b));
         TEST_ASSERT(tol.approximately_equal(pts[4], pc.f(t[4])));
-        pt_b=pc.fppp(t[3]*(1+small));
-        pt_a=pc.fppp(t[3]*(1-small));
-        TEST_ASSERT(tol.approximately_equal(pt_a, pt_b));
       }
 
       // create with default times
@@ -2416,6 +2121,7 @@ class piecewise_cubic_spline_creator_test_suite : public Test::Suite
         std::vector<point_type, Eigen::aligned_allocator<point_type> > pts(5);
         data_type dt;
         index_type i, nseg;
+        eli::geom::general::continuity cont;
 
         // set the points and times
         pts[0] <<  1, 3,  2;
@@ -2451,28 +2157,20 @@ class piecewise_cubic_spline_creator_test_suite : public Test::Suite
         // check the continuity at each point
         for (i=1; i<nseg; ++i)
         {
-          data_type small(std::numeric_limits<data_type>::epsilon());
-          pt_b=pc.f(i*(1+small));
-          pt_a=pc.f(i*(1-small));
-          TEST_ASSERT(tol.approximately_equal(pt_a, pt_b));
-          pt_b=pc.fp(i*(1+small));
-          pt_a=pc.fp(i*(1-small));
-          TEST_ASSERT(tol.approximately_equal(pt_a, pt_b));
-          pt_b=pc.fpp(i*(1+small));
-          pt_a=pc.fpp(i*(1-small));
-          TEST_ASSERT(tol.approximately_equal(pt_a, pt_b));
+          cont=pc.continuity(static_cast<data_type>(i));
+          if ((i==1) || (i==3))
+          {
+            TEST_ASSERT(cont==eli::geom::general::C3);
+          }
+          else
+          {
+            TEST_ASSERT(cont==eli::geom::general::C2);
+          }
         }
 
         // check the end points
-        data_type small(std::numeric_limits<data_type>::epsilon());
         TEST_ASSERT(tol.approximately_equal(pts[0], pc.f(0)));
-        pt_b=pc.fppp(1*(1+small));
-        pt_a=pc.fppp(1*(1-small));
-        TEST_ASSERT(tol.approximately_equal(pt_a, pt_b));
         TEST_ASSERT(tol.approximately_equal(pts[4], pc.f(4)));
-        pt_b=pc.fppp(3*(1+small));
-        pt_a=pc.fppp(3*(1-small));
-        TEST_ASSERT(tol.approximately_equal(pt_a, pt_b));
       }
     }
 
@@ -2487,6 +2185,7 @@ class piecewise_cubic_spline_creator_test_suite : public Test::Suite
         std::vector<data_type> t(5);
         data_type dt;
         index_type i, nseg;
+        eli::geom::general::continuity cont;
 
         // set the points and times
         pts[0] <<  1, 3,  2;
@@ -2535,16 +2234,8 @@ class piecewise_cubic_spline_creator_test_suite : public Test::Suite
         // check the continuity at each point
         for (i=1; i<nseg; ++i)
         {
-          data_type small(std::numeric_limits<data_type>::epsilon());
-          pt_b=pc.f(t[i]*(1+small));
-          pt_a=pc.f(t[i]*(1-small));
-          TEST_ASSERT(tol.approximately_equal(pt_a, pt_b));
-          pt_b=pc.fp(t[i]*(1+small));
-          pt_a=pc.fp(t[i]*(1-small));
-          TEST_ASSERT(tol.approximately_equal(pt_a, pt_b));
-          pt_b=pc.fpp(t[i]*(1+small));
-          pt_a=pc.fpp(t[i]*(1-small));
-          TEST_ASSERT(tol.approximately_equal(pt_a, pt_b));
+          cont=pc.continuity(t[i]);
+          TEST_ASSERT(cont==eli::geom::general::C2);
         }
 
         // check the end points
@@ -2562,6 +2253,7 @@ class piecewise_cubic_spline_creator_test_suite : public Test::Suite
         std::vector<point_type, Eigen::aligned_allocator<point_type> > pts(5);
         data_type dt;
         index_type i, nseg;
+        eli::geom::general::continuity cont;
 
         // set the points and times
         pts[0] <<  1, 3,  2;
@@ -2600,16 +2292,8 @@ class piecewise_cubic_spline_creator_test_suite : public Test::Suite
         // check the continuity at each point
         for (i=1; i<nseg; ++i)
         {
-          data_type small(std::numeric_limits<data_type>::epsilon());
-          pt_b=pc.f(i*(1+small));
-          pt_a=pc.f(i*(1-small));
-          TEST_ASSERT(tol.approximately_equal(pt_a, pt_b));
-          pt_b=pc.fp(i*(1+small));
-          pt_a=pc.fp(i*(1-small));
-          TEST_ASSERT(tol.approximately_equal(pt_a, pt_b));
-          pt_b=pc.fpp(i*(1+small));
-          pt_a=pc.fpp(i*(1-small));
-          TEST_ASSERT(tol.approximately_equal(pt_a, pt_b));
+          cont=pc.continuity(static_cast<data_type>(i));
+          TEST_ASSERT(cont==eli::geom::general::C2);
         }
 
         // check the end points
@@ -2631,6 +2315,7 @@ class piecewise_cubic_spline_creator_test_suite : public Test::Suite
         std::vector<data_type> t(5);
         data_type dt;
         index_type i, nseg;
+        eli::geom::general::continuity cont;
 
         // set the points and times
         pts[0] <<  1, 3,  2;
@@ -2676,16 +2361,8 @@ class piecewise_cubic_spline_creator_test_suite : public Test::Suite
         // check the continuity at each point
         for (i=1; i<nseg; ++i)
         {
-          data_type small(std::numeric_limits<data_type>::epsilon());
-          pt_b=pc.f(t[i]*(1+small));
-          pt_a=pc.f(t[i]*(1-small));
-          TEST_ASSERT(tol.approximately_equal(pt_a, pt_b));
-          pt_b=pc.fp(t[i]*(1+small));
-          pt_a=pc.fp(t[i]*(1-small));
-          TEST_ASSERT(tol.approximately_equal(pt_a, pt_b));
-          pt_b=pc.fpp(t[i]*(1+small));
-          pt_a=pc.fpp(t[i]*(1-small));
-          TEST_ASSERT(tol.approximately_equal(pt_a, pt_b));
+          cont=pc.continuity(t[i]);
+          TEST_ASSERT(cont==eli::geom::general::C2);
         }
 
         // check the end points
@@ -2704,6 +2381,7 @@ class piecewise_cubic_spline_creator_test_suite : public Test::Suite
         std::vector<point_type, Eigen::aligned_allocator<point_type> > pts(5);
         data_type dt;
         index_type i, nseg;
+        eli::geom::general::continuity cont;
 
         // set the points and times
         pts[0] <<  1, 3,  2;
@@ -2739,16 +2417,8 @@ class piecewise_cubic_spline_creator_test_suite : public Test::Suite
         // check the continuity at each point
         for (i=1; i<nseg; ++i)
         {
-          data_type small(std::numeric_limits<data_type>::epsilon());
-          pt_b=pc.f(i*(1+small));
-          pt_a=pc.f(i*(1-small));
-          TEST_ASSERT(tol.approximately_equal(pt_a, pt_b));
-          pt_b=pc.fp(i*(1+small));
-          pt_a=pc.fp(i*(1-small));
-          TEST_ASSERT(tol.approximately_equal(pt_a, pt_b));
-          pt_b=pc.fpp(i*(1+small));
-          pt_a=pc.fpp(i*(1-small));
-          TEST_ASSERT(tol.approximately_equal(pt_a, pt_b));
+          cont=pc.continuity(static_cast<data_type>(i));
+          TEST_ASSERT(cont==eli::geom::general::C2);
         }
 
         // check the end points
@@ -2771,6 +2441,7 @@ class piecewise_cubic_spline_creator_test_suite : public Test::Suite
         std::vector<data_type> t(5);
         data_type dt;
         index_type i, nseg;
+        eli::geom::general::continuity cont;
 
         // set the points and times
         pts[0] <<  1, 3,  2;
@@ -2816,16 +2487,8 @@ class piecewise_cubic_spline_creator_test_suite : public Test::Suite
         // check the continuity at each point
         for (i=1; i<nseg; ++i)
         {
-          data_type small(std::numeric_limits<data_type>::epsilon());
-          pt_b=pc.f(t[i]*(1+small));
-          pt_a=pc.f(t[i]*(1-small));
-          TEST_ASSERT(tol.approximately_equal(pt_a, pt_b));
-          pt_b=pc.fp(t[i]*(1+small));
-          pt_a=pc.fp(t[i]*(1-small));
-          TEST_ASSERT(tol.approximately_equal(pt_a, pt_b));
-          pt_b=pc.fpp(t[i]*(1+small));
-          pt_a=pc.fpp(t[i]*(1-small));
-          TEST_ASSERT(tol.approximately_equal(pt_a, pt_b));
+          cont=pc.continuity(t[i]);
+          TEST_ASSERT(cont==eli::geom::general::C2);
         }
 
         // check the end points
@@ -2843,6 +2506,7 @@ class piecewise_cubic_spline_creator_test_suite : public Test::Suite
         std::vector<point_type, Eigen::aligned_allocator<point_type> > pts(5);
         data_type dt;
         index_type i, nseg;
+        eli::geom::general::continuity cont;
 
         // set the points and times
         pts[0] <<  1, 3,  2;
@@ -2878,16 +2542,8 @@ class piecewise_cubic_spline_creator_test_suite : public Test::Suite
         // check the continuity at each point
         for (i=1; i<nseg; ++i)
         {
-          data_type small(std::numeric_limits<data_type>::epsilon());
-          pt_b=pc.f(i*(1+small));
-          pt_a=pc.f(i*(1-small));
-          TEST_ASSERT(tol.approximately_equal(pt_a, pt_b));
-          pt_b=pc.fp(i*(1+small));
-          pt_a=pc.fp(i*(1-small));
-          TEST_ASSERT(tol.approximately_equal(pt_a, pt_b));
-          pt_b=pc.fpp(i*(1+small));
-          pt_a=pc.fpp(i*(1-small));
-          TEST_ASSERT(tol.approximately_equal(pt_a, pt_b));
+          cont=pc.continuity(static_cast<data_type>(i));
+          TEST_ASSERT(cont==eli::geom::general::C2);
         }
 
         // check the end points
@@ -2909,6 +2565,7 @@ class piecewise_cubic_spline_creator_test_suite : public Test::Suite
         std::vector<data_type> t(6);
         data_type dt;
         index_type i, nseg;
+        eli::geom::general::continuity cont;
 
         // set the points and times
         pts[0] <<  1, 3,  2;
@@ -2957,22 +2614,15 @@ class piecewise_cubic_spline_creator_test_suite : public Test::Suite
         // check the continuity at each point
         for (i=1; i<nseg; ++i)
         {
-          data_type small(std::numeric_limits<data_type>::epsilon());
-          pt_b=pc.f(t[i]*(1+small));
-          pt_a=pc.f(t[i]*(1-small));
-          TEST_ASSERT(tol.approximately_equal(pt_a, pt_b));
-          pt_b=pc.fp(t[i]*(1+small));
-          pt_a=pc.fp(t[i]*(1-small));
-          TEST_ASSERT(tol.approximately_equal(pt_a, pt_b));
-          pt_b=pc.fpp(t[i]*(1+small));
-          pt_a=pc.fpp(t[i]*(1-small));
-          TEST_ASSERT(tol.approximately_equal(pt_a, pt_b));
+          cont=pc.continuity(t[i]);
+          TEST_ASSERT(cont==eli::geom::general::C2);
         }
 
         // check the end points
-        TEST_ASSERT(tol.approximately_equal(pc.f(t[5]), pc.f(t[0])));
-        TEST_ASSERT(tol.approximately_equal(pc.fp(t[5]), pc.fp(t[0])));
-        TEST_ASSERT(tol.approximately_equal(pc.fpp(t[5]), pc.fpp(t[0])));
+        cont=pc.continuity(t[0]);
+        TEST_ASSERT(cont==eli::geom::general::C2);
+        cont=pc.continuity(t[5]);
+        TEST_ASSERT(cont==eli::geom::general::C2);
       }
 
       // create with default times
@@ -2983,6 +2633,7 @@ class piecewise_cubic_spline_creator_test_suite : public Test::Suite
         std::vector<point_type, Eigen::aligned_allocator<point_type> > pts(5);
         data_type dt;
         index_type i, nseg;
+        eli::geom::general::continuity cont;
 
         // set the points and times
         pts[0] <<  1, 3,  2;
@@ -3020,22 +2671,15 @@ class piecewise_cubic_spline_creator_test_suite : public Test::Suite
         // check the continuity at each point
         for (i=1; i<nseg; ++i)
         {
-          data_type small(std::numeric_limits<data_type>::epsilon());
-          pt_b=pc.f(i*(1+small));
-          pt_a=pc.f(i*(1-small));
-          TEST_ASSERT(tol.approximately_equal(pt_a, pt_b));
-          pt_b=pc.fp(i*(1+small));
-          pt_a=pc.fp(i*(1-small));
-          TEST_ASSERT(tol.approximately_equal(pt_a, pt_b));
-          pt_b=pc.fpp(i*(1+small));
-          pt_a=pc.fpp(i*(1-small));
-          TEST_ASSERT(tol.approximately_equal(pt_a, pt_b));
+          cont=pc.continuity(static_cast<data_type>(i));
+          TEST_ASSERT(cont==eli::geom::general::C2);
         }
 
         // check the end points
-        TEST_ASSERT(tol.approximately_equal(pc.f(5), pc.f(0)));
-        TEST_ASSERT(tol.approximately_equal(pc.fp(5), pc.fp(0)));
-        TEST_ASSERT(tol.approximately_equal(pc.fpp(5), pc.fpp(0)));
+        cont=pc.continuity(0);
+        TEST_ASSERT(cont==eli::geom::general::C2);
+        cont=pc.continuity(5);
+        TEST_ASSERT(cont==eli::geom::general::C2);
       }
     }
 };

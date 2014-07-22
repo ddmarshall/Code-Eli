@@ -13,5 +13,10 @@
 project(AIRFOIL_FIT)
 
 # add the airfoil fitting example
-add_executable(AirfoilFitExample ${PROJECT_SOURCE_DIR}/airfoil_fit.cpp)
-target_link_libraries(AirfoilFitExample ${_ELI_EXAMPLE_LIBRARIES_LIST})
+set (AIRFOIL_FIT_EXE AirfoilFitExample)
+set (AIRFOIL_FIT_SOURCE ${PROJECT_SOURCE_DIR}/airfoil_fit.cpp)
+set (AIRFOIL_FIT_HEADER ${ELI_SOURCE_DIR}/include/eli/constants/math.hpp
+                        ${ELI_SOURCE_DIR}/include/eli/geom/curve/bezier.hpp)
+
+add_executable(${AIRFOIL_FIT_EXE} ${AIRFOIL_FIT_SOURCE} ${AIRFOIL_FIT_HEADER})
+target_link_libraries(${AIRFOIL_FIT_EXE} ${_ELI_EXAMPLE_LIBRARIES_LIST})

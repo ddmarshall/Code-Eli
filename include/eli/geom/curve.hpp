@@ -17,6 +17,7 @@
 #include "eli/geom/curve/bezier.hpp"
 #include "eli/geom/curve/explicit_bezier.hpp"
 #include "eli/geom/curve/piecewise.hpp"
+#include "eli/geom/curve/pseudo.hpp"
 
 // include helpers
 #include "eli/geom/curve/piecewise_circle_creator.hpp"

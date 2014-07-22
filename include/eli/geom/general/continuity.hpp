@@ -25,8 +25,13 @@ namespace eli
         C0            = 0,
         C1            = 1,
         C2            = 2,
+        C3            = 3,
+        GINFININTY    = 99,
+        G0            = 100,
         G1            = 101,
-        G2            = 102
+        G2            = 102,
+        G3            = 103,
+        CINFINITY     = 999
       };
     }
   }

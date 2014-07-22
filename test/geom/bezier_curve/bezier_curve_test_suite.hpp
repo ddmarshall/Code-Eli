@@ -54,8 +54,12 @@ class bezier_curve_test_suite : public Test::Suite
       TEST_ADD(bezier_curve_test_suite<float>::derivative_3_test);
       TEST_ADD(bezier_curve_test_suite<float>::frenet_serret_test);
       TEST_ADD(bezier_curve_test_suite<float>::reverse_test);
+      TEST_ADD(bezier_curve_test_suite<float>::reflection_test);
       TEST_ADD(bezier_curve_test_suite<float>::promotion_test);
+      TEST_ADD(bezier_curve_test_suite<float>::promotion_to_test);
       TEST_ADD(bezier_curve_test_suite<float>::demotion_test);
+      TEST_ADD(bezier_curve_test_suite<float>::degree_to_cubic_test);
+      TEST_ADD(bezier_curve_test_suite<float>::distance_bound_test);
       TEST_ADD(bezier_curve_test_suite<float>::split_test);
       TEST_ADD(bezier_curve_test_suite<float>::length_test);
     }
@@ -71,8 +75,12 @@ class bezier_curve_test_suite : public Test::Suite
       TEST_ADD(bezier_curve_test_suite<double>::derivative_3_test);
       TEST_ADD(bezier_curve_test_suite<double>::frenet_serret_test);
       TEST_ADD(bezier_curve_test_suite<double>::reverse_test);
+      TEST_ADD(bezier_curve_test_suite<double>::reflection_test);
       TEST_ADD(bezier_curve_test_suite<double>::promotion_test);
+      TEST_ADD(bezier_curve_test_suite<double>::promotion_to_test);
       TEST_ADD(bezier_curve_test_suite<double>::demotion_test);
+      TEST_ADD(bezier_curve_test_suite<double>::degree_to_cubic_test);
+      TEST_ADD(bezier_curve_test_suite<double>::distance_bound_test);
       TEST_ADD(bezier_curve_test_suite<double>::split_test);
       TEST_ADD(bezier_curve_test_suite<double>::length_test);
     }
@@ -88,48 +96,15 @@ class bezier_curve_test_suite : public Test::Suite
       TEST_ADD(bezier_curve_test_suite<long double>::derivative_3_test);
       TEST_ADD(bezier_curve_test_suite<long double>::frenet_serret_test);
       TEST_ADD(bezier_curve_test_suite<long double>::reverse_test);
+      TEST_ADD(bezier_curve_test_suite<long double>::reflection_test);
       TEST_ADD(bezier_curve_test_suite<long double>::promotion_test);
+      TEST_ADD(bezier_curve_test_suite<long double>::promotion_to_test);
       TEST_ADD(bezier_curve_test_suite<long double>::demotion_test);
+      TEST_ADD(bezier_curve_test_suite<long double>::degree_to_cubic_test);
+      TEST_ADD(bezier_curve_test_suite<long double>::distance_bound_test);
       TEST_ADD(bezier_curve_test_suite<long double>::split_test);
       TEST_ADD(bezier_curve_test_suite<long double>::length_test);
     }
-#ifdef ELI_USING_QD
-    void AddTests(const dd_real &)
-    {
-      // add the tests
-      TEST_ADD(bezier_curve_test_suite<dd_real>::assignment_test);
-      TEST_ADD(bezier_curve_test_suite<dd_real>::bounding_box_test);
-      TEST_ADD(bezier_curve_test_suite<dd_real>::transformation_test);
-      TEST_ADD(bezier_curve_test_suite<dd_real>::evaluation_test);
-      TEST_ADD(bezier_curve_test_suite<dd_real>::derivative_1_test);
-      TEST_ADD(bezier_curve_test_suite<dd_real>::derivative_2_test);
-      TEST_ADD(bezier_curve_test_suite<dd_real>::derivative_3_test);
-      TEST_ADD(bezier_curve_test_suite<dd_real>::frenet_serret_test);
-      TEST_ADD(bezier_curve_test_suite<dd_real>::reverse_test);
-      TEST_ADD(bezier_curve_test_suite<dd_real>::promotion_test);
-      TEST_ADD(bezier_curve_test_suite<dd_real>::demotion_test);
-      TEST_ADD(bezier_curve_test_suite<dd_real>::split_test);
-      TEST_ADD(bezier_curve_test_suite<dd_real>::length_test);
-    }
-
-    void AddTests(const qd_real &)
-    {
-      // add the tests
-      TEST_ADD(bezier_curve_test_suite<qd_real>::assignment_test);
-      TEST_ADD(bezier_curve_test_suite<qd_real>::bounding_box_test);
-      TEST_ADD(bezier_curve_test_suite<qd_real>::transformation_test);
-      TEST_ADD(bezier_curve_test_suite<qd_real>::evaluation_test);
-      TEST_ADD(bezier_curve_test_suite<qd_real>::derivative_1_test);
-      TEST_ADD(bezier_curve_test_suite<qd_real>::derivative_2_test);
-      TEST_ADD(bezier_curve_test_suite<qd_real>::derivative_3_test);
-      TEST_ADD(bezier_curve_test_suite<qd_real>::frenet_serret_test);
-      TEST_ADD(bezier_curve_test_suite<qd_real>::reverse_test);
-      TEST_ADD(bezier_curve_test_suite<qd_real>::promotion_test);
-      TEST_ADD(bezier_curve_test_suite<qd_real>::demotion_test);
-      TEST_ADD(bezier_curve_test_suite<qd_real>::split_test);
-      TEST_ADD(bezier_curve_test_suite<qd_real>::length_test);
-    }
-#endif
 
   public:
     bezier_curve_test_suite()
@@ -256,10 +231,6 @@ class bezier_curve_test_suite : public Test::Suite
     {
       point_type cntrl_in[4];
       data_type eps(std::numeric_limits<data__>::epsilon());
-#ifdef ELI_USING_QD
-      if ( (typeid(data_type)==typeid(dd_real)) || (typeid(data_type)==typeid(qd_real)) )
-        eps=std::numeric_limits<double>::epsilon();
-#endif
 
       // set control points
       cntrl_in[0] << 2.0, 2.0, 0.0;
@@ -309,10 +280,11 @@ class bezier_curve_test_suite : public Test::Suite
         typename bezier_type::rotation_matrix_type rmat;
 
         // set up rotation and apply
+        data_type one(1);
         bc2=bc1;
-        rmat << cos(1), 0, -sin(1),
-                     0, 1,       0,
-                sin(1), 0,  cos(1);
+        rmat << std::cos(one), 0,  -std::sin(one),
+                0,             one, 0,
+                std::sin(one), 0,   std::cos(one);
         bc2.rotate(rmat);
 
         // test evaluations
@@ -339,11 +311,12 @@ class bezier_curve_test_suite : public Test::Suite
         typename bezier_type::rotation_matrix_type rmat;
 
         // set up rotation and apply
+        data_type one(1);
         bc2=bc1;
         rorig << 2, 1, 3;
-        rmat << cos(1), 0, -sin(1),
-                     0, 1,       0,
-                sin(1), 0,  cos(1);
+        rmat << std::cos(one), 0,  -std::sin(one),
+                0,             one, 0,
+                std::sin(one), 0,   std::cos(one);
         bc2.rotate(rmat, rorig);
 
         // test evaluations
@@ -369,10 +342,6 @@ class bezier_curve_test_suite : public Test::Suite
     {
       point_type cntrl_in[4];
       data_type eps(std::numeric_limits<data__>::epsilon());
-#ifdef ELI_USING_QD
-      if ( (typeid(data_type)==typeid(dd_real)) || (typeid(data_type)==typeid(qd_real)) )
-        eps=std::numeric_limits<double>::epsilon();
-#endif
 
       // set control points
       cntrl_in[0] << 2.0, 2.0, 0.0;
@@ -409,10 +378,7 @@ class bezier_curve_test_suite : public Test::Suite
     {
       point_type cntrl_in[4];
       data_type eps(std::numeric_limits<data__>::epsilon());
-#ifdef ELI_USING_QD
-      if ( (typeid(data_type)==typeid(dd_real)) || (typeid(data_type)==typeid(qd_real)) )
-        eps=std::numeric_limits<double>::epsilon();
-#endif
+
       // set control points
       cntrl_in[0] << 2.0, 2.0, 0.0;
       cntrl_in[1] << 1.0, 1.5, 0.0;
@@ -450,10 +416,7 @@ class bezier_curve_test_suite : public Test::Suite
     {
       point_type cntrl_in[4];
       data_type eps(std::numeric_limits<data__>::epsilon());
-#ifdef ELI_USING_QD
-      if ( (typeid(data_type)==typeid(dd_real)) || (typeid(data_type)==typeid(qd_real)) )
-        eps=std::numeric_limits<double>::epsilon();
-#endif
+
       // set control points
       cntrl_in[0] << 2.0, 2.0, 0.0;
       cntrl_in[1] << 1.0, 1.5, 0.0;
@@ -491,10 +454,7 @@ class bezier_curve_test_suite : public Test::Suite
     {
       point_type cntrl_in[4];
       data_type eps(std::numeric_limits<data__>::epsilon());
-#ifdef ELI_USING_QD
-      if ( (typeid(data_type)==typeid(dd_real)) || (typeid(data_type)==typeid(qd_real)) )
-        eps=std::numeric_limits<double>::epsilon();
-#endif
+
       // set control points
       cntrl_in[0] << 2.0, 2.0, 0.0;
       cntrl_in[1] << 1.0, 1.5, 0.0;
@@ -549,10 +509,6 @@ class bezier_curve_test_suite : public Test::Suite
     {
       point_type cntrl_in[4];
       data_type eps(std::numeric_limits<data__>::epsilon());
-#ifdef ELI_USING_QD
-      if ( (typeid(data_type)==typeid(dd_real)) || (typeid(data_type)==typeid(qd_real)) )
-        eps=std::numeric_limits<double>::epsilon();
-#endif
 
       // set control points
       cntrl_in[0] << 2.0, 2.0, 0.0;
@@ -572,7 +528,7 @@ class bezier_curve_test_suite : public Test::Suite
 
       t=0.5;
       t_dir=bc.tangent(t);
-      t_dir_ref << 0.874157, -0.485643, 0;
+      t_dir_ref << static_cast<data_type>(0.874157), static_cast<data_type>(-0.485643), 0;
       TEST_ASSERT((t_dir-t_dir_ref).norm()<1e-5);
 
       bc.frenet_serret_frame(t_dir, n_dir, b_dir, t);
@@ -607,14 +563,131 @@ class bezier_curve_test_suite : public Test::Suite
       }
     }
 
+    void reflection_test()
+    {
+      point_type cntrl_in[4], cntrl_out[4];
+      index_type i;
+
+      // set control points
+      cntrl_in[0] << 2.0, 2.0, 1.0;
+      cntrl_in[1] << 1.0, 1.5, 2.0;
+      cntrl_in[2] << 3.5, 0.0, 3.0;
+      cntrl_in[3] << 4.0, 1.0, 4.0;
+
+      bezier_type bc(3), bcc;
+
+      // set control points
+      for (index_type i=0; i<4; ++i)
+      {
+        bc.set_control_point(cntrl_in[i], i);
+      }
+      bcc=bc;
+
+      // reflect about xy-plane
+      {
+        bc.reflect_xy();
+        for (i=0; i<4; ++i)
+        {
+          cntrl_out[i].x()= cntrl_in[i].x();
+          cntrl_out[i].y()= cntrl_in[i].y();
+          cntrl_out[i].z()=-cntrl_in[i].z();
+        }
+
+        // check control points
+        for (i=0; i<4; ++i)
+        {
+          TEST_ASSERT(bc.get_control_point(i)==cntrl_out[i]);
+        }
+      }
+
+      // reflect about xz-plane
+      bc=bcc;
+      {
+        bc.reflect_xz();
+        for (i=0; i<4; ++i)
+        {
+          cntrl_out[i].x()= cntrl_in[i].x();
+          cntrl_out[i].y()=-cntrl_in[i].y();
+          cntrl_out[i].z()= cntrl_in[i].z();
+        }
+
+        // check control points
+        for (i=0; i<4; ++i)
+        {
+          TEST_ASSERT(bc.get_control_point(i)==cntrl_out[i]);
+        }
+      }
+
+      // reflect about yz-plane
+      bc=bcc;
+      {
+        bc.reflect_yz();
+        for (i=0; i<4; ++i)
+        {
+          cntrl_out[i].x()=-cntrl_in[i].x();
+          cntrl_out[i].y()= cntrl_in[i].y();
+          cntrl_out[i].z()= cntrl_in[i].z();
+        }
+
+        // check control points
+        for (i=0; i<4; ++i)
+        {
+          TEST_ASSERT(bc.get_control_point(i)==cntrl_out[i]);
+        }
+      }
+
+      // reflect about arbitrary plane
+      bc=bcc;
+      {
+        data_type eps(std::numeric_limits<data__>::epsilon());
+        point_type normal, n;
+
+        normal << 1, 2, 3;
+        n=normal;
+        n.normalize();
+
+        bc.reflect(normal);
+        for (i=0; i<4; ++i)
+        {
+          cntrl_out[i]=cntrl_in[i]-2*cntrl_in[i].dot(n)*n;
+        }
+
+        // check control points
+        for (i=0; i<4; ++i)
+        {
+          TEST_ASSERT((bc.get_control_point(i)-cntrl_out[i]).norm()<10*eps);
+        }
+      }
+
+      // reflect about arbitrary plane not through origin
+      bc=bcc;
+      {
+        data_type eps(std::numeric_limits<data__>::epsilon());
+        point_type normal, n;
+        data_type d(4);
+
+        normal << 1, 2, 3;
+        n=normal;
+        n.normalize();
+
+        bc.reflect(normal, d);
+        for (i=0; i<4; ++i)
+        {
+          cntrl_out[i]=cntrl_in[i]-2*(cntrl_in[i].dot(n)-d)*n;
+        }
+
+        // check control points
+        for (i=0; i<4; ++i)
+        {
+          TEST_ASSERT((bc.get_control_point(i)-cntrl_out[i]).norm()<10*eps);
+        }
+      }
+    }
+
     void promotion_test()
     {
       point_type cntrl_in[5];
       data_type eps(std::numeric_limits<data__>::epsilon());
-#ifdef ELI_USING_QD
-      if ( (typeid(data_type)==typeid(dd_real)) || (typeid(data_type)==typeid(qd_real)) )
-        eps=std::numeric_limits<double>::epsilon();
-#endif
 
       // set control points
       cntrl_in[0] << 0,   0, 0;
@@ -657,12 +730,6 @@ class bezier_curve_test_suite : public Test::Suite
           {
             TEST_ASSERT((bc2.get_control_point(i)-cntrl_ref[i]).norm()<std::sqrt(eps));
           }
-#ifdef ELI_USING_QD
-          else if ( (typeid(data__)==typeid(dd_real)) || (typeid(data__)==typeid(qd_real)) )
-          {
-            TEST_ASSERT((bc2.get_control_point(i)-cntrl_ref[i]).norm()<2.0*eps);
-          }
-#endif
           else
           {
             TEST_ASSERT(bc2.get_control_point(i)==cntrl_ref[i]);
@@ -751,13 +818,138 @@ class bezier_curve_test_suite : public Test::Suite
       TEST_ASSERT(std::abs(curv_out-curv_ref)<203*eps);
     }
 
+    void promotion_to_test()
+    {
+      point_type cntrl_in[5];
+      data_type eps(std::numeric_limits<data__>::epsilon());
+
+      // set control points
+      cntrl_in[0] << 0,   0, 0;
+      cntrl_in[1] << 0,   4, 0;
+      cntrl_in[2] << 2,   4, 0;
+      cntrl_in[3] << 2,   3, 0;
+      cntrl_in[4] << 1.5, 3, 0;
+
+      bezier_type bc1(4), bc2, bc3, bc4;
+      point_type eval_out, eval_ref;
+      data_type t, curv_out, curv_ref;
+
+      // set control points
+      for (index_type i=0; i<5; ++i)
+      {
+        bc1.set_control_point(cntrl_in[i], i);
+      }
+      bc2=bc1;
+      bc3=bc1;
+      bc4=bc1;
+
+      // promote curve single degree
+      bc2.degree_promote();
+      // promote_to curve
+      bc3.degree_promote_to(bc1.degree()+1);
+
+      // test to see if degree has increased
+      TEST_ASSERT(bc3.degree()==bc2.degree());
+
+      // test to see if get exact behavior of single-degree promotion
+      if (bc3.degree()==bc2.degree())
+      {
+        for (index_type i=0; i<6; ++i)
+        {
+          TEST_ASSERT(bc3.get_control_point(i)==bc2.get_control_point(i));
+        }
+      }
+
+      // promote_to curve high order
+      bc4.degree_promote_to(bc1.degree()+5);
+
+      // test to see if degree has increased
+      TEST_ASSERT(bc4.degree()==bc1.degree()+5);
+
+      // test evaluation at end points
+      t=0;
+      eval_out=bc4.f(t);
+      eval_ref=bc1.f(t);
+      TEST_ASSERT(eval_out==eval_ref);
+      t=1;
+      eval_out=bc4.f(t);
+      eval_ref=bc1.f(t);
+      TEST_ASSERT(eval_out==eval_ref);
+
+      // test evaluation at interior point
+      t=static_cast<data__>(0.45);
+      eval_out=bc4.f(t);
+      eval_ref=bc1.f(t);
+      TEST_ASSERT((eval_out-eval_ref).norm()<5*eps);
+
+      // test 1st derivative at end points
+      t=0;
+      eval_out=bc4.fp(t);
+      eval_ref=bc1.fp(t);
+      TEST_ASSERT((eval_out-eval_ref).norm()<20*eps);
+      t=1;
+      eval_out=bc4.fp(t);
+      eval_ref=bc1.fp(t);
+      TEST_ASSERT((eval_out-eval_ref).norm()<5*4*eps);
+
+      // test 1st derivative at interior point
+      t=static_cast<data__>(0.45);
+      eval_out=bc4.fp(t);
+      eval_ref=bc1.fp(t);
+      TEST_ASSERT((eval_out-eval_ref).norm()<5*eps);
+
+      // test 2nd derivative at end points
+      t=0;
+      eval_out=bc4.fpp(t);
+      eval_ref=bc1.fpp(t);
+      TEST_ASSERT((eval_out-eval_ref).norm()<200*eps);
+      t=1;
+      eval_out=bc4.fpp(t);
+      eval_ref=bc1.fpp(t);
+      TEST_ASSERT((eval_out-eval_ref).norm()<18*16*eps);
+
+      // test 2nd derivative at interior point
+      t=static_cast<data__>(0.45);
+      eval_out=bc4.fpp(t);
+      eval_ref=bc1.fpp(t);
+      TEST_ASSERT((eval_out-eval_ref).norm()<35*eps);
+
+      // test 3rd derivative at end points
+      t=0;
+      eval_out=bc4.fppp(t);
+      eval_ref=bc1.fppp(t);
+      TEST_ASSERT((eval_out-eval_ref).norm()<390*16*eps);
+      t=1;
+      eval_out=bc4.fppp(t);
+      eval_ref=bc1.fppp(t);
+      TEST_ASSERT((eval_out-eval_ref).norm()<390*4*eps);
+
+      // test 3rd derivative at interior point
+      t=static_cast<data__>(0.45);
+      eval_out=bc4.fppp(t);
+      eval_ref=bc1.fppp(t);
+      TEST_ASSERT((eval_out-eval_ref).norm()<203*4*eps);
+
+      // test curvature at end points
+      t=0;
+      eli::geom::curve::curvature(curv_out, bc4, t);
+      eli::geom::curve::curvature(curv_ref, bc1, t);
+      TEST_ASSERT(std::abs(curv_out-curv_ref)<5*eps);
+      t=1;
+      eli::geom::curve::curvature(curv_out, bc4, t);
+      eli::geom::curve::curvature(curv_ref, bc1, t);
+      TEST_ASSERT(std::abs(curv_out-curv_ref)<203*eps);
+
+      // test curvature at interior point
+      t=static_cast<data__>(0.45);
+      eli::geom::curve::curvature(curv_out, bc4, t);
+      eli::geom::curve::curvature(curv_ref, bc1, t);
+      TEST_ASSERT(std::abs(curv_out-curv_ref)<203*eps);
+    }
+
     void demotion_test()
     {
       data_type eps(std::numeric_limits<data__>::epsilon());
-#ifdef ELI_USING_QD
-      if ( (typeid(data_type)==typeid(dd_real)) || (typeid(data_type)==typeid(qd_real)) )
-        eps=std::numeric_limits<double>::epsilon();
-#endif
 
       {
         // hand checked with "Degree Reduction of Bezier Curves" by Dave Morgan
@@ -812,7 +1004,7 @@ class bezier_curve_test_suite : public Test::Suite
         cntrl_in[3] << 2,   3, 0;
         cntrl_in[4] << 1.5, 3, 0;
 
-        bezier_type bc1(5), bc2;
+        bezier_type bc1(4), bc2;
 
         // set control points
         for (index_type i=0; i<5; ++i)
@@ -1017,14 +1209,419 @@ class bezier_curve_test_suite : public Test::Suite
       }
     }
 
+    void degree_to_cubic_test()  // degree_to_cubic();
+    {
+      data_type eps(std::numeric_limits<data__>::epsilon());
+
+      // Test linear promotion case.
+      {
+        point_type cntrl_in[2];
+
+        cntrl_in[0] <<  0, 0, 0;
+        cntrl_in[1] <<  2, 6, 0;
+
+        bezier_type bc1(1), bc2;
+        point_type eval_out, eval_ref;
+        data_type t, curv_out, curv_ref;
+
+        // set control points
+        for (index_type i=0; i<2; ++i)
+        {
+          bc1.set_control_point(cntrl_in[i], i);
+        }
+
+        bc2=bc1;
+        bc1.degree_to_cubic();
+
+        // test if the degree is correct
+        TEST_ASSERT(bc1.degree()==3);
+
+        // test evaluation at end points
+        t=0;
+        eval_out=bc2.f(t);
+        eval_ref=bc1.f(t);
+        TEST_ASSERT(eval_out==eval_ref);
+        t=1;
+        eval_out=bc2.f(t);
+        eval_ref=bc1.f(t);
+        TEST_ASSERT(eval_out==eval_ref);
+
+        // test evaluation at interior point
+        t=static_cast<data__>(0.45);
+        eval_out=bc2.f(t);
+        eval_ref=bc1.f(t);
+        TEST_ASSERT((eval_out-eval_ref).norm()<5*eps);
+
+        // test 1st derivative at end points
+        t=0;
+        eval_out=bc2.fp(t);
+        eval_ref=bc1.fp(t);
+        TEST_ASSERT((eval_out-eval_ref).norm()<5*eps);
+        t=1;
+        eval_out=bc2.fp(t);
+        eval_ref=bc1.fp(t);
+        TEST_ASSERT((eval_out-eval_ref).norm()<5*eps);
+
+        // test 1st derivative at interior point
+        t=static_cast<data__>(0.45);
+        eval_out=bc2.fp(t);
+        eval_ref=bc1.fp(t);
+        TEST_ASSERT((eval_out-eval_ref).norm()<5*eps);
+
+        // test 2nd derivative at end points
+        t=0;
+        eval_out=bc2.fpp(t);
+        eval_ref=bc1.fpp(t);
+        TEST_ASSERT((eval_out-eval_ref).norm()<33*eps);
+        t=1;
+        eval_out=bc2.fpp(t);
+        eval_ref=bc1.fpp(t);
+        TEST_ASSERT((eval_out-eval_ref).norm()<18*eps);
+
+        // test 2nd derivative at interior point
+        t=static_cast<data__>(0.45);
+        eval_out=bc2.fpp(t);
+        eval_ref=bc1.fpp(t);
+        TEST_ASSERT((eval_out-eval_ref).norm()<33*eps);
+
+        // test 3rd derivative at end points
+        t=0;
+        eval_out=bc2.fppp(t);
+        eval_ref=bc1.fppp(t);
+        TEST_ASSERT((eval_out-eval_ref).norm()<390*eps);
+        t=1;
+        eval_out=bc2.fppp(t);
+        eval_ref=bc1.fppp(t);
+        TEST_ASSERT((eval_out-eval_ref).norm()<390*eps);
+
+        // test 3rd derivative at interior point
+        t=static_cast<data__>(0.45);
+        eval_out=bc2.fppp(t);
+        eval_ref=bc1.fppp(t);
+        TEST_ASSERT((eval_out-eval_ref).norm()<203*eps);
+
+        // test curvature at end points
+        t=0;
+        eli::geom::curve::curvature(curv_out, bc2, t);
+        eli::geom::curve::curvature(curv_ref, bc1, t);
+        TEST_ASSERT(curv_out==curv_ref);
+        t=1;
+        eli::geom::curve::curvature(curv_out, bc2, t);
+        eli::geom::curve::curvature(curv_ref, bc1, t);
+        TEST_ASSERT(std::abs(curv_out-curv_ref)<203*eps);
+
+        // test curvature at interior point
+        t=static_cast<data__>(0.45);
+        eli::geom::curve::curvature(curv_out, bc2, t);
+        eli::geom::curve::curvature(curv_ref, bc1, t);
+        TEST_ASSERT(std::abs(curv_out-curv_ref)<203*eps);
+      }
+
+      // Test quadratic promotion case.
+      {
+        point_type cntrl_in[3];
+
+        cntrl_in[0] <<  0, 0, 0;
+        cntrl_in[1] <<  2, 6, 0;
+        cntrl_in[2] <<  3, 0, 0;
+
+        bezier_type bc1(2), bc2;
+        point_type eval_out, eval_ref;
+        data_type t, curv_out, curv_ref;
+
+        // set control points
+        for (index_type i=0; i<3; ++i)
+        {
+          bc1.set_control_point(cntrl_in[i], i);
+        }
+
+        bc2=bc1;
+        bc1.degree_to_cubic();
+
+        // test if the degree is correct
+        TEST_ASSERT(bc1.degree()==3);
+
+        // test evaluation at end points
+        t=0;
+        eval_out=bc2.f(t);
+        eval_ref=bc1.f(t);
+        TEST_ASSERT(eval_out==eval_ref);
+        t=1;
+        eval_out=bc2.f(t);
+        eval_ref=bc1.f(t);
+        TEST_ASSERT(eval_out==eval_ref);
+
+        // test evaluation at interior point
+        t=static_cast<data__>(0.45);
+        eval_out=bc2.f(t);
+        eval_ref=bc1.f(t);
+        TEST_ASSERT((eval_out-eval_ref).norm()<5*eps);
+
+        // test 1st derivative at end points
+        t=0;
+        eval_out=bc2.fp(t);
+        eval_ref=bc1.fp(t);
+        TEST_ASSERT((eval_out-eval_ref).norm()<5*eps);
+        t=1;
+        eval_out=bc2.fp(t);
+        eval_ref=bc1.fp(t);
+        TEST_ASSERT((eval_out-eval_ref).norm()<5*eps);
+
+        // test 1st derivative at interior point
+        t=static_cast<data__>(0.45);
+        eval_out=bc2.fp(t);
+        eval_ref=bc1.fp(t);
+        TEST_ASSERT((eval_out-eval_ref).norm()<5*eps);
+
+        // test 2nd derivative at end points
+        t=0;
+        eval_out=bc2.fpp(t);
+        eval_ref=bc1.fpp(t);
+        TEST_ASSERT((eval_out-eval_ref).norm()<33*eps);
+        t=1;
+        eval_out=bc2.fpp(t);
+        eval_ref=bc1.fpp(t);
+        TEST_ASSERT((eval_out-eval_ref).norm()<18*eps);
+
+        // test 2nd derivative at interior point
+        t=static_cast<data__>(0.45);
+        eval_out=bc2.fpp(t);
+        eval_ref=bc1.fpp(t);
+        TEST_ASSERT((eval_out-eval_ref).norm()<33*eps);
+
+        // test 3rd derivative at end points
+        t=0;
+        eval_out=bc2.fppp(t);
+        eval_ref=bc1.fppp(t);
+        TEST_ASSERT((eval_out-eval_ref).norm()<390*eps);
+        t=1;
+        eval_out=bc2.fppp(t);
+        eval_ref=bc1.fppp(t);
+        TEST_ASSERT((eval_out-eval_ref).norm()<390*eps);
+
+        // test 3rd derivative at interior point
+        t=static_cast<data__>(0.45);
+        eval_out=bc2.fppp(t);
+        eval_ref=bc1.fppp(t);
+        TEST_ASSERT((eval_out-eval_ref).norm()<203*eps);
+
+        // test curvature at end points
+        t=0;
+        eli::geom::curve::curvature(curv_out, bc2, t);
+        eli::geom::curve::curvature(curv_ref, bc1, t);
+        TEST_ASSERT((curv_out-curv_ref)<10*eps);
+        t=1;
+        eli::geom::curve::curvature(curv_out, bc2, t);
+        eli::geom::curve::curvature(curv_ref, bc1, t);
+        TEST_ASSERT(std::abs(curv_out-curv_ref)<203*eps);
+
+        // test curvature at interior point
+        t=static_cast<data__>(0.45);
+        eli::geom::curve::curvature(curv_out, bc2, t);
+        eli::geom::curve::curvature(curv_ref, bc1, t);
+        TEST_ASSERT(std::abs(curv_out-curv_ref)<203*eps);
+      }
+
+      // Test do-nothing cubic case.
+      {
+        point_type cntrl_in[4];
+
+        cntrl_in[0] <<  0, 0, 0;
+        cntrl_in[1] <<  2, 6, 0;
+        cntrl_in[2] <<  3, 0, 0;
+        cntrl_in[3] <<  5, 4, 0;
+
+        bezier_type bc1(3), bc2;
+
+        // set control points
+        for (index_type i=0; i<4; ++i)
+        {
+          bc1.set_control_point(cntrl_in[i], i);
+        }
+
+        bc2=bc1;
+        bc1.degree_to_cubic();
+
+        // test if the degree is correct
+        TEST_ASSERT(bc1.degree()==3);
+
+        // test to see that nothing happened
+        if (bc1.degree()==3)
+        {
+          for (index_type i=0; i<4; ++i)
+          {
+            TEST_ASSERT(bc1.get_control_point(i)==bc2.get_control_point(i));
+          }
+        }
+      }
+
+      // Test demotion case.
+      {
+        point_type cntrl_in[7];
+
+        cntrl_in[0] <<  0, 0, 0;
+        cntrl_in[1] <<  2, 6, 0;
+        cntrl_in[2] <<  3, 0, 0;
+        cntrl_in[3] <<  5, 4, 0;
+        cntrl_in[4] <<  7, 1, 0;
+        cntrl_in[5] <<  5, 5, 0;
+        cntrl_in[6] << 10, 6, 0;
+
+        bezier_type bc1(6), bc2;
+
+        // set control points
+        for (index_type i=0; i<7; ++i)
+        {
+          bc1.set_control_point(cntrl_in[i], i);
+        }
+
+        bc2=bc1;
+        bc1.degree_to_cubic();
+
+        // test if the degree is correct
+        TEST_ASSERT(bc1.degree()==3);
+
+        // test that start/end point/derivatives are equal.
+        data_type t;
+        t = 0;
+        TEST_ASSERT(eli::geom::point::distance(bc2.f(t), bc1.f(t))==0);
+        TEST_ASSERT(eli::geom::point::distance(bc2.fp(t), bc1.fp(t))==0);
+
+        t = 1;
+        TEST_ASSERT(eli::geom::point::distance(bc2.f(t), bc1.f(t))==0);
+        TEST_ASSERT(eli::geom::point::distance(bc2.fp(t), bc1.fp(t))==0);
+      }
+    }
+
+    void distance_bound_test()
+    {
+      // Test that curve has zero distance itself
+      {
+        point_type cntrl_in[5];
+
+        // set control points
+        cntrl_in[0] << 0,   0, 0;
+        cntrl_in[1] << 0,   4, 0;
+        cntrl_in[2] << 2,   4, 0;
+        cntrl_in[3] << 2,   3, 0;
+        cntrl_in[4] << 1.5, 3, 0;
+
+        bezier_type bc1(4);
+
+        // set control points
+        for (index_type i=0; i<5; ++i)
+        {
+          bc1.set_control_point(cntrl_in[i], i);
+        }
+
+        data_type d1 = bc1.eqp_distance_bound(bc1);
+        TEST_ASSERT(d1==0);
+      }
+
+      // Test that curve has zero distance from promoted-self (and vis-versa)
+      {
+        point_type cntrl_in[5];
+
+        // set control points
+        cntrl_in[0] << 0,   0, 0;
+        cntrl_in[1] << 0,   4, 0;
+        cntrl_in[2] << 2,   4, 0;
+        cntrl_in[3] << 2,   3, 0;
+        cntrl_in[4] << 1.5, 3, 0;
+
+        bezier_type bc1(4), bc2;
+
+        // set control points
+        for (index_type i=0; i<5; ++i)
+        {
+          bc1.set_control_point(cntrl_in[i], i);
+        }
+        bc2=bc1;
+
+        // promote_to curve high order
+        bc2.degree_promote_to(bc1.degree()+5);
+
+        data_type d1 = bc2.eqp_distance_bound(bc1);
+        TEST_ASSERT(d1==0);
+
+        data_type d2 = bc1.eqp_distance_bound(bc2);
+        TEST_ASSERT(d2==0);
+      }
+
+      // Test that curve has known distance from offset & promoted-self (and vis-versa)
+      {
+        point_type cntrl_in[5];
+
+        // set control points
+        cntrl_in[0] << 0,   0, 0;
+        cntrl_in[1] << 0,   4, 0;
+        cntrl_in[2] << 2,   4, 0;
+        cntrl_in[3] << 2,   3, 0;
+        cntrl_in[4] << 1.5, 3, 0;
+
+        data_type dz(3);
+        point_type offset;
+        offset << 0, 0, dz;
+
+        bezier_type bc1(4), bc2(4);
+
+        // set control points
+        for (index_type i=0; i<5; ++i)
+        {
+          bc1.set_control_point(cntrl_in[i], i);
+          bc2.set_control_point(cntrl_in[i]+offset, i);
+        }
+
+        // promote_to curve high order
+        bc2.degree_promote_to(bc1.degree()+5);
+
+        data_type d1 = bc2.eqp_distance_bound(bc1);
+        TEST_ASSERT(d1==dz);
+
+        data_type d2 = bc1.eqp_distance_bound(bc2);
+        TEST_ASSERT(d2==dz);
+      }
+
+      // Test that curve has known distance from reversed & promoted-self (and vis-versa)
+      {
+        point_type cntrl_in[5];
+
+        // set control points
+        // curve constructed such that greatest distance from reverse will be the endpoints.
+        cntrl_in[0] << 0,   0,   0;
+        cntrl_in[1] << 1,   1,   0;
+        cntrl_in[2] << 2,   0.5, 0;
+        cntrl_in[3] << 3,   2.5, 0;
+        cntrl_in[4] << 4,   6.0, 0;
+
+        bezier_type bc1(4), bc2(4);
+
+        // set control points
+        for (index_type i=0; i<5; ++i)
+        {
+          bc1.set_control_point(cntrl_in[i], i);
+        }
+        bc2=bc1;
+
+        bc2.reverse();
+
+        data_type dendpts = (bc1.get_control_point(4)-bc1.get_control_point(0) ).norm();
+
+        // promote_to curve high order
+        bc2.degree_promote_to(bc1.degree()+5);
+
+        data_type d1 = bc2.eqp_distance_bound(bc1);
+        TEST_ASSERT(d1==dendpts);
+
+        data_type d2 = bc1.eqp_distance_bound(bc2);
+        TEST_ASSERT(d2==dendpts);
+      }
+    }
+
     void split_test()
     {
       point_type cntrl_in[4], cntrl_ref[4];
       data_type eps(std::numeric_limits<data__>::epsilon());
-#ifdef ELI_USING_QD
-      if ( (typeid(data_type)==typeid(dd_real)) || (typeid(data_type)==typeid(qd_real)) )
-        eps=std::numeric_limits<double>::epsilon();
-#endif
 
       // set control points
       cntrl_in[0] << 0, 0, 0;
@@ -1105,10 +1702,6 @@ class bezier_curve_test_suite : public Test::Suite
     {
       point_type  cntrl_in[4];
       data_type eps(std::numeric_limits<data__>::epsilon());
-#ifdef ELI_USING_QD
-      if ( (typeid(data_type)==typeid(dd_real)) || (typeid(data_type)==typeid(qd_real)) )
-        eps=std::numeric_limits<double>::epsilon();
-#endif
 
       // set control points
       cntrl_in[0] << 0, 0, 0;

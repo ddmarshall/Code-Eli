@@ -56,21 +56,7 @@ class minimum_distance_line_test_suite : public Test::Suite
       TEST_ADD(minimum_distance_line_test_suite<long double>::point_2d_test);
       TEST_ADD(minimum_distance_line_test_suite<long double>::point_3d_test);
     }
-#ifdef ELI_USING_QD
-    void AddTests(const dd_real &)
-    {
-      // add the tests
-      TEST_ADD(minimum_distance_line_test_suite<dd_real>::point_2d_test);
-      TEST_ADD(minimum_distance_line_test_suite<dd_real>::point_3d_test);
-    }
 
-    void AddTests(const qd_real &)
-    {
-      // add the tests
-      TEST_ADD(minimum_distance_line_test_suite<qd_real>::point_2d_test);
-      TEST_ADD(minimum_distance_line_test_suite<qd_real>::point_3d_test);
-    }
-#endif
   public:
     minimum_distance_line_test_suite()
     {
@@ -168,7 +154,7 @@ class minimum_distance_line_test_suite : public Test::Suite
       pt << 1, 2, 2;
       dist=eli::geom::intersect::minimum_distance(t, a0, a1, pt);
       t_ref=1;
-      dist_ref=std::sqrt(8);
+      dist_ref=std::sqrt(static_cast<data_type>(8));
       TEST_ASSERT(tol.approximately_equal(t, t_ref));
       TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
 
@@ -178,7 +164,7 @@ class minimum_distance_line_test_suite : public Test::Suite
       pt << 3, 4, -1;
       dist=eli::geom::intersect::minimum_distance(t, a0, a1, pt);
       t_ref=2;
-      dist_ref=std::sqrt(9+1);
+      dist_ref=std::sqrt(static_cast<data_type>(9+1));
       TEST_ASSERT(tol.approximately_equal(t, t_ref));
       TEST_ASSERT(tol.approximately_equal(dist, dist_ref));
 

@@ -15,6 +15,12 @@
 
 #include <vector>
 
+#ifdef Success  // X11 #define collides with Eigen
+#undef Success
+#endif
+
+#include <Eigen/Eigen>
+
 #include "eli/geom/curve/piecewise.hpp"
 #include "eli/geom/curve/bezier.hpp"
 
@@ -29,11 +35,12 @@ namespace eli
       {
         public:
           typedef data__  data_type;
-          typedef int index_type;
+          typedef Eigen::Matrix<data_type, 1, dim__> point_type;
+          typedef typename point_type::Index index_type;
           typedef tol__ tolerance_type;
 
         public:
-          piecewise_creator_base(int n, const data_type &tt0) : dt(n), t0(tt0)
+          piecewise_creator_base(index_type n, const data_type &tt0) : dt(n), t0(tt0)
           {
             for (index_type i=0; i<static_cast<index_type>(dt.size()); ++i)
               dt[i]=1;

@@ -75,29 +75,6 @@ class bezier_curve_fit_test_suite : public Test::Suite
       TEST_ADD(bezier_curve_fit_test_suite<long double>::fit_closed_test);
       TEST_ADD(bezier_curve_fit_test_suite<long double>::interpolate_test);
     }
-#ifdef ELI_USING_QD
-    void AddTests(const dd_real &)
-    {
-      // add the tests
-      TEST_ADD(bezier_curve_fit_test_suite<dd_real>::fit_free_ends_test);
-      TEST_ADD(bezier_curve_fit_test_suite<dd_real>::fit_C0_ends_test);
-      TEST_ADD(bezier_curve_fit_test_suite<dd_real>::fit_C1_ends_test);
-      TEST_ADD(bezier_curve_fit_test_suite<dd_real>::fit_C2_ends_test);
-      TEST_ADD(bezier_curve_fit_test_suite<dd_real>::fit_closed_test);
-      TEST_ADD(bezier_curve_fit_test_suite<dd_real>::interpolate_test);
-    }
-
-    void AddTests(const qd_real &)
-    {
-      // add the tests
-      TEST_ADD(bezier_curve_fit_test_suite<qd_real>::fit_free_ends_test);
-      TEST_ADD(bezier_curve_fit_test_suite<qd_real>::fit_C0_ends_test);
-      TEST_ADD(bezier_curve_fit_test_suite<qd_real>::fit_C1_ends_test);
-      TEST_ADD(bezier_curve_fit_test_suite<qd_real>::fit_C2_ends_test);
-      TEST_ADD(bezier_curve_fit_test_suite<qd_real>::fit_closed_test);
-      TEST_ADD(bezier_curve_fit_test_suite<qd_real>::interpolate_test);
-    }
-#endif
 
   public:
     bezier_curve_fit_test_suite()
@@ -231,10 +208,6 @@ class bezier_curve_fit_test_suite : public Test::Suite
     void fit_C0_ends_test()
     {
       data_type eps(std::numeric_limits<data__>::epsilon());
-#ifdef ELI_USING_QD
-      if ( (typeid(data_type)==typeid(dd_real)) || (typeid(data_type)==typeid(qd_real)) )
-        eps=std::numeric_limits<double>::epsilon();
-#endif
 
       // open curve
       {
@@ -678,7 +651,7 @@ class bezier_curve_fit_test_suite : public Test::Suite
 
         // fit points
         data_type err;
-        err=bez.fit(t, fcon, deg);
+        err=bez.fit_with_error(t, fcon, deg);
 
         TEST_ASSERT(bez.closed());
         TEST_ASSERT(err < 0.393);
@@ -708,7 +681,7 @@ class bezier_curve_fit_test_suite : public Test::Suite
 
         // fit points
         data_type err;
-        err=bez.fit(t, fcon, deg);
+        err=bez.fit_with_error(t, fcon, deg);
 
         TEST_ASSERT(bez.closed());
         TEST_ASSERT(err < 0.0312);
@@ -738,7 +711,7 @@ class bezier_curve_fit_test_suite : public Test::Suite
 
         // fit points
         data_type err;
-        err=bez.fit(t, fcon, deg);
+        err=bez.fit_with_error(t, fcon, deg);
 
         TEST_ASSERT(bez.closed());
         TEST_ASSERT(err < 0.0343);
@@ -769,7 +742,7 @@ class bezier_curve_fit_test_suite : public Test::Suite
 
         // fit points
         data_type err;
-        err=bez.fit(t, fcon, deg);
+        err=bez.fit_with_error(t, fcon, deg);
 
         TEST_ASSERT(bez.closed());
         TEST_ASSERT(err < 0.0185);
@@ -805,7 +778,7 @@ class bezier_curve_fit_test_suite : public Test::Suite
 
         // fit points
         data_type err;
-        err=bez.fit(t, fcon, deg);
+        err=bez.fit_with_error(t, fcon, deg);
 
         TEST_ASSERT(bez.closed());
         TEST_ASSERT(err < 0.0395);
@@ -845,7 +818,7 @@ class bezier_curve_fit_test_suite : public Test::Suite
 
         // fit points
         data_type err;
-        err=bez.fit(t, fcon, deg);
+        err=bez.fit_with_error(t, fcon, deg);
 
         TEST_ASSERT(bez.closed());
         TEST_ASSERT(err < 0.141);
@@ -883,7 +856,7 @@ class bezier_curve_fit_test_suite : public Test::Suite
 
         // fit points
         data_type err;
-        err=bez.fit(t, fcon, deg);
+        err=bez.fit_with_error(t, fcon, deg);
 
         TEST_ASSERT(bez.closed());
         TEST_ASSERT(err < 0.0180);
@@ -920,7 +893,7 @@ class bezier_curve_fit_test_suite : public Test::Suite
 
         // fit points
         data_type err;
-        err=bez.fit(t, fcon, deg);
+        err=bez.fit_with_error(t, fcon, deg);
 
         TEST_ASSERT(bez.closed());
         TEST_ASSERT(err < 0.0316);
@@ -957,7 +930,7 @@ class bezier_curve_fit_test_suite : public Test::Suite
         fcon.add_C0_constraint(ci);
 
         // fit points
-        err=bez.fit(t, fcon, deg);
+        err=bez.fit_with_error(t, fcon, deg);
 
         TEST_ASSERT(bez.closed());
         TEST_ASSERT(err < 0.0353);
@@ -991,10 +964,6 @@ class bezier_curve_fit_test_suite : public Test::Suite
     void interpolate_test()
     {
       data_type eps(std::numeric_limits<data__>::epsilon());
-#ifdef ELI_USING_QD
-      if ( (typeid(data_type)==typeid(dd_real)) || (typeid(data_type)==typeid(qd_real)) )
-        eps=std::numeric_limits<double>::epsilon();
-#endif
 
       // interpolate through all points open
       {
@@ -1157,7 +1126,7 @@ class bezier_curve_fit_test_suite : public Test::Suite
         TEST_ASSERT((bez.f(t[1])-pts[1]).norm()<9*eps);
         TEST_ASSERT((bez.f(t[2])-pts[2]).norm()<84*eps);
         TEST_ASSERT((bez.f(t[3])-pts[3]).norm()<2*eps);
-        TEST_ASSERT((bez.fp(t[1])-fp1).norm()<77*eps);
+        TEST_ASSERT((bez.fp(t[1])-fp1).norm()<130*eps);
         TEST_ASSERT((bez.fpp(t[1])-fpp1).norm()<353*eps);
 
 //         octave_print(22, pts, bez);

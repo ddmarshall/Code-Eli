@@ -13,6 +13,10 @@
 #ifndef eli_mutil_nls_iterative_root_system_method_hpp
 #define eli_mutil_nls_iterative_root_system_method_hpp
 
+#ifdef Success  // X11 #define collides with Eigen
+#undef Success
+#endif
+
 #include "Eigen/Eigen"
 
 #include "eli/mutil/nls/iterative_root_base.hpp"
@@ -100,7 +104,12 @@ namespace eli
               }
               case(max_norm):      // for vectors this is equivalent to Linf, for matrices it is the largest element in matrix
               {
-                return std::abs(mat.maxCoeff());
+                data__ maxval = std::abs(mat.maxCoeff());
+                data__ minval = std::abs(mat.minCoeff());
+                if( maxval > minval ) return maxval;
+                else return minval;
+                // The following should work, but it throws an error: Expected expression.
+                // return mat.lpNorm<Eigen::Infinity>();
                 break;
               }
               case(L2):             // for vectors this is sqrt of sum of squares, for matrices this will be equivalent to the Frobenius norm

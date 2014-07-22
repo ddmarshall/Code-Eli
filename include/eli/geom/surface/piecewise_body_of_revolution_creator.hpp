@@ -10,8 +10,8 @@
 *    David D. Marshall - initial code and implementation
 ********************************************************************************/
 
-#ifndef eli_geom_surface_piecewise_creator_hpp
-#define eli_geom_surface_piecewise_creator_hpp
+#ifndef eli_geom_surface_piecewise_body_of_revolution_creator_hpp
+#define eli_geom_surface_piecewise_body_of_revolution_creator_hpp
 
 #include <list>
 #include <iterator>
@@ -30,16 +30,10 @@ namespace eli
   {
     namespace surface
     {
-      enum surface_orientation
-      {
-        OUTWARD_NORMAL = 1,
-        INWARD_NORMAL  = 2
-      };
-
       template<typename data__, unsigned short dim__, typename tol__>
       bool create_body_of_revolution(piecewise<bezier, data__, dim__, tol__> &ps,
                                      const eli::geom::curve::piecewise<eli::geom::curve::bezier, data__, dim__, tol__> &pc,
-                                     int axis, surface_orientation orient)
+                                     int axis, bool outward_normal)
       {
         typedef piecewise<bezier, data__, dim__, tol__> piecewise_surface_type;
         typedef eli::geom::curve::piecewise<eli::geom::curve::bezier, data__, dim__, tol__> piecewise_curve_type;
@@ -58,7 +52,7 @@ namespace eli
         index_type i, j, pp, qq, nu=pc.number_segments(), nv=4, udim, vdim;
 
         // resize the surface
-        ps.resize(nu, nv);
+        ps.init_uv(nu, nv);
 
         // set the axis of rotation
         switch(axis)
@@ -84,7 +78,7 @@ namespace eli
             return false;
           }
         }
-        if (orient==OUTWARD_NORMAL)
+        if (outward_normal)
         {
           normal*=-1;
         }

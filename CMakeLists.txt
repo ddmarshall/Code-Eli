@@ -16,8 +16,8 @@ project(ELI)
 
 # set the release version number
 set(ELI_VERSION_MAJOR 0)
-set(ELI_VERSION_MINOR 2)
-set(ELI_VERSION_PATCH 5)
+set(ELI_VERSION_MINOR 3)
+set(ELI_VERSION_PATCH 0)
 
 # capture the build date and time
 if (WIN32)
@@ -53,13 +53,6 @@ include(CTest)
 
 # find libraries that are needed or optional
 # find the cpptest library
-find_package(CPPTest REQUIRED)
-find_package(Eigen3 3.0.0 REQUIRED)
-find_package(QD 2.3.13)
-if (QD_FOUND)
-  set(ELI_QD_FOUND 1)
-  set(DOC_ELI_QD_FOUND "ELI_QD_FOUND")
-endif ()
 find_package(Doxygen)
 if (DOXYGEN_FOUND)
   configure_file(${ELI_SOURCE_DIR}/cmake/Doxyfile.in ${ELI_BINARY_DIR}/Doxyfile @ONLY)
@@ -74,18 +67,20 @@ endif()
 # are to be included
 configure_file(${ELI_SOURCE_DIR}/cmake/code_eli.hpp.in ${ELI_BINARY_DIR}/include/eli/code_eli.hpp @ONLY)
 
-# add the include and link directories and libraries that are needed
-include_directories(${ELI_BINARY_DIR}/include
-                    ${ELI_SOURCE_DIR}/include
-                    ${CPPTEST_INCLUDE_DIRS}
-                    ${EIGEN3_INCLUDE_DIR})
-link_directories(${CPPTEST_LIBRARY_DIRS})
-if (QD_FOUND)
-  include_directories(${QD_INCLUDE_DIRS})
-  link_directories(${QD_LIBRARY_DIRS})
+find_package(CPPTest)
+find_package(Eigen3 3.0.0)
+
+if (EIGEN3_FOUND)
+  # add the include directories and libraries that are needed
+  include_directories(${ELI_BINARY_DIR}/include
+                      ${ELI_SOURCE_DIR}/include
+                      ${EIGEN3_INCLUDE_DIR})
+  add_subdirectory(example)
+
+  if(CPPTEST_FOUND)
+    # add the CPPTest include and link directories
+    include_directories(${CPPTEST_INCLUDE_DIRS})
+    link_directories(${CPPTEST_LIBRARY_DIRS})
+    add_subdirectory(test)
+  endif()
 endif()
-
-# add subdirectories of project
-add_subdirectory(test)
-add_subdirectory(example)
-

@@ -17,6 +17,10 @@
 
 #include <vector>
 
+#ifdef Success  // X11 #define collides with Eigen
+#undef Success
+#endif
+
 #include "Eigen/Eigen"
 
 #include "eli/util/tolerance.hpp"
@@ -45,7 +49,7 @@ namespace eli
           typedef tol__ tolerance_type;
           typedef Eigen::Matrix<data_type, dim__, dim__> rotation_matrix_type;
           typedef eli::geom::general::bounding_box<data_type, dim__, tolerance_type> bounding_box_type;
-          typedef eli::geom::curve::bezier<data_type, dim__, tolerance_type> boundary_curve_type;
+          typedef eli::geom::curve::bezier<data_type, dim__, tolerance_type> curve_type;
 
         private:
           typedef Eigen::Map<Eigen::Matrix<data_type, Eigen::Dynamic, dim__>,
@@ -118,6 +122,18 @@ namespace eli
 
           index_type degree_u() const {return static_cast<index_type>(B_v.size())-1;}
           index_type degree_v() const {return static_cast<index_type>(B_u.size())-1;}
+
+          void get_parameter_min(data_type &umin, data_type &vmin) const
+          {
+            umin=0;
+            vmin=0;
+          }
+
+          void get_parameter_max(data_type &umax, data_type &vmax) const
+          {
+            umax=1;
+            vmax=1;
+          }
 
           void resize(const index_type &u_dim, const index_type &v_dim)
           {
@@ -200,7 +216,7 @@ namespace eli
           bool open_u() const {return !closed_u();}
           bool closed_u() const
           {
-            boundary_curve_type bc0, bc1;
+            curve_type bc0, bc1;
 
             get_uconst_curve(bc0, 0);
             get_uconst_curve(bc1, 1);
@@ -210,7 +226,7 @@ namespace eli
           bool open_v() const {return !closed_v();}
           bool closed_v() const
           {
-            boundary_curve_type bc0, bc1;
+            curve_type bc0, bc1;
 
             get_vconst_curve(bc0, 0);
             get_vconst_curve(bc1, 1);
@@ -293,7 +309,7 @@ namespace eli
             }
           }
 
-          void get_uconst_curve(boundary_curve_type &bc, const data_type &u) const
+          void get_uconst_curve(curve_type &bc, const data_type &u) const
           {
             index_type j, m(degree_v());
 
@@ -314,7 +330,7 @@ namespace eli
             }
           }
 
-          void get_vconst_curve(boundary_curve_type &bc, const data_type &v) const
+          void get_vconst_curve(curve_type &bc, const data_type &v) const
           {
             index_type i, n(degree_u());
 
@@ -379,7 +395,6 @@ namespace eli
           {
             point_type ans, tmp;
             index_type i, n(degree_u()), m(degree_v());
-            Eigen::Matrix<data_type, Eigen::Dynamic, dim__> temp_cp, B_up(n+1-1, dim__);
 
             // check to make sure have valid curve
             assert(n>=0);
@@ -394,6 +409,8 @@ namespace eli
               ans.setZero();
               return ans;
             }
+
+            Eigen::Matrix<data_type, Eigen::Dynamic, dim__> temp_cp, B_up(n+1-1, dim__);
 
             if ((n-1)<=m)
             {
@@ -429,7 +446,6 @@ namespace eli
           {
             point_type ans, tmp;
             index_type i, n(degree_u()), m(degree_v());
-            Eigen::Matrix<data_type, Eigen::Dynamic, dim__> temp_cp, B_vp(m+1-1, dim__);
 
             // check to make sure have valid curve
             assert(n>=0);
@@ -444,6 +460,8 @@ namespace eli
               ans.setZero();
               return ans;
             }
+
+            Eigen::Matrix<data_type, Eigen::Dynamic, dim__> temp_cp, B_vp(m+1-1, dim__);
 
             if (n<=(m-1))
             {
@@ -479,7 +497,6 @@ namespace eli
           {
             point_type ans, tmp;
             index_type i, n(degree_u()), m(degree_v());
-            Eigen::Matrix<data_type, Eigen::Dynamic, dim__> temp_cp, B_upp(n+1-2, dim__);
 
             // check to make sure have valid curve
             assert(n>=0);
@@ -494,6 +511,8 @@ namespace eli
               ans.setZero();
               return ans;
             }
+
+            Eigen::Matrix<data_type, Eigen::Dynamic, dim__> temp_cp, B_upp(n+1-2, dim__);
 
             if ((n-2)<=m)
             {
@@ -530,7 +549,6 @@ namespace eli
           {
             point_type ans, tmp;
             index_type i, n(degree_u()), m(degree_v());
-            Eigen::Matrix<data_type, Eigen::Dynamic, dim__> temp_cp, B_up(n+1-1, dim__), B_vp(m+1-1, dim__);
 
             // check to make sure have valid curve
             assert(n>=0);
@@ -545,6 +563,8 @@ namespace eli
               ans.setZero();
               return ans;
             }
+
+            Eigen::Matrix<data_type, Eigen::Dynamic, dim__> temp_cp, B_up(n+1-1, dim__), B_vp(m+1-1, dim__);
 
             if (n<=m)
             {
@@ -584,7 +604,6 @@ namespace eli
           {
             point_type ans, tmp;
             index_type i, n(degree_u()), m(degree_v());
-            Eigen::Matrix<data_type, Eigen::Dynamic, dim__> temp_cp, B_vpp(m+1-2, dim__);
 
             // check to make sure have valid curve
             assert(n>=0);
@@ -599,6 +618,8 @@ namespace eli
               ans.setZero();
               return ans;
             }
+
+            Eigen::Matrix<data_type, Eigen::Dynamic, dim__> temp_cp, B_vpp(m+1-2, dim__);
 
             if (n<=(m-2))
             {
@@ -635,7 +656,6 @@ namespace eli
 
             point_type ans, tmp;
             index_type i, n(degree_u()), m(degree_v());
-            Eigen::Matrix<data_type, Eigen::Dynamic, dim__> temp_cp, B_uppp(n+1-3, dim__);
 
             // check to make sure have valid curve
             assert(n>=0);
@@ -650,6 +670,8 @@ namespace eli
               ans.setZero();
               return ans;
             }
+
+            Eigen::Matrix<data_type, Eigen::Dynamic, dim__> temp_cp, B_uppp(n+1-3, dim__);
 
             if ((n-3)<=m)
             {
@@ -686,7 +708,6 @@ namespace eli
           {
             point_type ans, tmp;
             index_type i, n(degree_u()), m(degree_v());
-            Eigen::Matrix<data_type, Eigen::Dynamic, dim__> temp_cp, B_upp(n+1-2, dim__), B_vp(m+1-1, dim__);
 
             // check to make sure have valid curve
             assert(n>=0);
@@ -701,6 +722,8 @@ namespace eli
               ans.setZero();
               return ans;
             }
+
+            Eigen::Matrix<data_type, Eigen::Dynamic, dim__> temp_cp, B_upp(n+1-2, dim__), B_vp(m+1-1, dim__);
 
             if ((n-1)<=m)
             {
@@ -740,7 +763,6 @@ namespace eli
           {
             point_type ans, tmp;
             index_type i, n(degree_u()), m(degree_v());
-            Eigen::Matrix<data_type, Eigen::Dynamic, dim__> temp_cp, B_up(n+1-1, dim__), B_vpp(m+1-2, dim__);
 
             // check to make sure have valid curve
             assert(n>=0);
@@ -755,6 +777,8 @@ namespace eli
               ans.setZero();
               return ans;
             }
+
+            Eigen::Matrix<data_type, Eigen::Dynamic, dim__> temp_cp, B_up(n+1-1, dim__), B_vpp(m+1-2, dim__);
 
             if (n<=(m-1))
             {
@@ -794,7 +818,6 @@ namespace eli
           {
             point_type ans, tmp;
             index_type i, n(degree_u()), m(degree_v());
-            Eigen::Matrix<data_type, Eigen::Dynamic, dim__> temp_cp, B_vppp(m+1-3, dim__);
 
             // check to make sure have valid curve
             assert(n>=0);
@@ -809,6 +832,8 @@ namespace eli
               ans.setZero();
               return ans;
             }
+
+            Eigen::Matrix<data_type, Eigen::Dynamic, dim__> temp_cp, B_vppp(m+1-3, dim__);
 
             if (n<=(m-2))
             {
@@ -919,6 +944,32 @@ namespace eli
             }
           }
 
+          void promote_u_to(index_type target_degree)
+          {
+              typedef Eigen::Matrix<data_type, Eigen::Dynamic, dim__> control_row_type;
+              typedef std::vector<control_row_type, Eigen::aligned_allocator<control_row_type> > control_row_collection_type;
+
+              index_type i, n(degree_u()), m(degree_v());
+              control_row_collection_type current_row(m+1, control_row_type(n+1, dim__));
+
+              // copy the control rows
+              for (i=0; i<=m; ++i)
+              {
+                current_row[i]=B_u[i];
+              }
+
+              // resize current surface
+              resize(target_degree, m);
+
+              // set the new control points
+              control_row_type tmp_cp(target_degree+1, dim__);
+              for (i=0; i<=m; ++i)
+              {
+                eli::geom::utility::bezier_promote_control_points_to(tmp_cp, current_row[i]);
+                B_u[i]=tmp_cp;
+              }
+          }
+
           void promote_v()
           {
             typedef Eigen::Matrix<data_type, Eigen::Dynamic, dim__> control_col_type;
@@ -929,7 +980,9 @@ namespace eli
 
             // copy the control cols
             for (i=0; i<=n; ++i)
+            {
               current_col[i]=B_v[i];
+            }
 
             // resize current surface
             resize(n, m+1);
@@ -939,6 +992,32 @@ namespace eli
             for (i=0; i<=n; ++i)
             {
               eli::geom::utility::bezier_promote_control_points(tmp_cp, current_col[i]);
+              B_v[i]=tmp_cp;
+            }
+          }
+
+          void promote_v_to(index_type target_degree)
+          {
+            typedef Eigen::Matrix<data_type, Eigen::Dynamic, dim__> control_col_type;
+            typedef std::vector<control_col_type, Eigen::aligned_allocator<control_col_type> > control_col_collection_type;
+
+            index_type i, n(degree_u()), m(degree_v());
+            control_col_collection_type current_col(n+1, control_col_type(m+1, dim__));
+
+            // copy the control cols
+            for (i=0; i<=n; ++i)
+            {
+              current_col[i]=B_v[i];
+            }
+
+            // resize current surface
+            resize(n, target_degree);
+
+            // set the new control points
+            control_col_type tmp_cp(target_degree+1, dim__);
+            for (i=0; i<=n; ++i)
+            {
+              eli::geom::utility::bezier_promote_control_points_to(tmp_cp, current_col[i]);
               B_v[i]=tmp_cp;
             }
           }
@@ -1043,6 +1122,58 @@ namespace eli
             return true;
           }
 
+          void to_cubic_u()
+          {
+              typedef Eigen::Matrix<data_type, Eigen::Dynamic, dim__> control_row_type;
+              typedef std::vector<control_row_type, Eigen::aligned_allocator<control_row_type> > control_row_collection_type;
+
+              index_type i, n(degree_u()), m(degree_v());
+              control_row_collection_type current_row(m+1, control_row_type(n+1, dim__));
+
+              // copy the control rows
+              for (i=0; i<=m; ++i)
+              {
+                current_row[i]=B_u[i];
+              }
+
+              // resize current surface
+              resize(3, m);
+
+              // set the new control points
+              control_row_type tmp_cp(4, dim__);
+              for (i=0; i<=m; ++i)
+              {
+                eli::geom::utility::bezier_control_points_to_cubic(tmp_cp, current_row[i]);
+                B_u[i]=tmp_cp;
+              }
+          }
+
+          void to_cubic_v()
+          {
+            typedef Eigen::Matrix<data_type, Eigen::Dynamic, dim__> control_col_type;
+            typedef std::vector<control_col_type, Eigen::aligned_allocator<control_col_type> > control_col_collection_type;
+
+            index_type i, n(degree_u()), m(degree_v());
+            control_col_collection_type current_col(n+1, control_col_type(m+1, dim__));
+
+            // copy the control rows
+            for (i=0; i<=n; ++i)
+            {
+              current_col[i]=B_v[i];
+            }
+
+            // resize current surface
+            resize(n, 3);
+
+            // set the new control points
+            control_col_type tmp_cp(4, dim__);
+            for (i=0; i<=n; ++i)
+            {
+              eli::geom::utility::bezier_control_points_to_cubic(tmp_cp, current_col[i]);
+              B_v[i]=tmp_cp;
+            }
+          }
+
           void split_u(bezier<data_type, dim__, tol__> &bs_lo, bezier<data_type, dim__, tol__> &bs_hi, const data_type &u0) const
           {
             typedef Eigen::Matrix<data_type, Eigen::Dynamic, dim__> control_row_type;
@@ -1095,6 +1226,51 @@ namespace eli
             }
           }
 
+          data_type eqp_distance_bound(const bezier<data_type, dim__, tol__> &bs) const
+          {
+            typedef bezier<data_type, dim__, tol__> surf_type;
+
+            // Make working copies of surfaces.
+            surf_type bsa(*this);
+            surf_type bsb(bs);
+
+            // Find maximum common order.
+            index_type n(bsa.degree_u()), m(bsa.degree_v());
+            if(bsb.degree_u() > n)
+            {
+              n = bsb.degree_u();
+            }
+
+            if(bsb.degree_v() > m)
+            {
+              m = bsb.degree_v();
+            }
+
+            // Promote both to max common order.
+            bsa.promote_u_to(n);
+            bsa.promote_v_to(m);
+
+            bsb.promote_u_to(n);
+            bsb.promote_v_to(m);
+
+            // Find maximum distance between control points.
+            index_type i, j;
+            data_type d, maxd(0);
+            for (i=0; i<=n; ++i)
+            {
+              for (j=0; j<=m; ++j)
+              {
+                d = (bsa.get_control_point(i, j) - bsb.get_control_point(i, j)).norm();
+                if(d > maxd)
+                {
+                  maxd=d;
+                }
+              }
+            }
+
+            return maxd;
+          }
+
         private:
           void set_Bs(index_type n, index_type m)
           {
@@ -1102,13 +1278,21 @@ namespace eli
             B_u.resize(m+1, control_point_matrix_type(nullptr, m+1, dim__, Eigen::Stride<1, dim__>()));
             for (index_type j=0; j<=m; ++j)
             {
+#ifdef ELI_NO_VECTOR_DATA
+              new (&(B_u.at(0))+j) control_point_matrix_type(&(point_data.at(0))+j*(n+1)*dim__, n+1, dim__, Eigen::Stride<1, dim__>());
+#else
               new (B_u.data()+j) control_point_matrix_type(point_data.data()+j*(n+1)*dim__, n+1, dim__, Eigen::Stride<1, dim__>());
+#endif
             }
 
             B_v.resize(n+1, v_dir_control_point_matrix_type(nullptr, n+1, dim__, Eigen::Stride<1, Eigen::Dynamic>(1, (n+1)*dim__)));
             for (index_type i=0; i<=n; ++i)
             {
+#ifdef ELI_NO_VECTOR_DATA
+              new (&(B_v.at(0))+i) v_dir_control_point_matrix_type(&(point_data.at(0))+i*dim__, m+1, dim__, Eigen::Stride<1, Eigen::Dynamic>(1, (n+1)*dim__));
+#else
               new (B_v.data()+i) v_dir_control_point_matrix_type(point_data.data()+i*dim__, m+1, dim__, Eigen::Stride<1, Eigen::Dynamic>(1, (n+1)*dim__));
+#endif
             }
           }
       };

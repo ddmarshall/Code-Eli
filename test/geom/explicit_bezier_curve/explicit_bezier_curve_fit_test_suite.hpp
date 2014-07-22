@@ -69,27 +69,6 @@ class explicit_bezier_curve_fit_test_suite : public Test::Suite
       TEST_ADD(explicit_bezier_curve_fit_test_suite<long double>::fit_C2_ends_test);
       TEST_ADD(explicit_bezier_curve_fit_test_suite<long double>::interpolate_test);
     }
-#ifdef ELI_USING_QD
-    void AddTests(const dd_real &)
-    {
-      // add the tests
-      TEST_ADD(explicit_bezier_curve_fit_test_suite<dd_real>::fit_free_ends_test);
-      TEST_ADD(explicit_bezier_curve_fit_test_suite<dd_real>::fit_C0_ends_test);
-      TEST_ADD(explicit_bezier_curve_fit_test_suite<dd_real>::fit_C1_ends_test);
-      TEST_ADD(explicit_bezier_curve_fit_test_suite<dd_real>::fit_C2_ends_test);
-      TEST_ADD(explicit_bezier_curve_fit_test_suite<dd_real>::interpolate_test);
-    }
-
-    void AddTests(const qd_real &)
-    {
-      // add the tests
-      TEST_ADD(explicit_bezier_curve_fit_test_suite<qd_real>::fit_free_ends_test);
-      TEST_ADD(explicit_bezier_curve_fit_test_suite<qd_real>::fit_C0_ends_test);
-      TEST_ADD(explicit_bezier_curve_fit_test_suite<qd_real>::fit_C1_ends_test);
-      TEST_ADD(explicit_bezier_curve_fit_test_suite<qd_real>::fit_C2_ends_test);
-      TEST_ADD(explicit_bezier_curve_fit_test_suite<qd_real>::interpolate_test);
-    }
-#endif
 
   public:
     explicit_bezier_curve_fit_test_suite()
@@ -180,10 +159,6 @@ class explicit_bezier_curve_fit_test_suite : public Test::Suite
     void fit_C0_ends_test()
     {
       data_type eps(std::numeric_limits<data__>::epsilon());
-#ifdef ELI_USING_QD
-      if ( (typeid(data_type)==typeid(dd_real)) || (typeid(data_type)==typeid(qd_real)) )
-        eps=std::numeric_limits<double>::epsilon();
-#endif
       fit_container_type fcon;
       size_t i, deg(5);
       std::vector<point_type, Eigen::aligned_allocator<point_type> > pts(10);
@@ -221,10 +196,6 @@ class explicit_bezier_curve_fit_test_suite : public Test::Suite
     void fit_C1_ends_test()
     {
       data_type eps(std::numeric_limits<data__>::epsilon());
-#ifdef ELI_USING_QD
-      if ( (typeid(data_type)==typeid(dd_real)) || (typeid(data_type)==typeid(qd_real)) )
-        eps=std::numeric_limits<double>::epsilon();
-#endif
       fit_container_type fcon;
       size_t i, deg(5);
       std::vector<point_type, Eigen::aligned_allocator<point_type> > pts(10);
@@ -269,10 +240,6 @@ class explicit_bezier_curve_fit_test_suite : public Test::Suite
     void fit_C2_ends_test()
     {
       data_type eps(std::numeric_limits<data__>::epsilon());
-#ifdef ELI_USING_QD
-      if ( (typeid(data_type)==typeid(dd_real)) || (typeid(data_type)==typeid(qd_real)) )
-        eps=std::numeric_limits<double>::epsilon();
-#endif
       fit_container_type fcon;
       size_t i, deg(7);
       std::vector<point_type, Eigen::aligned_allocator<point_type> > pts(10);
@@ -319,10 +286,6 @@ class explicit_bezier_curve_fit_test_suite : public Test::Suite
     void interpolate_test()
     {
       data_type eps(std::numeric_limits<data__>::epsilon());
-#ifdef ELI_USING_QD
-      if ( (typeid(data_type)==typeid(dd_real)) || (typeid(data_type)==typeid(qd_real)) )
-        eps=std::numeric_limits<double>::epsilon();
-#endif
       // interpolate through all points
       {
         fit_container_type fcon;

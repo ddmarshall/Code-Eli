@@ -15,6 +15,10 @@
 
 #include <cmath>
 
+#ifdef Success  // X11 #define collides with Eigen
+#undef Success
+#endif
+
 #include "Eigen/Eigen"
 
 namespace eli

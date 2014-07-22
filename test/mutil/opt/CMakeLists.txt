@@ -13,6 +13,11 @@
 project(OPT)
 
 # add the optimization test
-add_executable(OptTest ${PROJECT_SOURCE_DIR}/opt_test.cpp)
-target_link_libraries(OptTest ${_ELI_TEST_LIBRARIES_LIST})
-add_test(NAME OptTest COMMAND $<TARGET_FILE:OptTest> --text)
+set (OPT_TEST_EXE OptTest)
+set (OPT_TEST_SOURCE ${PROJECT_SOURCE_DIR}/opt_test.cpp)
+set (OPT_TEST_HEADER ${PROJECT_SOURCE_DIR}/least_squares_test_suite.hpp
+                     ${ELI_SOURCE_DIR}/include/eli/mutil/opt/least_squares.hpp)
+
+add_executable(${OPT_TEST_EXE} ${OPT_TEST_SOURCE} ${OPT_TEST_HEADER})
+target_link_libraries(${OPT_TEST_EXE} ${_ELI_TEST_LIBRARIES_LIST})
+add_test(NAME ${OPT_TEST_EXE} COMMAND $<TARGET_FILE:${OPT_TEST_EXE}> --text)

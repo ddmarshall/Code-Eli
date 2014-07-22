@@ -74,31 +74,6 @@ class explicit_bezier_curve_test_suite : public Test::Suite
       TEST_ADD(explicit_bezier_curve_test_suite<long double>::demotion_test);
       TEST_ADD(explicit_bezier_curve_test_suite<long double>::length_test);
     }
-#ifdef ELI_USING_QD
-    void AddTests(const dd_real &)
-    {
-      // add the tests
-      TEST_ADD(explicit_bezier_curve_test_suite<dd_real>::assignment_test);
-      TEST_ADD(explicit_bezier_curve_test_suite<dd_real>::reverse_test);
-      TEST_ADD(explicit_bezier_curve_test_suite<dd_real>::evaluation_test);
-      TEST_ADD(explicit_bezier_curve_test_suite<dd_real>::derivative_test);
-      TEST_ADD(explicit_bezier_curve_test_suite<dd_real>::promotion_test);
-      TEST_ADD(explicit_bezier_curve_test_suite<dd_real>::demotion_test);
-      TEST_ADD(explicit_bezier_curve_test_suite<dd_real>::length_test);
-    }
-
-    void AddTests(const qd_real &)
-    {
-      // add the tests
-      TEST_ADD(explicit_bezier_curve_test_suite<qd_real>::assignment_test);
-      TEST_ADD(explicit_bezier_curve_test_suite<qd_real>::reverse_test);
-      TEST_ADD(explicit_bezier_curve_test_suite<qd_real>::evaluation_test);
-      TEST_ADD(explicit_bezier_curve_test_suite<qd_real>::derivative_test);
-      TEST_ADD(explicit_bezier_curve_test_suite<qd_real>::promotion_test);
-      TEST_ADD(explicit_bezier_curve_test_suite<qd_real>::demotion_test);
-      TEST_ADD(explicit_bezier_curve_test_suite<qd_real>::length_test);
-    }
-#endif
 
   public:
     explicit_bezier_curve_test_suite()
@@ -219,10 +194,6 @@ class explicit_bezier_curve_test_suite : public Test::Suite
     {
       typedef eli::geom::curve::bezier<data__, 2> bezier_curve_type;
       data_type eps(std::numeric_limits<data__>::epsilon());
-#ifdef ELI_USING_QD
-      if ( (typeid(data_type)==typeid(dd_real)) || (typeid(data_type)==typeid(qd_real)) )
-        eps=std::numeric_limits<double>::epsilon();
-#endif
 
       control_point_type cntrl_in[5];
       typename bezier_curve_type::control_point_type bez_cntrl[5];
@@ -272,11 +243,6 @@ class explicit_bezier_curve_test_suite : public Test::Suite
     {
       typedef eli::geom::curve::bezier<data__, 2> bezier_curve_type;
       data_type eps(std::numeric_limits<data__>::epsilon());
-#ifdef ELI_USING_QD
-      if ( (typeid(data_type)==typeid(dd_real)) || (typeid(data_type)==typeid(qd_real)) )
-        eps=std::numeric_limits<double>::epsilon();
-#endif
-
       control_point_type cntrl_in[5];
       typename bezier_curve_type::control_point_type bez_cntrl[5];
       curve_type ebc;
@@ -395,11 +361,6 @@ class explicit_bezier_curve_test_suite : public Test::Suite
     {
       typedef eli::geom::curve::bezier<data__, 2> bezier_curve_type;
       data_type eps(std::numeric_limits<data__>::epsilon());
-#ifdef ELI_USING_QD
-      if ( (typeid(data_type)==typeid(dd_real)) || (typeid(data_type)==typeid(qd_real)) )
-        eps=std::numeric_limits<double>::epsilon();
-#endif
-
       control_point_type cntrl_in[5];
       typename bezier_curve_type::control_point_type bez_cntrl[5];
       curve_type ebc;
@@ -526,7 +487,6 @@ class explicit_bezier_curve_test_suite : public Test::Suite
       // no constraint
       {
         typedef eli::geom::curve::bezier<data__, 2> bezier_curve_type;
-
         control_point_type cntrl_in[9];
         typename bezier_curve_type::control_point_type bez_cntrl[9];
         curve_type ebc;
@@ -578,7 +538,6 @@ class explicit_bezier_curve_test_suite : public Test::Suite
       // C0 constraint
       {
         typedef eli::geom::curve::bezier<data__, 2> bezier_curve_type;
-
         control_point_type cntrl_in[9];
         typename bezier_curve_type::control_point_type bez_cntrl[9];
         curve_type ebc;
@@ -623,7 +582,6 @@ class explicit_bezier_curve_test_suite : public Test::Suite
       // C1 constraint
       {
         typedef eli::geom::curve::bezier<data__, 2> bezier_curve_type;
-
         control_point_type cntrl_in[9];
         typename bezier_curve_type::control_point_type bez_cntrl[9];
         curve_type ebc;
@@ -668,7 +626,6 @@ class explicit_bezier_curve_test_suite : public Test::Suite
       // C2 constraint
       {
         typedef eli::geom::curve::bezier<data__, 2> bezier_curve_type;
-
         control_point_type cntrl_in[9];
         typename bezier_curve_type::control_point_type bez_cntrl[9];
         curve_type ebc;
@@ -714,12 +671,7 @@ class explicit_bezier_curve_test_suite : public Test::Suite
     void length_test()
     {
       data_type eps(std::numeric_limits<data__>::epsilon());
-#ifdef ELI_USING_QD
-      if ( (typeid(data_type)==typeid(dd_real)) || (typeid(data_type)==typeid(qd_real)) )
-        eps=std::numeric_limits<double>::epsilon();
-#endif
       typedef eli::geom::curve::bezier<data__, 2> bezier_curve_type;
-
       control_point_type cntrl_in[5];
       typename bezier_curve_type::control_point_type bez_cntrl[5];
       curve_type ebc;

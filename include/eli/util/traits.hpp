@@ -220,14 +220,6 @@ namespace eli
     {
       typedef long double promote_t;
     };
-
-#ifdef ELI_USING_QD
-    //
-    // traits promotion definitions for QD types
-    //
-    ELI_UTIL_PROMOTE_TRAITS_HELPER(dd_real)
-    ELI_UTIL_PROMOTE_TRAITS_HELPER(qd_real)
-#endif
   }
 }
 #endif

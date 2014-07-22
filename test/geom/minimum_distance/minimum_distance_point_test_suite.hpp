@@ -61,23 +61,7 @@ class minimum_distance_point_test_suite : public Test::Suite
       TEST_ADD(minimum_distance_point_test_suite<long double>::simple_2d_test);
       TEST_ADD(minimum_distance_point_test_suite<long double>::simple_3d_test);
     }
-#ifdef ELI_USING_QD
-    void AddTests(const dd_real &)
-    {
-      // add the tests
-      TEST_ADD(minimum_distance_point_test_suite<dd_real>::simple_1d_test);
-      TEST_ADD(minimum_distance_point_test_suite<dd_real>::simple_2d_test);
-      TEST_ADD(minimum_distance_point_test_suite<dd_real>::simple_3d_test);
-    }
 
-    void AddTests(const qd_real &)
-    {
-      // add the tests
-      TEST_ADD(minimum_distance_point_test_suite<qd_real>::simple_1d_test);
-      TEST_ADD(minimum_distance_point_test_suite<qd_real>::simple_2d_test);
-      TEST_ADD(minimum_distance_point_test_suite<qd_real>::simple_3d_test);
-    }
-#endif
   public:
     minimum_distance_point_test_suite()
     {

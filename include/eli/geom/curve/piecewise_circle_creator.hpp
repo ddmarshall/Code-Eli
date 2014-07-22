@@ -58,15 +58,24 @@ namespace eli
       class piecewise_ellipse_creator_base : public piecewise_creator_base<data__, dim__, tol__>
       {
         public:
-          typedef data__  data_type;
-          typedef int index_type;
-          typedef Eigen::Matrix<data_type, 1, dim__> point_type;
-          typedef tol__ tolerance_type;
+          typedef piecewise_creator_base<data__, dim__, tol__> base_class_type;
+          typedef typename base_class_type::data_type data_type;
+          typedef typename base_class_type::point_type point_type;
+          typedef typename base_class_type::index_type index_type;
+          typedef typename base_class_type::tolerance_type tolerance_type;
 
         public:
-          piecewise_ellipse_creator_base() : piecewise_creator_base<data_type, dim__, tolerance_type>(4, 0), xradius(1), yradius(1) {}
+          piecewise_ellipse_creator_base() : piecewise_creator_base<data_type, dim__, tolerance_type>(4, 0), xradius(1), yradius(1)
+          {
+            x.setZero(); x.x()=1;
+            y.setZero(); y.y()=1;
+          }
           piecewise_ellipse_creator_base(const index_type &ns, const data_type &xr, const data_type &yr)
-            : piecewise_creator_base<data_type, dim__, tolerance_type>(ns, 0), xradius(xr), yradius(yr) {}
+            : piecewise_creator_base<data_type, dim__, tolerance_type>(ns, 0), xradius(xr), yradius(yr)
+          {
+            x.setZero(); x.x()=1;
+            y.setZero(); y.y()=1;
+          }
           piecewise_ellipse_creator_base(const piecewise_ellipse_creator_base<data_type, dim__, tolerance_type> &pcc)
             : piecewise_creator_base<data_type, dim__, tolerance_type>(pcc), xradius(pcc.xradius), yradius(pcc.yradius), x(pcc.x), y(pcc.y) {}
           virtual ~piecewise_ellipse_creator_base() {};
@@ -137,7 +146,7 @@ namespace eli
               c.set_control_point(cp[i], i);
             }
             err=pc.push_back(c, this->get_segment_dt(0));
-            if (err!=piecewise_curve_type::NO_ERROR)
+            if (err!=piecewise_curve_type::NO_ERRORS)
             {
               pc.clear();
               pc.set_t0(0);
@@ -154,7 +163,7 @@ namespace eli
               c.set_control_point(cp[i], i);
             }
             err=pc.push_back(c, this->get_segment_dt(1));
-            if (err!=piecewise_curve_type::NO_ERROR)
+            if (err!=piecewise_curve_type::NO_ERRORS)
             {
               pc.clear();
               pc.set_t0(0);
@@ -171,7 +180,7 @@ namespace eli
               c.set_control_point(cp[i], i);
             }
             err=pc.push_back(c, this->get_segment_dt(2));
-            if (err!=piecewise_curve_type::NO_ERROR)
+            if (err!=piecewise_curve_type::NO_ERRORS)
             {
               pc.clear();
               pc.set_t0(0);
@@ -188,7 +197,7 @@ namespace eli
               c.set_control_point(cp[i], i);
             }
             err=pc.push_back(c, this->get_segment_dt(3));
-            if (err!=piecewise_curve_type::NO_ERROR)
+            if (err!=piecewise_curve_type::NO_ERRORS)
             {
               pc.clear();
               pc.set_t0(0);

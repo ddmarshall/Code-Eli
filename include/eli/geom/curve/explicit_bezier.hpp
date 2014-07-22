@@ -13,6 +13,10 @@
 #ifndef eli_geom_curve_explicit_bezier_hpp
 #define eli_geom_curve_explicit_bezier_hpp
 
+#ifdef Success  // X11 #define collides with Eigen
+#undef Success
+#endif
+
 #include <Eigen/Eigen>
 
 #include "eli/util/tolerance.hpp"
@@ -221,7 +225,7 @@ namespace eli
                 typename fit_container_type::error_code ec;
 
                 ec=fcon.get_constraint(indexes[i], ci);
-                if (ec!=fit_container_type::NO_ERROR)
+                if (ec!=fit_container_type::NO_ERRORS)
                 {
                   assert(false);
                 }
@@ -332,7 +336,7 @@ namespace eli
               typename fit_container_type::error_code ec;
 
               ec=fcon.get_constraint(indexes[i], ci);
-              if (ec!=fit_container_type::NO_ERROR)
+              if (ec!=fit_container_type::NO_ERRORS)
               {
                 assert(false);
               }

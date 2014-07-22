@@ -29,7 +29,13 @@
 // Visual Studio 2008 does not have cbrt(), asinh(), acosh(), atanh(), expm1() function
 #ifdef _MSC_VER
 # if (_MSC_VER<=1600)
+    typedef int int32_t;
+    typedef unsigned int uint32_t;
+    typedef __int64 int64_t;
+    typedef unsigned __int64 uint64_t;
+#   define nullptr (0)
 #   define _NEED_EXTRA_MATH_FUNCTIONS
+#   define ELI_NO_VECTOR_DATA
 # endif
 #endif
 
@@ -46,25 +52,25 @@
 # include <cmath>
 namespace std
 {
-  float cbrt(float v) {return ((v<0)?(-1):(1))*std::pow(std::abs(v), 1.0f/3);}
-  double cbrt(double v) {return ((v<0)?(-1):(1))*std::pow(std::abs(v), 1.0/3);}
-  long double cbrt(long double v) {return ((v<0)?(-1):(1))*std::pow(std::abs(v), 1.0L/3);}
+  inline float cbrt(float v) {return ((v<0)?(-1):(1))*std::pow(std::abs(v), 1.0f/3);}
+  inline double cbrt(double v) {return ((v<0)?(-1):(1))*std::pow(std::abs(v), 1.0/3);}
+  inline long double cbrt(long double v) {return ((v<0)?(-1):(1))*std::pow(std::abs(v), 1.0L/3);}
 
-  float asinh(float v)
+  inline float asinh(float v)
   {
     if(v>=0)
       return std::log(v + sqrt(v*v + 1));
     else
       return -std::log(-v + sqrt(v*v + 1));
   }
-  double asinh(double v)
+  inline double asinh(double v)
   {
     if(v>=0)
       return std::log(v + sqrt(v*v + 1));
     else
       return -std::log(-v + sqrt(v*v + 1));
   }
-  long double asinh(long double v)
+  inline long double asinh(long double v)
   {
     if(v>=0)
       return std::log(v + sqrt(v*v + 1));
@@ -72,21 +78,21 @@ namespace std
       return -std::log(-v + sqrt(v*v + 1));
   }
 
-  float acosh(float v)
+  inline float acosh(float v)
   {
     if(v>=0)
       return std::log(v - sqrt(v*v + 1));
     else
       return -std::log(-v - sqrt(v*v + 1));
   }
-  double acosh(double v)
+  inline double acosh(double v)
   {
     if(v>=0)
       return std::log(v - sqrt(v*v + 1));
     else
       return -std::log(-v - sqrt(v*v + 1));
   }
-  long double acosh(long double v)
+  inline long double acosh(long double v)
   {
     if(v>=0)
       return std::log(v - sqrt(v*v + 1));
@@ -94,58 +100,58 @@ namespace std
       return -std::log(-v - sqrt(v*v + 1));
   }
 
-  float atanh(float v)
+  inline float atanh(float v)
   {
     return std::log((1+v)/(1-v))/2;
   }
-  double atanh(double v)
+  inline double atanh(double v)
   {
     return std::log((1+v)/(1-v))/2;
   }
-  long double atanh(long double v)
+  inline long double atanh(long double v)
   {
     return std::log((1+v)/(1-v))/2;
   }
 
-  float expm1(float v) {return std::exp(v)-1;}
-  double expm1(double v) {return std::exp(v)-1;}
-  long double expm1(long double v) {return std::exp(v)-1;}
+  inline float expm1(float v) {return std::exp(v)-1;}
+  inline double expm1(double v) {return std::exp(v)-1;}
+  inline long double expm1(long double v) {return std::exp(v)-1;}
 
-  float exp2(float v) {return std::pow(2, v);}
-  double exp2(double v) {return std::pow(2, v);}
-  long double exp2(long double v) {return std::pow(2, v);}
+  inline float exp2(float v) {return std::pow(2, v);}
+  inline double exp2(double v) {return std::pow(2, v);}
+  inline long double exp2(long double v) {return std::pow(2, v);}
 
-  float log2(float v) {return std::log(v)/std::log(2.0f);}
-  double log2(double v) {return std::log(v)/std::log(2.0);}
-  long double log2(long double v) {return std::log(v)/std::log(2.0L);}
+  inline float log2(float v) {return std::log(v)/std::log(2.0f);}
+  inline double log2(double v) {return std::log(v)/std::log(2.0);}
+  inline long double log2(long double v) {return std::log(v)/std::log(2.0L);}
 
-  float log1p(float v) {return std::log(1+v);}
-  double log1p(double v) {return std::log(1+v);}
-  long double log1p(long double v) {return std::log(1+v);}
+  inline float log1p(float v) {return std::log(1+v);}
+  inline double log1p(double v) {return std::log(1+v);}
+  inline long double log1p(long double v) {return std::log(1+v);}
 
   // based on "Handbook of Mathematical Functions"
-  float erf(float v)
+  inline float erf(float v)
   {
     float a1(0.254829592f), a2(-0.284496736f), a3(1.421413741f), a4(-1.453152027f), a5(1.061405429f), p(0.3275911f);
     float t(1/(1+p*std::abs(v)));
     return ((v<0)?(-1):(1))*(a1+t*(a2+t*(a3+t*(a4+t*a5))))*t*std::exp(-v*v);
   }
-  double erf(double v)
+  inline double erf(double v)
   {
     double a1(0.254829592), a2(-0.284496736), a3(1.421413741), a4(-1.453152027), a5(1.061405429), p(0.3275911);
     double t(1/(1+p*std::abs(v)));
     return ((v<0)?(-1):(1))*(a1+t*(a2+t*(a3+t*(a4+t*a5))))*t*std::exp(-v*v);
   }
-  long double erf(long double v)
+  inline long double erf(long double v)
   {
     long double a1(0.254829592L), a2(-0.284496736L), a3(1.421413741L), a4(-1.453152027L), a5(1.061405429L), p(0.3275911L);
     long double t(1/(1+p*std::abs(v)));
     return ((v<0)?(-1):(1))*(a1+t*(a2+t*(a3+t*(a4+t*a5))))*t*std::exp(-v*v);
   }
 
-  float erfc(float v) {return 1-erf(v);}
-  double erfc(double v) {return 1-erf(v);}
-  long double erfc(long double v) {return 1-erf(v);}
+  inline float erfc(float v) {return 1-erf(v);}
+  inline double erfc(double v) {return 1-erf(v);}
+  inline long double erfc(long double v) {return 1-erf(v);}
 }
 #endif
 #undef _NEED_EXTRA_MATH_FUNCTIONS
@@ -195,90 +201,6 @@ namespace std
   using ::erfc;
 }
 # endif
-#endif
-
-#cmakedefine ELI_QD_FOUND
-
-#if !defined(ELI_QD_FOUND) && defined(ELI_USE_QD)
-# error Cannot use QD since it was not found!
-#endif
-
-#if defined(ELI_QD_FOUND) && defined(ELI_USE_QD)
-# define ELI_USING_QD
-
-# include <qd/dd_real.h>
-# include <qd/qd_real.h>
-# include <qd/fpu.h>
-
-dd_real pow(const double &x, const dd_real&n) {
-  return pow(static_cast<dd_real>(x), n);
-}
-
-dd_real expm1(const dd_real &a) {
-  return exp(a)-1;
-}
-
-dd_real exp2(const dd_real &a) {
-  return pow(2, a);
-}
-
-dd_real log2(const dd_real &a) {
-  return log(a)/log(static_cast<dd_real>(2));
-}
-
-dd_real log1p(const dd_real &a) {
-  return log(1+a);
-}
-
-dd_real erf(const dd_real &a) {
-  return erf(a.x[0]);
-}
-
-dd_real erfc(const dd_real &a) {
-  return erfc(a.x[0]);
-}
-
-
-qd_real pow(const double &x, const qd_real&n) {
-  return pow(static_cast<qd_real>(x), n);
-}
-
-qd_real expm1(const qd_real &a) {
-  return exp(a)-1;
-}
-
-qd_real exp2(const qd_real &a) {
-  return pow(2, a);
-}
-
-qd_real log2(const qd_real &a) {
-  return log(a)/log(static_cast<qd_real>(2));
-}
-
-qd_real log1p(const qd_real &a) {
-  return log(1+a);
-}
-
-qd_real erf(const qd_real &a) {
-  return erf(a.x[0]);
-}
-
-qd_real erfc(const qd_real &a) {
-  return erfc(a.x[0]);
-}
-
-namespace std {
-  using ::asinh;
-  using ::acosh;
-  using ::atanh;
-  using ::expm1;
-  using ::exp2;
-  using ::log2;
-  using ::log1p;
-  using ::erf;
-  using ::erfc;
-}
-
 #endif
 
 #endif

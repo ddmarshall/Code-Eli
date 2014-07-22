@@ -18,6 +18,7 @@
 #include <algorithm>
 
 #include "eli/util/tolerance.hpp"
+#include "eli/geom/curve/piecewise.hpp"
 
 #include "eli/geom/general/continuity.hpp"
 #include "eli/geom/curve/equivalent_curves.hpp"
@@ -26,6 +27,24 @@ namespace eli
 {
   namespace geom
   {
+
+    namespace surface
+    {
+      template<template<typename, unsigned short, typename> class surface__, typename data__, unsigned short dim__, typename tol__ >
+      class piecewise;
+    }
+
+    namespace intersect
+    {
+      template<template<typename, unsigned short, typename> class surface1__, typename data1__, unsigned short dim1__, typename tol1__ >
+      typename surface::piecewise<surface1__, data1__, dim1__, tol1__>::data_type
+        minimum_distance(
+          typename surface::piecewise<surface1__, data1__, dim1__, tol1__>::data_type &u,
+	      typename surface::piecewise<surface1__, data1__, dim1__, tol1__>::data_type &v,
+          const surface::piecewise<surface1__, data1__, dim1__, tol1__> &ps,
+          const typename surface::piecewise<surface1__, data1__, dim1__, tol1__>::point_type &pt);
+    }
+
     namespace surface
     {
       template<template<typename, unsigned short, typename> class surface__, typename data__, unsigned short dim__, typename tol__=eli::util::tolerance<data__> >
@@ -38,12 +57,15 @@ namespace eli
           typedef typename surface_type::control_point_type control_point_type;
           typedef typename surface_type::rotation_matrix_type rotation_matrix_type;
           typedef typename surface_type::bounding_box_type bounding_box_type;
+          typedef typename surface_type::curve_type curve_type;
+          typedef eli::geom::curve::piecewise<eli::geom::curve::bezier, data__, dim__, tol__> piecewise_curve_type;
+
           typedef data__ data_type;
           typedef unsigned short dimension_type;
           typedef tol__ tolerance_type;
           enum error_code
           {
-            NO_ERROR=0,
+            NO_ERRORS=0,
             INVALID_INDEX=1,
             INDEX_NOT_FOUND=2,
             INVALID_PARAM=50,
@@ -53,22 +75,22 @@ namespace eli
           };
 
         public:
-          piecewise() : u0(0), v0(0), nu(0), nv(0) {}
+          piecewise() : nu(0), nv(0) {}
           piecewise(const piecewise<surface__, data_type, dim__, tol__> &p)
-            : patches(p.patches), u0(p.u0), v0(p.v0), nu(p.nu), nv(p.nv) {}
+            : patches(p.patches), ukey(p.ukey), vkey(p.vkey), nu(p.nu), nv(p.nv) {}
           ~piecewise() {}
 
           bool operator==(const piecewise<surface__, data_type, dim__> &p) const
           {
             if (this==&p)
               return true;
-            if (u0!=p.u0)
-              return false;
-            if (v0!=p.v0)
-              return false;
             if (nu!=p.nu)
               return false;
             if (nv!=p.nv)
+              return false;
+            if (ukey!=p.ukey)
+              return false;
+            if (vkey!=p.vkey)
               return false;
             if (number_u_patches()!=p.number_u_patches())
               return false;
@@ -91,49 +113,180 @@ namespace eli
 
           static dimension_type dimension() {return dim__;}
 
-          const data_type & get_u0() const {return u0;}
-          void set_u0(const data_type &u0_in) {u0=u0_in;}
+          const data_type get_u0() const {return ukey.get_pmin();}
+          void set_u0(const data_type &u0_in) {ukey.set_pmin(u0_in);}
 
-          const data_type & get_v0() const {return v0;}
-          void set_v0(const data_type &v0_in) {v0=v0_in;}
+          const data_type get_v0() const {return vkey.get_pmin();}
+          void set_v0(const data_type &v0_in) {vkey.set_pmin(v0_in);}
 
           index_type number_u_patches() const {return nu;}
           index_type number_v_patches() const {return nv;}
 
+          surface_type * get_patch( const index_type &ui, const index_type &vi)
+          {
+              index_type uk, vk;
+              find_patch(uk, vk, ui, vi);
+              return &patches[uk][vk];
+          }
+
+          const surface_type * get_patch( const index_type &ui, const index_type &vi) const
+          {
+              index_type uk, vk;
+              find_patch(uk, vk, ui, vi);
+              return &patches[uk][vk];
+          }
+
+          surface_type * get_patch_unordered( const index_type &uk, const index_type &vk)
+          {
+              return &patches[uk][vk];
+          }
+
+          const surface_type * get_patch_unordered( const index_type &uk, const index_type &vk) const
+          {
+              return &patches[uk][vk];
+          }
+
           void get_parameter_min(data_type &umin, data_type &vmin) const
           {
-            umin=u0;
-            vmin=v0;
+            umin=ukey.get_pmin();
+            vmin=vkey.get_pmin();
           }
 
           void get_parameter_max(data_type &umax, data_type &vmax) const
           {
-            index_type i, j;
-            typename patch_collection_type::const_iterator pcit;
+            umax=ukey.get_pmax();
+            vmax=vkey.get_pmax();
+          }
 
-            umax=u0;
-            vmax=v0;
+          void parameter_report()
+          {
+            printf("U parameter:\n");
+            ukey.parameter_report();
+            printf("V parameter:\n");
+            vkey.parameter_report();
+          }
 
-            for (i=0, pcit=patches.begin(); i<nu; ++i, ++pcit)
+          void get_pmap_u( std::vector < data_type > &pmap )
+          {
+            ukey.get_pmap( pmap );
+          }
+
+          void get_pmap_v( std::vector < data_type > &pmap )
+          {
+            vkey.get_pmap( pmap );
+          }
+
+          void get_pmap_uv( std::vector < data_type > &upmap, std::vector < data_type > &vpmap )
+          {
+            ukey.get_pmap( upmap );
+            vkey.get_pmap( vpmap );
+          }
+
+          void init_u(const index_type &nsegu, const data_type &du = 1, const data_type &u0 = 0)
+          {
+            patches.clear();
+            resize_store(nsegu, nv);
+            ukey.init(nsegu, du, u0);
+          }
+
+          void init_v(const index_type &nsegv, const data_type &dv = 1, const data_type &v0 = 0)
+          {
+            patches.clear();
+            resize_store(nu, nsegv);
+            vkey.init(nsegv, dv, v0);
+          }
+
+          void init_uv(const index_type &nsegu, const index_type &nsegv, const data_type &du = 1, const data_type &dv = 1, const data_type &u0 = 0, const data_type &v0 = 0)
+          {
+            patches.clear();
+            resize_store(nsegu, nsegv);
+            ukey.init(nsegu, du, u0);
+            vkey.init(nsegv, dv, v0);
+          }
+
+          template<typename it__>
+          void init_u(const it__ &dus, const it__ &due, const data_type &u0 = 0)
+          {
+            patches.clear();
+            ukey.init(dus, due, u0);
+            resize_store(ukey.key.size(), nv);
+          }
+
+          template<typename it__>
+          void init_v(const it__ &dvs, const it__ &dve, const data_type &v0 = 0)
+          {
+            patches.clear();
+            vkey.init(dvs, dve, v0);
+            resize_store(nu, vkey.key.size());
+          }
+
+          template<typename it__>
+          void init_uv(const it__ &dus, const it__ &due, const it__ &dvs, const it__ &dve, const data_type &u0 = 0, const data_type &v0 = 0)
+          {
+            patches.clear();
+            ukey.init(dus, due, u0);
+            vkey.init(dvs, dve, v0);
+            resize_store(ukey.key.size(), vkey.key.size());
+          }
+
+          void degree_u(index_type &mind, index_type &maxd)
+          {
+            typename patch_collection_type::iterator uit;
+            typename patch_strip_type::iterator vit;
+
+            uit=patches.begin();
+            vit=(*uit).begin();
+
+            index_type d = vit->degree_u();
+            mind = d;
+            maxd = d;
+
+            for (uit=patches.begin(); uit!=patches.end(); ++uit)
             {
-              umax+=pcit->delta_u;
-            }
-            for (j=0, pcit=patches.begin(); j<nv; ++j, pcit+=nu)
-            {
-              vmax+=pcit->delta_v;
+              for (vit=(*uit).begin(); vit!=(*uit).end(); ++vit)
+              {
+                d = vit->degree_u();
+
+                if(d<mind)
+                {
+                  mind = d;
+                }
+                if(d>maxd)
+                {
+                  maxd=d;
+                }
+              }
             }
           }
 
-          void resize(const index_type &nu_in, const index_type &nv_in)
+          void degree_v(index_type &mind, index_type &maxd)
           {
-            if ( (nu_in<=0) || (nv_in<=0) )
-            {
-              return;
-            }
+            typename patch_collection_type::iterator uit;
+            typename patch_strip_type::iterator vit;
 
-            patches.resize(nu_in*nv_in);
-            nu=nu_in;
-            nv=nv_in;
+            uit=patches.begin();
+            vit=(*uit).begin();
+
+            index_type d = vit->degree_v();
+            mind = d;
+            maxd = d;
+
+            for (uit=patches.begin(); uit!=patches.end(); ++uit)
+            {
+              for (vit=(*uit).begin(); vit!=(*uit).end(); ++vit)
+              {
+                d = vit->degree_v();
+
+                if(d<mind)
+                {
+                  mind = d;
+                }
+                if(d>maxd)
+                {
+                  maxd=d;
+                }
+              }
+            }
           }
 
           bool open_u() const
@@ -142,20 +295,16 @@ namespace eli
           }
           bool closed_u() const
           {
-            index_type i, j;
-            typename surface_type::boundary_curve_type bc0, bc1;
+            index_type ifirst, ilast, j;
+            typename surface_type::curve_type bc0, bc1;
 
-            typename patch_collection_type::const_iterator pcis, pcie;
+            ifirst = ukey.key.begin()->second;
+            ilast = ukey.key.rbegin()->second;
 
-            // set the umin and umax surface iterators
-            pcis=patches.begin();
-            for (i=0, pcie=patches.begin(); i<number_u_patches()-1; ++i, ++pcie) {}
-
-            // test each patch
-            for (j=0; j<number_v_patches(); ++j, pcis+=number_u_patches(), pcie+=number_u_patches())
+            for (j=0; j<nv; ++j)
             {
-              pcis->s.get_uconst_curve(bc0, 0);
-              pcie->s.get_uconst_curve(bc1, 1);
+              patches[ifirst][j].get_uconst_curve(bc0, 0);
+              patches[ilast][j].get_uconst_curve(bc1, 1);
               if (!eli::geom::curve::equivalent_curves(bc0, bc1))
                 return false;
             }
@@ -169,20 +318,16 @@ namespace eli
           }
           bool closed_v() const
           {
-            index_type i, j;
-            typename surface_type::boundary_curve_type bc0, bc1;
+            index_type i, jfirst, jlast;
+            typename surface_type::curve_type bc0, bc1;
 
-            typename patch_collection_type::const_iterator pcis, pcie;
+            jfirst = vkey.key.begin()->second;
+            jlast = vkey.key.rbegin()->second;
 
-            // set the vmin and vmax surface iterators
-            pcis=patches.begin();
-            for (j=0, pcie=patches.begin(); j<number_v_patches()-1; ++j, pcie+=number_u_patches()) {}
-
-            // test each patch
-            for (i=0; i<number_u_patches(); ++i, ++pcis, ++pcie)
+            for (i=0; i<nu; ++i)
             {
-              pcis->s.get_vconst_curve(bc0, 0);
-              pcie->s.get_vconst_curve(bc1, 1);
+              patches[i][jfirst].get_vconst_curve(bc0, 0);
+              patches[i][jlast].get_vconst_curve(bc1, 1);
               if (!eli::geom::curve::equivalent_curves(bc0, bc1))
               {
                 return false;
@@ -194,113 +339,129 @@ namespace eli
 
           void get_bounding_box(bounding_box_type &bb) const
           {
-            typename patch_collection_type::const_iterator it;
+            typename patch_collection_type::const_iterator uit;
+            typename patch_strip_type::const_iterator vit;
             bounding_box_type bb_local;
 
             bb.clear();
 
             // cycle through all patches to get each bounding box to compare
-            for (it=patches.begin(); it!=patches.end(); ++it)
+            for (uit=patches.begin(); uit!=patches.end(); ++uit)
             {
-              it->s.get_bounding_box(bb_local);
-              bb.add(bb_local);
+              for (vit=(*uit).begin(); vit!=(*uit).end(); ++vit)
+              {
+                vit->get_bounding_box(bb_local);
+                bb.add(bb_local);
+              }
             }
           }
 
           void rotate(const rotation_matrix_type &rmat)
           {
-            typename patch_collection_type::iterator it;
+            typename patch_collection_type::iterator uit;
+            typename patch_strip_type::iterator vit;
 
-            for (it=patches.begin(); it!=patches.end(); ++it)
+            for (uit=patches.begin(); uit!=patches.end(); ++uit)
             {
-              it->s.rotate(rmat);
+              for (vit=(*uit).begin(); vit!=(*uit).end(); ++vit)
+              {
+                vit->rotate(rmat);
+              }
             }
           }
 
           void rotate(const rotation_matrix_type &rmat, const point_type &rorig)
           {
-            typename patch_collection_type::iterator it;
+            typename patch_collection_type::iterator uit;
+            typename patch_strip_type::iterator vit;
 
-            for (it=patches.begin(); it!=patches.end(); ++it)
+            for (uit=patches.begin(); uit!=patches.end(); ++uit)
             {
-              it->s.rotate(rmat, rorig);
+              for (vit=(*uit).begin(); vit!=(*uit).end(); ++vit)
+              {
+                vit->rotate(rmat, rorig);
+              }
             }
           }
 
           void translate(const point_type &trans)
           {
-            typename patch_collection_type::iterator it;
+            typename patch_collection_type::iterator uit;
+            typename patch_strip_type::iterator vit;
 
-            for (it=patches.begin(); it!=patches.end(); ++it)
+            for (uit=patches.begin(); uit!=patches.end(); ++uit)
             {
-              it->s.translate(trans);
+              for (vit=(*uit).begin(); vit!=(*uit).end(); ++vit)
+              {
+                vit->translate(trans);
+              }
             }
           }
 
           void reverse_u()
           {
-            typename patch_collection_type::iterator itrowb, itrowe;
+            typename patch_collection_type::iterator uit;
+            typename patch_strip_type::iterator vit;
 
-            // for each j reverse the elements
-            itrowb=patches.begin();
-            for (index_type j=0; j<nv; ++j)
+            for (uit=patches.begin(); uit!=patches.end(); ++uit)
             {
-              itrowe=itrowb;
-              for (index_type i=0; i<nu; ++i, ++itrowe)
+              for (vit=(*uit).begin(); vit!=(*uit).end(); ++vit)
               {
-                itrowe->s.reverse_u();
+                vit->reverse_u();
               }
-              std::reverse(itrowb, itrowe);
-              itrowb=itrowe;
             }
+            ukey.reverse_keymap();
           }
 
           void reverse_v()
           {
-            // for each i reverse the elements
-            for (index_type i=0; i<nu; ++i)
+            typename patch_collection_type::iterator uit;
+            typename patch_strip_type::iterator vit;
+
+            for (uit=patches.begin(); uit!=patches.end(); ++uit)
             {
-              for (index_type j=0; j<nv/2; ++j)
+              for (vit=(*uit).begin(); vit!=(*uit).end(); ++vit)
               {
-                patches[j*nu+i].s.reverse_v();
-                patches[(nv-j-1)*nu+i].s.reverse_v();
-                std::swap(patches[j*nu+i], patches[(nv-j-1)*nu+i]);
-              }
-              if (nv%2==1)
-              {
-                patches[1+nv%2].s.reverse_v();
+                vit->reverse_v();
               }
             }
+            vkey.reverse_keymap();
           }
 
           void swap_uv()
           {
-            // this isn't the most memory efficient algorithm, but since the collection type
-            // is a std::vector, moves wouldn't be efficient.
-            patch_collection_type old_patches(patches);
+            patch_collection_type old_patches;
+            old_patches.swap(patches);
 
-            // swap the starting parameters and the patch counts
-            std::swap(u0, v0);
-            std::swap(nu, nv);
+            index_type nu_old(nu), nv_old(nv);
+
+            // Resizes patches and also assigns nu, nv.
+            resize_store(nv_old, nu_old);
 
             for (index_type i=0; i<nu; ++i)
             {
               for (index_type j=0; j<nv; ++j)
               {
-                old_patches[i*nv+j].s.swap_uv();
-                std::swap(old_patches[i*nv+j].delta_u, old_patches[i*nv+j].delta_v);
-                patches[j*nu+i]=old_patches[i*nv+j];
+                patches[i][j]=old_patches[j][i];
+                patches[i][j].swap_uv();
               }
             }
+
+            data_type pmaxtmp;
+            pmaxtmp = ukey.pmax;
+            ukey.pmax = vkey.pmax;
+            vkey.pmax = pmaxtmp;
+
+            swap(ukey.key, vkey.key);
           }
 
           void clear()
           {
             nu=0;
             nv=0;
-            u0=0;
-            v0=0;
             patches.clear();
+            ukey.clear();
+            vkey.clear();
           }
 
           error_code get(surface_type &surf, const index_type &ui, const index_type &vi) const
@@ -311,58 +472,52 @@ namespace eli
 
           error_code get(surface_type &surf, data_type &du, data_type &dv, const index_type &ui, const index_type &vi) const
           {
-            if ( (ui>=number_u_patches()) || (vi>=number_v_patches()) )
+            if ((ui>=number_u_patches()) || (vi>=number_v_patches()))
               return INVALID_INDEX;
 
-            // advance to desired index
-            index_type i, j;
-            typename patch_collection_type::const_iterator pcit;
-            for (i=0, pcit=patches.begin(); i<ui; ++i, ++pcit) {}
-            for (j=0; j<vi; ++j, pcit+=nu) {}
+            index_type uk, vk;
+            typename keymap_type::const_iterator uit, vit;
+            find_patch(uk, vk, uit, vit, ui, vi);
 
-            surf=pcit->s;
-            du=pcit->delta_u;
-            dv=pcit->delta_v;
+            du = ukey.get_delta_parm(uit);
+            dv = vkey.get_delta_parm(vit);
+            surf = patches[uk][vk];
 
-            return NO_ERROR;
+            return NO_ERRORS;
           }
 
           error_code set(const surface_type &surf, const index_type &ui, const index_type &vi)
           {
-            if ( (ui>=number_u_patches()) || (vi>=number_v_patches()) )
+            if ((ui>=number_u_patches()) || (vi>=number_v_patches()))
               return INVALID_INDEX;
 
-            // advance to desired index
-            index_type i, j;
-            typename surface_type::boundary_curve_type bc0, bc1;
-            typename patch_collection_type::iterator pcit, pcito;
-            for (i=0, pcit=patches.begin(); i<ui; ++i, ++pcit) {}
-            for (j=0; j<vi; ++j, pcit+=nu) {}
+            index_type uk, vk;
+            typename keymap_type::const_iterator uit, vit;
+            find_patch(uk, vk, uit, vit, ui, vi);
 
             // set the new surf
-            pcit->s=surf;
+            patches[uk][vk]=surf;
 
-            return NO_ERROR;
+            return NO_ERRORS;
           }
 
           error_code replace(const surface_type &surf, const index_type &ui, const index_type &vi)
           {
-            if ( (ui>=number_u_patches()) || (vi>=number_v_patches()) )
+            if ((ui>=number_u_patches()) || (vi>=number_v_patches()))
               return INVALID_INDEX;
 
             // advance to desired index
-            index_type i, j;
-            typename surface_type::boundary_curve_type bc0, bc1;
-            typename patch_collection_type::iterator pcit, pcito;
-            for (i=0, pcit=patches.begin(); i<ui; ++i, ++pcit) {}
-            for (j=0; j<vi; ++j, pcit+=nu) {}
+            typename surface_type::curve_type bc0, bc1;
+            index_type uk, vk;
+            typename keymap_type::const_iterator uit, vit;
+            find_patch(uk, vk, uit, vit, ui, vi);
+
+            surface_type s = patches[uk][vk];
 
             if (ui>0)
             {
-              pcito=pcit;
-              --pcito;
               surf.get_uconst_curve(bc0, 0);
-              pcito->s.get_uconst_curve(bc1, 1);
+              s.get_uconst_curve(bc1, 0);
               if (!eli::geom::curve::equivalent_curves(bc0, bc1))
               {
                 return PATCH_NOT_CONNECTED;
@@ -370,10 +525,8 @@ namespace eli
             }
             if ((ui+1)<number_u_patches())
             {
-              pcito=pcit;
-              ++pcito;
               surf.get_uconst_curve(bc0, 1);
-              pcito->s.get_uconst_curve(bc1, 0);
+              s.get_uconst_curve(bc1, 1);
               if (!eli::geom::curve::equivalent_curves(bc0, bc1))
               {
                 return PATCH_NOT_CONNECTED;
@@ -381,10 +534,8 @@ namespace eli
             }
             if (vi>0)
             {
-              pcito=pcit;
-              pcito-=nu;
               surf.get_vconst_curve(bc0, 0);
-              pcito->s.get_vconst_curve(bc1, 1);
+              s.get_vconst_curve(bc1, 0);
               if (!eli::geom::curve::equivalent_curves(bc0, bc1))
               {
                 return PATCH_NOT_CONNECTED;
@@ -392,10 +543,8 @@ namespace eli
             }
             if ((vi+1)<number_v_patches())
             {
-              pcito=pcit;
-              pcito+=nu;
               surf.get_vconst_curve(bc0, 1);
-              pcito->s.get_vconst_curve(bc1, 0);
+              s.get_vconst_curve(bc1, 1);
               if (!eli::geom::curve::equivalent_curves(bc0, bc1))
               {
                 return PATCH_NOT_CONNECTED;
@@ -403,275 +552,373 @@ namespace eli
             }
 
             // set the new surf
-            pcit->s=surf;
+            patches[uk][vk]=surf;
 
             assert(check_continuity(eli::geom::general::C0));
 
-            return NO_ERROR;
+            return NO_ERRORS;
           }
 
           error_code split_u(const data_type &u_in)
           {
-            // find patch that corresponds to given u & v
-            typename patch_collection_type::iterator it;
+            index_type uk, vk;
+            typename keymap_type::iterator uit, vit;
             data_type uu(0), vv(0);
-            find_patch(it, uu, vv, u_in, v0);
+            data_type vmin = vkey.get_pmin();
 
-            if (it==patches.end())
+            find_patch(uk, vk, uit, vit, uu, vv, u_in, vmin);
+
+            if ((uk == -1) || (vk == -1))
               return INVALID_PARAM;
 
-            patch_collection_type old_patches(patches);
-            index_type i, j, isplit(std::distance(patches.begin(), it));
-            resize(nu+1, nv);
-
-            // copy over the pre-split patches
-            for (i=0; i<isplit; ++i)
-            {
-              for (j=0; j<nv; ++j)
-              {
-                patches[j*nv+i]=old_patches[j*nv+i];
-              }
-            }
-
-            // split the patch and replace
-            i=isplit;
-            for (j=0; j<nv; ++j)
-            {
-              old_patches[j*nv+i].s.split_u(patches[j*nv+i].s, patches[j*nv+i+1].s, uu);
-              patches[j*nv+i].delta_u=old_patches[j*nv+i].delta_u*uu;
-              patches[j*nv+i+1].delta_u=old_patches[j*nv+i].delta_u*(1-uu);
-            }
-
-            // copy over the post-split patches
-            for (i=isplit+2; i<nu; ++i)
-            {
-              for (j=0; j<nv; ++j)
-              {
-                patches[j*nv+i]=old_patches[j*nv+i-1];
-              }
-            }
-
-            return NO_ERROR;
+            return split_u(uk, uit, u_in, uu);
           }
 
           error_code split_v(const data_type &v_in)
           {
-            // find patch that corresponds to given u & v
-            typename patch_collection_type::iterator it;
+            index_type uk, vk;
+            typename keymap_type::iterator uit, vit;
             data_type uu(0), vv(0);
-            find_patch(it, uu, vv, u0, v_in);
+            data_type umin = ukey.get_pmin();
 
-            if (it==patches.end())
+            find_patch(uk, vk, uit, vit, uu, vv, umin, v_in);
+
+            if ((uk == -1) || (vk == -1))
               return INVALID_PARAM;
 
-            patch_collection_type old_patches(patches);
-            index_type i, j, jsplit(std::distance(patches.begin(), it)/nu);
-            resize(nu, nv+1);
+            return split_v(vk, vit, v_in, vv);
+          }
 
-            // copy over the pre-split patches
-            for (j=0; j<jsplit; ++j)
+          void to_cubic_u(const data_type &ttol)
+          {
+            typename keymap_type::iterator uit, vit;
+
+            // First pass to split patches until cubic approximation is within tolerance.
+            for(uit = ukey.key.begin(); uit != ukey.key.end(); ++uit)
             {
-              for (i=0; i<nu; ++i)
+              for(vit = vkey.key.begin(); vit != vkey.key.end(); ++vit)
               {
-                patches[j*nv+i]=old_patches[j*nv+i];
+                index_type uk = uit->second;
+                index_type vk = vit->second;
+
+                surface_type s = patches[uk][vk];
+                surface_type sc(s);
+
+                sc.to_cubic_u();
+
+                data_type d = s.eqp_distance_bound(sc);
+
+                while(d > ttol)
+                {
+                  data_type delta_u = ukey.get_delta_parm(uit);
+                  data_type u_in = uit->first + static_cast<data_type>(0.5) * delta_u;
+
+                  split_u(uk, uit, u_in, 0.5);
+
+                  s = patches[uk][vk];
+                  sc = s;
+
+                  sc.to_cubic_u();
+
+                  d = s.eqp_distance_bound(sc);
+                }
               }
             }
 
-            // split the patch and replace
-            j=jsplit;
-            for (i=0; i<nu; ++i)
+            // Second pass to convert all patches to cubic.
+            for (index_type uk=0; uk<nu; ++uk)
             {
-              old_patches[j*nv+i].s.split_v(patches[j*nv+i].s, patches[(j+1)*nv+i].s, vv);
-              patches[j*nv+i].delta_v=old_patches[j*nv+i].delta_v*vv;
-              patches[(j+1)*nv+i].delta_v=old_patches[j*nv+i].delta_v*(1-vv);
-            }
-
-            // copy over the post-split patches
-            for (j=jsplit+2; j<nv; ++j)
-            {
-              for (i=0; i<nu; ++i)
+              for (index_type vk=0; vk<nv; ++vk)
               {
-                patches[j*nv+i]=old_patches[(j-1)*nv+i];
+                patches[uk][vk].to_cubic_u();
+              }
+            }
+          }
+
+          void to_cubic_v(const data_type &ttol)
+          {
+            typename keymap_type::iterator uit, vit;
+
+            // First pass to split patches until cubic approximation is within tolerance.
+            for(uit = ukey.key.begin(); uit != ukey.key.end(); ++uit)
+            {
+              for(vit = vkey.key.begin(); vit != vkey.key.end(); ++vit)
+              {
+                index_type uk = uit->second;
+                index_type vk = vit->second;
+
+                surface_type s = patches[uk][vk];
+                surface_type sc(s);
+
+                sc.to_cubic_v();
+
+                data_type d = s.eqp_distance_bound(sc);
+
+                while(d > ttol)
+                {
+                  data_type delta_v = vkey.get_delta_parm(vit);
+                  data_type v_in = vit->first + static_cast<data_type>(0.5) * delta_v;
+
+                  split_v(vk, vit, v_in, 0.5);
+
+                  s = patches[uk][vk];
+                  sc = s;
+
+                  sc.to_cubic_v();
+
+                  d = s.eqp_distance_bound(sc);
+                }
               }
             }
 
-            return NO_ERROR;
+            // Second pass to convert all patches to cubic.
+            for (index_type uk=0; uk<nu; ++uk)
+            {
+              for (index_type vk=0; vk<nv; ++vk)
+              {
+                patches[uk][vk].to_cubic_v();
+              }
+            }
+          }
+
+          void to_cubic(const data_type &ttol)
+          {
+            to_cubic_u(ttol);
+            to_cubic_v(ttol);
+          }
+
+          void get_uconst_curve(piecewise_curve_type &pwc, const data_type &u) const
+          {
+            index_type uk, vk;
+            typename keymap_type::const_iterator uit, vit;
+            data_type uu(0), vv(0);
+            data_type vmin = vkey.get_pmin();
+
+            find_patch(uk, vk, uit, vit, uu, vv, u, vmin);
+
+            assert ((uk != -1) && (vk != -1));
+
+            pwc.clear();
+            pwc.set_t0(vmin);
+
+            for( index_type i=0; i<nv; i++)
+            {
+              vkey.find_segment(vk, vit, i);
+
+              data_type dv=vkey.get_delta_parm(vit);
+
+              surface_type s=patches[uk][vk];
+
+              curve_type c;
+
+              s.get_uconst_curve(c, uu);
+
+              pwc.push_back(c,dv);
+            }
+          }
+
+          void get_vconst_curve(piecewise_curve_type &pwc, const data_type &v) const
+          {
+            index_type uk, vk;
+            typename keymap_type::const_iterator uit, vit;
+            data_type uu(0), vv(0);
+            data_type umin = ukey.get_pmin();
+
+            find_patch(uk, vk, uit, vit, uu, vv, umin, v);
+
+            assert ((uk != -1) && (vk != -1));
+
+            pwc.clear();
+            pwc.set_t0(umin);
+
+            for( index_type i=0; i<nu; i++)
+            {
+              ukey.find_segment(uk, uit, i);
+
+              data_type du=ukey.get_delta_parm(uit);
+
+              surface_type s=patches[uk][vk];
+
+              curve_type c;
+
+              s.get_vconst_curve(c, vv);
+
+              pwc.push_back(c,du);
+            }
           }
 
           point_type f(const data_type &u, const data_type &v) const
           {
             // find patch that corresponds to given u & v
-            typename patch_collection_type::const_iterator it;
+            index_type uk, vk;
             data_type uu(0), vv(0);
-            find_patch(it, uu, vv, u, v);
 
-            if (it==patches.end())
-            {
-              assert(false);
-              --it;
-            }
+            find_patch(uk, vk, uu, vv, u, v);
 
-            return it->s.f(uu, vv);
+            assert((uk != -1) && (vk != -1));
+
+            return patches[uk][vk].f(uu, vv);
           }
 
           point_type f_u(const data_type &u, const data_type &v) const
           {
             // find patch that corresponds to given u & v
-            typename patch_collection_type::const_iterator it;
+            index_type uk, vk;
+            typename keymap_type::const_iterator uit, vit;
             data_type uu(0), vv(0);
-            find_patch(it, uu, vv, u, v);
 
-            if (it==patches.end())
-            {
-              assert(false);
-              --it;
-            }
+            find_patch(uk, vk, uit, vit, uu, vv, u, v);
 
-            return it->s.f_u(uu, vv)/it->delta_u;
+            assert((uk != -1) && (vk != -1));
+
+            data_type delta_u = ukey.get_delta_parm(uit);
+
+            return patches[uk][vk].f_u(uu, vv)/delta_u;
           }
 
           point_type f_v(const data_type &u, const data_type &v) const
           {
             // find patch that corresponds to given u & v
-            typename patch_collection_type::const_iterator it;
+            index_type uk, vk;
+            typename keymap_type::const_iterator uit, vit;
             data_type uu(0), vv(0);
-            find_patch(it, uu, vv, u, v);
 
-            if (it==patches.end())
-            {
-              assert(false);
-              --it;
-            }
+            find_patch(uk, vk, uit, vit, uu, vv, u, v);
 
-            return it->s.f_v(uu, vv)/it->delta_v;
+            assert((uk != -1) && (vk != -1));
+
+            data_type delta_v = vkey.get_delta_parm(vit);
+
+            return patches[uk][vk].f_v(uu, vv)/delta_v;
           }
 
           point_type f_uu(const data_type &u, const data_type &v) const
           {
             // find patch that corresponds to given u & v
-            typename patch_collection_type::const_iterator it;
+            index_type uk, vk;
+            typename keymap_type::const_iterator uit, vit;
             data_type uu(0), vv(0);
-            find_patch(it, uu, vv, u, v);
 
-            if (it==patches.end())
-            {
-              assert(false);
-              --it;
-            }
+            find_patch(uk, vk, uit, vit, uu, vv, u, v);
 
-            return it->s.f_uu(uu, vv)/(it->delta_u*it->delta_u);
+            assert((uk != -1) && (vk != -1));
+
+            data_type delta_u = ukey.get_delta_parm(uit);
+
+            return patches[uk][vk].f_uu(uu, vv)/(delta_u*delta_u);
           }
 
           point_type f_uv(const data_type &u, const data_type &v) const
           {
             // find patch that corresponds to given u & v
-            typename patch_collection_type::const_iterator it;
+            index_type uk, vk;
+            typename keymap_type::const_iterator uit, vit;
             data_type uu(0), vv(0);
-            find_patch(it, uu, vv, u, v);
 
-            if (it==patches.end())
-            {
-              assert(false);
-              --it;
-            }
+            find_patch(uk, vk, uit, vit, uu, vv, u, v);
 
-            return it->s.f_uv(uu, vv)/(it->delta_u*it->delta_v);
+            assert((uk != -1) && (vk != -1));
+
+            data_type delta_u = ukey.get_delta_parm(uit);
+            data_type delta_v = vkey.get_delta_parm(vit);
+
+            return patches[uk][vk].f_uv(uu, vv)/(delta_u*delta_v);
           }
 
           point_type f_vv(const data_type &u, const data_type &v) const
           {
             // find patch that corresponds to given u & v
-            typename patch_collection_type::const_iterator it;
+            index_type uk, vk;
+            typename keymap_type::const_iterator uit, vit;
             data_type uu(0), vv(0);
-            find_patch(it, uu, vv, u, v);
 
-            if (it==patches.end())
-            {
-              assert(false);
-              --it;
-            }
+            find_patch(uk, vk, uit, vit, uu, vv, u, v);
 
-            return it->s.f_vv(uu, vv)/(it->delta_v*it->delta_v);
+            assert((uk != -1) && (vk != -1));
+
+            data_type delta_v = vkey.get_delta_parm(vit);
+
+            return patches[uk][vk].f_vv(uu, vv)/(delta_v*delta_v);
           }
 
           point_type f_uuu(const data_type &u, const data_type &v) const
           {
             // find patch that corresponds to given u & v
-            typename patch_collection_type::const_iterator it;
+            index_type uk, vk;
+            typename keymap_type::const_iterator uit, vit;
             data_type uu(0), vv(0);
-            find_patch(it, uu, vv, u, v);
 
-            if (it==patches.end())
-            {
-              assert(false);
-              --it;
-            }
+            find_patch(uk, vk, uit, vit, uu, vv, u, v);
 
-            return it->s.f_uuu(uu, vv)/(it->delta_u*it->delta_u*it->delta_u);
+            assert((uk != -1) && (vk != -1));
+
+            data_type delta_u = ukey.get_delta_parm(uit);
+
+            return patches[uk][vk].f_uuu(uu, vv)/(delta_u*delta_u*delta_u);
           }
 
           point_type f_uuv(const data_type &u, const data_type &v) const
           {
             // find patch that corresponds to given u & v
-            typename patch_collection_type::const_iterator it;
+            index_type uk, vk;
+            typename keymap_type::const_iterator uit, vit;
             data_type uu(0), vv(0);
-            find_patch(it, uu, vv, u, v);
 
-            if (it==patches.end())
-            {
-              assert(false);
-              --it;
-            }
+            find_patch(uk, vk, uit, vit, uu, vv, u, v);
 
-            return it->s.f_uuv(uu, vv)/(it->delta_u*it->delta_u*it->delta_v);
+            assert((uk != -1) && (vk != -1));
+
+            data_type delta_u = ukey.get_delta_parm(uit);
+            data_type delta_v = vkey.get_delta_parm(vit);
+
+            return patches[uk][vk].f_uuv(uu, vv)/(delta_u*delta_u*delta_v);
           }
 
           point_type f_uvv(const data_type &u, const data_type &v) const
           {
             // find patch that corresponds to given u & v
-            typename patch_collection_type::const_iterator it;
+            index_type uk, vk;
+            typename keymap_type::const_iterator uit, vit;
             data_type uu(0), vv(0);
-            find_patch(it, uu, vv, u, v);
 
-            if (it==patches.end())
-            {
-              assert(false);
-              --it;
-            }
+            find_patch(uk, vk, uit, vit, uu, vv, u, v);
 
-            return it->s.f_uvv(uu, vv)/(it->delta_u*it->delta_v*it->delta_v);
+            assert((uk != -1) && (vk != -1));
+
+            data_type delta_u = ukey.get_delta_parm(uit);
+            data_type delta_v = vkey.get_delta_parm(vit);
+
+            return patches[uk][vk].f_uvv(uu, vv)/(delta_u*delta_v*delta_v);
           }
 
           point_type f_vvv(const data_type &u, const data_type &v) const
           {
             // find patch that corresponds to given u & v
-            typename patch_collection_type::const_iterator it;
+            index_type uk, vk;
+            typename keymap_type::const_iterator uit, vit;
             data_type uu(0), vv(0);
-            find_patch(it, uu, vv, u, v);
 
-            if (it==patches.end())
-            {
-              assert(false);
-              --it;
-            }
+            find_patch(uk, vk, uit, vit, uu, vv, u, v);
 
-            return it->s.f_vvv(uu, vv)/(it->delta_v*it->delta_v*it->delta_v);
+            assert((uk != -1) && (vk != -1));
+
+            data_type delta_u = ukey.get_delta_parm(uit);
+            data_type delta_v = vkey.get_delta_parm(vit);
+
+            return patches[uk][vk].f_vvv(uu, vv)/(delta_v*delta_v*delta_v);
           }
 
           point_type normal(const data_type &u, const data_type &v) const
           {
             // find patch that corresponds to given u & v
-            typename patch_collection_type::const_iterator it;
+            index_type uk, vk;
             data_type uu(0), vv(0);
-            find_patch(it, uu, vv, u, v);
 
-            if (it==patches.end())
-            {
-              assert(false);
-              --it;
-            }
+            find_patch(uk, vk, uu, vv, u, v);
 
-            return it->s.normal(uu, vv);
+            assert((uk != -1) && (vk != -1));
+
+            return patches[uk][vk].normal(uu, vv);
           }
 
           // TODO: NEED TO IMPLEMENT
@@ -692,38 +939,413 @@ namespace eli
 //                            const typename piecewise<surf1__, data1__, dim1__, tol1__>::data_type &t1,
 //                            const typename piecewise<surf1__, data1__, dim1__, tol1__>::data_type &tol);
 
-          struct patch_info
+          template<template<typename, unsigned short, typename> class surface1__, typename data1__, unsigned short dim1__, typename tol1__ >
+          friend typename piecewise<surface1__, data1__, dim1__, tol1__>::data_type
+            eli::geom::intersect::minimum_distance(
+              typename piecewise<surface1__, data1__, dim1__, tol1__>::data_type &u,
+              typename piecewise<surface1__, data1__, dim1__, tol1__>::data_type &v,
+              const piecewise<surface1__, data1__, dim1__, tol1__> &ps,
+              const typename piecewise<surface1__, data1__, dim1__, tol1__>::point_type &pt);
+
+          typedef std::map< data_type, index_type > keymap_type;
+
+          struct parameter_key
           {
-            surface_type s;
-            data_type delta_u, delta_v;
+            keymap_type key;
+            data_type pmax;
 
-            patch_info() : delta_u(1), delta_v(1) {}
-            patch_info(const patch_info &si) : s(si.s), delta_u(si.delta_u), delta_v(si.delta_v) {}
-            ~patch_info() {}
+            parameter_key() : pmax(0) {}
+            parameter_key(const parameter_key &pk) : key(pk.key), pmax(pk.pmax) {}
+            ~parameter_key() {}
 
-            bool operator==(const patch_info &si) const
+            bool operator==(const parameter_key &pk) const
             {
-              if (this==&si)
+              if (this==&pk)
                 return true;
-              if (delta_u!=si.delta_u)
+              if (pmax!=pk.pmax)
                 return false;
-              if (delta_v!=si.delta_v)
-                return false;
-              if (s!=si.s)
+              if (key!=pk.key)
                 return false;
 
               return true;
             }
 
-            bool operator!=(const patch_info &si) const
+            bool operator!=(const parameter_key &pk) const
             {
-              return !operator==(si);
+              return !operator==(pk);
+            }
+
+            void clear()
+            {
+              pmax=0;
+              key.clear();
+            }
+
+            data_type get_pmax() const
+            {
+              return pmax;
+            }
+
+            data_type get_pmin() const
+            {
+              if(!key.empty())
+                return key.begin()->first;
+              else
+                return pmax;
+            }
+
+            void set_pmax(const data_type &pmax_in)
+            {
+              pmax = pmax_in;
+            }
+
+            void set_pmin(const data_type &pmin_in)
+            {
+              if(!key.empty())
+              {
+                if(pmin_in != key.begin()->first)
+                {
+                  data_type p = pmin_in;
+                  keymap_type shiftkey;
+                  for (typename keymap_type::iterator it=key.begin(); it!=key.end(); ++it)
+                  {
+                    data_type delta_p = get_delta_parm(it);
+
+                    shiftkey.insert(shiftkey.end(), std::make_pair(p, it->second));
+
+                    p+=delta_p;
+                  }
+                  key.swap(shiftkey);
+                  pmax = p;
+                }
+              }
+              else
+              {
+                pmax=pmin_in;
+              }
+            }
+
+            void init(const index_type &nseg, const data_type &dp = 1, const data_type &p0 = 0)
+            {
+              key.clear();
+              pmax = p0;
+              append(nseg, dp);
+            }
+
+            void append(const index_type &nseg, const data_type &dp = 1)
+            {
+              typename keymap_type::iterator itguess = key.end();
+              index_type j = key.size();
+              data_type p = pmax;
+              for(index_type i = 0; i < nseg; ++i)
+              {
+                itguess = key.insert(itguess, std::make_pair(p, j));
+                p += dp;
+                ++j;
+              }
+              pmax = p;
+            }
+
+            template<typename it__>
+            void init(const it__ &dps, const it__ &dpe, const data_type &p0 = 0)
+            {
+              key.clear();
+              pmax = p0;
+              append(dps, dpe);
+            }
+
+            template<typename it__>
+            void append(const it__ &dps, const it__ &dpe)
+            {
+              typename keymap_type::iterator itguess = key.end();
+              index_type j = key.size();
+              data_type p = pmax;
+              for(it__ dp = dps; dp != dpe; ++dp)
+              {
+                itguess = key.insert(itguess, std::make_pair(p, j));
+                p += (*dp);
+                ++j;
+              }
+              pmax = p;
+            }
+
+            void parameter_report()
+            {
+              printf("Parameter report:\n");
+              typename keymap_type::iterator it;
+
+              int i = 0;
+              // cycle through all segments to get each bounding box to add
+              for (it=key.begin(); it!=key.end(); ++it)
+              {
+                printf(" seg: %d \t p: %f \t pk %d\n", i, it->first, it->second);
+                ++i;
+              }
+              printf(" pmax: %f\n", pmax);
+              printf("End report\n");
+            }
+
+            void get_pmap( std::vector < data_type > &pmap )
+            {
+              pmap.clear();
+
+              typename keymap_type::iterator it;
+              for (it=key.begin(); it!=key.end(); ++it)
+              {
+                pmap.push_back( it->first );
+              }
+              pmap.push_back( pmax );
+            }
+
+            void reverse_keymap()
+            {
+              keymap_type rkey;
+              typename keymap_type::iterator itr;
+              typename keymap_type::iterator itrguess = rkey.begin();
+
+              data_type p = get_pmin();
+
+              for (typename keymap_type::reverse_iterator it=key.rbegin(); it!=key.rend(); ++it)
+              {
+                itr = rkey.insert(itrguess, std::make_pair(p, it->second));
+
+                data_type delta_p = get_delta_parm(it);
+                p += delta_p;
+
+                itrguess = itr;
+              }
+              key.swap(rkey);
+
+              // Parametric length should stay the same.
+              assert(p == pmax);
+            }
+
+
+            data_type get_delta_parm(const typename keymap_type::iterator &it) const
+            {
+              assert (it != key.end());
+
+              typename keymap_type::iterator itnext = it;
+              itnext++;
+
+              data_type delta_p;
+
+              if(itnext != key.end())
+                delta_p = itnext->first - it->first;
+              else
+                delta_p = pmax - it->first;
+
+              return delta_p;
+            }
+
+            data_type get_delta_parm(const typename keymap_type::const_iterator &it) const
+            {
+              assert (it != key.end());
+
+              typename keymap_type::const_iterator itnext = it;
+              itnext++;
+
+              data_type delta_p;
+
+              if(itnext != key.end())
+                delta_p = itnext->first - it->first;
+              else
+                delta_p = pmax - it->first;
+
+              return delta_p;
+            }
+
+            data_type get_delta_parm(const typename keymap_type::reverse_iterator &it) const
+            {
+              assert (it != key.rend());
+
+              data_type delta_p;
+
+              if(it != key.rbegin())
+              {
+                typename keymap_type::reverse_iterator itprev = it;
+                itprev--;
+                delta_p = itprev->first - it->first;
+              }
+              else
+              {
+                delta_p = pmax - it->first;
+              }
+
+              return delta_p;
+            }
+
+            data_type get_delta_parm(const typename keymap_type::const_reverse_iterator &it) const
+            {
+              assert (it != key.rend());
+
+              data_type delta_p;
+
+              if(it != key.rbegin())
+              {
+                typename keymap_type::const_reverse_iterator itprev = it;
+                itprev--;
+                delta_p = itprev->first - it->first;
+              }
+              else
+              {
+                delta_p = pmax - it->first;
+              }
+
+              return delta_p;
+            }
+
+            void find_segment(index_type &ikey, typename keymap_type::const_iterator &it, const index_type &index) const
+            {
+              if(index >= (int) key.size() || index < 0)
+              {
+                it=key.end();
+                ikey=-1;
+                return;
+              }
+
+              // advance to desired index
+              index_type i;
+              for (i=0, it=key.begin(); i<index; ++i, ++it) {}
+
+              ikey=it->second;
+            }
+
+            void find_segment(index_type &ikey, typename keymap_type::iterator &it, const index_type &index) const
+            {
+              if(index >= (int) key.size() || index < 0)
+              {
+                it=key.end();
+                ikey=-1;
+                return;
+              }
+
+              // advance to desired index
+              index_type i;
+              for (i=0, it=key.begin(); i<index; ++i, ++it) {}
+
+              ikey=it->second;
+            }
+
+            void find_segment(index_type &ikey, typename keymap_type::iterator &it, data_type &pp, const data_type &p_in)
+            {
+              tol__ tol;
+
+              if(p_in>pmax)
+              {
+                it=key.end();
+                ikey = -1;
+                return;
+              }
+
+              data_type pmin = get_pmin();
+
+              if(p_in<pmin)
+              {
+                it=key.end();
+                ikey = -1;
+                return;
+              }
+
+              // Use map::upper_bound for fast lookup of segment after p_in
+              it=key.upper_bound(p_in);
+
+              // Decrement to segment containing p_in
+              if(it != key.begin())
+                it--;
+
+              ikey = it->second;
+
+              // At start of segment
+              if(tol.approximately_equal(p_in, it->first))
+              {
+                pp=static_cast<data_type>(0);
+                return;
+              }
+
+              data_type delta_p = get_delta_parm(it);
+
+              // At end of segment
+              if(tol.approximately_equal(p_in, it->first + delta_p))
+              {
+                pp=static_cast<data_type>(1);
+                return;
+              }
+
+              // Typical case
+              pp=(p_in-it->first)/delta_p;
+
+              // Super careful checks
+              if (pp>static_cast<data_type>(1))
+                pp=static_cast<data_type>(1);
+              if (pp<static_cast<data_type>(0))
+                pp=static_cast<data_type>(0);
+            }
+
+            void find_segment(index_type &ikey, typename keymap_type::const_iterator &it, data_type &pp, const data_type &p_in) const
+            {
+              tol__ tol;
+
+              if(p_in>pmax)
+              {
+                it=key.end();
+                ikey = -1;
+                return;
+              }
+
+              data_type pmin = get_pmin();
+
+              if(p_in<pmin)
+              {
+                it=key.end();
+                ikey = -1;
+                return;
+              }
+
+              // Use map::upper_bound for fast lookup of segment after p_in
+              it=key.upper_bound(p_in);
+
+              // Decrement to segment containing p_in
+              if(it != key.begin())
+                it--;
+
+              ikey = it->second;
+
+              // At start of segment
+              if(tol.approximately_equal(p_in, it->first))
+              {
+                pp=static_cast<data_type>(0);
+                return;
+              }
+
+              data_type delta_p = get_delta_parm(it);
+
+              // At end of segment
+              if(tol.approximately_equal(p_in, it->first + delta_p))
+              {
+                pp=static_cast<data_type>(1);
+                return;
+              }
+
+              // Typical case
+              pp=(p_in-it->first)/delta_p;
+
+              // Super careful checks
+              if (pp>static_cast<data_type>(1))
+                pp=static_cast<data_type>(1);
+              if (pp<static_cast<data_type>(0))
+                pp=static_cast<data_type>(0);
             }
           };
-          typedef std::vector<patch_info> patch_collection_type;
+
+
+          typedef std::vector< surface_type > patch_strip_type;
+          typedef std::vector< patch_strip_type > patch_collection_type;
 
           patch_collection_type patches;
-          data_type u0, v0;
+          // By convention, patches[uk][vk]
+
+          parameter_key ukey, vkey;
           index_type nu, nv;
 
         protected:
@@ -746,103 +1368,141 @@ namespace eli
           }
 
         private:
-          void find_patch(typename patch_collection_type::const_iterator &it,
-                          data_type &uu, data_type &vv,
-                          const data_type &u_in, const data_type &v_in) const
+
+          void resize_store(const index_type &nu_in, const index_type &nv_in)
           {
-            data_type u(u0), v(v0);
-            index_type i, j;
-
-            // check to see if have invalid u_in or v_in
-            if ((u_in<u0) || (v_in<v0))
-            {
-              it=patches.end();
+            if ((nu_in<=0) || (nv_in<=0))
               return;
-            }
 
-            // cycle through the u-coordinates to find match
-            for (i=0, it=patches.begin(); i<nu; ++i, ++it)
-            {
-              if (u_in<=u+it->delta_u)
-              {
-                uu=(u_in-u)/it->delta_u;
-                break;
-              }
-              u+=it->delta_u;
-            }
-            if (i==nu)
-            {
-              assert(false);
-              it=patches.end();
-              return;
-            }
+            patches.resize(nu_in);
+            nu = nu_in;
 
-            // cycle through the v-coordinates to find match
-            for (j=0; j<nv; ++j, it+=nu)
-            {
-              if (v_in<=v+it->delta_v)
-              {
-                vv=(v_in-v)/it->delta_v;
-//               std::cout << "searching for (u,v)=(" << u_in << "," << v_in << ")" << std::endl;
-//               std::cout << "  found (i,j)=(" << i << "," << j << ")" << std::endl;
-//               std::cout << "  local (u,v)=(" << uu << "," << vv << ")" << std::endl;
-//               std::cout << "  distance=" << std::distance(patches.begin(), it) << std::endl;
-                return;
-              }
-              v+=it->delta_v;
-            }
-            if (j==nv)
-            {
-              assert(false);
-              it=patches.end();
-              return;
-            }
+            // Unconditionally do this to make sure newly added rows are properly sized.
+            for(index_type i = 0; i < nu_in; i++)
+              patches[i].resize(nv_in);
+
+            nv = nv_in;
           }
 
-          void find_patch(typename patch_collection_type::iterator &it,
+          error_code split_u(const index_type &uk, const typename keymap_type::iterator &uit, const data_type &u_in, const data_type &uu)
+          {
+            index_type ukr, vk;
+            // Right half will be added at end of patch matrix.
+            ukr=nu;
+            ukey.key.insert(uit, std::make_pair(u_in, ukr));
+
+            // Increase matrix size.
+            resize_store(nu+1, nv);
+
+            for (vk=0; vk<nv; ++vk)
+            {
+              surface_type s = patches[uk][vk];
+              s.split_u(patches[uk][vk], patches[ukr][vk], uu);
+            }
+
+            return NO_ERRORS;
+          }
+
+          error_code split_v(const index_type &vk, const typename keymap_type::iterator &vit, const data_type &v_in, const data_type &vv)
+          {
+            index_type uk, vkr;
+            // Right half will be added at end of patch matrix.
+            vkr=nv;
+            vkey.key.insert(vit, std::make_pair(v_in, vkr));
+
+            // Increase matrix size.
+            resize_store(nu, nv+1);
+
+            for (uk=0; uk<nu; ++uk)
+            {
+              surface_type s = patches[uk][vk];
+              s.split_v(patches[uk][vk], patches[uk][vkr], vv);
+            }
+
+            return NO_ERRORS;
+          }
+
+          // Lookup based on i,j
+          void find_patch(index_type &uk, index_type &vk,
+                          typename keymap_type::iterator &uit, typename keymap_type::iterator &vit,
+                          const index_type & ui, const index_type &vi)
+          {
+            ukey.find_segment(uk, uit, ui);
+            vkey.find_segment(vk, vit, vi);
+          }
+
+          void find_patch(typename keymap_type::iterator &uit, typename keymap_type::iterator &vit,
+                          const index_type & ui, const index_type &vi)
+          {
+            index_type uk, vk;
+            find_patch(uk, vk, uit, vit, ui, vi);
+          }
+
+          void find_patch(index_type &uk, index_type &vk,
+                          typename keymap_type::const_iterator &uit, typename keymap_type::const_iterator &vit,
+                          const index_type & ui, const index_type &vi) const
+          {
+            ukey.find_segment(uk, uit, ui);
+            vkey.find_segment(vk, vit, vi);
+          }
+
+          void find_patch(typename keymap_type::const_iterator &uit, typename keymap_type::const_iterator &vit,
+                          const index_type & ui, const index_type &vi) const
+          {
+            index_type uk, vk;
+            find_patch(uk, vk, uit, vit, ui, vi);
+          }
+
+          void find_patch(index_type &uk, index_type &vk,
+                          const index_type & ui, const index_type &vi) const
+          {
+            typename keymap_type::const_iterator uit, vit;
+            find_patch(uk, vk, uit, vit, ui, vi);
+          }
+
+          // Lookup based on u_in, v_in.
+          void find_patch(index_type &uk, index_type &vk,
+                          typename keymap_type::iterator &uit, typename keymap_type::iterator &vit,
                           data_type &uu, data_type &vv,
                           const data_type &u_in, const data_type &v_in)
           {
-            data_type u(u0), v(v0);
-            index_type i, j;
-
-            // check to see if have invalid u_in or v_in
-            if ((u_in<u0) || (v_in<v0))
-            {
-              it=patches.end();
-              return;
-            }
-
-            // cycle through the u-coordinates to find match
-            for (i=0, it=patches.begin(); i<nu; ++i, ++it)
-            {
-              if (u_in<=u+it->delta_u)
-              {
-                uu=(u_in-u)/it->delta_u;
-                break;
-              }
-            }
-            if (i==nu)
-            {
-              it=patches.end();
-              return;
-            }
-
-            // cycle through the v-coordinates to find match
-            for (j=0; j<nv; ++j, it+=nu)
-            {
-              if (v_in<=v+it->delta_v)
-              {
-                vv=(v_in-v)/it->delta_v;
-                return;
-              }
-            }
-            if (j==nv)
-            {
-              it=patches.end();
-              return;
-            }
+            ukey.find_segment(uk, uit, uu, u_in);
+            vkey.find_segment(vk, vit, vv, v_in);
           }
+
+          void find_patch(typename keymap_type::iterator &uit, typename keymap_type::iterator &vit,
+                          data_type &uu, data_type &vv,
+                          const data_type &u_in, const data_type &v_in)
+          {
+            index_type uk, vk;
+            find_patch(uk, vk, uit, vit, uu, vv, u_in, v_in);
+          }
+
+          void find_patch(index_type &uk, index_type &vk,
+                          typename keymap_type::const_iterator &uit, typename keymap_type::const_iterator &vit,
+                          data_type &uu, data_type &vv,
+                          const data_type &u_in, const data_type &v_in) const
+          {
+            ukey.find_segment(uk, uit, uu, u_in);
+            vkey.find_segment(vk, vit, vv, v_in);
+          }
+
+          void find_patch(typename keymap_type::const_iterator &uit, typename keymap_type::const_iterator &vit,
+                          data_type &uu, data_type &vv,
+                          const data_type &u_in, const data_type &v_in) const
+          {
+            index_type uk, vk;
+            find_patch(uk, vk, uit, vit, uu, vv, u_in, v_in);
+          }
+
+          void find_patch(index_type &uk, index_type &vk,
+                          data_type &uu, data_type &vv,
+                          const data_type &u_in, const data_type &v_in) const
+          {
+            typename keymap_type::const_iterator uit, vit;
+            find_patch(uk, vk, uit, vit, uu, vv, u_in, v_in);
+          }
+
       };
     }
   }

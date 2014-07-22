@@ -66,27 +66,7 @@ class bounding_box_test_suite : public Test::Suite
       TEST_ADD(bounding_box_test_suite<long double>::inside_test);
       TEST_ADD(bounding_box_test_suite<long double>::intersect_test);
     }
-#ifdef ELI_USING_QD
-    void AddTests(const dd_real &)
-    {
-      // add the tests
-      TEST_ADD(bounding_box_test_suite<dd_real>::construction_test);
-      TEST_ADD(bounding_box_test_suite<dd_real>::add_test);
-      TEST_ADD(bounding_box_test_suite<dd_real>::add_bb_test);
-      TEST_ADD(bounding_box_test_suite<dd_real>::inside_test);
-      TEST_ADD(bounding_box_test_suite<dd_real>::intersect_test);
-    }
 
-    void AddTests(const qd_real &)
-    {
-      // add the tests
-      TEST_ADD(bounding_box_test_suite<qd_real>::construction_test);
-      TEST_ADD(bounding_box_test_suite<qd_real>::add_test);
-      TEST_ADD(bounding_box_test_suite<qd_real>::add_bb_test);
-      TEST_ADD(bounding_box_test_suite<qd_real>::inside_test);
-      TEST_ADD(bounding_box_test_suite<qd_real>::intersect_test);
-    }
-#endif
   public:
     bounding_box_test_suite()
     {

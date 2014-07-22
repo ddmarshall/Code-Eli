@@ -71,27 +71,7 @@ class piecewise_circle_creator_test_suite : public Test::Suite
       TEST_ADD(piecewise_circle_creator_test_suite<long double>::create_circle_3_point_test);
       TEST_ADD(piecewise_circle_creator_test_suite<long double>::create_ellipse_primative_test);
     }
-#ifdef ELI_USING_QD
-    void AddTests(const dd_real &)
-    {
-      // add the tests
-      TEST_ADD(piecewise_circle_creator_test_suite<dd_real>::create_circle_primative_test);
-      TEST_ADD(piecewise_circle_creator_test_suite<dd_real>::create_circle_start_origin_test);
-      TEST_ADD(piecewise_circle_creator_test_suite<dd_real>::create_circle_start_origin_normal_test);
-      TEST_ADD(piecewise_circle_creator_test_suite<dd_real>::create_circle_3_point_test);
-      TEST_ADD(piecewise_circle_creator_test_suite<dd_real>::create_ellipse_primative_test);
-    }
 
-    void AddTests(const qd_real &)
-    {
-      // add the tests
-      TEST_ADD(piecewise_circle_creator_test_suite<qd_real>::create_circle_primative_test);
-      TEST_ADD(piecewise_circle_creator_test_suite<qd_real>::create_circle_start_origin_test);
-      TEST_ADD(piecewise_circle_creator_test_suite<qd_real>::create_circle_start_origin_normal_test);
-      TEST_ADD(piecewise_circle_creator_test_suite<qd_real>::create_circle_3_point_test);
-      TEST_ADD(piecewise_circle_creator_test_suite<qd_real>::create_ellipse_primative_test);
-    }
-#endif
   public:
     piecewise_circle_creator_test_suite() : tol()
     {
@@ -326,7 +306,6 @@ class piecewise_circle_creator_test_suite : public Test::Suite
       // test 2D
       {
         typedef eli::geom::curve::piecewise<eli::geom::curve::bezier, data_type, 2> piecewise_curve2_type;
-        typedef typename piecewise_curve2_type::curve_type curve2_type;
         typedef typename piecewise_curve2_type::point_type point2_type;
         typedef eli::geom::curve::piecewise_circle_creator<data__, 2, tolerance_type> circle_creator2_type;
 
@@ -371,12 +350,12 @@ class piecewise_circle_creator_test_suite : public Test::Suite
         start  << radius*std::cos(alpha1), radius*std::sin(alpha1), 0;
         middle << radius*std::cos(alpha2), radius*std::sin(alpha2), 0;
         end    << radius*std::cos(alpha3), radius*std::sin(alpha3), 0;
-        rotx << 1,             0,              0,
-                0, std::cos(0.5), -std::sin(0.5),
-                0, std::sin(0.5),  std::cos(0.5);
-        roty << std::cos(0.25), 0, std::sin(0.25),
-                             0, 1,              0,
-               -std::sin(0.25), 0, std::cos(0.25);
+        rotx << 1, 0,                                     0,
+                0, std::cos(static_cast<data_type>(0.5)), -std::sin(static_cast<data_type>(0.5)),
+                0, std::sin(static_cast<data_type>(0.5)),  std::cos(static_cast<data_type>(0.5));
+        roty << std::cos(static_cast<data_type>(0.25)), 0, std::sin(static_cast<data_type>(0.25)),
+                0,                                      1, 0,
+               -std::sin(static_cast<data_type>(0.25)), 0, std::cos(static_cast<data_type>(0.25));
         start=start*rotx*roty+origin;
         middle=middle*rotx*roty+origin;
         end=end*rotx*roty+origin;

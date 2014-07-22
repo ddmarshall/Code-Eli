@@ -43,6 +43,7 @@ class piecewise_surface_test_suite : public Test::Suite
     typedef typename piecewise_surface_type::data_type data_type;
     typedef typename piecewise_surface_type::index_type index_type;
     typedef typename piecewise_surface_type::tolerance_type tolerance_type;
+    typedef typename piecewise_surface_type::piecewise_curve_type piecewise_curve_type;
 
     tolerance_type tol;
 
@@ -58,7 +59,9 @@ class piecewise_surface_test_suite : public Test::Suite
       TEST_ADD(piecewise_surface_test_suite<float>::transformation_test);
       TEST_ADD(piecewise_surface_test_suite<float>::evaluation_test);
       TEST_ADD(piecewise_surface_test_suite<float>::split_test);
+      TEST_ADD(piecewise_surface_test_suite<float>::to_cubic_test);
       TEST_ADD(piecewise_surface_test_suite<float>::area_test);
+      TEST_ADD(piecewise_surface_test_suite<float>::get_curve_test);
     }
     void AddTests(const double &)
     {
@@ -71,7 +74,9 @@ class piecewise_surface_test_suite : public Test::Suite
       TEST_ADD(piecewise_surface_test_suite<double>::transformation_test);
       TEST_ADD(piecewise_surface_test_suite<double>::evaluation_test);
       TEST_ADD(piecewise_surface_test_suite<double>::split_test);
+      TEST_ADD(piecewise_surface_test_suite<double>::to_cubic_test);
       TEST_ADD(piecewise_surface_test_suite<double>::area_test);
+      TEST_ADD(piecewise_surface_test_suite<double>::get_curve_test);
     }
     void AddTests(const long double &)
     {
@@ -84,38 +89,10 @@ class piecewise_surface_test_suite : public Test::Suite
       TEST_ADD(piecewise_surface_test_suite<long double>::transformation_test);
       TEST_ADD(piecewise_surface_test_suite<long double>::evaluation_test);
       TEST_ADD(piecewise_surface_test_suite<long double>::split_test);
+      TEST_ADD(piecewise_surface_test_suite<long double>::to_cubic_test);
       TEST_ADD(piecewise_surface_test_suite<long double>::area_test);
+      TEST_ADD(piecewise_surface_test_suite<long double>::get_curve_test);
     }
-
-#ifdef ELI_USING_QD
-    void AddTests(const dd_real &)
-    {
-      // add the tests
-      TEST_ADD(piecewise_surface_test_suite<dd_real>::creation_test);
-      TEST_ADD(piecewise_surface_test_suite<dd_real>::bounding_box_test);
-      TEST_ADD(piecewise_surface_test_suite<dd_real>::reverse_test);
-      TEST_ADD(piecewise_surface_test_suite<dd_real>::swap_test);
-      TEST_ADD(piecewise_surface_test_suite<dd_real>::replace_test);
-      TEST_ADD(piecewise_surface_test_suite<dd_real>::transformation_test);
-      TEST_ADD(piecewise_surface_test_suite<dd_real>::evaluation_test);
-      TEST_ADD(piecewise_surface_test_suite<dd_real>::split_test);
-      TEST_ADD(piecewise_surface_test_suite<dd_real>::area_test);
-    }
-
-    void AddTests(const qd_real &)
-    {
-      // add the tests
-      TEST_ADD(piecewise_surface_test_suite<qd_real>::creation_test);
-      TEST_ADD(piecewise_surface_test_suite<qd_real>::bounding_box_test);
-      TEST_ADD(piecewise_surface_test_suite<qd_real>::reverse_test);
-      TEST_ADD(piecewise_surface_test_suite<qd_real>::swap_test);
-      TEST_ADD(piecewise_surface_test_suite<qd_real>::replace_test);
-      TEST_ADD(piecewise_surface_test_suite<qd_real>::transformation_test);
-      TEST_ADD(piecewise_surface_test_suite<qd_real>::evaluation_test);
-      TEST_ADD(piecewise_surface_test_suite<qd_real>::split_test);
-      TEST_ADD(piecewise_surface_test_suite<qd_real>::area_test);
-    }
-#endif
 
   public:
     piecewise_surface_test_suite()
@@ -293,7 +270,7 @@ class piecewise_surface_test_suite : public Test::Suite
       typename piecewise_surface_type::error_code err;
 
       // create 3x2 patches with unit spacing
-      ps1.resize(3, 2);
+      ps1.init_uv(3, 2);
       TEST_ASSERT(ps1.number_u_patches()==3);
       TEST_ASSERT(ps1.number_v_patches()==2);
 
@@ -330,20 +307,20 @@ class piecewise_surface_test_suite : public Test::Suite
       s.split_v(s1, s2, 0.5);  // this splits surface into lower and upper
       s1.split_u(s3, s4, 0.5); // this splits lower into first segment and last two
       err=ps1.set(s3, 0, 0); s_patches[0]=s3;
-      TEST_ASSERT(err==piecewise_surface_type::NO_ERROR);
+      TEST_ASSERT(err==piecewise_surface_type::NO_ERRORS);
       s2.split_u(s5, s6, 0.5); // this splits upper into first segment and last two
       err=ps1.set(s5, 0, 1); s_patches[3]=s5;
-      TEST_ASSERT(err==piecewise_surface_type::NO_ERROR);
+      TEST_ASSERT(err==piecewise_surface_type::NO_ERRORS);
       s4.split_u(s1, s2, 0.5); // this splits lower end into final two pieces
       err=ps1.set(s1, 1, 0); s_patches[1]=s1;
-      TEST_ASSERT(err==piecewise_surface_type::NO_ERROR);
+      TEST_ASSERT(err==piecewise_surface_type::NO_ERRORS);
       err=ps1.set(s2, 2, 0); s_patches[2]=s2;
-      TEST_ASSERT(err==piecewise_surface_type::NO_ERROR);
+      TEST_ASSERT(err==piecewise_surface_type::NO_ERRORS);
       s6.split_u(s1, s2, 0.5); // this splits the upper end into final two pieces
       err=ps1.set(s1, 1, 1); s_patches[4]=s1;
-      TEST_ASSERT(err==piecewise_surface_type::NO_ERROR);
+      TEST_ASSERT(err==piecewise_surface_type::NO_ERRORS);
       err=ps1.set(s2, 2, 1); s_patches[5]=s2;
-      TEST_ASSERT(err==piecewise_surface_type::NO_ERROR);
+      TEST_ASSERT(err==piecewise_surface_type::NO_ERRORS);
 
       // test getting parameter max
       data_type umax, vmax;
@@ -373,7 +350,7 @@ class piecewise_surface_test_suite : public Test::Suite
       typename piecewise_surface_type::error_code err;
 
       // create 3x2 patches with unit spacing
-      ps1.resize(3, 2);
+      ps1.init_uv(3, 2);
       TEST_ASSERT(ps1.number_u_patches()==3);
       TEST_ASSERT(ps1.number_v_patches()==2);
 
@@ -410,20 +387,20 @@ class piecewise_surface_test_suite : public Test::Suite
       s.split_v(s1, s2, 0.5);  // this splits surface into lower and upper
       s1.split_u(s3, s4, 0.5); // this splits lower into first segment and last two
       err=ps1.set(s3, 0, 0); s_patches[0]=s3;
-      TEST_ASSERT(err==piecewise_surface_type::NO_ERROR);
+      TEST_ASSERT(err==piecewise_surface_type::NO_ERRORS);
       s2.split_u(s5, s6, 0.5); // this splits upper into first segment and last two
       err=ps1.set(s5, 0, 1); s_patches[3]=s5;
-      TEST_ASSERT(err==piecewise_surface_type::NO_ERROR);
+      TEST_ASSERT(err==piecewise_surface_type::NO_ERRORS);
       s4.split_u(s1, s2, 0.5); // this splits lower end into final two pieces
       err=ps1.set(s1, 1, 0); s_patches[1]=s1;
-      TEST_ASSERT(err==piecewise_surface_type::NO_ERROR);
+      TEST_ASSERT(err==piecewise_surface_type::NO_ERRORS);
       err=ps1.set(s2, 2, 0); s_patches[2]=s2;
-      TEST_ASSERT(err==piecewise_surface_type::NO_ERROR);
+      TEST_ASSERT(err==piecewise_surface_type::NO_ERRORS);
       s6.split_u(s1, s2, 0.5); // this splits the upper end into final two pieces
       err=ps1.set(s1, 1, 1); s_patches[4]=s1;
-      TEST_ASSERT(err==piecewise_surface_type::NO_ERROR);
+      TEST_ASSERT(err==piecewise_surface_type::NO_ERRORS);
       err=ps1.set(s2, 2, 1); s_patches[5]=s2;
-      TEST_ASSERT(err==piecewise_surface_type::NO_ERROR);
+      TEST_ASSERT(err==piecewise_surface_type::NO_ERRORS);
 
       // test the bounding box
       typename piecewise_surface_type::bounding_box_type bb;
@@ -443,7 +420,7 @@ class piecewise_surface_test_suite : public Test::Suite
       data_type u, v, umax, vmax;
 
       // create 3x2 patches with unit spacing
-      ps1.resize(3, 2);
+      ps1.init_uv(3, 2);
 
       // create piecewise surface
       {
@@ -482,20 +459,20 @@ class piecewise_surface_test_suite : public Test::Suite
         s.split_v(s1, s2, 0.5);  // this splits surface into lower and upper
         s1.split_u(s3, s4, 0.5); // this splits lower into first segment and last two
         err=ps1.set(s3, 0, 0);
-        TEST_ASSERT(err==piecewise_surface_type::NO_ERROR);
+        TEST_ASSERT(err==piecewise_surface_type::NO_ERRORS);
         s2.split_u(s5, s6, 0.5); // this splits upper into first segment and last two
         err=ps1.set(s5, 0, 1);
-        TEST_ASSERT(err==piecewise_surface_type::NO_ERROR);
+        TEST_ASSERT(err==piecewise_surface_type::NO_ERRORS);
         s4.split_u(s1, s2, 0.5); // this splits lower end into final two pieces
         err=ps1.set(s1, 1, 0);
-        TEST_ASSERT(err==piecewise_surface_type::NO_ERROR);
+        TEST_ASSERT(err==piecewise_surface_type::NO_ERRORS);
         err=ps1.set(s2, 2, 0);
-        TEST_ASSERT(err==piecewise_surface_type::NO_ERROR);
+        TEST_ASSERT(err==piecewise_surface_type::NO_ERRORS);
         s6.split_u(s1, s2, 0.5); // this splits the upper end into final two pieces
         err=ps1.set(s1, 1, 1);
-        TEST_ASSERT(err==piecewise_surface_type::NO_ERROR);
+        TEST_ASSERT(err==piecewise_surface_type::NO_ERRORS);
         err=ps1.set(s2, 2, 1);
-        TEST_ASSERT(err==piecewise_surface_type::NO_ERROR);
+        TEST_ASSERT(err==piecewise_surface_type::NO_ERRORS);
       }
       ps1.get_parameter_max(umax, vmax);
 
@@ -542,7 +519,9 @@ class piecewise_surface_test_suite : public Test::Suite
       data_type u, v;
 
       // create 3x2 patches with unit spacing
-      ps1.resize(3, 2);
+      ps1.init_uv(3, 2);
+      TEST_ASSERT(ps1.number_u_patches()==3);
+      TEST_ASSERT(ps1.number_v_patches()==2);
 
       // create piecewise surface
       {
@@ -581,25 +560,28 @@ class piecewise_surface_test_suite : public Test::Suite
         s.split_v(s1, s2, 0.5);  // this splits surface into lower and upper
         s1.split_u(s3, s4, 0.5); // this splits lower into first segment and last two
         err=ps1.set(s3, 0, 0);
-        TEST_ASSERT(err==piecewise_surface_type::NO_ERROR);
+        TEST_ASSERT(err==piecewise_surface_type::NO_ERRORS);
         s2.split_u(s5, s6, 0.5); // this splits upper into first segment and last two
         err=ps1.set(s5, 0, 1);
-        TEST_ASSERT(err==piecewise_surface_type::NO_ERROR);
+        TEST_ASSERT(err==piecewise_surface_type::NO_ERRORS);
         s4.split_u(s1, s2, 0.5); // this splits lower end into final two pieces
         err=ps1.set(s1, 1, 0);
-        TEST_ASSERT(err==piecewise_surface_type::NO_ERROR);
+        TEST_ASSERT(err==piecewise_surface_type::NO_ERRORS);
         err=ps1.set(s2, 2, 0);
-        TEST_ASSERT(err==piecewise_surface_type::NO_ERROR);
+        TEST_ASSERT(err==piecewise_surface_type::NO_ERRORS);
         s6.split_u(s1, s2, 0.5); // this splits the upper end into final two pieces
         err=ps1.set(s1, 1, 1);
-        TEST_ASSERT(err==piecewise_surface_type::NO_ERROR);
+        TEST_ASSERT(err==piecewise_surface_type::NO_ERRORS);
         err=ps1.set(s2, 2, 1);
-        TEST_ASSERT(err==piecewise_surface_type::NO_ERROR);
+        TEST_ASSERT(err==piecewise_surface_type::NO_ERRORS);
       }
 
       // create second piecewise surface and swap coordinate directions
       ps2=ps1;
       ps2.swap_uv();
+
+      TEST_ASSERT(ps2.number_u_patches()==2);
+      TEST_ASSERT(ps2.number_v_patches()==3);
 
       // test point
       u=1.25;
@@ -623,7 +605,7 @@ class piecewise_surface_test_suite : public Test::Suite
       data_type u, v;
 
       // create 3x2 patches with unit spacing
-      ps1.resize(3, 2);
+      ps1.init_uv(3, 2);
 
       // create piecewise surface
       {
@@ -661,20 +643,20 @@ class piecewise_surface_test_suite : public Test::Suite
         s.split_v(s1, s2, 0.5);  // this splits surface into lower and upper
         s1.split_u(s3, s4, 0.5); // this splits lower into first segment and last two
         err=ps1.set(s3, 0, 0);
-        TEST_ASSERT(err==piecewise_surface_type::NO_ERROR);
+        TEST_ASSERT(err==piecewise_surface_type::NO_ERRORS);
         s2.split_u(s5, s6, 0.5); // this splits upper into first segment and last two
         err=ps1.set(s5, 0, 1);
-        TEST_ASSERT(err==piecewise_surface_type::NO_ERROR);
+        TEST_ASSERT(err==piecewise_surface_type::NO_ERRORS);
         s4.split_u(s1, s2, 0.5); // this splits lower end into final two pieces
         err=ps1.set(s1, 1, 0);
-        TEST_ASSERT(err==piecewise_surface_type::NO_ERROR);
+        TEST_ASSERT(err==piecewise_surface_type::NO_ERRORS);
         err=ps1.set(s2, 2, 0);
-        TEST_ASSERT(err==piecewise_surface_type::NO_ERROR);
+        TEST_ASSERT(err==piecewise_surface_type::NO_ERRORS);
         s6.split_u(s1, s2, 0.5); // this splits the upper end into final two pieces
         err=ps1.set(s1, 1, 1);
-        TEST_ASSERT(err==piecewise_surface_type::NO_ERROR);
+        TEST_ASSERT(err==piecewise_surface_type::NO_ERRORS);
         err=ps1.set(s2, 2, 1);
-        TEST_ASSERT(err==piecewise_surface_type::NO_ERROR);
+        TEST_ASSERT(err==piecewise_surface_type::NO_ERRORS);
       }
 
       surface_type s;
@@ -685,7 +667,7 @@ class piecewise_surface_test_suite : public Test::Suite
       s.promote_u();
       s.promote_v();
       err=ps2.replace(s, 2, 1);
-      TEST_ASSERT(err==piecewise_surface_type::NO_ERROR);
+      TEST_ASSERT(err==piecewise_surface_type::NO_ERRORS);
 
       u=2.25;
       v=1.75;
@@ -695,7 +677,7 @@ class piecewise_surface_test_suite : public Test::Suite
 
       // test adding invalid patch
       point_type nudge;
-      nudge << 0, 0.01, 0;
+      nudge << 0, static_cast<data_type>(0.01), 0;
       ps2=ps1;
       ps2.get(s, 2, 1);
       s.set_control_point(s.get_control_point(0, 0)+nudge, 0, 0);
@@ -710,7 +692,7 @@ class piecewise_surface_test_suite : public Test::Suite
       typename piecewise_surface_type::error_code err;
 
       // create 3x2 patches with unit spacing
-      ps1.resize(3, 2);
+      ps1.init_uv(3, 2);
 
       // create piecewise surface
       {
@@ -748,20 +730,20 @@ class piecewise_surface_test_suite : public Test::Suite
         s.split_v(s1, s2, 0.5);  // this splits surface into lower and upper
         s1.split_u(s3, s4, 0.5); // this splits lower into first segment and last two
         err=ps1.set(s3, 0, 0);
-        TEST_ASSERT(err==piecewise_surface_type::NO_ERROR);
+        TEST_ASSERT(err==piecewise_surface_type::NO_ERRORS);
         s2.split_u(s5, s6, 0.5); // this splits upper into first segment and last two
         err=ps1.set(s5, 0, 1);
-        TEST_ASSERT(err==piecewise_surface_type::NO_ERROR);
+        TEST_ASSERT(err==piecewise_surface_type::NO_ERRORS);
         s4.split_u(s1, s2, 0.5); // this splits lower end into final two pieces
         err=ps1.set(s1, 1, 0);
-        TEST_ASSERT(err==piecewise_surface_type::NO_ERROR);
+        TEST_ASSERT(err==piecewise_surface_type::NO_ERRORS);
         err=ps1.set(s2, 2, 0);
-        TEST_ASSERT(err==piecewise_surface_type::NO_ERROR);
+        TEST_ASSERT(err==piecewise_surface_type::NO_ERRORS);
         s6.split_u(s1, s2, 0.5); // this splits the upper end into final two pieces
         err=ps1.set(s1, 1, 1);
-        TEST_ASSERT(err==piecewise_surface_type::NO_ERROR);
+        TEST_ASSERT(err==piecewise_surface_type::NO_ERRORS);
         err=ps1.set(s2, 2, 1);
-        TEST_ASSERT(err==piecewise_surface_type::NO_ERROR);
+        TEST_ASSERT(err==piecewise_surface_type::NO_ERRORS);
       }
 
       // test translation
@@ -782,10 +764,11 @@ class piecewise_surface_test_suite : public Test::Suite
         typename piecewise_surface_type::rotation_matrix_type rmat;
 
         // set up rotation and apply
+        data_type one(1);
         ps2=ps1;
-        rmat << cos(1), 0, -sin(1),
-                     0, 1,       0,
-                sin(1), 0,  cos(1);
+        rmat << std::cos(one), 0,  -std::sin(one),
+                0,             one, 0,
+                std::sin(one), 0,   std::cos(one);
         ps2.rotate(rmat);
         TEST_ASSERT(tol.approximately_equal(ps2.f(u, v), ps1.f(u, v)*rmat.transpose()));
       }
@@ -796,11 +779,12 @@ class piecewise_surface_test_suite : public Test::Suite
         point_type rorig;
 
         // set up rotation and apply
+        data_type one(1);
         ps2=ps1;
         rorig << 2, 1, 3;
-        rmat << cos(1), 0, -sin(1),
-                     0, 1,       0,
-                sin(1), 0,  cos(1);
+        rmat << std::cos(one), 0,  -std::sin(one),
+                0,             one, 0,
+                std::sin(one), 0,   std::cos(one);
         ps2.rotate(rmat, rorig);
         TEST_ASSERT(tol.approximately_equal(ps2.f(u, v), rorig+(ps1.f(u, v)-rorig)*rmat.transpose()));
       }
@@ -814,7 +798,7 @@ class piecewise_surface_test_suite : public Test::Suite
       typename piecewise_surface_type::error_code err;
 
       // create 3x2 patches with unit spacing
-      ps1.resize(3, 2);
+      ps1.init_uv(3, 2);
 
       // create piecewise surface
       {
@@ -852,20 +836,20 @@ class piecewise_surface_test_suite : public Test::Suite
         s.split_v(s1, s2, 0.5);  // this splits surface into lower and upper
         s1.split_u(s3, s4, 0.5); // this splits lower into first segment and last two
         err=ps1.set(s3, 0, 0); s_patches[0]=s3;
-        TEST_ASSERT(err==piecewise_surface_type::NO_ERROR);
+        TEST_ASSERT(err==piecewise_surface_type::NO_ERRORS);
         s2.split_u(s5, s6, 0.5); // this splits upper into first segment and last two
         err=ps1.set(s5, 0, 1); s_patches[3]=s5;
-        TEST_ASSERT(err==piecewise_surface_type::NO_ERROR);
+        TEST_ASSERT(err==piecewise_surface_type::NO_ERRORS);
         s4.split_u(s1, s2, 0.5); // this splits lower end into final two pieces
         err=ps1.set(s1, 1, 0); s_patches[1]=s1;
-        TEST_ASSERT(err==piecewise_surface_type::NO_ERROR);
+        TEST_ASSERT(err==piecewise_surface_type::NO_ERRORS);
         err=ps1.set(s2, 2, 0); s_patches[2]=s2;
-        TEST_ASSERT(err==piecewise_surface_type::NO_ERROR);
+        TEST_ASSERT(err==piecewise_surface_type::NO_ERRORS);
         s6.split_u(s1, s2, 0.5); // this splits the upper end into final two pieces
         err=ps1.set(s1, 1, 1); s_patches[4]=s1;
-        TEST_ASSERT(err==piecewise_surface_type::NO_ERROR);
+        TEST_ASSERT(err==piecewise_surface_type::NO_ERRORS);
         err=ps1.set(s2, 2, 1); s_patches[5]=s2;
-        TEST_ASSERT(err==piecewise_surface_type::NO_ERROR);
+        TEST_ASSERT(err==piecewise_surface_type::NO_ERRORS);
       }
 
       // test evaluation on first patch
@@ -911,7 +895,7 @@ class piecewise_surface_test_suite : public Test::Suite
       data_type u, v;
 
       // create 3x2 patches with unit spacing
-      ps1.resize(3, 2);
+      ps1.init_uv(3, 2);
 
       // create piecewise surface
       {
@@ -950,20 +934,20 @@ class piecewise_surface_test_suite : public Test::Suite
         s.split_v(s1, s2, 0.5);  // this splits surface into lower and upper
         s1.split_u(s3, s4, 0.5); // this splits lower into first segment and last two
         err=ps1.set(s3, 0, 0);
-        TEST_ASSERT(err==piecewise_surface_type::NO_ERROR);
+        TEST_ASSERT(err==piecewise_surface_type::NO_ERRORS);
         s2.split_u(s5, s6, 0.5); // this splits upper into first segment and last two
         err=ps1.set(s5, 0, 1);
-        TEST_ASSERT(err==piecewise_surface_type::NO_ERROR);
+        TEST_ASSERT(err==piecewise_surface_type::NO_ERRORS);
         s4.split_u(s1, s2, 0.5); // this splits lower end into final two pieces
         err=ps1.set(s1, 1, 0);
-        TEST_ASSERT(err==piecewise_surface_type::NO_ERROR);
+        TEST_ASSERT(err==piecewise_surface_type::NO_ERRORS);
         err=ps1.set(s2, 2, 0);
-        TEST_ASSERT(err==piecewise_surface_type::NO_ERROR);
+        TEST_ASSERT(err==piecewise_surface_type::NO_ERRORS);
         s6.split_u(s1, s2, 0.5); // this splits the upper end into final two pieces
         err=ps1.set(s1, 1, 1);
-        TEST_ASSERT(err==piecewise_surface_type::NO_ERROR);
+        TEST_ASSERT(err==piecewise_surface_type::NO_ERRORS);
         err=ps1.set(s2, 2, 1);
-        TEST_ASSERT(err==piecewise_surface_type::NO_ERROR);
+        TEST_ASSERT(err==piecewise_surface_type::NO_ERRORS);
       }
 
       // split u-direction
@@ -1024,14 +1008,157 @@ class piecewise_surface_test_suite : public Test::Suite
       TEST_ASSERT(tol.approximately_equal(ps1.f_v(u, v), ps2.f_v(u, v)));
     }
 
+    void to_cubic_test()
+    {
+      piecewise_surface_type ps1, ps2;
+      data_type u, v;
+
+      // create 3x2 patches with unit spacing
+      ps1.init_uv(1,1);
+
+      // create piecewise surface
+      {
+        typename piecewise_surface_type::error_code err;
+        surface_type s;
+        index_type i, j, n(5), m(4);
+        point_type pt[5+1][4+1], pt_out;
+
+        // create surface with specified control points
+        pt[0][0] <<  0, 0, 15;
+        pt[1][0] <<  2, 6, 15;
+        pt[2][0] <<  3, 0, 15;
+        pt[3][0] <<  5, 4, 15;
+        pt[4][0] <<  7, 1, 15;
+        pt[5][0] <<  9, 1, 15;
+        pt[0][1] <<  0, 0, 11;
+        pt[1][1] <<  2, 6, 11;
+        pt[2][1] <<  3, 0, 11;
+        pt[3][1] <<  5, 4, 11;
+        pt[4][1] <<  7, 1, 11;
+        pt[5][1] <<  9, 1, 11;
+        pt[0][2] <<  0, 0,  3;
+        pt[1][2] <<  2, 6,  3;
+        pt[2][2] <<  3, 0,  3;
+        pt[3][2] <<  5, 4,  3;
+        pt[4][2] <<  7, 1,  3;
+        pt[5][2] <<  9, 1,  3;
+        pt[0][3] <<  0, 0,  0;
+        pt[1][3] <<  2, 6,  0;
+        pt[2][3] <<  3, 0,  0;
+        pt[3][3] <<  5, 4,  0;
+        pt[4][3] <<  7, 1,  0;
+        pt[5][3] <<  9, 1,  0;
+        pt[0][4] <<  0, 0, -5;
+        pt[1][4] <<  2, 6, -5;
+        pt[2][4] <<  3, 0, -5;
+        pt[3][4] <<  5, 4, -5;
+        pt[4][4] <<  7, 1, -5;
+        pt[5][4] <<  9, 1, -5;
+
+        s.resize(n, m);
+        for (i=0; i<=n; ++i)
+        {
+          for (j=0; j<=m; ++j)
+          {
+            s.set_control_point(pt[i][j], i, j);
+          }
+        }
+
+        err=ps1.set(s, 0, 0);
+        TEST_ASSERT(err==piecewise_surface_type::NO_ERRORS);
+
+      }
+
+      data_type ttol = static_cast<data_type>(1e-3);
+
+      // to_cubic u-direction
+      ps2=ps1;
+
+      ps2.to_cubic_u(ttol);
+
+      index_type mind, maxd;
+
+      ps2.degree_u(mind, maxd);
+
+      TEST_ASSERT(mind==3);
+      TEST_ASSERT(maxd==3);
+
+      // printf("nu: %d nv: %d\n", ps2.number_u_patches(), ps2.number_v_patches());
+
+      u=0.25;
+      v=0.5;
+      TEST_ASSERT((ps1.f(u, v)-ps2.f(u, v)).norm() < ttol);
+
+      u=0.25;
+      v=0.75;
+      TEST_ASSERT((ps1.f(u, v)-ps2.f(u, v)).norm() < ttol);
+
+      u=0.75;
+      v=0.75;
+      TEST_ASSERT((ps1.f(u, v)-ps2.f(u, v)).norm() < ttol);
+
+      u=0.25;
+      v=0.25;
+      TEST_ASSERT((ps1.f(u, v)-ps2.f(u, v)).norm() < ttol);
+
+      // to_cubic v-direction
+      ps2=ps1;
+
+      ps2.to_cubic_v(ttol);
+
+      ps2.degree_v(mind, maxd);
+
+      TEST_ASSERT(mind==3);
+      TEST_ASSERT(maxd==3);
+
+      // printf("nu: %d nv: %d\n", ps2.number_u_patches(), ps2.number_v_patches());
+
+      u=0.25;
+      v=0.5;
+      TEST_ASSERT((ps1.f(u, v)-ps2.f(u, v)).norm() < ttol);
+
+      u=0.25;
+      v=0.75;
+      TEST_ASSERT((ps1.f(u, v)-ps2.f(u, v)).norm() < ttol);
+
+      u=0.75;
+      v=0.75;
+      TEST_ASSERT((ps1.f(u, v)-ps2.f(u, v)).norm() < ttol);
+
+      // to_cubic u and v-direction
+      ps2=ps1;
+
+      ps2.to_cubic(ttol);
+
+      ps2.degree_u(mind, maxd);
+
+      TEST_ASSERT(mind==3);
+      TEST_ASSERT(maxd==3);
+
+      ps2.degree_v(mind, maxd);
+
+      TEST_ASSERT(mind==3);
+      TEST_ASSERT(maxd==3);
+
+      // printf("nu: %d nv: %d\n", ps2.number_u_patches(), ps2.number_v_patches());
+
+      u=0.25;
+      v=0.5;
+      TEST_ASSERT((ps1.f(u, v)-ps2.f(u, v)).norm() < ttol);
+
+      u=0.25;
+      v=0.75;
+      TEST_ASSERT((ps1.f(u, v)-ps2.f(u, v)).norm() < ttol);
+
+      u=0.75;
+      v=0.75;
+      TEST_ASSERT((ps1.f(u, v)-ps2.f(u, v)).norm() < ttol);
+    }
+
     void area_test()
     {
 #if 0
       data_type eps(std::numeric_limits<data__>::epsilon());
-#ifdef ELI_USING_QD
-      if ( (typeid(data_type)==typeid(dd_real)) || (typeid(data_type)==typeid(qd_real)) )
-        eps=std::numeric_limits<double>::epsilon();
-#endif
       piecewise_surface_type c1;
       curve_type bc[3];
       data_type dt[3], len, bc_len[3], ref_len, t0, t1, temp0, temp1;
@@ -1074,22 +1201,13 @@ class piecewise_surface_test_suite : public Test::Suite
       }
       eli::geom::curve::length(bc_len[2], bc[2], tol);
       err=c1.set(bc, bc+3, dt);
-      TEST_ASSERT(err==piecewise_surface_type::NO_ERROR);
+      TEST_ASSERT(err==piecewise_surface_type::NO_ERRORS);
       TEST_ASSERT(c1.number_segments()==3);
 
       // create two segment curve calc length of each segment to compare
       eli::geom::curve::length(len, c1, tol);
       ref_len=bc_len[0]+bc_len[1]+bc_len[2];
-#ifdef ELI_USING_QD
-      if ( (typeid(data_type)==typeid(dd_real)) || (typeid(data_type)==typeid(qd_real)) )
-      {
-        TEST_ASSERT(std::abs(len-ref_len)<3*eps);
-      }
-      else
-#endif
-      {
-        TEST_ASSERT(len==ref_len);
-      }
+      TEST_ASSERT(len==ref_len);
 
       // choose part of first segment to calc length and compare
       t0=0.125;
@@ -1116,6 +1234,466 @@ class piecewise_surface_test_suite : public Test::Suite
       ref_len=temp0+bc_len[1]+temp1;
       TEST_ASSERT(std::abs(len-ref_len)<166*tol);
 #endif
+    }
+
+    void get_curve_test()
+    {
+      const index_type n(3), m(3);
+      surface_type s(n, m);
+      point_type cp[3+1][3+1], pt_out, pt_ref;
+      point_type pt, norm, u_contra, v_contra;
+      data_type u, v, d;
+      index_type i, j;
+      piecewise_surface_type pws;
+      piecewise_curve_type pwc;
+      typename piecewise_surface_type::error_code err;
+
+      pws.init_uv(1, 1);
+
+      // create surface with specified control points
+      cp[0][0] << -15, 0,  15;
+      cp[1][0] <<  -5, 5,  15;
+      cp[2][0] <<   5, 5,  15;
+      cp[3][0] <<  15, 0,  15;
+      cp[0][1] << -15, 5,   5;
+      cp[1][1] <<  -5, 5,   5;
+      cp[2][1] <<   5, 5,   5;
+      cp[3][1] <<  15, 5,   5;
+      cp[0][2] << -15, 5,  -5;
+      cp[1][2] <<  -5, 5,  -5;
+      cp[2][2] <<   5, 5,  -5;
+      cp[3][2] <<  15, 5,  -5;
+      cp[0][3] << -15, 0, -15;
+      cp[1][3] <<  -5, 5, -15;
+      cp[2][3] <<   5, 5, -15;
+      cp[3][3] <<  15, 0, -15;
+
+      // create surface with specified dimensions and set control points
+      for (i=0; i<=n; ++i)
+      {
+        for (j=0; j<=m; ++j)
+        {
+          s.set_control_point(cp[i][j], i, j);
+        }
+      }
+      TEST_ASSERT(s.open_u());
+      TEST_ASSERT(s.open_v());
+
+      err=pws.set(s, 0, 0);
+      TEST_ASSERT(err==piecewise_surface_type::NO_ERRORS);
+
+      pws.split_u(0.2);
+      pws.split_u(0.3);
+      pws.split_u(0.6);
+      pws.split_u(0.7);
+
+      pws.split_v(0.2);
+      pws.split_v(0.412);
+      pws.split_v(0.6);
+      pws.split_v(0.895);
+
+      // Extract u curve
+      u=0;
+      pws.get_uconst_curve(pwc, u);
+
+      v=0;
+      pt_ref=pws.f(u, v);
+      pt_out=pwc.f(v);
+      TEST_ASSERT(pt_out==pt_ref);
+
+      v=0.1;
+      pt_ref=pws.f(u, v);
+      pt_out=pwc.f(v);
+      TEST_ASSERT(pt_out==pt_ref);
+
+      v=0.2;
+      pt_ref=pws.f(u, v);
+      pt_out=pwc.f(v);
+      TEST_ASSERT(pt_out==pt_ref);
+
+      v=0.4;
+      pt_ref=pws.f(u, v);
+      pt_out=pwc.f(v);
+      TEST_ASSERT(pt_out==pt_ref);
+
+      v=0.6;
+      pt_ref=pws.f(u, v);
+      pt_out=pwc.f(v);
+      TEST_ASSERT(pt_out==pt_ref);
+
+      v=0.8;
+      pt_ref=pws.f(u, v);
+      pt_out=pwc.f(v);
+      TEST_ASSERT(pt_out==pt_ref);
+
+      v=1;
+      pt_ref=pws.f(u, v);
+      pt_out=pwc.f(v);
+      TEST_ASSERT(pt_out==pt_ref);
+
+      // Extract u curve
+      u=0.1;
+      pws.get_uconst_curve(pwc, u);
+
+      v=0;
+      pt_ref=pws.f(u, v);
+      pt_out=pwc.f(v);
+      TEST_ASSERT(pt_out==pt_ref);
+
+      v=0.1;
+      pt_ref=pws.f(u, v);
+      pt_out=pwc.f(v);
+      TEST_ASSERT(pt_out==pt_ref);
+
+      v=0.2;
+      pt_ref=pws.f(u, v);
+      pt_out=pwc.f(v);
+      TEST_ASSERT(pt_out==pt_ref);
+
+      v=0.4;
+      pt_ref=pws.f(u, v);
+      pt_out=pwc.f(v);
+      TEST_ASSERT(pt_out==pt_ref);
+
+      v=0.6;
+      pt_ref=pws.f(u, v);
+      pt_out=pwc.f(v);
+      TEST_ASSERT(pt_out==pt_ref);
+
+      v=0.8;
+      pt_ref=pws.f(u, v);
+      pt_out=pwc.f(v);
+      TEST_ASSERT(pt_out==pt_ref);
+
+      v=1;
+      pt_ref=pws.f(u, v);
+      pt_out=pwc.f(v);
+      TEST_ASSERT(pt_out==pt_ref);
+
+      // Extract u curve
+      u=0.2;
+      pws.get_uconst_curve(pwc, u);
+
+      v=0;
+      pt_ref=pws.f(u, v);
+      pt_out=pwc.f(v);
+      TEST_ASSERT(pt_out==pt_ref);
+
+      v=0.1;
+      pt_ref=pws.f(u, v);
+      pt_out=pwc.f(v);
+      TEST_ASSERT(pt_out==pt_ref);
+
+      v=0.2;
+      pt_ref=pws.f(u, v);
+      pt_out=pwc.f(v);
+      TEST_ASSERT(pt_out==pt_ref);
+
+      v=0.4;
+      pt_ref=pws.f(u, v);
+      pt_out=pwc.f(v);
+      TEST_ASSERT(pt_out==pt_ref);
+
+      v=0.6;
+      pt_ref=pws.f(u, v);
+      pt_out=pwc.f(v);
+      TEST_ASSERT(pt_out==pt_ref);
+
+      v=0.8;
+      pt_ref=pws.f(u, v);
+      pt_out=pwc.f(v);
+      TEST_ASSERT(pt_out==pt_ref);
+
+      v=1;
+      pt_ref=pws.f(u, v);
+      pt_out=pwc.f(v);
+      TEST_ASSERT(pt_out==pt_ref);
+
+      // Extract u curve
+      u=0.5;
+      pws.get_uconst_curve(pwc, u);
+
+      v=0;
+      pt_ref=pws.f(u, v);
+      pt_out=pwc.f(v);
+      TEST_ASSERT(pt_out==pt_ref);
+
+      v=0.1;
+      pt_ref=pws.f(u, v);
+      pt_out=pwc.f(v);
+      TEST_ASSERT(pt_out==pt_ref);
+
+      v=0.2;
+      pt_ref=pws.f(u, v);
+      pt_out=pwc.f(v);
+      TEST_ASSERT(pt_out==pt_ref);
+
+      v=0.4;
+      pt_ref=pws.f(u, v);
+      pt_out=pwc.f(v);
+      TEST_ASSERT(pt_out==pt_ref);
+
+      v=0.6;
+      pt_ref=pws.f(u, v);
+      pt_out=pwc.f(v);
+      TEST_ASSERT(pt_out==pt_ref);
+
+      v=0.8;
+      pt_ref=pws.f(u, v);
+      pt_out=pwc.f(v);
+      TEST_ASSERT(pt_out==pt_ref);
+
+      v=1;
+      pt_ref=pws.f(u, v);
+      pt_out=pwc.f(v);
+      TEST_ASSERT(pt_out==pt_ref);
+
+      // Extract u curve
+      u=1;
+      pws.get_uconst_curve(pwc, u);
+
+      v=0;
+      pt_ref=pws.f(u, v);
+      pt_out=pwc.f(v);
+      TEST_ASSERT(pt_out==pt_ref);
+
+      v=0.1;
+      pt_ref=pws.f(u, v);
+      pt_out=pwc.f(v);
+      TEST_ASSERT(pt_out==pt_ref);
+
+      v=0.2;
+      pt_ref=pws.f(u, v);
+      pt_out=pwc.f(v);
+      TEST_ASSERT(pt_out==pt_ref);
+
+      v=0.4;
+      pt_ref=pws.f(u, v);
+      pt_out=pwc.f(v);
+      TEST_ASSERT(pt_out==pt_ref);
+
+      v=0.6;
+      pt_ref=pws.f(u, v);
+      pt_out=pwc.f(v);
+      TEST_ASSERT(pt_out==pt_ref);
+
+      v=0.8;
+      pt_ref=pws.f(u, v);
+      pt_out=pwc.f(v);
+      TEST_ASSERT(pt_out==pt_ref);
+
+      v=1;
+      pt_ref=pws.f(u, v);
+      pt_out=pwc.f(v);
+      TEST_ASSERT(pt_out==pt_ref);
+
+
+
+      // Extract v curve
+      v=0;
+      pws.get_vconst_curve(pwc, v);
+
+      u=0;
+      pt_ref=pws.f(u, v);
+      pt_out=pwc.f(u);
+      TEST_ASSERT(pt_out==pt_ref);
+
+      u=0.1;
+      pt_ref=pws.f(u, v);
+      pt_out=pwc.f(u);
+      TEST_ASSERT(pt_out==pt_ref);
+
+      u=0.2;
+      pt_ref=pws.f(u, v);
+      pt_out=pwc.f(u);
+      TEST_ASSERT(pt_out==pt_ref);
+
+      u=0.4;
+      pt_ref=pws.f(u, v);
+      pt_out=pwc.f(u);
+      TEST_ASSERT(pt_out==pt_ref);
+
+      u=0.6;
+      pt_ref=pws.f(u, v);
+      pt_out=pwc.f(u);
+      TEST_ASSERT(pt_out==pt_ref);
+
+      u=0.8;
+      pt_ref=pws.f(u, v);
+      pt_out=pwc.f(u);
+      TEST_ASSERT(pt_out==pt_ref);
+
+      u=1;
+      pt_ref=pws.f(u, v);
+      pt_out=pwc.f(u);
+      TEST_ASSERT(pt_out==pt_ref);
+
+      // Extract v curve
+      v=0.1;
+      pws.get_vconst_curve(pwc, v);
+
+      u=0;
+      pt_ref=pws.f(u, v);
+      pt_out=pwc.f(u);
+      TEST_ASSERT(pt_out==pt_ref);
+
+      u=0.1;
+      pt_ref=pws.f(u, v);
+      pt_out=pwc.f(u);
+      d=(pt_ref - pt_out).norm();
+      TEST_ASSERT(d<std::numeric_limits<data_type>::epsilon()*30);
+
+      u=0.2;
+      pt_ref=pws.f(u, v);
+      pt_out=pwc.f(u);
+      TEST_ASSERT(pt_out==pt_ref);
+
+      u=0.4;
+      pt_ref=pws.f(u, v);
+      pt_out=pwc.f(u);
+      d=(pt_ref - pt_out).norm();
+      TEST_ASSERT(d<std::numeric_limits<data_type>::epsilon()*30);
+
+      u=0.6;
+      pt_ref=pws.f(u, v);
+      pt_out=pwc.f(u);
+      d=(pt_ref - pt_out).norm();
+      TEST_ASSERT(d<std::numeric_limits<data_type>::epsilon()*30);
+
+      u=0.8;
+      pt_ref=pws.f(u, v);
+      pt_out=pwc.f(u);
+      d=(pt_ref - pt_out).norm();
+      TEST_ASSERT(d<std::numeric_limits<data_type>::epsilon()*30);
+
+      u=1;
+      pt_ref=pws.f(u, v);
+      pt_out=pwc.f(u);
+      TEST_ASSERT(pt_out==pt_ref);
+
+      // Extract v curve
+      v=0.2;
+      pws.get_vconst_curve(pwc, v);
+
+      u=0;
+      pt_ref=pws.f(u, v);
+      pt_out=pwc.f(u);
+      TEST_ASSERT(pt_out==pt_ref);
+
+      u=0.1;
+      pt_ref=pws.f(u, v);
+      pt_out=pwc.f(u);
+      TEST_ASSERT(pt_out==pt_ref);
+
+      u=0.2;
+      pt_ref=pws.f(u, v);
+      pt_out=pwc.f(u);
+      TEST_ASSERT(pt_out==pt_ref);
+
+      u=0.4;
+      pt_ref=pws.f(u, v);
+      pt_out=pwc.f(u);
+      d=(pt_ref - pt_out).norm();
+      TEST_ASSERT(d<std::numeric_limits<data_type>::epsilon()*30);
+
+      u=0.6;
+      pt_ref=pws.f(u, v);
+      pt_out=pwc.f(u);
+      d=(pt_ref - pt_out).norm();
+      TEST_ASSERT(d<std::numeric_limits<data_type>::epsilon()*30);
+
+      u=0.8;
+      pt_ref=pws.f(u, v);
+      pt_out=pwc.f(u);
+      d=(pt_ref - pt_out).norm();
+      TEST_ASSERT(d<std::numeric_limits<data_type>::epsilon()*30);
+
+      u=1;
+      pt_ref=pws.f(u, v);
+      pt_out=pwc.f(u);
+      TEST_ASSERT(pt_out==pt_ref);
+
+      // Extract v curve
+      v=0.4;
+      pws.get_vconst_curve(pwc, v);
+
+      u=0;
+      pt_ref=pws.f(u, v);
+      pt_out=pwc.f(u);
+      TEST_ASSERT(pt_out==pt_ref);
+
+      u=0.1;
+      pt_ref=pws.f(u, v);
+      pt_out=pwc.f(u);
+      d=(pt_ref - pt_out).norm();
+      TEST_ASSERT(d<std::numeric_limits<data_type>::epsilon()*30);
+
+      u=0.2;
+      pt_ref=pws.f(u, v);
+      pt_out=pwc.f(u);
+      d=(pt_ref - pt_out).norm();
+      TEST_ASSERT(d<std::numeric_limits<data_type>::epsilon()*30);
+
+      u=0.4;
+      pt_ref=pws.f(u, v);
+      pt_out=pwc.f(u);
+      d=(pt_ref - pt_out).norm();
+      TEST_ASSERT(d<std::numeric_limits<data_type>::epsilon()*30);
+
+      u=0.6;
+      pt_ref=pws.f(u, v);
+      pt_out=pwc.f(u);
+      TEST_ASSERT(pt_out==pt_ref);
+
+      u=0.8;
+      pt_ref=pws.f(u, v);
+      pt_out=pwc.f(u);
+      d=(pt_ref - pt_out).norm();
+      TEST_ASSERT(d<std::numeric_limits<data_type>::epsilon()*30);
+
+      u=1;
+      pt_ref=pws.f(u, v);
+      pt_out=pwc.f(u);
+      TEST_ASSERT(pt_out==pt_ref);
+
+      // Extract v curve
+      v=1;
+      pws.get_vconst_curve(pwc, v);
+
+      u=0;
+      pt_ref=pws.f(u, v);
+      pt_out=pwc.f(u);
+      TEST_ASSERT(pt_out==pt_ref);
+
+      u=0.1;
+      pt_ref=pws.f(u, v);
+      pt_out=pwc.f(u);
+      TEST_ASSERT(pt_out==pt_ref);
+
+      u=0.2;
+      pt_ref=pws.f(u, v);
+      pt_out=pwc.f(u);
+      TEST_ASSERT(pt_out==pt_ref);
+
+      u=0.4;
+      pt_ref=pws.f(u, v);
+      pt_out=pwc.f(u);
+      TEST_ASSERT(pt_out==pt_ref);
+
+      u=0.6;
+      pt_ref=pws.f(u, v);
+      pt_out=pwc.f(u);
+      TEST_ASSERT(pt_out==pt_ref);
+
+      u=0.8;
+      pt_ref=pws.f(u, v);
+      pt_out=pwc.f(u);
+      TEST_ASSERT(pt_out==pt_ref);
+
+      u=1;
+      pt_ref=pws.f(u, v);
+      pt_out=pwc.f(u);
+      TEST_ASSERT(pt_out==pt_ref);
     }
 };
 
