@@ -685,7 +685,6 @@ namespace eli
                 bool rtn_flag(gc.set_conditions(joints, max_degree, closed));
                 if (!rtn_flag)
                 {
-                  assert(false);
                   return false;
                 }
 
@@ -698,7 +697,6 @@ namespace eli
                 rtn_flag=gc.create(c);
                 if (!rtn_flag)
                 {
-                  assert(false);
                   return false;
                 }
 
