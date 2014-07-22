@@ -558,12 +558,12 @@ namespace eli
                       if ( hit_max_i || (!hit_max_im1 && (seg_degree[i-1]<=seg_degree[i])) )
                       {
                         seg_degree[i-1]+=1;
-                        assert(max_degree[i-1]<=0 || (seg_degree[i-1]<=max_degree[i-1]));
+//                        assert(max_degree[i-1]<=0 || (seg_degree[i-1]<=max_degree[i-1]));
                       }
                       else
                       {
                         seg_degree[i]+=1;
-                        assert(max_degree[i]<=0 || (seg_degree[i]<=max_degree[i]));
+//                        assert(max_degree[i]<=0 || (seg_degree[i]<=max_degree[i]));
                       }
                     }
                   }
