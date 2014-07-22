@@ -586,12 +586,6 @@ namespace eli
             // FIX: Should be able to handle closed surfaces
             assert(!closed);
 
-            // FIX: Need way of handling maximum u-degree specifi0]);ation for each surface patch
-            for (i=0; i<(nribs-1); ++i)
-            {
-              assert(max_degree[i]==0);
-            }
-
             // FIX: Need to be able to handle v-direction discontinuous fu and fuu specifications
 
             // reset the incoming piecewise surface
@@ -685,7 +679,6 @@ namespace eli
                 bool rtn_flag(gc.set_conditions(joints, max_degree, closed));
                 if (!rtn_flag)
                 {
-                  assert(false);
                   return false;
                 }
 
@@ -698,7 +691,6 @@ namespace eli
                 rtn_flag=gc.create(c);
                 if (!rtn_flag)
                 {
-                  assert(false);
                   return false;
                 }
 
