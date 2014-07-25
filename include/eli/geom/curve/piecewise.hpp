@@ -1055,11 +1055,11 @@ namespace eli
             data_type tt;
             find_segment(it, tt, t);
 
-            itnext = it;
-            itnext++;
-
             if (it==segments.end())
               return INVALID_PARAM;
+
+            itnext = it;
+            itnext++;
 
             if (tol.approximately_equal(tt, 0))
             	return NO_ERRORS;
