@@ -704,7 +704,6 @@ class piecewise_curve_test_suite : public Test::Suite
       TEST_ASSERT(err==piecewise_curve_type::NO_ERRORS);
       TEST_ASSERT(bc[0]==bc_out);
       TEST_ASSERT(dt[0]==dt_out);
-      std::cout << "dt_out=" << dt_out << "\tdt[0]=" << dt[0] << "\tdiff=" << dt_out - dt[0] << std::endl;
       err=c1.get(bc_out, dt_out, 2);
       TEST_ASSERT(err==piecewise_curve_type::NO_ERRORS);
       TEST_ASSERT(bc[1]==bc_out);
@@ -1679,7 +1678,7 @@ class piecewise_curve_test_suite : public Test::Suite
       pt0=pwc0.f(t[0]);
       pt1=pwc1.f(t[0]);
       ptref << static_cast<data_type>(0.0414214), static_cast<data_type>(0.1), 0;
-      data_type v; pwc0.get_parameter_max(v);
+      data_type v(pwc0.get_parameter_max());
       TEST_ASSERT(pt0!=pt1);
       TEST_ASSERT((pt0-ptref).norm()<1e-4);
 

@@ -320,9 +320,7 @@ namespace eli
 
           data_type get_t0() const
           {
-            data_type t0;
-            get_parameter_min(t0);
-            return t0;
+            return get_parameter_min();
           }
 
           void set_t0(const data_type &t0_in)
@@ -351,17 +349,17 @@ namespace eli
             }
           }
 
-          void get_parameter_min(data_type &tmin) const
+          data_type get_parameter_min() const
           {
             if(!segments.empty())
-              tmin=segments.begin()->first;
+              return segments.begin()->first;
             else
-              tmin=tmax;
+              return tmax;
           }
 
-          void get_parameter_max(data_type &tmax_out) const
+          data_type get_parameter_max() const
           {
-            tmax_out = tmax;
+            return tmax;
           }
 
           template<typename it__>
@@ -510,8 +508,7 @@ namespace eli
             typename segment_collection_type::iterator itr;
             typename segment_collection_type::iterator itrguess = rseg.begin();
 
-            data_type t;
-            get_parameter_min(t);
+            data_type t(get_parameter_min());
 
             for (typename segment_collection_type::reverse_iterator it=segments.rbegin(); it!=segments.rend(); ++it)
             {
@@ -648,8 +645,7 @@ namespace eli
             }
 
             // add segment
-            data_type t0;
-            get_parameter_min(t0);
+            data_type t0(get_parameter_min());
             t0 -= dt;
             segments.insert(segments.begin(), std::make_pair(t0, curve));
 
@@ -888,10 +884,7 @@ namespace eli
             find_segment(scit, index);
 
             // Find parameter span to insert
-            data_type pt0, ptmax, ptspan;
-            p.get_parameter_min(pt0);
-            p.get_parameter_max(ptmax);
-            ptspan = ptmax - pt0;
+            data_type pt0(p.get_parameter_min()), ptmax(p.get_parameter_max()), ptspan(ptmax - pt0);
 
             // get the first and last curve to insert
             typename segment_collection_type::const_iterator itps, itpe;
@@ -977,10 +970,7 @@ namespace eli
             find_segment(scit1, index1);
 
             // Find parameter span to insert
-            data_type pt0, ptmax, ptspan;
-            p.get_parameter_min(pt0);
-            p.get_parameter_max(ptmax);
-            ptspan = ptmax - pt0;
+            data_type pt0(p.get_parameter_min()), ptmax(p.get_parameter_max()), ptspan(ptmax - pt0);
 
             // get the first and last curve to insert
             typename segment_collection_type::const_iterator itps, itpe;
@@ -1771,11 +1761,8 @@ namespace eli
               return;
             }
 
-            data_type tmin;
-            get_parameter_min(tmin);
-
-            if(t_in<tmin)
             // catch cases that are before the beginning of the piecewise curve
+            if(t_in<get_parameter_min())
             {
               tt=static_cast<data_type>(-1);
               it=segments.end();
@@ -1840,11 +1827,8 @@ namespace eli
               return;
             }
 
-            data_type tmin;
-            get_parameter_min(tmin);
-
-            if(t_in<tmin)
             // catch cases that are before the beginning of the piecewise curve
+            if(t_in<get_parameter_min())
             {
               tt=static_cast<data_type>(-1);
               it=segments.end();
