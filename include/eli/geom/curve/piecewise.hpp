@@ -1051,20 +1051,17 @@ namespace eli
           error_code split(const data_type &t)
           {
             // find segment that corresponds to given t
-            typename segment_collection_type::iterator it, itnext;
+            typename segment_collection_type::iterator it;
             data_type tt;
             find_segment(it, tt, t);
 
-            if (it==segments.end())
-              return INVALID_PARAM;
-
-            itnext = it;
-            itnext++;
-
+            // do some checking to see if even need to split
             if (tol.approximately_equal(tt, 0))
             	return NO_ERRORS;
             if (tol.approximately_equal(tt, 1))
             	return NO_ERRORS;
+            if (it==segments.end())
+              return INVALID_PARAM;
 
             // split the segment and replace
             return split_seg(it, tt);
@@ -1759,8 +1756,17 @@ namespace eli
           {
             tol__ tol;
 
+            // handle the end of the piecewise curve specially
+            if(tol.approximately_equal(t_in, tmax))
+            {
+              tt=static_cast<data_type>(1);
+              it=segments.end();
+              it--;
+              return;
+            }
             if(t_in>tmax)
             {
+              tt=static_cast<data_type>(2);
               it=segments.end();
               return;
             }
@@ -1769,7 +1775,9 @@ namespace eli
             get_parameter_min(tmin);
 
             if(t_in<tmin)
+            // catch cases that are before the beginning of the piecewise curve
             {
+              tt=static_cast<data_type>(-1);
               it=segments.end();
               return;
             }
@@ -1779,7 +1787,9 @@ namespace eli
 
             // Decrement to segment containing t_in
             if(it != segments.begin())
+            {
               it--;
+            }
 
             // At start of segment
             if(tol.approximately_equal(t_in, it->first))
@@ -1802,17 +1812,30 @@ namespace eli
 
             // Super careful checks
             if (tt>static_cast<data_type>(1))
+            {
               tt=static_cast<data_type>(1);
+            }
             if (tt<static_cast<data_type>(0))
+            {
               tt=static_cast<data_type>(0);
+            }
           }
 
           void find_segment(typename segment_collection_type::iterator &it, data_type &tt, const data_type &t_in)
           {
             tol__ tol;
 
+            // handle the end of the piecewise curve specially
+            if(tol.approximately_equal(t_in, tmax))
+            {
+              tt=static_cast<data_type>(1);
+              it=segments.end();
+              it--;
+              return;
+            }
             if(t_in>tmax)
             {
+              tt=static_cast<data_type>(2);
               it=segments.end();
               return;
             }
@@ -1821,7 +1844,9 @@ namespace eli
             get_parameter_min(tmin);
 
             if(t_in<tmin)
+            // catch cases that are before the beginning of the piecewise curve
             {
+              tt=static_cast<data_type>(-1);
               it=segments.end();
               return;
             }
@@ -1854,9 +1879,13 @@ namespace eli
 
             // Super careful checks
             if (tt>static_cast<data_type>(1))
+            {
               tt=static_cast<data_type>(1);
+            }
             if (tt<static_cast<data_type>(0))
+            {
               tt=static_cast<data_type>(0);
+            }
 
           }
       };
