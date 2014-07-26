@@ -113,11 +113,14 @@ namespace eli
 
           static dimension_type dimension() {return dim__;}
 
-          const data_type get_u0() const {return ukey.get_pmin();}
+          data_type get_u0() const {return ukey.get_pmin();}
           void set_u0(const data_type &u0_in) {ukey.set_pmin(u0_in);}
 
-          const data_type get_v0() const {return vkey.get_pmin();}
+          data_type get_v0() const {return vkey.get_pmin();}
           void set_v0(const data_type &v0_in) {vkey.set_pmin(v0_in);}
+
+          data_type get_umax() const {return ukey.get_pmax();}
+          data_type get_vmax() const {return vkey.get_pmax();}
 
           index_type number_u_patches() const {return nu;}
           index_type number_v_patches() const {return nv;}
