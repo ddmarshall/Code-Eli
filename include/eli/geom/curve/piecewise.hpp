@@ -320,9 +320,7 @@ namespace eli
 
           data_type get_t0() const
           {
-            data_type t0;
-            get_parameter_min(t0);
-            return t0;
+            return get_parameter_min();
           }
 
           void set_t0(const data_type &t0_in)
@@ -351,17 +349,17 @@ namespace eli
             }
           }
 
-          void get_parameter_min(data_type &tmin) const
+          data_type get_parameter_min() const
           {
             if(!segments.empty())
-              tmin=segments.begin()->first;
+              return segments.begin()->first;
             else
-              tmin=tmax;
+              return tmax;
           }
 
-          void get_parameter_max(data_type &tmax_out) const
+          data_type get_parameter_max() const
           {
-            tmax_out = tmax;
+            return tmax;
           }
 
           template<typename it__>
@@ -510,8 +508,7 @@ namespace eli
             typename segment_collection_type::iterator itr;
             typename segment_collection_type::iterator itrguess = rseg.begin();
 
-            data_type t;
-            get_parameter_min(t);
+            data_type t(get_parameter_min());
 
             for (typename segment_collection_type::reverse_iterator it=segments.rbegin(); it!=segments.rend(); ++it)
             {
@@ -648,8 +645,7 @@ namespace eli
             }
 
             // add segment
-            data_type t0;
-            get_parameter_min(t0);
+            data_type t0(get_parameter_min());
             t0 -= dt;
             segments.insert(segments.begin(), std::make_pair(t0, curve));
 
@@ -888,10 +884,7 @@ namespace eli
             find_segment(scit, index);
 
             // Find parameter span to insert
-            data_type pt0, ptmax, ptspan;
-            p.get_parameter_min(pt0);
-            p.get_parameter_max(ptmax);
-            ptspan = ptmax - pt0;
+            data_type pt0(p.get_parameter_min()), ptmax(p.get_parameter_max()), ptspan(ptmax - pt0);
 
             // get the first and last curve to insert
             typename segment_collection_type::const_iterator itps, itpe;
@@ -977,10 +970,7 @@ namespace eli
             find_segment(scit1, index1);
 
             // Find parameter span to insert
-            data_type pt0, ptmax, ptspan;
-            p.get_parameter_min(pt0);
-            p.get_parameter_max(ptmax);
-            ptspan = ptmax - pt0;
+            data_type pt0(p.get_parameter_min()), ptmax(p.get_parameter_max()), ptspan(ptmax - pt0);
 
             // get the first and last curve to insert
             typename segment_collection_type::const_iterator itps, itpe;
@@ -1051,20 +1041,17 @@ namespace eli
           error_code split(const data_type &t)
           {
             // find segment that corresponds to given t
-            typename segment_collection_type::iterator it, itnext;
+            typename segment_collection_type::iterator it;
             data_type tt;
             find_segment(it, tt, t);
 
-            if (it==segments.end())
-              return INVALID_PARAM;
-
-            itnext = it;
-            itnext++;
-
+            // do some checking to see if even need to split
             if (tol.approximately_equal(tt, 0))
             	return NO_ERRORS;
             if (tol.approximately_equal(tt, 1))
             	return NO_ERRORS;
+            if (it==segments.end())
+              return INVALID_PARAM;
 
             // split the segment and replace
             return split_seg(it, tt);
@@ -1759,17 +1746,25 @@ namespace eli
           {
             tol__ tol;
 
+            // handle the end of the piecewise curve specially
+            if(tol.approximately_equal(t_in, tmax))
+            {
+              tt=static_cast<data_type>(1);
+              it=segments.end();
+              it--;
+              return;
+            }
             if(t_in>tmax)
             {
+              tt=static_cast<data_type>(2);
               it=segments.end();
               return;
             }
 
-            data_type tmin;
-            get_parameter_min(tmin);
-
-            if(t_in<tmin)
+            // catch cases that are before the beginning of the piecewise curve
+            if(t_in<get_parameter_min())
             {
+              tt=static_cast<data_type>(-1);
               it=segments.end();
               return;
             }
@@ -1779,7 +1774,9 @@ namespace eli
 
             // Decrement to segment containing t_in
             if(it != segments.begin())
+            {
               it--;
+            }
 
             // At start of segment
             if(tol.approximately_equal(t_in, it->first))
@@ -1802,26 +1799,38 @@ namespace eli
 
             // Super careful checks
             if (tt>static_cast<data_type>(1))
+            {
               tt=static_cast<data_type>(1);
+            }
             if (tt<static_cast<data_type>(0))
+            {
               tt=static_cast<data_type>(0);
+            }
           }
 
           void find_segment(typename segment_collection_type::iterator &it, data_type &tt, const data_type &t_in)
           {
             tol__ tol;
 
+            // handle the end of the piecewise curve specially
+            if(tol.approximately_equal(t_in, tmax))
+            {
+              tt=static_cast<data_type>(1);
+              it=segments.end();
+              it--;
+              return;
+            }
             if(t_in>tmax)
             {
+              tt=static_cast<data_type>(2);
               it=segments.end();
               return;
             }
 
-            data_type tmin;
-            get_parameter_min(tmin);
-
-            if(t_in<tmin)
+            // catch cases that are before the beginning of the piecewise curve
+            if(t_in<get_parameter_min())
             {
+              tt=static_cast<data_type>(-1);
               it=segments.end();
               return;
             }
@@ -1854,9 +1863,13 @@ namespace eli
 
             // Super careful checks
             if (tt>static_cast<data_type>(1))
+            {
               tt=static_cast<data_type>(1);
+            }
             if (tt<static_cast<data_type>(0))
+            {
               tt=static_cast<data_type>(0);
+            }
 
           }
       };

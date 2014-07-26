@@ -62,10 +62,7 @@ void octave_print(std::ostream &ostr, const std::string &varname, const std::vec
 void octave_print(std::ostream &ostr, const std::string &varname, const piecewise_curve_type &pc)
 {
   index_type i;
-  data_type tmin, tmax;
-
-  pc.get_parameter_min(tmin);
-  pc.get_parameter_max(tmax);
+  data_type tmin(pc.get_parameter_min()), tmax(pc.get_parameter_max());
 
   // initialize the t parameters
   std::vector<data_type> t(101);
