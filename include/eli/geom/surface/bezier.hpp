@@ -135,6 +135,11 @@ namespace eli
             vmax=1;
           }
 
+          data_type get_umin() const {return static_cast<data_type>(0);}
+          data_type get_vmin() const {return static_cast<data_type>(0);}
+          data_type get_umax() const {return static_cast<data_type>(1);}
+          data_type get_vmax() const {return static_cast<data_type>(1);}
+
           void resize(const index_type &u_dim, const index_type &v_dim)
           {
             // allocate the control points
