@@ -19,31 +19,18 @@ set(ELI_VERSION_MAJOR 0)
 set(ELI_VERSION_MINOR 3)
 set(ELI_VERSION_PATCH 2)
 
-# capture the build date and time
-if (WIN32)
-  execute_process(COMMAND "cmd" " /C date /T" OUTPUT_VARIABLE _ELI_WIN_DATE)
-  string(REGEX MATCH "(..)/(..)/(....)" _ELI_WIN_DATE ${_ELI_WIN_DATE})
-  string(REGEX REPLACE "(..)/(..)/(....)" "\\3\\1\\2" ELI_BUILD_DATE ${_ELI_WIN_DATE})
-  execute_process(COMMAND "cmd" " /C echo %time%" OUTPUT_VARIABLE _ELI_WIN_TIME)
-  string(REGEX MATCH "(..):(..):(..)" _ELI_WIN_TIME ${_ELI_WIN_TIME})
-  string(REGEX REPLACE "(..):(..):(..)" "\\1" _ELI_WIN_HOUR_TIME ${_ELI_WIN_TIME})
-  string(STRIP ${_ELI_WIN_HOUR_TIME} _ELI_WIN_HOUR_TIME)
-  if(_ELI_WIN_HOUR_TIME LESS "10")
-    set(_ELI_WIN_HOUR_TIME "0${_ELI_WIN_HOUR_TIME}")
-  endif()
-  string(REGEX REPLACE "(..):(..):(..)" "\\2\\3" _ELI_WIN_MINSEC_TIME ${_ELI_WIN_TIME})
-  set(ELI_BUILD_TIME "${_ELI_WIN_HOUR_TIME}${_ELI_WIN_MINSEC_TIME}")
-elseif (UNIX)
-  execute_process(COMMAND "date" "+%Y%m%d" OUTPUT_VARIABLE ELI_BUILD_DATE)
-  string(REGEX REPLACE "(\r?\n)+$" "" ELI_BUILD_DATE "${ELI_BUILD_DATE}")
-  execute_process(COMMAND "date" "+%H%M%S" OUTPUT_VARIABLE ELI_BUILD_TIME)
-  string(REGEX REPLACE "(\r?\n)+$" "" ELI_BUILD_TIME "${ELI_BUILD_TIME}")
-else()
-  message(SEND_ERROR "Could not determine build date and time.")
-endif()
-
 # add the Code-Eli specific cmake files to module path
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${ELI_SOURCE_DIR}/cmake)
+
+# capture the build date and time
+include(${ELI_SOURCE_DIR}/cmake/DetermineDateTime.cmake)
+if (ELI_DATE_TIME_FOUND)
+  set(ELI_BUILD_DATE ${ELI_DATE})
+  set(ELI_BUILD_TIME ${ELI_TIME})
+else()
+  set(ELI_BUILD_DATE "")
+  set(ELI_BUILD_TIME "")
+endif()
 
 # include the compiler specific settings
 include(${ELI_SOURCE_DIR}/cmake/ConfigureCompiler.cmake)
