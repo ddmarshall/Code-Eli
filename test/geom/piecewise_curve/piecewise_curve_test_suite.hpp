@@ -98,11 +98,9 @@ class piecewise_curve_test_suite : public Test::Suite
   void octave_print(int figno, const piecewise_curve_type &pc)
   {
     index_type i, pp, ns;
-    data_type tmin, tmax;
+    data_type tmin(pc.get_parameter_min()), tmax(pc.get_parameter_max());
 
     ns=pc.number_segments();
-    pc.get_parameter_min(tmin);
-    pc.get_parameter_max(tmax);
 
     std::cout << "figure(" << figno << ");" << std::endl;
 
@@ -118,9 +116,8 @@ class piecewise_curve_test_suite : public Test::Suite
         if (i<bez.degree())
           std::cout << ", ";
         else if (pp<ns-1)
-          std::cout << "; ";
+          std::cout << ", ";
       }
-      std::cout << std::endl;
     }
     std::cout << "];" << std::endl;
 
@@ -135,9 +132,8 @@ class piecewise_curve_test_suite : public Test::Suite
         if (i<bez.degree())
           std::cout << ", ";
         else if (pp<ns-1)
-          std::cout << "; ";
+          std::cout << ", ";
       }
-      std::cout << std::endl;
     }
     std::cout << "];" << std::endl;
 
@@ -152,9 +148,8 @@ class piecewise_curve_test_suite : public Test::Suite
         if (i<bez.degree())
           std::cout << ", ";
         else if (pp<ns-1)
-          std::cout << "; ";
+          std::cout << ", ";
       }
-      std::cout << std::endl;
     }
     std::cout << "];" << std::endl;
 
