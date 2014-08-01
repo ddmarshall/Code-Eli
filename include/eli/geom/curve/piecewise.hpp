@@ -1373,7 +1373,7 @@ namespace eli
             data_type dtsecond = get_delta_t(itsecond);
 
             // check the continuity of the two sections
-            return eli::geom::utility::check_point_continuity(itfirst->c, dtfirst, itsecond->c, dtsecond, cont, tol);
+            return eli::geom::utility::check_point_continuity(itfirst->second, dtfirst, itsecond->second, dtsecond, cont, tol);
           }
 
           eli::geom::general::continuity continuity(const data_type &t) const
@@ -1445,6 +1445,34 @@ namespace eli
 
             // check the continuity of the two sections
             return eli::geom::utility::report_point_continuity(itfirst->second, dtfirst, itsecond->second, dtsecond, tol);
+          }
+
+          void find_discontinuities(eli::geom::general::continuity cont, std::vector<data_type> &tdisc) const
+          {
+            // clear input vector
+            tdisc.clear();
+
+            index_type i, istart(0), njoints(number_segments()+1);
+            std::vector<data_type> joints;
+
+            // get all of the joints
+            get_parameters(std::back_inserter(joints));
+
+            // if curve is open then don't check last joint
+            if (open())
+            {
+              ++istart;
+              --njoints;
+            }
+
+            // check each joint (after starting joint) if it is continuous
+            for (i=istart; i<njoints; ++i)
+            {
+              if (!continuous(cont, joints[i]))
+              {
+                tdisc.push_back(joints[i]);
+              }
+            }
           }
 
           point_type f(const data_type &t) const

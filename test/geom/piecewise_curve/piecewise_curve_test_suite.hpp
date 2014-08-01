@@ -40,6 +40,7 @@ class piecewise_curve_test_suite : public Test::Suite
     typedef typename piecewise_curve_type::point_type point_type;
     typedef typename piecewise_curve_type::data_type data_type;
     typedef typename piecewise_curve_type::index_type index_type;
+    typedef typename piecewise_curve_type::tolerance_type tolerance_type;
 
   protected:
     void AddTests(const float &)
@@ -55,6 +56,7 @@ class piecewise_curve_test_suite : public Test::Suite
       TEST_ADD(piecewise_curve_test_suite<float>::to_cubic_test);
       TEST_ADD(piecewise_curve_test_suite<float>::length_test);
       TEST_ADD(piecewise_curve_test_suite<float>::round_test);
+      TEST_ADD(piecewise_curve_test_suite<float>::continuity_test);
     }
     void AddTests(const double &)
     {
@@ -69,6 +71,7 @@ class piecewise_curve_test_suite : public Test::Suite
       TEST_ADD(piecewise_curve_test_suite<double>::to_cubic_test);
       TEST_ADD(piecewise_curve_test_suite<double>::length_test);
       TEST_ADD(piecewise_curve_test_suite<double>::round_test);
+      TEST_ADD(piecewise_curve_test_suite<double>::continuity_test);
     }
     void AddTests(const long double &)
     {
@@ -83,6 +86,7 @@ class piecewise_curve_test_suite : public Test::Suite
       TEST_ADD(piecewise_curve_test_suite<long double>::to_cubic_test);
       TEST_ADD(piecewise_curve_test_suite<long double>::length_test);
       TEST_ADD(piecewise_curve_test_suite<long double>::round_test);
+      TEST_ADD(piecewise_curve_test_suite<long double>::continuity_test);
     }
 
   public:
@@ -1709,6 +1713,185 @@ class piecewise_curve_test_suite : public Test::Suite
       ptref << static_cast<data_type>(0.0414214), static_cast<data_type>(0.1), 0;
       TEST_ASSERT(pt0!=pt1);
       TEST_ASSERT((pt0-ptref).norm()<1e-4);
+    }
+
+    void continuity_test()
+    {
+      // test continuity on open curve
+      {
+        piecewise_curve_type c;
+        curve_type bc[3];
+        data_type dt[3];
+        index_type i;
+        typename curve_type::control_point_type cntrl1_in[4], cntrl2_in[5], cntrl3_in[3];
+        typename piecewise_curve_type::error_code err;
+
+        // create bezier curves
+        cntrl1_in[0] << 2.0, 2.0, 0.0;
+        cntrl1_in[1] << 1.0, 1.5, 0.0;
+        cntrl1_in[2] << 3.5, 0.0, 0.0;
+        cntrl1_in[3] << 4.0, 1.0, 0.0;
+        dt[0]=0.5;
+        bc[0].resize(3);
+        for (i=0; i<4; ++i)
+        {
+          bc[0].set_control_point(cntrl1_in[i], i);
+        }
+        cntrl2_in[0] << 4.0, 1.0, 0.0;
+        cntrl2_in[1] << 5.0, 2.5, 0.0;
+        cntrl2_in[2] << 5.5, 1.0, 0.0;
+        cntrl2_in[3] << 6.0, 0.0, 0.0;
+        cntrl2_in[4] << 6.5,-0.5, 0.0;
+        dt[1]=2.0;
+        bc[1].resize(4);
+        for (i=0; i<5; ++i)
+        {
+          bc[1].set_control_point(cntrl2_in[i], i);
+        }
+        cntrl3_in[0] << 6.5,-0.5, 0.0;
+        cntrl3_in[1] << 6.0,-1.0, 0.0;
+        cntrl3_in[2] << 5.5,-2.0, 0.0;
+        dt[2]=1.5;
+        bc[2].resize(2);
+        for (i=0; i<3; ++i)
+        {
+          bc[2].set_control_point(cntrl3_in[i], i);
+        }
+
+        err=c.set(bc, bc+3, dt);
+        TEST_ASSERT(err==piecewise_curve_type::NO_ERRORS);
+        TEST_ASSERT(c.number_segments()==3);
+
+        std::vector<data_type> joints(c.number_segments()+1+3);
+        std::vector<data_type> disc_joints, disc_joints_ref(2);
+        tolerance_type tol;
+
+        // store joints
+        joints[0]=c.get_t0();
+        joints[1]=joints[0]+dt[0]/2;
+        joints[2]=joints[0]+dt[0];
+        joints[3]=joints[2]+dt[1]/2;
+        joints[4]=joints[2]+dt[1];
+        joints[5]=joints[4]+dt[2]/2;
+        joints[6]=joints[4]+dt[2];
+
+        // store the discontinuous joints
+        disc_joints_ref[0]=joints[2];
+        disc_joints_ref[1]=joints[4];
+
+        // split curve at 3 locations to create continuous joints
+        c.split(joints[1]);
+        c.split(joints[3]);
+        c.split(joints[5]);
+        TEST_ASSERT(c.number_segments()==6);
+
+//        if (typeid(data_type)==typeid(float))
+//        {
+//          octave_print(1, c);
+//        }
+
+        c.find_discontinuities(eli::geom::general::C1, disc_joints);
+        TEST_ASSERT(disc_joints.size()==disc_joints_ref.size());
+        TEST_ASSERT(tol.approximately_equal(disc_joints[0], disc_joints_ref[0]));
+        TEST_ASSERT(tol.approximately_equal(disc_joints[1], disc_joints_ref[1]));
+      }
+
+      // test continuity on closed curve
+      {
+        piecewise_curve_type c;
+        curve_type bc[4];
+        data_type dt[4];
+        index_type i;
+        typename curve_type::control_point_type cntrl1_in[4], cntrl2_in[5], cntrl3_in[3], cntrl4_in[2];
+        typename piecewise_curve_type::error_code err;
+
+        // create bezier curves
+        cntrl1_in[0] << 2.0, 2.0, 0.0;
+        cntrl1_in[1] << 1.0, 1.5, 0.0;
+        cntrl1_in[2] << 3.5, 0.0, 0.0;
+        cntrl1_in[3] << 4.0, 1.0, 0.0;
+        dt[0]=0.5;
+        bc[0].resize(3);
+        for (i=0; i<4; ++i)
+        {
+          bc[0].set_control_point(cntrl1_in[i], i);
+        }
+        cntrl2_in[0] << 4.0, 1.0, 0.0;
+        cntrl2_in[1] << 5.0, 2.5, 0.0;
+        cntrl2_in[2] << 5.5, 1.0, 0.0;
+        cntrl2_in[3] << 6.0, 0.0, 0.0;
+        cntrl2_in[4] << 6.5,-0.5, 0.0;
+        dt[1]=2.0;
+        bc[1].resize(4);
+        for (i=0; i<5; ++i)
+        {
+          bc[1].set_control_point(cntrl2_in[i], i);
+        }
+        cntrl3_in[0] << 6.5,-0.5, 0.0;
+        cntrl3_in[1] << 6.0, 2.0, 0.0;
+        cntrl3_in[2] << 5.0, 3.0, 0.0;
+        dt[2]=1.5;
+        bc[2].resize(2);
+        for (i=0; i<3; ++i)
+        {
+          bc[2].set_control_point(cntrl3_in[i], i);
+        }
+        cntrl4_in[0] = cntrl3_in[2];
+        cntrl4_in[1] = cntrl1_in[0];
+        dt[3]=0.75;
+        bc[3].resize(1);
+        for (i=0; i<2; ++i)
+        {
+          bc[3].set_control_point(cntrl4_in[i], i);
+        }
+
+        err=c.set(bc, bc+4, dt);
+        TEST_ASSERT(err==piecewise_curve_type::NO_ERRORS);
+        TEST_ASSERT(c.number_segments()==4);
+        TEST_ASSERT(c.closed());
+
+        std::vector<data_type> joints(c.number_segments()+1+4);
+        std::vector<data_type> disc_joints, disc_joints_ref(5);
+        tolerance_type tol;
+
+        // store joints
+        joints[0]=c.get_t0();
+        joints[1]=joints[0]+dt[0]/2;
+        joints[2]=joints[0]+dt[0];
+        joints[3]=joints[2]+dt[1]/2;
+        joints[4]=joints[2]+dt[1];
+        joints[5]=joints[4]+dt[2]/2;
+        joints[6]=joints[4]+dt[2];
+        joints[7]=joints[6]+dt[3]/2;
+        joints[8]=joints[6]+dt[3];
+
+        // store the discontinuous joints
+        disc_joints_ref[0]=joints[0];
+        disc_joints_ref[1]=joints[2];
+        disc_joints_ref[2]=joints[4];
+        disc_joints_ref[3]=joints[6];
+        disc_joints_ref[4]=joints[8];
+
+        // split curve at 3 locations to create continuous joints
+        c.split(joints[1]);
+        c.split(joints[3]);
+        c.split(joints[5]);
+        c.split(joints[7]);
+        TEST_ASSERT(c.number_segments()==8);
+
+//        if (typeid(data_type)==typeid(float))
+//        {
+//          octave_print(1, c);
+//        }
+
+        c.find_discontinuities(eli::geom::general::C1, disc_joints);
+        TEST_ASSERT(disc_joints.size()==disc_joints_ref.size());
+        TEST_ASSERT(tol.approximately_equal(disc_joints[0], disc_joints_ref[0]));
+        TEST_ASSERT(tol.approximately_equal(disc_joints[1], disc_joints_ref[1]));
+        TEST_ASSERT(tol.approximately_equal(disc_joints[2], disc_joints_ref[2]));
+        TEST_ASSERT(tol.approximately_equal(disc_joints[3], disc_joints_ref[3]));
+        TEST_ASSERT(tol.approximately_equal(disc_joints[4], disc_joints_ref[4]));
+      }
     }
 };
 #endif
