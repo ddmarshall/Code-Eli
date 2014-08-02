@@ -62,6 +62,7 @@ class piecewise_surface_test_suite : public Test::Suite
       TEST_ADD(piecewise_surface_test_suite<float>::to_cubic_test);
       TEST_ADD(piecewise_surface_test_suite<float>::area_test);
       TEST_ADD(piecewise_surface_test_suite<float>::get_curve_test);
+      TEST_ADD(piecewise_surface_test_suite<float>::continuity_test);
     }
     void AddTests(const double &)
     {
@@ -77,6 +78,7 @@ class piecewise_surface_test_suite : public Test::Suite
       TEST_ADD(piecewise_surface_test_suite<double>::to_cubic_test);
       TEST_ADD(piecewise_surface_test_suite<double>::area_test);
       TEST_ADD(piecewise_surface_test_suite<double>::get_curve_test);
+      TEST_ADD(piecewise_surface_test_suite<double>::continuity_test);
     }
     void AddTests(const long double &)
     {
@@ -92,6 +94,7 @@ class piecewise_surface_test_suite : public Test::Suite
       TEST_ADD(piecewise_surface_test_suite<long double>::to_cubic_test);
       TEST_ADD(piecewise_surface_test_suite<long double>::area_test);
       TEST_ADD(piecewise_surface_test_suite<long double>::get_curve_test);
+      TEST_ADD(piecewise_surface_test_suite<long double>::continuity_test);
     }
 
   public:
@@ -115,92 +118,92 @@ class piecewise_surface_test_suite : public Test::Suite
       ps.get_parameter_max(umax, vmax);
 
       std::cout << "figure(" << figno << ");" << std::endl;
-      std::cout << "cp_x=[" << std::endl;
-      for (pp=0; pp<nup; ++pp)
-      {
-        for (qq=0; qq<nvp; ++qq)
-        {
-          surface_type bez;
-          ps.get(bez, pp, qq);
-          for (i=0; i<=bez.degree_u(); ++i)
-          {
-            std::cout << bez.get_control_point(i, 0).x();
-            for (j=1; j<bez.degree_v(); ++j)
-            {
-              std::cout << ", " << bez.get_control_point(i, j).x();
-            }
-            j=bez.degree_v();
-            std::cout << ", " << bez.get_control_point(i, j).x();
-            if (i<bez.degree_u())
-              std::cout << "; ";
-            else if (pp<nup-1)
-              std::cout << "; ";
-            else if (qq<nvp-1)
-              std::cout << "; ";
-          }
-          std::cout << std::endl;
-        }
-      }
-      std::cout << "];" << std::endl;
-
-      std::cout << "cp_y=[";
-      for (pp=0; pp<nup; ++pp)
-      {
-        for (qq=0; qq<nvp; ++qq)
-        {
-          surface_type bez;
-          ps.get(bez, pp, qq);
-          for (i=0; i<=bez.degree_u(); ++i)
-          {
-            std::cout << bez.get_control_point(i, 0).y();
-            for (j=1; j<bez.degree_v(); ++j)
-            {
-              std::cout << ", " << bez.get_control_point(i, j).y();
-            }
-            j=bez.degree_v();
-            std::cout << ", " << bez.get_control_point(i, j).y();
-            if (i<bez.degree_u())
-              std::cout << "; ";
-            else if (pp<nup-1)
-              std::cout << "; ";
-            else if (qq<nvp-1)
-              std::cout << "; ";
-          }
-          std::cout << std::endl;
-        }
-      }
-      std::cout << "];" << std::endl;
-
-      std::cout << "cp_z=[";
-      for (pp=0; pp<nup; ++pp)
-      {
-        for (qq=0; qq<nvp; ++qq)
-        {
-          surface_type bez;
-          ps.get(bez, pp, qq);
-          for (i=0; i<=bez.degree_u(); ++i)
-          {
-            std::cout << bez.get_control_point(i, 0).z();
-            for (j=1; j<bez.degree_v(); ++j)
-            {
-              std::cout << ", " << bez.get_control_point(i, j).z();
-            }
-            j=bez.degree_v();
-            std::cout << ", " << bez.get_control_point(i, j).z();
-            if (i<bez.degree_u())
-              std::cout << "; ";
-            else if (pp<nup-1)
-              std::cout << "; ";
-            else if (qq<nvp-1)
-              std::cout << "; ";
-          }
-          std::cout << std::endl;
-        }
-      }
-      std::cout << "];" << std::endl;
+//      std::cout << "cp_x=[" << std::endl;
+//      for (pp=0; pp<nup; ++pp)
+//      {
+//        for (qq=0; qq<nvp; ++qq)
+//        {
+//          surface_type bez;
+//          ps.get(bez, pp, qq);
+//          for (i=0; i<=bez.degree_u(); ++i)
+//          {
+//            std::cout << bez.get_control_point(i, 0).x();
+//            for (j=1; j<bez.degree_v(); ++j)
+//            {
+//              std::cout << ", " << bez.get_control_point(i, j).x();
+//            }
+//            j=bez.degree_v();
+//            std::cout << ", " << bez.get_control_point(i, j).x();
+//            if (i<bez.degree_u())
+//              std::cout << "; ";
+//            else if (pp<nup-1)
+//              std::cout << "; ";
+//            else if (qq<nvp-1)
+//              std::cout << "; ";
+//          }
+//          std::cout << std::endl;
+//        }
+//      }
+//      std::cout << "];" << std::endl;
+//
+//      std::cout << "cp_y=[";
+//      for (pp=0; pp<nup; ++pp)
+//      {
+//        for (qq=0; qq<nvp; ++qq)
+//        {
+//          surface_type bez;
+//          ps.get(bez, pp, qq);
+//          for (i=0; i<=bez.degree_u(); ++i)
+//          {
+//            std::cout << bez.get_control_point(i, 0).y();
+//            for (j=1; j<bez.degree_v(); ++j)
+//            {
+//              std::cout << ", " << bez.get_control_point(i, j).y();
+//            }
+//            j=bez.degree_v();
+//            std::cout << ", " << bez.get_control_point(i, j).y();
+//            if (i<bez.degree_u())
+//              std::cout << "; ";
+//            else if (pp<nup-1)
+//              std::cout << "; ";
+//            else if (qq<nvp-1)
+//              std::cout << "; ";
+//          }
+//          std::cout << std::endl;
+//        }
+//      }
+//      std::cout << "];" << std::endl;
+//
+//      std::cout << "cp_z=[";
+//      for (pp=0; pp<nup; ++pp)
+//      {
+//        for (qq=0; qq<nvp; ++qq)
+//        {
+//          surface_type bez;
+//          ps.get(bez, pp, qq);
+//          for (i=0; i<=bez.degree_u(); ++i)
+//          {
+//            std::cout << bez.get_control_point(i, 0).z();
+//            for (j=1; j<bez.degree_v(); ++j)
+//            {
+//              std::cout << ", " << bez.get_control_point(i, j).z();
+//            }
+//            j=bez.degree_v();
+//            std::cout << ", " << bez.get_control_point(i, j).z();
+//            if (i<bez.degree_u())
+//              std::cout << "; ";
+//            else if (pp<nup-1)
+//              std::cout << "; ";
+//            else if (qq<nvp-1)
+//              std::cout << "; ";
+//          }
+//          std::cout << std::endl;
+//        }
+//      }
+//      std::cout << "];" << std::endl;
 
       // initialize the u & v parameters
-      std::vector<data__> u(11), v(11);
+      std::vector<data__> u(31), v(31);
       for (i=0; i<static_cast<index_type>(u.size()); ++i)
       {
         u[i]=umin+(umax-umin)*static_cast<data__>(i)/(u.size()-1);
@@ -258,9 +261,9 @@ class piecewise_surface_test_suite : public Test::Suite
 
       std::cout << "setenv('GNUTERM', 'x11');" << std::endl;
       std::cout << "mesh(surf_x, surf_y, surf_z, zeros(size(surf_z)), 'EdgeColor', [0 0 0]);" << std::endl;
-      std::cout << "hold on;" << std::endl;
-      std::cout << "plot3(cp_x, cp_y, cp_z, 'ok', 'MarkerFaceColor', [0 0 0]);" << std::endl;
-      std::cout << "hold off;" << std::endl;
+//      std::cout << "hold on;" << std::endl;
+//      std::cout << "plot3(cp_x, cp_y, cp_z, 'ok', 'MarkerFaceColor', [0 0 0]);" << std::endl;
+//      std::cout << "hold off;" << std::endl;
     }
 
     void creation_test()
@@ -1694,6 +1697,219 @@ class piecewise_surface_test_suite : public Test::Suite
       pt_ref=pws.f(u, v);
       pt_out=pwc.f(u);
       TEST_ASSERT(pt_out==pt_ref);
+    }
+
+    void continuity_test()
+    {
+      // create
+      {
+        surface_type s;
+        piecewise_surface_type ps;
+        std::vector<data_type> du(3), dv(2);
+        typename piecewise_surface_type::error_code err;
+
+        // set the du and dv
+        du[0]=0.5;
+        du[1]=1.5;
+        du[2]=0.5;
+        dv[0]=1.25;
+        dv[1]=0.5;
+        // create 3x2 patches with unit spacing
+        ps.init_uv(du.begin(), du.end(), dv.begin(), dv.end(), -1, -2);
+        TEST_ASSERT(ps.number_u_patches()==3);
+        TEST_ASSERT(ps.number_v_patches()==2);
+
+        // create and set each surface
+        index_type i, j, n, m;
+        point_type pt[3+1][3+1], pt_out;
+
+        // create patch 0,0
+        n=1;
+        m=3;
+        pt[0][0] << -20, 0,  15;
+        pt[0][1] << -20, 5,   5;
+        pt[0][2] << -20, 5,  -5;
+        pt[0][3] << -20, 0, -15;
+        pt[1][0] << -15, 0,  15;
+        pt[1][1] << -15, 5,   5;
+        pt[1][2] << -15, 5,  -5;
+        pt[1][3] << -15, 0, -15;
+        s.resize(n, m);
+        for (i=0; i<=n; ++i)
+        {
+          for (j=0; j<=m; ++j)
+          {
+            s.set_control_point(pt[i][j], i, j);
+          }
+        }
+        err=ps.set(s, 0, 0);
+        TEST_ASSERT(err==piecewise_surface_type::NO_ERRORS);
+
+        // create patch 1, 0
+        n=3;
+        m=3;
+        pt[0][0] << -15, 0,  15;
+        pt[1][0] <<  -5, 5,  15;
+        pt[2][0] <<   5, 5,  15;
+        pt[3][0] <<  15, 0,  15;
+        pt[0][1] << -15, 5,   5;
+        pt[1][1] <<  -5, 5,   5;
+        pt[2][1] <<   5, 5,   5;
+        pt[3][1] <<  15, 5,   5;
+        pt[0][2] << -15, 5,  -5;
+        pt[1][2] <<  -5, 5,  -5;
+        pt[2][2] <<   5, 5,  -5;
+        pt[3][2] <<  15, 5,  -5;
+        pt[0][3] << -15, 0, -15;
+        pt[1][3] <<  -5, 5, -15;
+        pt[2][3] <<   5, 5, -15;
+        pt[3][3] <<  15, 0, -15;
+        s.resize(n, m);
+        for (i=0; i<=n; ++i)
+        {
+          for (j=0; j<=m; ++j)
+          {
+            s.set_control_point(pt[i][j], i, j);
+          }
+        }
+        err=ps.set(s, 1, 0);
+        TEST_ASSERT(err==piecewise_surface_type::NO_ERRORS);
+
+        // create patch 2,0
+        n=1;
+        m=3;
+        pt[0][0] <<  15, 0,  15;
+        pt[0][1] <<  15, 5,   5;
+        pt[0][2] <<  15, 5,  -5;
+        pt[0][3] <<  15, 0, -15;
+        pt[1][0] <<  20, 0,  15;
+        pt[1][1] <<  20, 5,   5;
+        pt[1][2] <<  20, 5,  -5;
+        pt[1][3] <<  20, 0, -15;
+        s.resize(n, m);
+        for (i=0; i<=n; ++i)
+        {
+          for (j=0; j<=m; ++j)
+          {
+            s.set_control_point(pt[i][j], i, j);
+          }
+        }
+        err=ps.set(s, 2, 0);
+        TEST_ASSERT(err==piecewise_surface_type::NO_ERRORS);
+
+        // create patch 0,1
+        n=1;
+        m=2;
+        pt[0][0] << -20,  0, -15;
+        pt[0][1] << -20, -3,  -7;
+        pt[0][2] << -20, -7, -10;
+        pt[1][0] << -15,  0, -15;
+        pt[1][1] << -15, -3,  -7;
+        pt[1][2] << -15, -7, -10;
+
+        s.resize(n, m);
+        for (i=0; i<=n; ++i)
+        {
+          for (j=0; j<=m; ++j)
+          {
+            s.set_control_point(pt[i][j], i, j);
+          }
+        }
+        err=ps.set(s, 0, 1);
+        TEST_ASSERT(err==piecewise_surface_type::NO_ERRORS);
+
+        // create patch 1,1
+        n=3;
+        m=2;
+        pt[0][0] << -15,  0, -15;
+        pt[0][1] << -15, -3,  -7;
+        pt[0][2] << -15, -7, -10;
+        pt[1][0] <<  -5,  5, -15;
+        pt[1][1] <<  -5, -1,  -7;
+        pt[1][2] <<  -5, -4, -10;
+        pt[2][0] <<   5,  5, -15;
+        pt[2][1] <<   5, -1,  -7;
+        pt[2][2] <<   5, -4, -10;
+        pt[3][0] <<  15,  0, -15;
+        pt[3][1] <<  15, -3,  -7;
+        pt[3][2] <<  15, -7, -10;
+
+        s.resize(n, m);
+        for (i=0; i<=n; ++i)
+        {
+          for (j=0; j<=m; ++j)
+          {
+            s.set_control_point(pt[i][j], i, j);
+          }
+        }
+        err=ps.set(s, 1, 1);
+        TEST_ASSERT(err==piecewise_surface_type::NO_ERRORS);
+
+        // create patch 2,1
+        n=1;
+        m=2;
+        pt[0][0] <<  15,  0, -15;
+        pt[0][1] <<  15, -3,  -7;
+        pt[0][2] <<  15, -7, -10;
+        pt[1][0] <<  20,  0, -15;
+        pt[1][1] <<  20, -3,  -7;
+        pt[1][2] <<  20, -7, -10;
+
+        s.resize(n, m);
+        for (i=0; i<=n; ++i)
+        {
+          for (j=0; j<=m; ++j)
+          {
+            s.set_control_point(pt[i][j], i, j);
+          }
+        }
+        err=ps.set(s, 2, 1);
+        TEST_ASSERT(err==piecewise_surface_type::NO_ERRORS);
+
+        std::vector<data_type> ujoints(2*ps.number_u_patches()+1), vjoints(2*ps.number_v_patches()+1);
+        std::vector<data_type> disc_ujoints, disc_ujoints_ref(2), disc_vjoints, disc_vjoints_ref(1);
+        tolerance_type tol;
+
+        // store joints
+        ujoints[0]=ps.get_u0();
+        ujoints[1]=ujoints[0]+du[0]/2;
+        ujoints[2]=ujoints[0]+du[0];
+        ujoints[3]=ujoints[2]+du[1]/2;
+        ujoints[4]=ujoints[2]+du[1];
+        ujoints[5]=ujoints[4]+du[2]/2;
+        ujoints[6]=ujoints[4]+du[2];
+        vjoints[0]=ps.get_v0();
+        vjoints[1]=vjoints[0]+dv[0]/2;
+        vjoints[2]=vjoints[0]+dv[0];
+        vjoints[3]=vjoints[2]+dv[1]/2;
+        vjoints[4]=vjoints[2]+dv[1];
+
+        // store the discontinuous joints
+        disc_ujoints_ref[0]=ujoints[2];
+        disc_ujoints_ref[1]=ujoints[4];
+        disc_vjoints_ref[0]=vjoints[2];
+
+        // split curve at 3 locations to create continuous joints
+        ps.split_u(ujoints[1]);
+        ps.split_u(ujoints[3]);
+        ps.split_u(ujoints[5]);
+        ps.split_v(vjoints[1]);
+        ps.split_v(vjoints[3]);
+        TEST_ASSERT(ps.number_u_patches()==6);
+        TEST_ASSERT(ps.number_v_patches()==4);
+
+//        if (typeid(data_type)==typeid(float))
+//        {
+//          octave_print(1, ps);
+//        }
+
+        ps.find_interior_C0_edges(disc_ujoints, disc_vjoints);
+        TEST_ASSERT(disc_ujoints.size()==disc_ujoints_ref.size());
+        TEST_ASSERT(disc_vjoints.size()==disc_vjoints_ref.size());
+        TEST_ASSERT(tol.approximately_equal(disc_ujoints[0], disc_ujoints_ref[0]));
+        TEST_ASSERT(tol.approximately_equal(disc_ujoints[1], disc_ujoints_ref[1]));
+        TEST_ASSERT(tol.approximately_equal(disc_vjoints[0], disc_vjoints_ref[0]));
+      }
     }
 };
 
