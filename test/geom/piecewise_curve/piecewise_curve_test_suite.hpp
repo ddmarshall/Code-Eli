@@ -1677,7 +1677,6 @@ class piecewise_curve_test_suite : public Test::Suite
       pt0=pwc0.f(t[0]);
       pt1=pwc1.f(t[0]);
       ptref << static_cast<data_type>(0.0414214), static_cast<data_type>(0.1), 0;
-      data_type v(pwc0.get_parameter_max());
       TEST_ASSERT(pt0!=pt1);
       TEST_ASSERT((pt0-ptref).norm()<1e-4);
 
