@@ -14,6 +14,7 @@
 #define eli_geom_surface_piecewise_hpp
 
 #include <vector>
+#include <iterator>
 #include <utility>
 #include <algorithm>
 
@@ -169,20 +170,20 @@ namespace eli
             vkey.parameter_report();
           }
 
-          void get_pmap_u( std::vector < data_type > &pmap )
+          void get_pmap_u(std::vector<data_type> &pmap) const
           {
-            ukey.get_pmap( pmap );
+            ukey.get_pmap(pmap);
           }
 
-          void get_pmap_v( std::vector < data_type > &pmap )
+          void get_pmap_v(std::vector<data_type> &pmap) const
           {
-            vkey.get_pmap( pmap );
+            vkey.get_pmap(pmap);
           }
 
-          void get_pmap_uv( std::vector < data_type > &upmap, std::vector < data_type > &vpmap )
+          void get_pmap_uv(std::vector<data_type> &upmap, std::vector<data_type> &vpmap) const
           {
-            ukey.get_pmap( upmap );
-            vkey.get_pmap( vpmap );
+            ukey.get_pmap(upmap);
+            vkey.get_pmap(vpmap);
           }
 
           void init_u(const index_type &nsegu, const data_type &du = 1, const data_type &u0 = 0)
@@ -750,6 +751,61 @@ namespace eli
             }
           }
 
+          void find_interior_C0_edges(std::vector<data_type> &uconst, std::vector<data_type> &vconst) const
+          {
+            index_type nu, nv, iu, iv;
+
+            piecewise_curve_type c;
+            std::vector<data_type> pmap, ldis, ldis_out;
+            tolerance_type tol;
+
+            // initialize the output
+            uconst.clear();
+            vconst.clear();
+
+            // unnamed function to test if two parameters are close enough
+            auto comp = [&tol](const data_type &x1, const data_type &x2)->bool
+            {
+              return tol.approximately_less_than(x1, x2);
+            };
+
+            // extract each v-const curve that is an edge of one of the patches to find u-parameters
+            // that contain C0 only edges
+            get_pmap_v(pmap);
+            nv=pmap.size();
+            assert(nv-1==number_v_patches());
+            for (iv=0; iv<nv; ++iv)
+            {
+              get_vconst_curve(c, pmap[iv]);
+              c.find_discontinuities(eli::geom::general::C1, ldis);
+
+              // merge these parameters with current list
+              ldis_out.clear();
+              std::set_union(uconst.begin(), uconst.end(), ldis.begin(), ldis.end(), std::back_inserter(ldis_out), comp);
+              std::swap(uconst, ldis_out);
+            }
+
+            // extract each u-const curve that is an edge of one of the patches to find v-parameters
+            // that contain C0 only edges
+            pmap.clear();
+            get_pmap_u(pmap);
+            nu=pmap.size();
+            assert(nu-1==number_u_patches());
+            for (iu=0; iu<nu; ++iu)
+            {
+              get_uconst_curve(c, pmap[iu]);
+              c.find_discontinuities(eli::geom::general::C1, ldis);
+
+              // merge these parameters with current list
+              ldis_out.clear();
+              std::set_union(vconst.begin(), vconst.end(), ldis.begin(), ldis.end(), std::back_inserter(ldis_out), comp);
+              std::swap(vconst, ldis_out);
+            }
+
+            // TODO: Need to compare actual control points next to edges to catch cases where the
+            //       patch corners are continuous but internally it is not.
+          }
+
           point_type f(const data_type &u, const data_type &v) const
           {
             // find patch that corresponds to given u & v
@@ -1072,7 +1128,7 @@ namespace eli
               pmax = p;
             }
 
-            void parameter_report()
+            void parameter_report() const
             {
               printf("Parameter report:\n");
               typename keymap_type::iterator it;
@@ -1088,12 +1144,12 @@ namespace eli
               printf("End report\n");
             }
 
-            void get_pmap( std::vector < data_type > &pmap )
+            void get_pmap(std::vector<data_type> &pmap) const
             {
               pmap.clear();
 
-              typename keymap_type::iterator it;
-              for (it=key.begin(); it!=key.end(); ++it)
+              typename keymap_type::const_iterator it;
+              for (it=key.cbegin(); it!=key.cend(); ++it)
               {
                 pmap.push_back( it->first );
               }
