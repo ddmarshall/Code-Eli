@@ -13,11 +13,7 @@
 #ifndef eli_geom_utility_bezier_hpp
 #define eli_geom_utility_bezier_hpp
 
-#ifdef Success  // X11 #define collides with Eigen
-#undef Success
-#endif
-
-#include "Eigen/Eigen"
+#include "eli/code_eli.hpp"
 
 #include "eli/mutil/dm/binomial_coefficient.hpp"
 

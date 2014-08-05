@@ -13,19 +13,17 @@
 #ifndef piecewise_superellipse_creator_test_suite_hpp
 #define piecewise_superellipse_creator_test_suite_hpp
 
-#include "eli/code_eli.hpp"
-
-#include "eli/constants/math.hpp"
-#include "eli/geom/curve/piecewise.hpp"
-#include "eli/geom/curve/piecewise_superellipse_creator.hpp"
-
-#include <cassert>  // assert()
+#include <cmath>    // std::pow, std::exp
 
 #include <typeinfo> // typeid
 #include <string>   // std::string
 #include <sstream>  // std::stringstream
 #include <iomanip>  // std::setw
 #include <limits>   // std::numeric_limits
+
+#include "eli/constants/math.hpp"
+#include "eli/geom/curve/piecewise.hpp"
+#include "eli/geom/curve/piecewise_superellipse_creator.hpp"
 
 template<typename data__>
 class piecewise_superellipse_creator_test_suite : public Test::Suite

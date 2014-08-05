@@ -13,6 +13,8 @@
 #ifndef eli_mutil_ad_dual_math_hpp
 #define eli_mutil_ad_dual_math_hpp
 
+#include "eli/code_eli.hpp"
+
 #include "eli/constants/math.hpp"
 #include "eli/mutil/ad/dual_functions.hpp"
 

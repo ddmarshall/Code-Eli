@@ -13,21 +13,18 @@
 #ifndef four_digit_test_suite_hpp
 #define four_digit_test_suite_hpp
 
-#include "eli/code_eli.hpp"
-
-#include "eli/constants/math.hpp"
-#include "eli/mutil/fd/d1o2.hpp"
-#include "eli/mutil/fd/d2o2.hpp"
-#include "eli/geom/curve/pseudo/four_digit.hpp"
-
 #include <cmath>    // std::pow, std::exp
-#include <cassert>  // assert()
 
 #include <typeinfo> // typeid
 #include <string>   // std::string
 #include <sstream>  // std::stringstream
 #include <iomanip>  // std::setw
 #include <limits>   // std::numeric_limits
+
+#include "eli/constants/math.hpp"
+#include "eli/mutil/fd/d1o2.hpp"
+#include "eli/mutil/fd/d2o2.hpp"
+#include "eli/geom/curve/pseudo/four_digit.hpp"
 
 template<typename data__>
 class four_digit_test_suite : public Test::Suite

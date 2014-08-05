@@ -13,15 +13,10 @@
 #ifndef eli_geom_curve_bezier_h
 #define eli_geom_curve_bezier_h
 
-#include <cassert>
 #include <iostream>
 #include <vector>
 
-#ifdef Success  // X11 #define collides with Eigen
-#undef Success
-#endif
-
-#include <Eigen/Eigen>
+#include "eli/code_eli.hpp"
 
 #include "eli/util/tolerance.hpp"
 

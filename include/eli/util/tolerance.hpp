@@ -13,14 +13,10 @@
 #ifndef eli_util_tolerance_hpp
 #define eli_util_tolerance_hpp
 
-#ifdef Success  // X11 #define collides with Eigen
-#undef Success
-#endif
-
-#include "Eigen/Eigen"  // Eigen::MatrixBase
-
 #include <cmath>  // std::cmath
 #include <limits> // std::numeric_limits
+
+#include "eli/code_eli.hpp"
 
 namespace eli
 {

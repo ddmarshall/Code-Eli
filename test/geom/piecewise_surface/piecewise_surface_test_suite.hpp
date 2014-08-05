@@ -13,7 +13,13 @@
 #ifndef piecewise_surface_test_suite_hpp
 #define piecewise_surface_test_suite_hpp
 
-#include "eli/code_eli.hpp"
+#include <cmath>    // std::pow, std::exp
+
+#include <typeinfo> // typeid
+#include <string>   // std::string
+#include <sstream>  // std::stringstream
+#include <iomanip>  // std::setw
+#include <limits>   // std::numeric_limits
 
 #include "eli/util/tolerance.hpp"
 
@@ -23,15 +29,6 @@
 // #include "eli/geom/surface/area.hpp"
 #include "eli/geom/surface/curvature.hpp"
 #include "eli/geom/surface/piecewise.hpp"
-
-#include <cmath>    // std::pow, std::exp
-#include <cassert>  // assert()
-
-#include <typeinfo> // typeid
-#include <string>   // std::string
-#include <sstream>  // std::stringstream
-#include <iomanip>  // std::setw
-#include <limits>   // std::numeric_limits
 
 template<typename data__>
 class piecewise_surface_test_suite : public Test::Suite

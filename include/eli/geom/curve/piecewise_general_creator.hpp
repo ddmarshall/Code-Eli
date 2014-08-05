@@ -15,6 +15,8 @@
 
 #include <vector>
 
+#include "eli/code_eli.hpp"
+
 #include "eli/geom/general/continuity.hpp"
 
 #include "eli/geom/utility/bezier.hpp"

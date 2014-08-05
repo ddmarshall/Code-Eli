@@ -13,14 +13,10 @@
 #ifndef least_squares_test_suite_hpp
 #define least_squares_test_suite_hpp
 
-#include "Eigen/Eigen"
-
-#include "eli/code_eli.hpp"
-
-#include "eli/mutil/opt/least_squares.hpp"
-
 #include <cmath>      // std::sqrt()
 #include <limits>     // std::numeric_limits<>
+
+#include "eli/mutil/opt/least_squares.hpp"
 
 template<typename data__>
 class least_squares_test_suite : public Test::Suite

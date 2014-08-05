@@ -13,16 +13,12 @@
 #ifndef nls_test_suite_hpp
 #define nls_test_suite_hpp
 
-#include "Eigen/Eigen"
-
-#include "eli/code_eli.hpp"
-
-#include "eli/mutil/nls.hpp"
-#include "eli/constants/math.hpp"
-
 #include <cmath>      // cos()
 #include <functional> // std::ptr_fun()
 #include <limits>     // numeric_limits
+
+#include "eli/mutil/nls.hpp"
+#include "eli/constants/math.hpp"
 
 template<typename data__>
 data__ my_function(const data__ &x)

@@ -13,6 +13,8 @@
 #ifndef eli_geom_curve_equivalent_curves_hpp
 #define eli_geom_curve_equivalent_curves_hpp
 
+#include "eli/code_eli.hpp"
+
 #include "eli/geom/curve/bezier.hpp"
 
 namespace eli

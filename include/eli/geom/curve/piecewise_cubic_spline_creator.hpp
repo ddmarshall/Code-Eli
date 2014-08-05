@@ -16,6 +16,8 @@
 #include <iterator>
 #include <vector>
 
+#include "eli/code_eli.hpp"
+
 #include "eli/mutil/fd/d1o2.hpp"
 
 #include "eli/geom/general/continuity.hpp"

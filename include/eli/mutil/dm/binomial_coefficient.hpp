@@ -13,7 +13,7 @@
 #ifndef eli_mutil_dm_binomial_coef_hpp
 #define eli_mutil_dm_binomial_coef_hpp
 
-#include <cassert>
+#include "eli/code_eli.hpp"
 
 namespace eli
 {

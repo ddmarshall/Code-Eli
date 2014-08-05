@@ -13,9 +13,9 @@
 #ifndef eli_mutil_quad_simpson_hpp
 #define eli_mutil_quad_simpson_hpp
 
-#include <cassert>
-
 #include <limits>
+
+#include "eli/code_eli.hpp"
 
 namespace eli
 {

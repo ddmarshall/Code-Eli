@@ -13,6 +13,8 @@
 #ifndef eli_mutil_ad_dual_operators_hpp
 #define eli_mutil_ad_dual_operators_hpp
 
+#include "eli/code_eli.hpp"
+
 #include "eli/util/traits.hpp"
 
 #include "eli/mutil/ad/dual_number.hpp"

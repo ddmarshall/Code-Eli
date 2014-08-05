@@ -14,15 +14,12 @@
 #define mutil_fd_testsuite_hpp
 
 #include <cmath>    // std::pow, std::exp
-#include <cassert>  // assert()
 
 #include <typeinfo> // typeid
 #include <string>   // std::string
 #include <sstream>  // std::stringstream
 #include <iomanip>  // std::setw
 #include <vector>   // std::vector
-
-#include "eli/code_eli.hpp"
 
 #include "eli/mutil/fd.hpp"
 

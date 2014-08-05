@@ -15,6 +15,8 @@
 
 #include <cmath>
 
+#include "eli/code_eli.hpp"
+
 #include "eli/mutil/nls/iterative_root_base.hpp"
 
 namespace eli

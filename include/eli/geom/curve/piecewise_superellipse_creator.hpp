@@ -13,14 +13,7 @@
 #ifndef eli_geom_curve_piecewise_superellipse_creator_hpp
 #define eli_geom_curve_piecewise_superellipse_creator_hpp
 
-#include <vector>
-#include <algorithm>
-
-#ifdef Success  // X11 #define collides with Eigen
-#undef Success
-#endif
-
-#include "Eigen/Eigen"
+#include "eli/code_eli.hpp"
 
 #include "eli/geom/curve/piecewise_creator_base.hpp"
 #include "eli/geom/curve/piecewise.hpp"
