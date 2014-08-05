@@ -2894,66 +2894,27 @@ class bezier_surface_test_suite : public Test::Suite
       pt_out=c.f(v);
       TEST_ASSERT(pt_out==pt_ref);
 
-      v=0.1;
+      v=static_cast<data_type>(0.1);
       pt_ref=bez.f(u, v);
       pt_out=c.f(v);
       TEST_ASSERT(pt_out==pt_ref);
 
-      v=0.2;
+      v=static_cast<data_type>(0.2);
       pt_ref=bez.f(u, v);
       pt_out=c.f(v);
       TEST_ASSERT(pt_out==pt_ref);
 
-      v=0.4;
+      v=static_cast<data_type>(0.4);
       pt_ref=bez.f(u, v);
       pt_out=c.f(v);
       TEST_ASSERT(pt_out==pt_ref);
 
-      v=0.6;
+      v=static_cast<data_type>(0.6);
       pt_ref=bez.f(u, v);
       pt_out=c.f(v);
       TEST_ASSERT(pt_out==pt_ref);
 
-      v=0.8;
-      pt_ref=bez.f(u, v);
-      pt_out=c.f(v);
-      TEST_ASSERT(pt_out==pt_ref);
-
-      v=1;
-      pt_ref=bez.f(u, v);
-      pt_out=c.f(v);
-      TEST_ASSERT(pt_out==pt_ref);
-
-      // Extract u curve
-      u=0.1;
-      bez.get_uconst_curve(c, u);
-
-      v=0;
-      pt_ref=bez.f(u, v);
-      pt_out=c.f(v);
-      TEST_ASSERT(pt_out==pt_ref);
-
-      v=0.1;
-      pt_ref=bez.f(u, v);
-      pt_out=c.f(v);
-      TEST_ASSERT(pt_out==pt_ref);
-
-      v=0.2;
-      pt_ref=bez.f(u, v);
-      pt_out=c.f(v);
-      TEST_ASSERT(pt_out==pt_ref);
-
-      v=0.4;
-      pt_ref=bez.f(u, v);
-      pt_out=c.f(v);
-      TEST_ASSERT(pt_out==pt_ref);
-
-      v=0.6;
-      pt_ref=bez.f(u, v);
-      pt_out=c.f(v);
-      TEST_ASSERT(pt_out==pt_ref);
-
-      v=0.8;
+      v=static_cast<data_type>(0.8);
       pt_ref=bez.f(u, v);
       pt_out=c.f(v);
       TEST_ASSERT(pt_out==pt_ref);
@@ -2964,7 +2925,7 @@ class bezier_surface_test_suite : public Test::Suite
       TEST_ASSERT(pt_out==pt_ref);
 
       // Extract u curve
-      u=0.2;
+      u=static_cast<data_type>(0.1);
       bez.get_uconst_curve(c, u);
 
       v=0;
@@ -2972,27 +2933,66 @@ class bezier_surface_test_suite : public Test::Suite
       pt_out=c.f(v);
       TEST_ASSERT(pt_out==pt_ref);
 
-      v=0.1;
+      v=static_cast<data_type>(0.1);
       pt_ref=bez.f(u, v);
       pt_out=c.f(v);
       TEST_ASSERT(pt_out==pt_ref);
 
-      v=0.2;
+      v=static_cast<data_type>(0.2);
       pt_ref=bez.f(u, v);
       pt_out=c.f(v);
       TEST_ASSERT(pt_out==pt_ref);
 
-      v=0.4;
+      v=static_cast<data_type>(0.4);
       pt_ref=bez.f(u, v);
       pt_out=c.f(v);
       TEST_ASSERT(pt_out==pt_ref);
 
-      v=0.6;
+      v=static_cast<data_type>(0.6);
       pt_ref=bez.f(u, v);
       pt_out=c.f(v);
       TEST_ASSERT(pt_out==pt_ref);
 
-      v=0.8;
+      v=static_cast<data_type>(0.8);
+      pt_ref=bez.f(u, v);
+      pt_out=c.f(v);
+      TEST_ASSERT(pt_out==pt_ref);
+
+      v=1;
+      pt_ref=bez.f(u, v);
+      pt_out=c.f(v);
+      TEST_ASSERT(pt_out==pt_ref);
+
+      // Extract u curve
+      u=static_cast<data_type>(0.2);
+      bez.get_uconst_curve(c, u);
+
+      v=0;
+      pt_ref=bez.f(u, v);
+      pt_out=c.f(v);
+      TEST_ASSERT(pt_out==pt_ref);
+
+      v=static_cast<data_type>(0.1);
+      pt_ref=bez.f(u, v);
+      pt_out=c.f(v);
+      TEST_ASSERT(pt_out==pt_ref);
+
+      v=static_cast<data_type>(0.2);
+      pt_ref=bez.f(u, v);
+      pt_out=c.f(v);
+      TEST_ASSERT(pt_out==pt_ref);
+
+      v=static_cast<data_type>(0.4);
+      pt_ref=bez.f(u, v);
+      pt_out=c.f(v);
+      TEST_ASSERT(pt_out==pt_ref);
+
+      v=static_cast<data_type>(0.6);
+      pt_ref=bez.f(u, v);
+      pt_out=c.f(v);
+      TEST_ASSERT(pt_out==pt_ref);
+
+      v=static_cast<data_type>(0.8);
       pt_ref=bez.f(u, v);
       pt_out=c.f(v);
       TEST_ASSERT(pt_out==pt_ref);
@@ -3011,27 +3011,27 @@ class bezier_surface_test_suite : public Test::Suite
       pt_out=c.f(v);
       TEST_ASSERT(pt_out==pt_ref);
 
-      v=0.1;
+      v=static_cast<data_type>(0.1);
       pt_ref=bez.f(u, v);
       pt_out=c.f(v);
       TEST_ASSERT(pt_out==pt_ref);
 
-      v=0.2;
+      v=static_cast<data_type>(0.2);
       pt_ref=bez.f(u, v);
       pt_out=c.f(v);
       TEST_ASSERT(pt_out==pt_ref);
 
-      v=0.4;
+      v=static_cast<data_type>(0.4);
       pt_ref=bez.f(u, v);
       pt_out=c.f(v);
       TEST_ASSERT(pt_out==pt_ref);
 
-      v=0.6;
+      v=static_cast<data_type>(0.6);
       pt_ref=bez.f(u, v);
       pt_out=c.f(v);
       TEST_ASSERT(pt_out==pt_ref);
 
-      v=0.8;
+      v=static_cast<data_type>(0.8);
       pt_ref=bez.f(u, v);
       pt_out=c.f(v);
       TEST_ASSERT(pt_out==pt_ref);
@@ -3050,27 +3050,27 @@ class bezier_surface_test_suite : public Test::Suite
       pt_out=c.f(v);
       TEST_ASSERT(pt_out==pt_ref);
 
-      v=0.1;
+      v=static_cast<data_type>(0.1);
       pt_ref=bez.f(u, v);
       pt_out=c.f(v);
       TEST_ASSERT(pt_out==pt_ref);
 
-      v=0.2;
+      v=static_cast<data_type>(0.2);
       pt_ref=bez.f(u, v);
       pt_out=c.f(v);
       TEST_ASSERT(pt_out==pt_ref);
 
-      v=0.4;
+      v=static_cast<data_type>(0.4);
       pt_ref=bez.f(u, v);
       pt_out=c.f(v);
       TEST_ASSERT(pt_out==pt_ref);
 
-      v=0.6;
+      v=static_cast<data_type>(0.6);
       pt_ref=bez.f(u, v);
       pt_out=c.f(v);
       TEST_ASSERT(pt_out==pt_ref);
 
-      v=0.8;
+      v=static_cast<data_type>(0.8);
       pt_ref=bez.f(u, v);
       pt_out=c.f(v);
       TEST_ASSERT(pt_out==pt_ref);
@@ -3091,27 +3091,27 @@ class bezier_surface_test_suite : public Test::Suite
       pt_out=c.f(u);
       TEST_ASSERT(pt_out==pt_ref);
 
-      u=0.1;
+      u=static_cast<data_type>(0.1);
       pt_ref=bez.f(u, v);
       pt_out=c.f(u);
       TEST_ASSERT(pt_out==pt_ref);
 
-      u=0.2;
+      u=static_cast<data_type>(0.2);
       pt_ref=bez.f(u, v);
       pt_out=c.f(u);
       TEST_ASSERT(pt_out==pt_ref);
 
-      u=0.4;
+      u=static_cast<data_type>(0.4);
       pt_ref=bez.f(u, v);
       pt_out=c.f(u);
       TEST_ASSERT(pt_out==pt_ref);
 
-      u=0.6;
+      u=static_cast<data_type>(0.6);
       pt_ref=bez.f(u, v);
       pt_out=c.f(u);
       TEST_ASSERT(pt_out==pt_ref);
 
-      u=0.8;
+      u=static_cast<data_type>(0.8);
       pt_ref=bez.f(u, v);
       pt_out=c.f(u);
       TEST_ASSERT(pt_out==pt_ref);
@@ -3122,7 +3122,7 @@ class bezier_surface_test_suite : public Test::Suite
       TEST_ASSERT(pt_out==pt_ref);
 
       // Extract v curve
-      v=0.1;
+      v=static_cast<data_type>(0.1);
       bez.get_vconst_curve(c, v);
 
       u=0;
@@ -3130,13 +3130,13 @@ class bezier_surface_test_suite : public Test::Suite
       pt_out=c.f(u);
       TEST_ASSERT(pt_out==pt_ref);
 
-      u=0.1;
+      u=static_cast<data_type>(0.1);
       pt_ref=bez.f(u, v);
       pt_out=c.f(u);
       d=(pt_ref - pt_out).norm();
       TEST_ASSERT(d<std::numeric_limits<data_type>::epsilon()*30);
 
-      u=0.2;
+      u=static_cast<data_type>(0.2);
       pt_ref=bez.f(u, v);
       pt_out=c.f(u);
       if (typeid(data_type)==typeid(float))
@@ -3149,19 +3149,19 @@ class bezier_surface_test_suite : public Test::Suite
         TEST_ASSERT(pt_out==pt_ref);
       }
 
-      u=0.4;
+      u=static_cast<data_type>(0.4);
       pt_ref=bez.f(u, v);
       pt_out=c.f(u);
       d=(pt_ref - pt_out).norm();
       TEST_ASSERT(d<std::numeric_limits<data_type>::epsilon()*30);
 
-      u=0.6;
+      u=static_cast<data_type>(0.6);
       pt_ref=bez.f(u, v);
       pt_out=c.f(u);
       d=(pt_ref - pt_out).norm();
       TEST_ASSERT(d<std::numeric_limits<data_type>::epsilon()*30);
 
-      u=0.8;
+      u=static_cast<data_type>(0.8);
       pt_ref=bez.f(u, v);
       pt_out=c.f(u);
       if (typeid(data_type)==typeid(float))
@@ -3180,7 +3180,7 @@ class bezier_surface_test_suite : public Test::Suite
       TEST_ASSERT(pt_out==pt_ref);
 
       // Extract v curve
-      v=0.2;
+      v=static_cast<data_type>(0.2);
       bez.get_vconst_curve(c, v);
 
       u=0;
@@ -3188,7 +3188,7 @@ class bezier_surface_test_suite : public Test::Suite
       pt_out=c.f(u);
       TEST_ASSERT(pt_out==pt_ref);
 
-      u=0.1;
+      u=static_cast<data_type>(0.1);
       pt_ref=bez.f(u, v);
       pt_out=c.f(u);
       if (typeid(data_type)==typeid(float))
@@ -3201,24 +3201,24 @@ class bezier_surface_test_suite : public Test::Suite
         TEST_ASSERT(pt_out==pt_ref);
       }
 
-      u=0.2;
+      u=static_cast<data_type>(0.2);
       pt_ref=bez.f(u, v);
       pt_out=c.f(u);
       TEST_ASSERT(pt_out==pt_ref);
 
-      u=0.4;
+      u=static_cast<data_type>(0.4);
       pt_ref=bez.f(u, v);
       pt_out=c.f(u);
       d=(pt_ref - pt_out).norm();
       TEST_ASSERT(d<std::numeric_limits<data_type>::epsilon()*30);
 
-      u=0.6;
+      u=static_cast<data_type>(0.6);
       pt_ref=bez.f(u, v);
       pt_out=c.f(u);
       d=(pt_ref - pt_out).norm();
       TEST_ASSERT(d<std::numeric_limits<data_type>::epsilon()*30);
 
-      u=0.8;
+      u=static_cast<data_type>(0.8);
       pt_ref=bez.f(u, v);
       pt_out=c.f(u);
       d=(pt_ref - pt_out).norm();
@@ -3230,7 +3230,7 @@ class bezier_surface_test_suite : public Test::Suite
       TEST_ASSERT(pt_out==pt_ref);
 
       // Extract v curve
-      v=0.4;
+      v=static_cast<data_type>(0.4);
       bez.get_vconst_curve(c, v);
 
       u=0;
@@ -3238,19 +3238,19 @@ class bezier_surface_test_suite : public Test::Suite
       pt_out=c.f(u);
       TEST_ASSERT(pt_out==pt_ref);
 
-      u=0.1;
+      u=static_cast<data_type>(0.1);
       pt_ref=bez.f(u, v);
       pt_out=c.f(u);
       d=(pt_ref - pt_out).norm();
       TEST_ASSERT(d<std::numeric_limits<data_type>::epsilon()*30);
 
-      u=0.2;
+      u=static_cast<data_type>(0.2);
       pt_ref=bez.f(u, v);
       pt_out=c.f(u);
       d=(pt_ref - pt_out).norm();
       TEST_ASSERT(d<std::numeric_limits<data_type>::epsilon()*30);
 
-      u=0.4;
+      u=static_cast<data_type>(0.4);
       pt_ref=bez.f(u, v);
       pt_out=c.f(u);
       if (typeid(data_type)==typeid(float))
@@ -3263,7 +3263,7 @@ class bezier_surface_test_suite : public Test::Suite
         TEST_ASSERT(pt_out==pt_ref);
       }
 
-      u=0.6;
+      u=static_cast<data_type>(0.6);
       pt_ref=bez.f(u, v);
       pt_out=c.f(u);
       if (typeid(data_type)==typeid(float))
@@ -3276,7 +3276,7 @@ class bezier_surface_test_suite : public Test::Suite
         TEST_ASSERT(pt_out==pt_ref);
       }
 
-      u=0.8;
+      u=static_cast<data_type>(0.8);
       pt_ref=bez.f(u, v);
       pt_out=c.f(u);
       if (typeid(data_type)==typeid(float))
@@ -3311,27 +3311,27 @@ class bezier_surface_test_suite : public Test::Suite
       pt_out=c.f(u);
       TEST_ASSERT(pt_out==pt_ref);
 
-      u=0.1;
+      u=static_cast<data_type>(0.1);
       pt_ref=bez.f(u, v);
       pt_out=c.f(u);
       TEST_ASSERT(pt_out==pt_ref);
 
-      u=0.2;
+      u=static_cast<data_type>(0.2);
       pt_ref=bez.f(u, v);
       pt_out=c.f(u);
       TEST_ASSERT(pt_out==pt_ref);
 
-      u=0.4;
+      u=static_cast<data_type>(0.4);
       pt_ref=bez.f(u, v);
       pt_out=c.f(u);
       TEST_ASSERT(pt_out==pt_ref);
 
-      u=0.6;
+      u=static_cast<data_type>(0.6);
       pt_ref=bez.f(u, v);
       pt_out=c.f(u);
       TEST_ASSERT(pt_out==pt_ref);
 
-      u=0.8;
+      u=static_cast<data_type>(0.8);
       pt_ref=bez.f(u, v);
       pt_out=c.f(u);
       TEST_ASSERT(pt_out==pt_ref);

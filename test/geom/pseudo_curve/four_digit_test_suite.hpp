@@ -89,12 +89,12 @@ class four_digit_test_suite : public Test::Suite
       airfoil_thickness_coefficient_type a, a_ref;
 
       af.set_sharp_trailing_edge(false);
-      a_ref << 0.2969, -0.1260, -0.3516, 0.2843, -0.1015;
+      a_ref << static_cast<data_type>(0.2969), static_cast<data_type>(-0.1260), static_cast<data_type>(-0.3516), static_cast<data_type>(0.2843), static_cast<data_type>(-0.1015);
       a=af.get_thickness_coefficients();
       TEST_ASSERT((a-a_ref).norm()<1e-4);
 
       af.set_sharp_trailing_edge(true);
-      a_ref << 0.2983, -0.1325, -0.3286, 0.2442, -0.0815;
+      a_ref << static_cast<data_type>(0.2983), static_cast<data_type>(-0.1325), static_cast<data_type>(-0.3286), static_cast<data_type>(0.2442), static_cast<data_type>(-0.0815);
       a=af.get_thickness_coefficients();
       TEST_ASSERT((a-a_ref).norm()<1e-4);
     }
