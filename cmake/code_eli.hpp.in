@@ -1,5 +1,5 @@
 /*********************************************************************************
-* Copyright (c) 2013 David D. Marshall <ddmarsha@calpoly.edu>
+* Copyright (c) 2013-2014 David D. Marshall <ddmarsha@calpoly.edu>
 *
 * All rights reserved. This program and the accompanying materials
 * are made available under the terms of the Eclipse Public License v1.0
@@ -19,11 +19,65 @@
 #define ELI_VERSION "@ELI_VERSION_MAJOR@.@ELI_VERSION_MINOR@.@ELI_VERSION_PATCH@"
 #define ELI_BUILD_TIMESTAMP @ELI_BUILD_DATE@.@ELI_BUILD_TIME@
 
+#include <cassert>
+
 // disable warnings from Eigen that still show up
 #ifdef _MSC_VER
 #elif defined __INTEL_COMPILER
-  #pragma warning( push )
-  #pragma warning disable 82 279 1595 2196 2536
+//  #pragma warning( push )
+//  #pragma warning disable 82 279 1595 2196 2536
+#elif defined __clang__
+# if ( (__clang_major__ < 3) || ((__clang_major__==3) && (__clang_minor__>3)) )
+#   include <Eigen/src/Core/util/Macros.h>
+#   if ( (EIGEN_WORLD_VERSION == 3) && (EIGEN_MAJOR_VERSION == 2) && (EIGEN_MINOR_VERSION == 0) )
+#     pragma clang diagnostic push
+#     pragma clang diagnostic ignored "-Wdeprecated-register"
+#   endif
+# endif
+#elif defined __GNUC__
+# if defined NDEBUG
+#   if ( (__GNUC__==4) && (__GNUC_MINOR__<=8) )
+#     include <Eigen/src/Core/util/Macros.h>
+#     if ( (EIGEN_WORLD_VERSION == 3) && (EIGEN_MAJOR_VERSION == 2) && (EIGEN_MINOR_VERSION == 0) )
+#       if (__GNUC_MINOR__>5)
+#         pragma GCC diagnostic push
+#       endif
+#       pragma GCC diagnostic ignored "-Wuninitialized"
+#       if (__GNUC_MINOR__>6)
+#         pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
+#       endif
+#     endif
+#   endif
+# endif
+#endif
+
+#ifdef Success  // X11 #define collides with Eigen
+#undef Success
+#endif
+
+#include <Eigen/Eigen>
+#include <Eigen/StdVector>
+
+#ifdef _MSC_VER
+#elif defined __INTEL_COMPILER
+//  #pragma warning( push )
+//  #pragma warning disable 82 279 1595 2196 2536
+#elif defined __clang__
+# if ( (__clang_major__ < 3) || ((__clang_major__==3) && (__clang_minor__>3)) )
+#   if ( (EIGEN_WORLD_VERSION == 3) && (EIGEN_MAJOR_VERSION == 2) && (EIGEN_MINOR_VERSION == 0) )
+#     pragma clang diagnostic pop
+#   endif
+# endif
+#elif defined __GNUC__
+# if defined NDEBUG
+#   if ( (__GNUC__==4) && (__GNUC_MINOR__<=8) )
+#     if ( (EIGEN_WORLD_VERSION == 3) && (EIGEN_MAJOR_VERSION == 2) && (EIGEN_MINOR_VERSION == 0) )
+#       if (__GNUC_MINOR__>5)
+#         pragma GCC diagnostic pop
+#       endif
+#     endif
+#   endif
+# endif
 #endif
 
 // Visual Studio 2008 does not have cbrt(), asinh(), acosh(), atanh(), expm1() function
