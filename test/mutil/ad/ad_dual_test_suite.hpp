@@ -14,15 +14,12 @@
 #define ad_dual_test_suite_hpp
 
 #include <cmath>    // std::pow, std::exp
-#include <cassert>  // assert()
 
 #include <typeinfo> // typeid
 #include <string>   // std::string
 #include <sstream>  // std::stringstream
 #include <iomanip>  // std::setw
 #include <limits>   // std::numeric_limits
-
-#include "eli/code_eli.hpp"
 
 #include "eli/constants/math.hpp"
 #include "eli/mutil/ad/dual.hpp"

@@ -13,6 +13,8 @@
 #ifndef eli_mutil_quad_trapezoid_hpp
 #define eli_mutil_quad_trapezoid_hpp
 
+#include "eli/code_eli.hpp"
+
 namespace eli
 {
   namespace mutil

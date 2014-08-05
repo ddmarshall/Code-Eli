@@ -16,6 +16,8 @@
 #include <iomanip>
 #include <limits> // numeric_limits
 
+#include "eli/code_eli.hpp"
+
 namespace eli
 {
   namespace geom

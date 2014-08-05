@@ -17,6 +17,8 @@
 #include <vector>
 #include <iterator>
 
+#include "eli/code_eli.hpp"
+
 #include "eli/util/tolerance.hpp"
 
 #include "eli/geom/curve/bezier.hpp"

@@ -13,6 +13,8 @@
 #ifndef eli_geom_general_continuity_hpp
 #define eli_geom_general_continuity_hpp
 
+#include "eli/code_eli.hpp"
+
 namespace eli
 {
   namespace geom

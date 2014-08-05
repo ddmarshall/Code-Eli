@@ -13,6 +13,8 @@
 #ifndef eli_mutil_ad_dual_number_hpp
 #define eli_mutil_ad_dual_number_hpp
 
+#include "eli/code_eli.hpp"
+
 //
 // dual value type
 //

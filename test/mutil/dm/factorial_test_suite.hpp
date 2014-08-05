@@ -13,16 +13,12 @@
 #ifndef dm_factorial_test_suite_hpp
 #define dm_factorial_test_suite_hpp
 
-#include <cassert>  // assert()
-
 #include <typeinfo>   // typeid
 #include <string>     // std::string
 #include <sstream>    // std::stringstream
 #include <iomanip>    // std::setw
 #include <vector>     // std::vector
 #include <functional> // std::less
-
-#include "eli/code_eli.hpp"
 
 #include "eli/mutil/dm/factorial.hpp"
 

@@ -14,7 +14,6 @@
 #define dm_combination_test_suite_hpp
 
 #include <cmath>    // std::pow, std::exp
-#include <cassert>  // assert()
 
 #include <typeinfo>   // typeid
 #include <string>     // std::string
@@ -22,8 +21,6 @@
 #include <iomanip>    // std::setw
 #include <vector>     // std::vector
 #include <functional> // std::less
-
-#include "eli/code_eli.hpp"
 
 #include "eli/mutil/dm/combination.hpp"
 

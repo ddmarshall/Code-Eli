@@ -49,6 +49,7 @@ set (PIECEWISE_CURVE_CREATOR_TEST_HEADER ${PROJECT_SOURCE_DIR}/piecewise_point_c
                                          ${ELI_SOURCE_DIR}/include/eli/geom/curve/piecewise.hpp
                                          ${ELI_SOURCE_DIR}/include/eli/geom/curve/piecewise_creator_base.hpp
                                          ${ELI_SOURCE_DIR}/include/eli/geom/curve/piecewise_point_creator.hpp
+                                         ${ELI_SOURCE_DIR}/include/eli/geom/curve/piecewise_linear_creator.hpp
                                          ${ELI_SOURCE_DIR}/include/eli/geom/curve/piecewise_polygon_creator.hpp
                                          ${ELI_SOURCE_DIR}/include/eli/geom/curve/piecewise_circle_creator.hpp
                                          ${ELI_SOURCE_DIR}/include/eli/geom/curve/piecewise_cubic_spline_creator.hpp
@@ -74,7 +75,8 @@ set (PIECEWISE_AIRFOIL_CREATOR_TEST_HEADER ${PROJECT_SOURCE_DIR}/piecewise_four_
                                            ${ELI_SOURCE_DIR}/include/eli/geom/curve/curvature.hpp
                                            ${ELI_SOURCE_DIR}/include/eli/geom/curve/piecewise.hpp
                                            ${ELI_SOURCE_DIR}/include/eli/geom/curve/piecewise_creator_base.hpp
-                                           ${ELI_SOURCE_DIR}/include/eli/geom/curve/piecewise_four_digit_creator.hpp)
+                                           ${ELI_SOURCE_DIR}/include/eli/geom/curve/piecewise_four_digit_creator.hpp
+                                           ${ELI_SOURCE_DIR}/include/eli/geom/curve/pseudo/four_digit.hpp)
 
 
 add_executable(${PIECEWISE_AIRFOIL_CREATOR_TEST_EXE} ${PIECEWISE_AIRFOIL_CREATOR_TEST_SOURCE} ${PIECEWISE_AIRFOIL_CREATOR_TEST_HEADER})

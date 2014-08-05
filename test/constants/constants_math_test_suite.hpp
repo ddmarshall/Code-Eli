@@ -14,7 +14,6 @@
 #define constants_math_test_suite_hpp
 
 #include <cmath>    // std::pow, std::exp
-#include <cassert>  // assert()
 
 #include <typeinfo> // typeid
 #include <string>   // std::string
@@ -22,11 +21,9 @@
 #include <iomanip>  // std::setw
 #include <vector>   // std::vector
 
-#include "eli/code_eli.hpp"
+#include <cmath> // std::tan and others
 
 #include "eli/constants/math.hpp"
-
-#include <cmath> // std::tan and others
 
 template<typename T__>
 void set_pi(T__ &p)

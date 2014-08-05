@@ -13,6 +13,8 @@
 #ifndef eli_mutil_ad_dual_traits_hpp
 #define eli_mutil_ad_dual_traits_hpp
 
+#include "eli/code_eli.hpp"
+
 #include "eli/util/traits.hpp"
 
 namespace eli

@@ -13,9 +13,10 @@
 #ifndef eli_mutil_poly_root_sturm_count_hpp
 #define eli_mutil_poly_root_sturm_count_hpp
 
-
 #include <cmath>
 #include <vector>
+
+#include "eli/code_eli.hpp"
 
 #include "eli/mutil/poly/root/sign_changes.hpp"
 #include "eli/mutil/poly/polynomial.hpp"

@@ -13,13 +13,9 @@
 #ifndef tolerance_test_suite_hpp
 #define tolerance_test_suite_hpp
 
-#include "Eigen/Eigen"
-
-#include "eli/code_eli.hpp"
+#include <limits>     // numeric_limits
 
 #include "eli/util/tolerance.hpp"
-
-#include <limits>     // numeric_limits
 
 template<typename data__>
 class tolerance_test_suite : public Test::Suite

@@ -18,11 +18,7 @@
 #include <list>
 #include <algorithm>
 
-#ifdef Success  // X11 #define collides with Eigen
-#undef Success
-#endif
-
-#include "Eigen/Eigen"
+#include "eli/code_eli.hpp"
 
 #include "eli/mutil/nls/newton_raphson_constrained_method.hpp"
 

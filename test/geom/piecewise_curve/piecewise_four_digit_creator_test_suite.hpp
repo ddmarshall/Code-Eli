@@ -13,22 +13,19 @@
 #ifndef piecewise_four_digit_creator_test_suite_hpp
 #define piecewise_four_digit_creator_test_suite_hpp
 
-#include "eli/code_eli.hpp"
-
-#include "eli/constants/math.hpp"
-#include "eli/mutil/fd/d1o2.hpp"
-#include "eli/mutil/fd/d2o2.hpp"
-#include "eli/geom/curve/piecewise.hpp"
-#include "eli/geom/curve/piecewise_four_digit_creator.hpp"
-
 #include <cmath>    // std::pow, std::exp
-#include <cassert>  // assert()
 
 #include <typeinfo> // typeid
 #include <string>   // std::string
 #include <sstream>  // std::stringstream
 #include <iomanip>  // std::setw
 #include <limits>   // std::numeric_limits
+
+#include "eli/constants/math.hpp"
+#include "eli/mutil/fd/d1o2.hpp"
+#include "eli/mutil/fd/d2o2.hpp"
+#include "eli/geom/curve/piecewise.hpp"
+#include "eli/geom/curve/piecewise_four_digit_creator.hpp"
 
 template<typename data__>
 class piecewise_four_digit_creator_test_suite : public Test::Suite

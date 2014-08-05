@@ -10,19 +10,12 @@
 *    David D. Marshall - initial code and implementation
 ********************************************************************************/
 
-#ifndef eli_geom_curve_piecewise_four_digit_creator_hpp
-#define eli_geom_curve_piecewise_four_digit_creator_hpp
-
 #ifndef eli_geom_curve_piecewise_airfoil_creator_base_hpp
 #define eli_geom_curve_piecewise_airfoil_creator_base_hpp
 
 #include <vector>
 
-#ifdef Success // X11 #define collides with Eigen
-#undef Success
-#endif
-
-#include "Eigen/Eigen"
+#include "eli/code_eli.hpp"
 
 #include "eli/geom/curve/piecewise.hpp"
 #include "eli/geom/curve/bezier.hpp"
@@ -89,7 +82,10 @@ namespace eli
 }
 #endif
 
-#include "Eigen/Eigen"
+#ifndef eli_geom_curve_piecewise_four_digit_creator_hpp
+#define eli_geom_curve_piecewise_four_digit_creator_hpp
+
+#include "eli/code_eli.hpp"
 
 #include "eli/geom/curve/piecewise.hpp"
 #include "eli/geom/curve/bezier.hpp"

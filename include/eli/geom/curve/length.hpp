@@ -13,6 +13,8 @@
 #ifndef eli_geom_curve_length_hpp
 #define eli_geom_curve_length_hpp
 
+#include "eli/code_eli.hpp"
+
 #include "eli/mutil/quad.hpp"
 
 #include "eli/geom/curve/piecewise.hpp"

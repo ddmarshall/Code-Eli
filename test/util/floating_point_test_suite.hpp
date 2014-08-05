@@ -16,10 +16,6 @@
 #include <string>
 #include <sstream>
 
-#include "Eigen/Eigen"
-
-#include "eli/code_eli.hpp"
-
 #include "eli/util/floating_point.hpp"
 
 template<typename data__>

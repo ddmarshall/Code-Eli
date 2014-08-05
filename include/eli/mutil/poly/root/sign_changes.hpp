@@ -13,6 +13,8 @@
 #ifndef eli_mutil_poly_root_sign_changes_hpp
 #define eli_mutil_poly_root_sign_changes_hpp
 
+#include "eli/code_eli.hpp"
+
 namespace eli
 {
   namespace mutil

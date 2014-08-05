@@ -13,6 +13,8 @@
 #ifndef eli_util_traits_hpp
 #define eli_util_traits_hpp
 
+#include "eli/code_eli.hpp"
+
 //
 // traits class
 //

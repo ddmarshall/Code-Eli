@@ -15,6 +15,8 @@
 
 #include <utility> // std::pair
 
+#include "eli/code_eli.hpp"
+
 namespace eli
 {
   namespace mutil

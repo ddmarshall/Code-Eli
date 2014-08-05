@@ -19,8 +19,6 @@
 #include <iomanip>  // std::setw
 #include <limits>   // std::numeric_limits
 
-#include "eli/code_eli.hpp"
-
 #include "eli/mutil/quad/simpson.hpp"
 #include "eli/constants/math.hpp"
 

@@ -18,11 +18,7 @@
 #include <iomanip>   // std::setw
 #include <algorithm> // std::transform
 
-#ifdef Success // X11 #define collides with Eigen
-#undef Success
-#endif
-
-#include <Eigen/Eigen>
+#include "eli/code_eli.hpp"
 
 namespace eli
 {

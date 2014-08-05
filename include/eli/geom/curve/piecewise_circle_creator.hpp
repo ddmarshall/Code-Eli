@@ -15,6 +15,8 @@
 
 #include <iterator>
 
+#include "eli/code_eli.hpp"
+
 #include "eli/constants/math.hpp"
 
 #include "eli/geom/point/distance.hpp"

@@ -13,11 +13,7 @@
 #ifndef eli_mutil_opt_least_squares_hpp
 #define eli_mutil_opt_least_squares_hpp
 
-#ifdef Success  // X11 #define collides with Eigen
-#undef Success
-#endif
-
-#include "Eigen/Eigen"
+#include "eli/code_eli.hpp"
 
 namespace eli
 {

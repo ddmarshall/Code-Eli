@@ -17,6 +17,8 @@
 #include <algorithm>
 #include <functional>
 
+#include "eli/code_eli.hpp"
+
 namespace eli
 {
   namespace mutil

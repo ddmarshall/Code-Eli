@@ -13,22 +13,19 @@
 #ifndef explicit_bezier_curve_fit_test_suite_hpp
 #define explicit_bezier_curve_fit_test_suite_hpp
 
-#include "eli/code_eli.hpp"
-
-#include "eli/constants/math.hpp"
-#include "eli/geom/point/distance.hpp"
-#include "eli/geom/curve/explicit_bezier.hpp"
-#include "eli/geom/curve/length.hpp"
-#include "eli/geom/curve/curvature.hpp"
-
 #include <cmath>    // std::pow, std::exp
-#include <cassert>  // assert()
 
 #include <typeinfo> // typeid
 #include <string>   // std::string
 #include <sstream>  // std::stringstream
 #include <iomanip>  // std::setw
 #include <limits>   // std::numeric_limits
+
+#include "eli/constants/math.hpp"
+#include "eli/geom/point/distance.hpp"
+#include "eli/geom/curve/explicit_bezier.hpp"
+#include "eli/geom/curve/length.hpp"
+#include "eli/geom/curve/curvature.hpp"
 
 template<typename data__>
 class explicit_bezier_curve_fit_test_suite : public Test::Suite
