@@ -22,23 +22,32 @@
 #include <cassert>
 
 // disable warnings from Eigen that still show up
+#include <Eigen/src/Core/util/Macros.h>
+#define EIGEN_NUM_VERSION (EIGEN_WORLD_VERSION*10000+EIGEN_MAJOR_VERSION*100+EIGEN_MINOR_VERSION)
 #ifdef _MSC_VER
 #elif defined __INTEL_COMPILER
 //  #pragma warning( push )
 //  #pragma warning disable 82 279 1595 2196 2536
 #elif defined __clang__
-# if ( (__clang_major__ < 3) || ((__clang_major__==3) && (__clang_minor__>3)) )
-#   include <Eigen/src/Core/util/Macros.h>
-#   if ( (EIGEN_WORLD_VERSION == 3) && (EIGEN_MAJOR_VERSION == 2) && (EIGEN_MINOR_VERSION == 0) )
-#     pragma clang diagnostic push
-#     pragma clang diagnostic ignored "-Wdeprecated-register"
+# if defined __apple_build_version__
+#   if ( (__clang_major__ == 5) && (__clang_minor__ <= 1) )
+#     if ( (EIGEN_NUM_VERSION >= 30007) && (EIGEN_NUM_VERSION <=30200) )
+#       pragma clang diagnostic push
+#       pragma clang diagnostic ignored "-Wdeprecated-register"
+#     endif
+#   endif
+# else
+#   if ( (__clang_major__ < 3) || ((__clang_major__==3) && (__clang_minor__>3)) )
+#     if ( (EIGEN_NUM_VERSION >= 30007) && (EIGEN_NUM_VERSION <=30200) )
+#       pragma clang diagnostic push
+#       pragma clang diagnostic ignored "-Wdeprecated-register"
+#     endif
 #   endif
 # endif
 #elif defined __GNUC__
 # if defined NDEBUG
 #   if ( (__GNUC__==4) && (__GNUC_MINOR__<=8) )
-#     include <Eigen/src/Core/util/Macros.h>
-#     if ( (EIGEN_WORLD_VERSION == 3) && (EIGEN_MAJOR_VERSION == 2) && (EIGEN_MINOR_VERSION == 0) )
+#     if (EIGEN_NUM_VERSION == 30200)
 #       if (__GNUC_MINOR__>5)
 #         pragma GCC diagnostic push
 #       endif
@@ -63,15 +72,23 @@
 //  #pragma warning( push )
 //  #pragma warning disable 82 279 1595 2196 2536
 #elif defined __clang__
-# if ( (__clang_major__ < 3) || ((__clang_major__==3) && (__clang_minor__>3)) )
-#   if ( (EIGEN_WORLD_VERSION == 3) && (EIGEN_MAJOR_VERSION == 2) && (EIGEN_MINOR_VERSION == 0) )
-#     pragma clang diagnostic pop
+# if defined __apple_build_version__
+#   if ( (__clang_major__ == 5) && (__clang_minor__ <= 1) )
+#     if ( (EIGEN_NUM_VERSION >= 30007) && (EIGEN_NUM_VERSION <=30200) )
+#       pragma clang diagnostic pop
+#     endif
+#   endif
+# else
+#   if ( (__clang_major__ < 3) || ((__clang_major__==3) && (__clang_minor__>3)) )
+#     if ( (EIGEN_NUM_VERSION >= 30007) && (EIGEN_NUM_VERSION <=30200) )
+#       pragma clang diagnostic pop
+#     endif
 #   endif
 # endif
 #elif defined __GNUC__
 # if defined NDEBUG
 #   if ( (__GNUC__==4) && (__GNUC_MINOR__<=8) )
-#     if ( (EIGEN_WORLD_VERSION == 3) && (EIGEN_MAJOR_VERSION == 2) && (EIGEN_MINOR_VERSION == 0) )
+#     if (EIGEN_NUM_VERSION == 30200)
 #       if (__GNUC_MINOR__>5)
 #         pragma GCC diagnostic pop
 #       endif
