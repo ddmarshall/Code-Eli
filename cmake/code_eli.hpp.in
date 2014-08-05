@@ -37,7 +37,7 @@
 #     endif
 #   endif
 # else
-#   if ( (__clang_major__ < 3) || ((__clang_major__==3) && (__clang_minor__>3)) )
+#   if ((__clang_major__==3) && (__clang_minor__>3))
 #     if ( (EIGEN_NUM_VERSION >= 30007) && (EIGEN_NUM_VERSION <=30200) )
 #       pragma clang diagnostic push
 #       pragma clang diagnostic ignored "-Wdeprecated-register"
@@ -79,7 +79,7 @@
 #     endif
 #   endif
 # else
-#   if ( (__clang_major__ < 3) || ((__clang_major__==3) && (__clang_minor__>3)) )
+#   if ((__clang_major__==3) && (__clang_minor__>3))
 #     if ( (EIGEN_NUM_VERSION >= 30007) && (EIGEN_NUM_VERSION <=30200) )
 #       pragma clang diagnostic pop
 #     endif
