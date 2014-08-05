@@ -14,6 +14,7 @@
 #define eli_geom_curve_piecewise_hpp
 
 #include <map>
+#include <iterator>
 
 #include "eli/code_eli.hpp"
 
