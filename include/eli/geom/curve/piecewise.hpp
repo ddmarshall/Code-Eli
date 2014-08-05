@@ -1317,7 +1317,7 @@ namespace eli
             if (it==segments.end())
             {
               assert(false);
-              return eli::geom::general::NOT_CONNECTED;
+              return false;
             }
 
             if (tt==0)
