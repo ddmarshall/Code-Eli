@@ -24,7 +24,13 @@
 // disable warnings from Eigen that still show up
 #include <Eigen/src/Core/util/Macros.h>
 #define EIGEN_NUM_VERSION (EIGEN_WORLD_VERSION*10000+EIGEN_MAJOR_VERSION*100+EIGEN_MINOR_VERSION)
-#ifdef _MSC_VER
+#if defined _MSC_VER
+# if (_MSC_VER==1600)
+#   if (EIGEN_NUM_VERSION == 30006)
+#     pragma warning(push)
+#     pragma warning(disable : 4244) // 64-bit int to 32-bit int conversion
+#   endif
+# endif
 #elif defined __INTEL_COMPILER
 //  #pragma warning( push )
 //  #pragma warning disable 82 279 1595 2196 2536
@@ -67,7 +73,12 @@
 #include <Eigen/Eigen>
 #include <Eigen/StdVector>
 
-#ifdef _MSC_VER
+#if defined _MSC_VER
+# if (_MSC_VER==1600)
+#   if (EIGEN_NUM_VERSION == 30006)
+#     pragma warning(pop)
+#   endif
+# endif
 #elif defined __INTEL_COMPILER
 //  #pragma warning( push )
 //  #pragma warning disable 82 279 1595 2196 2536
