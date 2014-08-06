@@ -489,7 +489,7 @@ class four_digit_test_suite : public Test::Suite
         if (typeid(data_type)==typeid(float))
         {
           TEST_ASSERT((xp-xp_ref).norm()<1e-6);
-          TEST_ASSERT((xpp-xpp_ref).norm()<1e-6);
+          TEST_ASSERT((xpp-xpp_ref).norm()<5e-5);
         }
         else
         {
@@ -510,7 +510,7 @@ class four_digit_test_suite : public Test::Suite
         if (typeid(data_type)==typeid(float))
         {
           TEST_ASSERT((xp-xp_ref).norm()<1e-6);
-          TEST_ASSERT((xpp-xpp_ref).norm()<5e-6);
+          TEST_ASSERT((xpp-xpp_ref).norm()<1e-5);
         }
         else
         {
