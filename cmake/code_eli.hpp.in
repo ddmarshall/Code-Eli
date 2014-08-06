@@ -97,14 +97,92 @@
 # endif
 #endif
 
-// Visual Studio 2008 does not have cbrt(), asinh(), acosh(), atanh(), expm1() function
+// Visual Studio 2010 does not have to_string(), round(), cbrt(), asinh(), acosh(), atanh(), expm1() function
 #ifdef _MSC_VER
-# if (_MSC_VER<=1600)
+# if (_MSC_VER==1600)
+#include <sstream>
+
+namespace std
+{
+  inline std::string to_string(int val)
+  {
+    std::string sout;
+    std::stringstream str;
+    str << val;
+    sout = str.str();
+    return sout;
+  }
+  inline std::string to_string(unsigned int val)
+  {
+    std::string sout;
+    std::stringstream str;
+    str << val;
+    sout = str.str();
+    return sout;
+  }
+  inline std::string to_string(long val)
+  {
+    std::string sout;
+    std::stringstream str;
+    str << val;
+    sout = str.str();
+    return sout;
+  }
+  inline std::string to_string(unsigned long val)
+  {
+    std::string sout;
+    std::stringstream str;
+    str << val;
+    sout = str.str();
+    return sout;
+  }
+  inline std::string to_string(float val)
+  {
+    std::string sout;
+    std::stringstream str;
+    str << val;
+    sout = str.str();
+    return sout;
+  }
+  inline std::string to_string(double val)
+  {
+    std::string sout;
+    std::stringstream str;
+    str << val;
+    sout = str.str();
+    return sout;
+  }
+
+  inline float round(float f)
+  {
+    if (f >= (float)(UINT_MAX)) return f; // if larger than unsigned int then return value
+    if (f <= 0.5) return 0;      // catch case of small f
+    return (float) (unsigned int) (f + 0.5f);
+  }
+
+  inline double round(double f)
+  {
+    if (f >= (double)(UINT_MAX)) return f; // if larger than unsigned int then return value
+    if (f <= 0.5) return 0;      // catch case of small f
+    return (double) (unsigned int) (f + 0.5);
+  }
+
+  inline long double round(long double f)
+  {
+    if (f >= (long double)(UINT_MAX)) return f; // if larger than unsigned int then return value
+    if (f <= 0.5) return 0;      // catch case of small f
+    return (long double) (unsigned int) (f + 0.5L);
+  }
+}
+
+    // need to get some other data types
     typedef int int32_t;
     typedef unsigned int uint32_t;
     typedef __int64 int64_t;
     typedef unsigned __int64 uint64_t;
 #   define nullptr (0)
+
+    // more limitations in std implementation
 #   define _NEED_EXTRA_MATH_FUNCTIONS
 #   define ELI_NO_VECTOR_DATA
 # endif
