@@ -122,7 +122,9 @@ class four_digit_test_suite : public Test::Suite
       // test the name
       std::string name, name_ref;
 
-      name_ref="NACA "+std::to_string((int)round(cam))+std::to_string((int)round(cam_loc))+std::to_string((int)round(th));
+      name_ref="NACA "+std::to_string(static_cast<int>(std::round(cam)))
+                      +std::to_string(static_cast<int>(std::round(cam_loc)))
+                      +std::to_string(static_cast<int>(std::round(th)));
       name=af.get_name();
       TEST_ASSERT(name==name_ref);
     }
