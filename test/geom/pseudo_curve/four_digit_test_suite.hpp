@@ -136,7 +136,7 @@ class four_digit_test_suite : public Test::Suite
         airfoil_type af;
         std::vector<data_type> x(18), y(18);
         airfoil_point_type xout;
-        const data_type tol(1e-5);
+        const data_type tol(static_cast<data_type>(1e-5));
 
         // create 0021 airfoil to test against Abbott & von Doenhoff data NACA Report 824 p. 330
         af.set_thickness(21);
@@ -173,7 +173,7 @@ class four_digit_test_suite : public Test::Suite
         airfoil_type af;
         std::vector<data_type> x(18), y(18);
         airfoil_point_type xout;
-        const data_type tol(1e-5);
+        const data_type tol(static_cast<data_type>(1e-5));
 
         // create 0021 airfoil to test against Abbott & von Doenhoff data NACA Report 824 p. 330
         af.set_thickness(21);
@@ -275,7 +275,7 @@ class four_digit_test_suite : public Test::Suite
         airfoil_type af;
         airfoil_point_type xr, xp, xpp, xp_ref, xpp_ref;
         data_type xi, x[3], y[3];
-        const data_type dxi(1e2*std::sqrt(std::numeric_limits<data_type>::epsilon()));
+        const data_type dxi(static_cast<data_type>(1e2)*std::sqrt(std::numeric_limits<data_type>::epsilon()));
         eli::mutil::fd::d1o2<data_type> d1_calc;
         eli::mutil::fd::d2o2<data_type> d2_calc;
 
@@ -391,7 +391,7 @@ class four_digit_test_suite : public Test::Suite
       airfoil_type af;
       std::vector<data_type> x(18), y(18);
       airfoil_point_type xout;
-      const data_type tol(1e-5);
+      const data_type tol(static_cast<data_type>(1e-5));
 
       // create 2300 airfoil to test against externally calculated data
       af.set_camber(2, 3);
@@ -467,7 +467,7 @@ class four_digit_test_suite : public Test::Suite
         airfoil_type af;
         airfoil_point_type xr, xp, xpp, xp_ref, xpp_ref;
         data_type xi, x[3], y[3];
-        const data_type dxi(1e2*std::sqrt(std::numeric_limits<data_type>::epsilon()));
+        const data_type dxi(static_cast<data_type>(1e2)*std::sqrt(std::numeric_limits<data_type>::epsilon()));
         eli::mutil::fd::d1o2<data_type> d1_calc;
         eli::mutil::fd::d2o2<data_type> d2_calc;
 
@@ -582,7 +582,7 @@ class four_digit_test_suite : public Test::Suite
       airfoil_type af;
       std::vector<data_type> xi(36), x(36), y(36);
       airfoil_point_type xout;
-      const data_type tol(3e-3);
+      const data_type tol(static_cast<data_type>(3e-3));
 
       // create 2412 airfoil to test against Abbott & von Doenhoff data NACA Report 824 p. 358
       af.set_camber(2, 4);
@@ -646,7 +646,7 @@ class four_digit_test_suite : public Test::Suite
       airfoil_type af;
       airfoil_point_type xr, xp, xpp, xp_ref, xpp_ref;
       data_type xi, x[3], y[3];
-      const data_type dxi(1e2*std::sqrt(std::numeric_limits<data_type>::epsilon()));
+      const data_type dxi(static_cast<data_type>(1e2)*std::sqrt(std::numeric_limits<data_type>::epsilon()));
       eli::mutil::fd::d1o2<data_type> d1_calc;
       eli::mutil::fd::d2o2<data_type> d2_calc;
 
