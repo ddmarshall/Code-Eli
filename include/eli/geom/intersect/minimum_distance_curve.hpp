@@ -106,7 +106,7 @@ namespace eli
               }
               else if (t<=pc->get_t0())
               {
-                rtn=(g(pc->get_t0()+.01)-g(pc->get_t0()))/static_cast<typename curve__::data_type>(0.01);
+                rtn=(g(pc->get_t0()+static_cast<typename curve__::data_type>(0.01))-g(pc->get_t0()))/static_cast<typename curve__::data_type>(0.01);
               }
               else
               {

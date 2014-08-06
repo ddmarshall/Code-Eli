@@ -1282,15 +1282,15 @@ class piecewise_surface_test_suite : public Test::Suite
       err=pws.set(s, 0, 0);
       TEST_ASSERT(err==piecewise_surface_type::NO_ERRORS);
 
-      pws.split_u(0.2);
-      pws.split_u(0.3);
-      pws.split_u(0.6);
-      pws.split_u(0.7);
+      pws.split_u(static_cast<data_type>(0.2));
+      pws.split_u(static_cast<data_type>(0.3));
+      pws.split_u(static_cast<data_type>(0.6));
+      pws.split_u(static_cast<data_type>(0.7));
 
-      pws.split_v(0.2);
-      pws.split_v(0.412);
-      pws.split_v(0.6);
-      pws.split_v(0.895);
+      pws.split_v(static_cast<data_type>(0.2));
+      pws.split_v(static_cast<data_type>(0.412));
+      pws.split_v(static_cast<data_type>(0.6));
+      pws.split_v(static_cast<data_type>(0.895));
 
       // Extract u curve
       u=0;
@@ -1301,66 +1301,27 @@ class piecewise_surface_test_suite : public Test::Suite
       pt_out=pwc.f(v);
       TEST_ASSERT(pt_out==pt_ref);
 
-      v=0.1;
+      v=static_cast<data_type>(0.1);
       pt_ref=pws.f(u, v);
       pt_out=pwc.f(v);
       TEST_ASSERT(pt_out==pt_ref);
 
-      v=0.2;
+      v=static_cast<data_type>(0.2);
       pt_ref=pws.f(u, v);
       pt_out=pwc.f(v);
       TEST_ASSERT(pt_out==pt_ref);
 
-      v=0.4;
+      v=static_cast<data_type>(0.4);
       pt_ref=pws.f(u, v);
       pt_out=pwc.f(v);
       TEST_ASSERT(pt_out==pt_ref);
 
-      v=0.6;
+      v=static_cast<data_type>(0.6);
       pt_ref=pws.f(u, v);
       pt_out=pwc.f(v);
       TEST_ASSERT(pt_out==pt_ref);
 
-      v=0.8;
-      pt_ref=pws.f(u, v);
-      pt_out=pwc.f(v);
-      TEST_ASSERT(pt_out==pt_ref);
-
-      v=1;
-      pt_ref=pws.f(u, v);
-      pt_out=pwc.f(v);
-      TEST_ASSERT(pt_out==pt_ref);
-
-      // Extract u curve
-      u=0.1;
-      pws.get_uconst_curve(pwc, u);
-
-      v=0;
-      pt_ref=pws.f(u, v);
-      pt_out=pwc.f(v);
-      TEST_ASSERT(pt_out==pt_ref);
-
-      v=0.1;
-      pt_ref=pws.f(u, v);
-      pt_out=pwc.f(v);
-      TEST_ASSERT(pt_out==pt_ref);
-
-      v=0.2;
-      pt_ref=pws.f(u, v);
-      pt_out=pwc.f(v);
-      TEST_ASSERT(pt_out==pt_ref);
-
-      v=0.4;
-      pt_ref=pws.f(u, v);
-      pt_out=pwc.f(v);
-      TEST_ASSERT(pt_out==pt_ref);
-
-      v=0.6;
-      pt_ref=pws.f(u, v);
-      pt_out=pwc.f(v);
-      TEST_ASSERT(pt_out==pt_ref);
-
-      v=0.8;
+      v=static_cast<data_type>(0.8);
       pt_ref=pws.f(u, v);
       pt_out=pwc.f(v);
       TEST_ASSERT(pt_out==pt_ref);
@@ -1371,7 +1332,7 @@ class piecewise_surface_test_suite : public Test::Suite
       TEST_ASSERT(pt_out==pt_ref);
 
       // Extract u curve
-      u=0.2;
+      u=static_cast<data_type>(0.1);
       pws.get_uconst_curve(pwc, u);
 
       v=0;
@@ -1379,27 +1340,27 @@ class piecewise_surface_test_suite : public Test::Suite
       pt_out=pwc.f(v);
       TEST_ASSERT(pt_out==pt_ref);
 
-      v=0.1;
+      v=static_cast<data_type>(0.1);
       pt_ref=pws.f(u, v);
       pt_out=pwc.f(v);
       TEST_ASSERT(pt_out==pt_ref);
 
-      v=0.2;
+      v=static_cast<data_type>(0.2);
       pt_ref=pws.f(u, v);
       pt_out=pwc.f(v);
       TEST_ASSERT(pt_out==pt_ref);
 
-      v=0.4;
+      v=static_cast<data_type>(0.4);
       pt_ref=pws.f(u, v);
       pt_out=pwc.f(v);
       TEST_ASSERT(pt_out==pt_ref);
 
-      v=0.6;
+      v=static_cast<data_type>(0.6);
       pt_ref=pws.f(u, v);
       pt_out=pwc.f(v);
       TEST_ASSERT(pt_out==pt_ref);
 
-      v=0.8;
+      v=static_cast<data_type>(0.8);
       pt_ref=pws.f(u, v);
       pt_out=pwc.f(v);
       TEST_ASSERT(pt_out==pt_ref);
@@ -1410,7 +1371,7 @@ class piecewise_surface_test_suite : public Test::Suite
       TEST_ASSERT(pt_out==pt_ref);
 
       // Extract u curve
-      u=0.5;
+      u=static_cast<data_type>(0.2);
       pws.get_uconst_curve(pwc, u);
 
       v=0;
@@ -1418,27 +1379,66 @@ class piecewise_surface_test_suite : public Test::Suite
       pt_out=pwc.f(v);
       TEST_ASSERT(pt_out==pt_ref);
 
-      v=0.1;
+      v=static_cast<data_type>(0.1);
       pt_ref=pws.f(u, v);
       pt_out=pwc.f(v);
       TEST_ASSERT(pt_out==pt_ref);
 
-      v=0.2;
+      v=static_cast<data_type>(0.2);
       pt_ref=pws.f(u, v);
       pt_out=pwc.f(v);
       TEST_ASSERT(pt_out==pt_ref);
 
-      v=0.4;
+      v=static_cast<data_type>(0.4);
       pt_ref=pws.f(u, v);
       pt_out=pwc.f(v);
       TEST_ASSERT(pt_out==pt_ref);
 
-      v=0.6;
+      v=static_cast<data_type>(0.6);
       pt_ref=pws.f(u, v);
       pt_out=pwc.f(v);
       TEST_ASSERT(pt_out==pt_ref);
 
-      v=0.8;
+      v=static_cast<data_type>(0.8);
+      pt_ref=pws.f(u, v);
+      pt_out=pwc.f(v);
+      TEST_ASSERT(pt_out==pt_ref);
+
+      v=1;
+      pt_ref=pws.f(u, v);
+      pt_out=pwc.f(v);
+      TEST_ASSERT(pt_out==pt_ref);
+
+      // Extract u curve
+      u=static_cast<data_type>(0.5);
+      pws.get_uconst_curve(pwc, u);
+
+      v=0;
+      pt_ref=pws.f(u, v);
+      pt_out=pwc.f(v);
+      TEST_ASSERT(pt_out==pt_ref);
+
+      v=static_cast<data_type>(0.1);
+      pt_ref=pws.f(u, v);
+      pt_out=pwc.f(v);
+      TEST_ASSERT(pt_out==pt_ref);
+
+      v=static_cast<data_type>(0.2);
+      pt_ref=pws.f(u, v);
+      pt_out=pwc.f(v);
+      TEST_ASSERT(pt_out==pt_ref);
+
+      v=static_cast<data_type>(0.4);
+      pt_ref=pws.f(u, v);
+      pt_out=pwc.f(v);
+      TEST_ASSERT(pt_out==pt_ref);
+
+      v=static_cast<data_type>(0.6);
+      pt_ref=pws.f(u, v);
+      pt_out=pwc.f(v);
+      TEST_ASSERT(pt_out==pt_ref);
+
+      v=static_cast<data_type>(0.8);
       pt_ref=pws.f(u, v);
       pt_out=pwc.f(v);
       TEST_ASSERT(pt_out==pt_ref);
@@ -1457,27 +1457,27 @@ class piecewise_surface_test_suite : public Test::Suite
       pt_out=pwc.f(v);
       TEST_ASSERT(pt_out==pt_ref);
 
-      v=0.1;
+      v=static_cast<data_type>(0.1);
       pt_ref=pws.f(u, v);
       pt_out=pwc.f(v);
       TEST_ASSERT(pt_out==pt_ref);
 
-      v=0.2;
+      v=static_cast<data_type>(0.2);
       pt_ref=pws.f(u, v);
       pt_out=pwc.f(v);
       TEST_ASSERT(pt_out==pt_ref);
 
-      v=0.4;
+      v=static_cast<data_type>(0.4);
       pt_ref=pws.f(u, v);
       pt_out=pwc.f(v);
       TEST_ASSERT(pt_out==pt_ref);
 
-      v=0.6;
+      v=static_cast<data_type>(0.6);
       pt_ref=pws.f(u, v);
       pt_out=pwc.f(v);
       TEST_ASSERT(pt_out==pt_ref);
 
-      v=0.8;
+      v=static_cast<data_type>(0.8);
       pt_ref=pws.f(u, v);
       pt_out=pwc.f(v);
       TEST_ASSERT(pt_out==pt_ref);
@@ -1498,27 +1498,27 @@ class piecewise_surface_test_suite : public Test::Suite
       pt_out=pwc.f(u);
       TEST_ASSERT(pt_out==pt_ref);
 
-      u=0.1;
+      u=static_cast<data_type>(0.1);
       pt_ref=pws.f(u, v);
       pt_out=pwc.f(u);
       TEST_ASSERT(pt_out==pt_ref);
 
-      u=0.2;
+      u=static_cast<data_type>(0.2);
       pt_ref=pws.f(u, v);
       pt_out=pwc.f(u);
       TEST_ASSERT(pt_out==pt_ref);
 
-      u=0.4;
+      u=static_cast<data_type>(0.4);
       pt_ref=pws.f(u, v);
       pt_out=pwc.f(u);
       TEST_ASSERT(pt_out==pt_ref);
 
-      u=0.6;
+      u=static_cast<data_type>(0.6);
       pt_ref=pws.f(u, v);
       pt_out=pwc.f(u);
       TEST_ASSERT(pt_out==pt_ref);
 
-      u=0.8;
+      u=static_cast<data_type>(0.8);
       pt_ref=pws.f(u, v);
       pt_out=pwc.f(u);
       TEST_ASSERT(pt_out==pt_ref);
@@ -1529,7 +1529,7 @@ class piecewise_surface_test_suite : public Test::Suite
       TEST_ASSERT(pt_out==pt_ref);
 
       // Extract v curve
-      v=0.1;
+      v=static_cast<data_type>(0.1);
       pws.get_vconst_curve(pwc, v);
 
       u=0;
@@ -1537,72 +1537,30 @@ class piecewise_surface_test_suite : public Test::Suite
       pt_out=pwc.f(u);
       TEST_ASSERT(pt_out==pt_ref);
 
-      u=0.1;
+      u=static_cast<data_type>(0.1);
       pt_ref=pws.f(u, v);
       pt_out=pwc.f(u);
       d=(pt_ref - pt_out).norm();
       TEST_ASSERT(d<std::numeric_limits<data_type>::epsilon()*30);
 
-      u=0.2;
+      u=static_cast<data_type>(0.2);
       pt_ref=pws.f(u, v);
       pt_out=pwc.f(u);
       TEST_ASSERT(pt_out==pt_ref);
 
-      u=0.4;
+      u=static_cast<data_type>(0.4);
       pt_ref=pws.f(u, v);
       pt_out=pwc.f(u);
       d=(pt_ref - pt_out).norm();
       TEST_ASSERT(d<std::numeric_limits<data_type>::epsilon()*30);
 
-      u=0.6;
+      u=static_cast<data_type>(0.6);
       pt_ref=pws.f(u, v);
       pt_out=pwc.f(u);
       d=(pt_ref - pt_out).norm();
       TEST_ASSERT(d<std::numeric_limits<data_type>::epsilon()*30);
 
-      u=0.8;
-      pt_ref=pws.f(u, v);
-      pt_out=pwc.f(u);
-      d=(pt_ref - pt_out).norm();
-      TEST_ASSERT(d<std::numeric_limits<data_type>::epsilon()*30);
-
-      u=1;
-      pt_ref=pws.f(u, v);
-      pt_out=pwc.f(u);
-      TEST_ASSERT(pt_out==pt_ref);
-
-      // Extract v curve
-      v=0.2;
-      pws.get_vconst_curve(pwc, v);
-
-      u=0;
-      pt_ref=pws.f(u, v);
-      pt_out=pwc.f(u);
-      TEST_ASSERT(pt_out==pt_ref);
-
-      u=0.1;
-      pt_ref=pws.f(u, v);
-      pt_out=pwc.f(u);
-      TEST_ASSERT(pt_out==pt_ref);
-
-      u=0.2;
-      pt_ref=pws.f(u, v);
-      pt_out=pwc.f(u);
-      TEST_ASSERT(pt_out==pt_ref);
-
-      u=0.4;
-      pt_ref=pws.f(u, v);
-      pt_out=pwc.f(u);
-      d=(pt_ref - pt_out).norm();
-      TEST_ASSERT(d<std::numeric_limits<data_type>::epsilon()*30);
-
-      u=0.6;
-      pt_ref=pws.f(u, v);
-      pt_out=pwc.f(u);
-      d=(pt_ref - pt_out).norm();
-      TEST_ASSERT(d<std::numeric_limits<data_type>::epsilon()*30);
-
-      u=0.8;
+      u=static_cast<data_type>(0.8);
       pt_ref=pws.f(u, v);
       pt_out=pwc.f(u);
       d=(pt_ref - pt_out).norm();
@@ -1614,7 +1572,7 @@ class piecewise_surface_test_suite : public Test::Suite
       TEST_ASSERT(pt_out==pt_ref);
 
       // Extract v curve
-      v=0.4;
+      v=static_cast<data_type>(0.2);
       pws.get_vconst_curve(pwc, v);
 
       u=0;
@@ -1622,30 +1580,72 @@ class piecewise_surface_test_suite : public Test::Suite
       pt_out=pwc.f(u);
       TEST_ASSERT(pt_out==pt_ref);
 
-      u=0.1;
-      pt_ref=pws.f(u, v);
-      pt_out=pwc.f(u);
-      d=(pt_ref - pt_out).norm();
-      TEST_ASSERT(d<std::numeric_limits<data_type>::epsilon()*30);
-
-      u=0.2;
-      pt_ref=pws.f(u, v);
-      pt_out=pwc.f(u);
-      d=(pt_ref - pt_out).norm();
-      TEST_ASSERT(d<std::numeric_limits<data_type>::epsilon()*30);
-
-      u=0.4;
-      pt_ref=pws.f(u, v);
-      pt_out=pwc.f(u);
-      d=(pt_ref - pt_out).norm();
-      TEST_ASSERT(d<std::numeric_limits<data_type>::epsilon()*30);
-
-      u=0.6;
+      u=static_cast<data_type>(0.1);
       pt_ref=pws.f(u, v);
       pt_out=pwc.f(u);
       TEST_ASSERT(pt_out==pt_ref);
 
-      u=0.8;
+      u=static_cast<data_type>(0.2);
+      pt_ref=pws.f(u, v);
+      pt_out=pwc.f(u);
+      TEST_ASSERT(pt_out==pt_ref);
+
+      u=static_cast<data_type>(0.4);
+      pt_ref=pws.f(u, v);
+      pt_out=pwc.f(u);
+      d=(pt_ref - pt_out).norm();
+      TEST_ASSERT(d<std::numeric_limits<data_type>::epsilon()*30);
+
+      u=static_cast<data_type>(0.6);
+      pt_ref=pws.f(u, v);
+      pt_out=pwc.f(u);
+      d=(pt_ref - pt_out).norm();
+      TEST_ASSERT(d<std::numeric_limits<data_type>::epsilon()*30);
+
+      u=static_cast<data_type>(0.8);
+      pt_ref=pws.f(u, v);
+      pt_out=pwc.f(u);
+      d=(pt_ref - pt_out).norm();
+      TEST_ASSERT(d<std::numeric_limits<data_type>::epsilon()*30);
+
+      u=1;
+      pt_ref=pws.f(u, v);
+      pt_out=pwc.f(u);
+      TEST_ASSERT(pt_out==pt_ref);
+
+      // Extract v curve
+      v=static_cast<data_type>(0.4);
+      pws.get_vconst_curve(pwc, v);
+
+      u=0;
+      pt_ref=pws.f(u, v);
+      pt_out=pwc.f(u);
+      TEST_ASSERT(pt_out==pt_ref);
+
+      u=static_cast<data_type>(0.1);
+      pt_ref=pws.f(u, v);
+      pt_out=pwc.f(u);
+      d=(pt_ref - pt_out).norm();
+      TEST_ASSERT(d<std::numeric_limits<data_type>::epsilon()*30);
+
+      u=static_cast<data_type>(0.2);
+      pt_ref=pws.f(u, v);
+      pt_out=pwc.f(u);
+      d=(pt_ref - pt_out).norm();
+      TEST_ASSERT(d<std::numeric_limits<data_type>::epsilon()*30);
+
+      u=static_cast<data_type>(0.4);
+      pt_ref=pws.f(u, v);
+      pt_out=pwc.f(u);
+      d=(pt_ref - pt_out).norm();
+      TEST_ASSERT(d<std::numeric_limits<data_type>::epsilon()*30);
+
+      u=static_cast<data_type>(0.6);
+      pt_ref=pws.f(u, v);
+      pt_out=pwc.f(u);
+      TEST_ASSERT(pt_out==pt_ref);
+
+      u=static_cast<data_type>(0.8);
       pt_ref=pws.f(u, v);
       pt_out=pwc.f(u);
       d=(pt_ref - pt_out).norm();
@@ -1665,27 +1665,27 @@ class piecewise_surface_test_suite : public Test::Suite
       pt_out=pwc.f(u);
       TEST_ASSERT(pt_out==pt_ref);
 
-      u=0.1;
+      u=static_cast<data_type>(0.1);
       pt_ref=pws.f(u, v);
       pt_out=pwc.f(u);
       TEST_ASSERT(pt_out==pt_ref);
 
-      u=0.2;
+      u=static_cast<data_type>(0.2);
       pt_ref=pws.f(u, v);
       pt_out=pwc.f(u);
       TEST_ASSERT(pt_out==pt_ref);
 
-      u=0.4;
+      u=static_cast<data_type>(0.4);
       pt_ref=pws.f(u, v);
       pt_out=pwc.f(u);
       TEST_ASSERT(pt_out==pt_ref);
 
-      u=0.6;
+      u=static_cast<data_type>(0.6);
       pt_ref=pws.f(u, v);
       pt_out=pwc.f(u);
       TEST_ASSERT(pt_out==pt_ref);
 
-      u=0.8;
+      u=static_cast<data_type>(0.8);
       pt_ref=pws.f(u, v);
       pt_out=pwc.f(u);
       TEST_ASSERT(pt_out==pt_ref);

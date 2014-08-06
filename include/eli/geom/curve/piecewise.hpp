@@ -14,6 +14,7 @@
 #define eli_geom_curve_piecewise_hpp
 
 #include <map>
+#include <iterator>
 
 #include "eli/code_eli.hpp"
 
@@ -1317,7 +1318,7 @@ namespace eli
             if (it==segments.end())
             {
               assert(false);
-              return eli::geom::general::NOT_CONNECTED;
+              return false;
             }
 
             if (tt==0)
