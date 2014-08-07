@@ -160,7 +160,7 @@
 #     define NEED_EXTRA_MATH_IN_STD
 #   endif
 # endif
-#elif defined __GNU__
+#elif defined __GNUC__
 // GCC prior to version 4 not supported
 # if (__GNUC__ < 4)
 #   pragma message "Parts of Code-Eli will not work with this version of GCC"
