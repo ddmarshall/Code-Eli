@@ -153,7 +153,7 @@
 # endif
 #elif defined __clang__
 // Clang prior to version 3 not supported
-# if (__clang_major_ < 3)
+# if (__clang_major__ < 3)
 #   pragma message "Parts of Code-Eli will not work with this version of Clang"
 # elif (__clang_major__ == 3)
 #   if (__clang_minor__ <= 3)
