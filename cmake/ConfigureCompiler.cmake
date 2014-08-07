@@ -103,8 +103,8 @@ if(NOT CONFIGURE_COMPILER_INCLUDED)
     endif()
   endif()
 
-  # set MS Visual 2008  & 2010 Compiler flags
-  if (MSVC90 OR MSVC10)
+  # set MS Visual Studio Compiler flags
+  if (MSVC90 OR MSVC10 OR MSVC11 OR MSVC12)
     set(CONFIGURE_COMPILER_SET_C_COMPILER_FLAGS ON)
     set(CMAKE_C_FLAGS "/DNOMINMAX /DWIN32 /D_WINDOWS /W3 /Zm1000 /Qc99"
                       CACHE STRING "Flags used by the compiler during all build types." FORCE)

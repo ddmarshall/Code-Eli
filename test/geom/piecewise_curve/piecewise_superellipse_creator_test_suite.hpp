@@ -400,10 +400,10 @@ class piecewise_superellipse_creator_test_suite : public Test::Suite
         if (typeid(data_type)==typeid(float))
         {
 #if defined(_MSC_VER)
-# ifdef _WIN64
-          fref << static_cast<data_type>(47.022247), static_cast<data_type>(3.483002), 0;
-# else
+# if (!defined(_WIN64) && (_MSC_VER==1600))
           fref << static_cast<data_type>(46.939301), static_cast<data_type>(3.475554), 0;
+# else
+          fref << static_cast<data_type>(47.022247), static_cast<data_type>(3.483002), 0;
 # endif
 #elif defined(__GNUC__) && defined(__clang__)
           fref << static_cast<data_type>(47.022247), static_cast<data_type>(3.483002), 0;
@@ -447,10 +447,10 @@ class piecewise_superellipse_creator_test_suite : public Test::Suite
         if (typeid(data_type)==typeid(float))
         {
 #ifdef _MSC_VER
-# ifdef _WIN64
-          fref << static_cast<data_type>(1.351675), static_cast<data_type>(2.2758243), 0;
-# else
+# if (!defined(_WIN64) && (_MSC_VER==1600))
           fref << static_cast<data_type>(1.351444), static_cast<data_type>(2.2766607), 0;
+# else
+          fref << static_cast<data_type>(1.351675), static_cast<data_type>(2.2758243), 0;
 # endif
 #else
           fref << static_cast<data_type>(1.351337), static_cast<data_type>(2.2768044), 0;
@@ -462,8 +462,8 @@ class piecewise_superellipse_creator_test_suite : public Test::Suite
         }
         f=pc.f(t0+dt0/2);
         TEST_ASSERT((f-fref).norm() < 6e-6);
- //        std::cout << "f=" << std::setprecision(12) << f << std::endl;
- //        std::cout << "diff=" << std::setprecision(12) << (f-fref).norm() << std::endl;
+//         std::cout << "f=" << std::setprecision(12) << f << std::endl;
+//         std::cout << "diff=" << std::setprecision(12) << (f-fref).norm() << std::endl;
       }
 
       // create a mixed concave-convex
@@ -698,10 +698,10 @@ class piecewise_superellipse_creator_test_suite : public Test::Suite
         if (typeid(data_type)==typeid(float))
         {
 #if defined(_MSC_VER)
-# ifdef _WIN64
-          fref << static_cast<data_type>(-23.633438), static_cast<data_type>(11.261538), 0;
-# else
+# if (!defined(_WIN64) && (_MSC_VER==1600))
           fref << static_cast<data_type>(-23.633450), static_cast<data_type>(11.261473), 0;
+# else
+          fref << static_cast<data_type>(-23.633438), static_cast<data_type>(11.261538), 0;
 # endif
 #elif defined(__GNUC__) && defined(__clang__)
           fref << static_cast<data_type>(-23.633438), static_cast<data_type>(11.261538), 0;
@@ -755,10 +755,10 @@ class piecewise_superellipse_creator_test_suite : public Test::Suite
         if (typeid(data_type)==typeid(float))
         {
 #ifdef _MSC_VER
-# ifdef _WIN64
-          fref << static_cast<data_type>(1.930066), static_cast<data_type>(1.438622), 0;
-# else
+# if (!defined(_WIN64) && (_MSC_VER==1600))
           fref << static_cast<data_type>(1.928875), static_cast<data_type>(1.436862), 0;
+# else
+          fref << static_cast<data_type>(1.930066), static_cast<data_type>(1.438622), 0;
 # endif
 #else
           fref << static_cast<data_type>(1.928891), static_cast<data_type>(1.436470), 0;
@@ -998,10 +998,10 @@ class piecewise_superellipse_creator_test_suite : public Test::Suite
         if (typeid(data_type)==typeid(float))
         {
 #if defined(_MSC_VER)
-# ifdef _WIN64
-          fref << static_cast<data_type>(-1.328213), static_cast<data_type>(3.102814), 0;
-# else
+# if (!defined(_WIN64) && (_MSC_VER==1600))
           fref << static_cast<data_type>(-1.200153), static_cast<data_type>(2.997783), 0;
+# else
+          fref << static_cast<data_type>(-1.328213), static_cast<data_type>(3.102814), 0;
 # endif
 #elif defined(__GNUC__) && defined(__clang__)
           fref << static_cast<data_type>(-1.328212), static_cast<data_type>(3.102814), 0;
@@ -1045,10 +1045,10 @@ class piecewise_superellipse_creator_test_suite : public Test::Suite
         if (typeid(data_type)==typeid(float))
         {
 #ifdef _MSC_VER
-# ifdef _WIN64
-          fref << static_cast<data_type>(1.970389), static_cast<data_type>(1.330017), 0;
-# else
+# if (!defined(_WIN64) && (_MSC_VER==1600))
           fref << static_cast<data_type>(1.970994), static_cast<data_type>(1.330452), 0;
+# else
+          fref << static_cast<data_type>(1.970389), static_cast<data_type>(1.330017), 0;
 # endif
 #else
           fref << static_cast<data_type>(1.975022), static_cast<data_type>(1.332086), 0;
