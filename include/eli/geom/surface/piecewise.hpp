@@ -83,6 +83,20 @@ namespace eli
             : patches(p.patches), ukey(p.ukey), vkey(p.vkey), nu(p.nu), nv(p.nv) {}
           ~piecewise() {}
 
+          piecewise & operator=(const piecewise<surface__, data_type, dim__> &p)
+          {
+            if (this==&p)
+              return (*this);
+
+            patches=p.patches;
+            ukey=p.ukey;
+            vkey=p.vkey;
+            nu=p.nu;
+            nv=p.nv;
+
+            return (*this);
+          }
+
           bool operator==(const piecewise<surface__, data_type, dim__> &p) const
           {
             if (this==&p)
