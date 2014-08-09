@@ -312,6 +312,17 @@ namespace eli
             return true;
           }
 
+          piecewise & operator=(const piecewise<curve__, data_type, dim__> &p)
+          {
+            if (this==&p)
+              return (*this);
+            segments=p.segments;
+            tmax=p.tmax;
+            tol=p.tol;
+
+            return (*this);
+          }
+
           bool operator!=(const piecewise<curve__, data_type, dim__> &p) const
           {
             return !operator==(p);
