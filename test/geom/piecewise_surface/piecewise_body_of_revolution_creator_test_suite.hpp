@@ -10,8 +10,8 @@
 *    David D. Marshall - initial code and implementation
 ********************************************************************************/
 
-#ifndef piecewise_body_of_revolution_creator_test_suite_suite_hpp
-#define piecewise_body_of_revolution_creator_test_suite_suite_hpp
+#ifndef piecewise_body_of_revolution_creator_test_suite_hpp
+#define piecewise_body_of_revolution_creator_test_suite_hpp
 
 #include <cmath>    // std::pow, std::exp
 
