@@ -34,7 +34,8 @@ add_test(NAME ${PIECEWISE_SURFACE_TEST_EXE} COMMAND $<TARGET_FILE:${PIECEWISE_SU
 # add the piecewise_surface_creator test
 set (PIECEWISE_SURFACE_CREATOR_TEST_EXE PiecewiseSurfaceCreatorTest)
 set (PIECEWISE_SURFACE_CREATOR_TEST_SOURCE ${PROJECT_SOURCE_DIR}/piecewise_surface_creator_test.cpp)
-set (PIECEWISE_SURFACE_CREATOR_TEST_HEADER ${PROJECT_SOURCE_DIR}/piecewise_body_of_revolution_creator_test_suite.hpp
+set (PIECEWISE_SURFACE_CREATOR_TEST_HEADER ${_ELI_TEST_INCLUDE_DIR}/octave_helpers.hpp
+                                           ${PROJECT_SOURCE_DIR}/piecewise_body_of_revolution_creator_test_suite.hpp
                                            ${PROJECT_SOURCE_DIR}/piecewise_general_skinning_surface_creator_test_suite.hpp
                                            ${ELI_SOURCE_DIR}/include/eli/constants/math.hpp
                                            ${ELI_SOURCE_DIR}/include/eli/util/tolerance.hpp
