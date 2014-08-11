@@ -10,7 +10,7 @@
 #    David D. Marshall - initial code and implementation
 ################################################################################
 
-project(DM)
+project(DM_TEST)
 
 # add the discrete math test
 set (DM_TEST_EXE DMTest)

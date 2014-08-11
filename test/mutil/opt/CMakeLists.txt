@@ -10,7 +10,7 @@
 #    David D. Marshall - initial code and implementation
 ################################################################################
 
-project(OPT)
+project(OPT_TEST)
 
 # add the optimization test
 set (OPT_TEST_EXE OptTest)

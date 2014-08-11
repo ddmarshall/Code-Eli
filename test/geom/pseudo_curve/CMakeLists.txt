@@ -10,7 +10,7 @@
 #    David D. Marshall - initial code and implementation
 ################################################################################
 
-project(GEOM)
+project(AIFOIL_TEST)
 
 # add the airfoil test
 set (AIRFOIL_TEST_EXE AirfoilTest)

@@ -10,7 +10,7 @@
 #    David D. Marshall - initial code and implementation
 ################################################################################
 
-project(QUAD)
+project(QUAD_TEST)
 
 # add the quadrature test
 set (QUAD_TEST_EXE QuadTest)

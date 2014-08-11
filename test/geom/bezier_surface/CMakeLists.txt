@@ -10,7 +10,7 @@
 #    David D. Marshall - initial code and implementation
 ################################################################################
 
-project(GEOM)
+project(BEZIER_SURFACE_TEST)
 
 # add the bezier_surface test
 set (BEZIER_SURFACE_TEST_EXE BezierSurfaceTest)
