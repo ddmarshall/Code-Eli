@@ -44,7 +44,7 @@ class piecewise_general_skinning_surface_creator_test_suite : public Test::Suite
     typedef typename eli::geom::surface::connection_data<data__, 3, tolerance_type> rib_data_type;
     typedef typename rib_data_type::curve_type rib_curve_type;
     typedef typename eli::geom::curve::piecewise_linear_creator<data__, 3, tolerance_type> piecewise_line_creator_type;
-    typedef typename eli::geom::surface::general_skinning_surface_creator<data__, 3, tolerance_type> general_creator_type;
+    typedef typename eli::geom::surface::piecewise_general_skinning_surface_creator<data__, 3, tolerance_type> general_creator_type;
 
     tolerance_type tol;
 

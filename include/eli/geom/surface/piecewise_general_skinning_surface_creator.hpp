@@ -451,7 +451,7 @@ namespace eli
     namespace surface
     {
       template<typename data__, unsigned short dim__, typename tol__>
-      class general_skinning_surface_creator : public piecewise_creator_base<data__, dim__, tol__>
+      class piecewise_general_skinning_surface_creator : public piecewise_creator_base<data__, dim__, tol__>
       {
         public:
           typedef piecewise_creator_base<data__, dim__, tol__> base_class_type;
@@ -462,22 +462,22 @@ namespace eli
 
           typedef connection_data<data_type, dim__, tolerance_type> rib_data_type;
 
-          general_skinning_surface_creator()
+          piecewise_general_skinning_surface_creator()
             : piecewise_creator_base<data__, dim__, tol__>(0, 0), ribs(2),
               max_degree(1), closed(false)
           {
           }
-          general_skinning_surface_creator(const data_type &uu0, const data_type &vv0)
+          piecewise_general_skinning_surface_creator(const data_type &uu0, const data_type &vv0)
             : piecewise_creator_base<data__, dim__, tol__>(uu0, vv0), ribs(2),
               max_degree(1), closed(false)
           {
           }
-          general_skinning_surface_creator(const general_skinning_surface_creator<data_type, dim__, tolerance_type> & gs)
+          piecewise_general_skinning_surface_creator(const piecewise_general_skinning_surface_creator<data_type, dim__, tolerance_type> & gs)
             : piecewise_creator_base<data_type, dim__, tolerance_type>(gs), ribs(gs.ribs),
               max_degree(gs.max_degree), closed(gs.closed)
           {
           }
-          virtual ~general_skinning_surface_creator()
+          virtual ~piecewise_general_skinning_surface_creator()
           {
           }
 
