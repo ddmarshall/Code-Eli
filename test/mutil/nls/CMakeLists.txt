@@ -10,7 +10,7 @@
 #    David D. Marshall - initial code and implementation
 ################################################################################
 
-project(NLS)
+project(NLS_TEST)
 
 # add the nonlinear solver test
 set (NLS_TEST_EXE NLSTest)

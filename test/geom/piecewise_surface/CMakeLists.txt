@@ -10,7 +10,7 @@
 #    David D. Marshall - initial code and implementation
 ################################################################################
 
-project(GEOM)
+project(PIECEWISE_SURFACE_TESTS)
 
 # add the piecewise_surface test
 set (PIECEWISE_SURFACE_TEST_EXE PiecewiseSurfaceTest)

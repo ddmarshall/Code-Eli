@@ -10,7 +10,7 @@
 #    David D. Marshall - initial code and implementation
 ################################################################################
 
-project(CONSTANTS)
+project(CONSTANTS_MATH_TEST)
 
 # add the constants test
 set (CONSTANTS_MATH_TEST_EXE ConstantsMathTest)

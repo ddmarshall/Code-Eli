@@ -10,7 +10,7 @@
 #    David D. Marshall - initial code and implementation
 ################################################################################
 
-project(FD)
+project(FD_TEST)
 
 # add the finite difference test
 set (FD_TEST_EXE FDTest)

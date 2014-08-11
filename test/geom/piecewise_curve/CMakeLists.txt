@@ -10,7 +10,7 @@
 #    David D. Marshall - initial code and implementation
 ################################################################################
 
-project(GEOM)
+project(PIECEWISE_CURVE_TESTS)
 
 # add the piecewise_curve test
 set (PIECEWISE_CURVE_TEST_EXE PiecewiseCurveTest)

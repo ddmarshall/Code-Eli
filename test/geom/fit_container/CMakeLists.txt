@@ -10,7 +10,7 @@
 #    David D. Marshall - initial code and implementation
 ################################################################################
 
-project(GEOM)
+project(FIT_CONTAINER_TEST)
 
 # add the fit_container test
 set (FIT_CONTAINER_TEST_EXE FitContainerTest)

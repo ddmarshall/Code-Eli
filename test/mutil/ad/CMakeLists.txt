@@ -10,7 +10,7 @@
 #    David D. Marshall - initial code and implementation
 ################################################################################
 
-project(AD)
+project(AD_TEST)
 
 # add the automatic differentiation test
 set (AD_TEST_EXE ADTest)
