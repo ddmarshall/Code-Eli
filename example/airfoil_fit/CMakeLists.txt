@@ -10,7 +10,7 @@
 #    David D. Marshall - initial code and implementation
 ################################################################################
 
-project(AIRFOIL_FIT)
+project(AIRFOIL_FIT_EXAMPLE)
 
 # add the airfoil fitting example
 set (AIRFOIL_FIT_EXE AirfoilFitExample)

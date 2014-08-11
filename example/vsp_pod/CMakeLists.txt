@@ -10,7 +10,7 @@
 #    David D. Marshall - initial code and implementation
 ################################################################################
 
-project(VSP_POD)
+project(VSP_POD_EXAMPLE)
 
 # add the OpenVSP Pod construction example
 set (VSP_POD_EXE VSPPodExample)
