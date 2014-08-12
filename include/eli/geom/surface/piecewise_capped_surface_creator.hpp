@@ -10,8 +10,8 @@
 *    David D. Marshall - initial code and implementation
 ********************************************************************************/
 
-#ifndef eli_geom_surface_piecewise_body_of_revolution_creator_hpp
-#define eli_geom_surface_piecewise_body_of_revolution_creator_hpp
+#ifndef eli_geom_surface_piecewise_capped_surface_creator_hpp
+#define eli_geom_surface_piecewise_capped_surface_creator_hpp
 
 #include <list>
 #include <iterator>
@@ -33,7 +33,7 @@ namespace eli
     namespace surface
     {
       template<typename data__, unsigned short dim__, typename tol__>
-      class capped_surface_creator : public piecewise_creator_base<data__, dim__, tol__>
+      class piecewise_capped_surface_creator : public piecewise_creator_base<data__, dim__, tol__>
       {
         public:
           enum edge_split_identifier
@@ -52,30 +52,35 @@ namespace eli
           typedef typename base_class_type::tolerance_type tolerance_type;
           typedef typename base_class_type::piecewise_surface_type piecewise_surface_type;
 
-          capped_surface_creator()
+          piecewise_capped_surface_creator()
             : piecewise_creator_base<data__, dim__, tol__>(0, 0), split_param(0), edge_to_split(SPLIT_NONE)
           {
           }
-          capped_surface_creator(const data_type &uu0, const data_type &sp, edge_split_identifier esi)
-            : piecewise_creator_base<data__, dim__, tol__>(0, 0), edge_curve
+          piecewise_capped_surface_creator(const piecewise_surface_type &os, const data_type &sp, edge_split_identifier esi)
+            : piecewise_creator_base<data__, dim__, tol__>(0, 0), orig_surface(os), split_param(sp), edge_to_split(esi)
           {
           }
-          capped_surface_creator(const general_skinning_surface_creator<data_type, dim__, tolerance_type> & gs)
-            : piecewise_creator_base<data_type, dim__, tolerance_type>(gs), ribs(gs.ribs),
-              max_degree(gs.max_degree), closed(gs.closed)
+          piecewise_capped_surface_creator(const piecewise_capped_surface_creator<data_type, dim__, tolerance_type> & gs)
+            : piecewise_creator_base<data_type, dim__, tolerance_type>(gs), orig_surface(gs.orig_surface),
+              split_param(gs.split_param), edge_to_split(gs.edge_to_split)
           {
           }
-          virtual ~capped_surface_creator()
+          virtual ~piecewise_capped_surface_creator()
           {
           }
 
-          bool set_conditions(const piecewise_curve_type &rbs, const std::vector<index_type> &maxd, bool cl=false)
+          bool set_conditions(const piecewise_surface_type &os, const data_type &sp, edge_split_identifier esi)
           {
+            // before setting things, make sure that the split parameter is within the edges min and max
+            orig_surface = os;
+            split_param = sp;
+            edge_to_split = esi;
           }
 
           virtual bool create(piecewise_surface_type &ps) const
           {
             typedef typename eli::geom::curve::piecewise<eli::geom::curve::bezier, data_type, dim__, tolerance_type> piecewise_curve_type;
+
             // need to implement
             assert(false);
 
