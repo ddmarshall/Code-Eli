@@ -20,11 +20,11 @@
 
 #include "eli/util/tolerance.hpp"
 
+#include "eli/geom/curve/bezier.hpp"
 #include "eli/geom/curve/piecewise.hpp"
-#include "eli/geom/curve/piecewise_creator.hpp"
 
-#include "eli/geom/surface/piecewise.hpp"
 #include "eli/geom/surface/bezier.hpp"
+#include "eli/geom/surface/piecewise.hpp"
 
 namespace eli
 {
@@ -36,22 +36,28 @@ namespace eli
       class capped_surface_creator : public piecewise_creator_base<data__, dim__, tol__>
       {
         public:
+          enum edge_split_identifier
+          {
+            SPLIT_NONE,
+            SPLIT_UMIN,
+            SPLIT_UMAX,
+            SPLIT_VMIN,
+            SPLIT_VMAX
+          };
+
           typedef piecewise_creator_base<data__, dim__, tol__> base_class_type;
           typedef typename base_class_type::data_type data_type;
           typedef typename base_class_type::point_type point_type;
           typedef typename base_class_type::index_type index_type;
           typedef typename base_class_type::tolerance_type tolerance_type;
-
-          typedef connection_data<data_type, dim__, tolerance_type> rib_data_type;
+          typedef typename base_class_type::piecewise_surface_type piecewise_surface_type;
 
           capped_surface_creator()
-            : piecewise_creator_base<data__, dim__, tol__>(0, 0), ribs(2),
-              max_degree(1), closed(false)
+            : piecewise_creator_base<data__, dim__, tol__>(0, 0), split_param(0), edge_to_split(SPLIT_NONE)
           {
           }
-          capped_surface_creator(const data_type &uu0, const data_type &vv0)
-            : piecewise_creator_base<data__, dim__, tol__>(uu0, vv0), ribs(2),
-              max_degree(1), closed(false)
+          capped_surface_creator(const data_type &uu0, const data_type &sp, edge_split_identifier esi)
+            : piecewise_creator_base<data__, dim__, tol__>(0, 0), edge_curve
           {
           }
           capped_surface_creator(const general_skinning_surface_creator<data_type, dim__, tolerance_type> & gs)
@@ -63,13 +69,20 @@ namespace eli
           {
           }
 
-          bool set_conditions(const std::vector<rib_data_type> &rbs, const std::vector<index_type> &maxd, bool cl=false)
+          bool set_conditions(const piecewise_curve_type &rbs, const std::vector<index_type> &maxd, bool cl=false)
           {
           }
 
-          virtual bool create(piecewise<bezier, data_type, dim__, tolerance_type> &ps) const
+          virtual bool create(piecewise_surface_type &ps) const
           {
+            typedef typename eli::geom::curve::piecewise<eli::geom::curve::bezier, data_type, dim__, tolerance_type> piecewise_curve_type;
+            // need to implement
+            assert(false);
+
+            return false;
+          }
 #if 0
+          {
             typedef piecewise<bezier, data_type, dim__, tolerance_type> piecewise_surface_type;
             typedef typename piecewise_surface_type::surface_type surface_type;
 
@@ -223,14 +236,13 @@ namespace eli
             }
 
             return true;
-#endif
-            return false;
           }
+#endif
 
         private:
-          std::vector<rib_data_type> ribs;
-          std::vector<index_type> max_degree;
-          bool closed;
+          piecewise_surface_type orig_surface;
+          data_type split_param;
+          edge_split_identifier edge_to_split;
       };
     }
   }
