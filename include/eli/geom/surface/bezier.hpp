@@ -26,6 +26,7 @@
 #include "eli/geom/curve/equivalent_curves.hpp"
 #include "eli/geom/general/continuity.hpp"
 #include "eli/geom/general/bounding_box.hpp"
+#include "eli/geom/point/distance.hpp"
 
 namespace eli
 {
