@@ -109,6 +109,28 @@ namespace eli
             return true;
           }
 
+          bool abouteq(const bezier<data_type, dim__, tol__> &bs, const data_type &ttol2 ) const
+          {
+            if (this==&bs)
+              return true;
+
+            if (B_u.size()!=bs.B_u.size())
+              return false;
+
+            if (B_v.size()!=bs.B_v.size())
+              return false;
+
+            for ( index_type i = 0; i < point_data.size(); i++ )
+            {
+              if ( distance2( point_data[i], bs.point_data[i] )  > ttol2 )
+              {
+                return false;
+              }
+            }
+
+            return true;
+          }
+
           bool operator!=(const bezier<data_type, dim__, tol__> &bs) const
           {
             return !operator==(bs);
