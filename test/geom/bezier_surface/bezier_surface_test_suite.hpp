@@ -311,6 +311,9 @@ class bezier_surface_test_suite : public Test::Suite
       // test equivalence operator
       TEST_ASSERT(bez2==bez1);
 
+      // test about equivalent
+      TEST_ASSERT(bez2.abouteq(bez1, 1e-6));
+
       // test assignment operator
       bezier_type bez3;
 

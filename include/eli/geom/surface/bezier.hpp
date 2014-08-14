@@ -121,11 +121,15 @@ namespace eli
             if (B_v.size()!=bs.B_v.size())
               return false;
 
-            for ( index_type i = 0; i < point_data.size(); i++ )
+            index_type i, j, degu(degree_u()), degv(degree_v());
+            for (j=0; j<=degv; ++j)
             {
-              if ( distance2( point_data[i], bs.point_data[i] )  > ttol2 )
+              for (i=0; i<=degu; ++i)
               {
-                return false;
+                if ( eli::geom::point::distance2( B_u[j].row(i), bs.B_u[j].row(i) ) > ttol2 )
+                {
+                  return false;
+                }
               }
             }
 
