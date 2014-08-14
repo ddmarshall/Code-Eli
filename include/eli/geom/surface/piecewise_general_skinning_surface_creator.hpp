@@ -141,7 +141,7 @@ namespace eli
               std::swap(joints, jts_out);
             }
 
-            // split ribs so have same number of curves (with same joint parameters) for all ribs and get degree
+            // record where the joints need to be for create()
             index_type njoints(static_cast<index_type>(joints.size()));
 
             // set the v-parameterization
