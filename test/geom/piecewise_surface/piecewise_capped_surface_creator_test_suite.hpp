@@ -24,8 +24,10 @@
 #include "eli/constants/math.hpp"
 
 #include "eli/geom/curve/piecewise.hpp"
+#include "eli/geom/curve/piecewise_circle_creator.hpp"
 
 #include "eli/geom/surface/piecewise.hpp"
+#include "eli/geom/surface/piecewise_general_skinning_surface_creator.hpp"
 #include "eli/geom/surface/piecewise_capped_surface_creator.hpp"
 
 template<typename data__>
@@ -71,51 +73,154 @@ class piecewise_capped_surface_creator_test_suite : public Test::Suite
   private:
     void create_flat_capped_surface_test()
     {
-#if 0
-      typedef typename piecewise_curve_type::curve_type curve_type;
-      typedef typename curve_type::control_point_type curve_control_point_type;
+      typedef eli::geom::surface::piecewise_capped_surface_creator<data_type, 3, tolerance_type> capped_creator_type;
 
-      // create geometry with default parameterizations
+      piecewise_surface_type s_orig;
+      bool rtn_flag;
+
+      // create cylinder with both ends open
       {
-        piecewise_curve_type pc;
-        curve_type c(3);
-        curve_control_point_type cp[4];
-        data_type k=4*(eli::constants::math<data_type>::sqrt_two()-1)/3;
-        index_type i;
+        typedef eli::geom::surface::piecewise_general_skinning_surface_creator<data_type, 3, tolerance_type> skinning_creator_type;
+        typedef typename eli::geom::surface::connection_data<data__, 3, tolerance_type> rib_data_type;
+        typedef typename rib_data_type::curve_type rib_curve_type;
 
-        // create curve
-        cp[0] << 1, 0, 0;
-        cp[1] << 1, k, 0;
-        cp[2] << k, 1, 0;
-        cp[3] << 0, 1, 0;
-        for (i=0; i<4; ++i)
+        index_type nsegs(2);
+        std::vector<rib_data_type> ribs(nsegs+1);
+        std::vector<typename skinning_creator_type::index_type> max_degree(nsegs);
+        std::vector<data_type> u(nsegs+1);
+        rib_curve_type rc1, rc2, rc3;
+        skinning_creator_type gc;
+
+        // create the 3 ribs
         {
-          c.set_control_point(cp[i], i);
+          eli::geom::curve::piecewise_circle_creator<data_type, 3, tolerance_type> circle_creator;
+          point_type start, origin;
+
+          // set the parameters for first circle
+          u[0]=-1;
+          start  << 1, 0, 0;
+          origin << 0, 0, 0;
+
+          // create the first circle
+          circle_creator.set(start, origin);
+          rtn_flag = circle_creator.create(rc1);
+          TEST_ASSERT(rtn_flag);
+
+          // set the parameters for second circle
+          u[1]=1;
+          start  << 1, 0, 1;
+          origin << 0, 0, 1;
+
+          // create the second circle
+          circle_creator.set(start, origin);
+          rtn_flag = circle_creator.create(rc2);
+          TEST_ASSERT(rtn_flag);
+
+          // set the parameters for third circle
+          u[2]=2;
+          start  << 1, 0, 3;
+          origin << 0, 0, 3;
+
+          // create the third circle
+          circle_creator.set(start, origin);
+          rtn_flag = circle_creator.create(rc3);
+          TEST_ASSERT(rtn_flag);
         }
-        TEST_ASSERT(pc.push_back(c, 0.25)==piecewise_curve_type::NO_ERRORS);
 
-        // set 2nd quadrant curve
-        cp[0] <<  0, 1, 0;
-        cp[1] << -k, 1, 0;
-        cp[2] << -1, k, 0;
-        cp[3] << -1, 0, 0;
-        for (i=0; i<4; ++i)
-        {
-          c.set_control_point(cp[i], i);
-        }
-        TEST_ASSERT(pc.push_back(c, 0.25)==piecewise_curve_type::NO_ERRORS);
+        // set the rib data
+        ribs[0].set_f(rc1);
+        ribs[1].set_f(rc2);
+        ribs[2].set_f(rc3);
 
-        piecewise_surface_type ps;
+        // set the maximum degrees of each segment
+        max_degree[0]=0;
 
-        TEST_ASSERT(eli::geom::surface::create_body_of_revolution(ps, pc, 0, true));
+        // create the cylinder
+        rtn_flag=gc.set_conditions(ribs, max_degree, false);
+        TEST_ASSERT(rtn_flag);
+        gc.set_u0(u[0]);
+        gc.set_segment_du(u[1]-u[0], 0);
+        gc.set_segment_du(u[2]-u[1], 1);
+        rtn_flag = gc.create(s_orig);
+        TEST_ASSERT(rtn_flag);
 
-//         if (typeid(data_type)==typeid(double))
-//           octave_print(2, ps);
-
-        TEST_ASSERT(ps.open_u());
-        TEST_ASSERT(ps.closed_v());
+//        if (rtn_flag && (typeid(data_type)==typeid(float)))
+//        {
+//          std::cout.flush();
+//          eli::test::octave_start(1);
+//          eli::test::octave_print(1, ribs[0].get_f(), "rib0", true);
+//          eli::test::octave_print(1, ribs[1].get_f(), "rib1", true);
+//          eli::test::octave_print(1, ribs[2].get_f(), "rib2", true);
+//          eli::test::octave_print(1, s_orig, "surf", true);
+//          eli::test::octave_finish(1);
+//        }
       }
-#endif
+
+      // cap umin edge
+      {
+        piecewise_surface_type s_umin_cap(s_orig);
+        capped_creator_type cc;
+
+        rtn_flag = cc.set_conditions(s_umin_cap, 0.5, capped_creator_type::CAP_UMIN);
+        TEST_ASSERT(rtn_flag);
+
+        rtn_flag = cc.create(s_umin_cap);
+        TEST_ASSERT(rtn_flag);
+
+//        if (rtn_flag && (typeid(data_type)==typeid(float)))
+//        {
+//          std::cout.flush();
+//          eli::test::octave_start(1);
+//          eli::test::octave_print(1, s_umin_cap, "surf", true);
+//          eli::test::octave_finish(1);
+//        }
+      }
+
+      // cap umax edge
+      {
+        piecewise_surface_type s_umax_cap(s_orig);
+        capped_creator_type cc;
+
+        rtn_flag = cc.set_conditions(s_umax_cap, 0.5, capped_creator_type::CAP_UMAX);
+        TEST_ASSERT(rtn_flag);
+
+        rtn_flag = cc.create(s_umax_cap);
+        TEST_ASSERT(rtn_flag);
+
+//        if (rtn_flag && (typeid(data_type)==typeid(float)))
+//        {
+//          std::cout.flush();
+//          eli::test::octave_start(1);
+//          eli::test::octave_print(1, s_umax_cap, "surf", true);
+//          eli::test::octave_finish(1);
+//        }
+      }
+
+      // cap umin & umax edge
+      {
+        piecewise_surface_type s_uminmax_cap(s_orig);
+        capped_creator_type cc;
+
+        rtn_flag = cc.set_conditions(s_uminmax_cap, 0.5, capped_creator_type::CAP_UMIN);
+        TEST_ASSERT(rtn_flag);
+
+        rtn_flag = cc.create(s_uminmax_cap);
+        TEST_ASSERT(rtn_flag);
+
+        rtn_flag = cc.set_conditions(s_uminmax_cap, 0.5, capped_creator_type::CAP_UMAX);
+        TEST_ASSERT(rtn_flag);
+
+        rtn_flag = cc.create(s_uminmax_cap);
+        TEST_ASSERT(rtn_flag);
+
+        if (rtn_flag && (typeid(data_type)==typeid(float)))
+        {
+          std::cout.flush();
+          eli::test::octave_start(1);
+          eli::test::octave_print(1, s_uminmax_cap, "surf", true);
+          eli::test::octave_finish(1);
+        }
+      }
     }
 };
 

@@ -25,6 +25,8 @@
 
 #include "eli/geom/surface/bezier.hpp"
 #include "eli/geom/surface/piecewise.hpp"
+#include "eli/geom/surface/piecewise_connection_data.hpp"
+#include "eli/geom/surface/piecewise_general_skinning_surface_creator.hpp"
 
 namespace eli
 {
@@ -36,13 +38,13 @@ namespace eli
       class piecewise_capped_surface_creator : public piecewise_creator_base<data__, dim__, tol__>
       {
         public:
-          enum edge_split_identifier
+          enum edge_cap_identifier
           {
-            SPLIT_NONE,
-            SPLIT_UMIN,
-            SPLIT_UMAX,
-            SPLIT_VMIN,
-            SPLIT_VMAX
+            CAP_NONE,
+            CAP_UMIN,
+            CAP_UMAX,
+            CAP_VMIN,
+            CAP_VMAX
           };
 
           typedef piecewise_creator_base<data__, dim__, tol__> base_class_type;
@@ -53,201 +55,339 @@ namespace eli
           typedef typename base_class_type::piecewise_surface_type piecewise_surface_type;
 
           piecewise_capped_surface_creator()
-            : piecewise_creator_base<data__, dim__, tol__>(0, 0), split_param(0), edge_to_split(SPLIT_NONE)
+            : piecewise_creator_base<data__, dim__, tol__>(0, 0), delta_param(1), edge_to_cap(CAP_NONE)
           {
           }
-          piecewise_capped_surface_creator(const piecewise_surface_type &os, const data_type &sp, edge_split_identifier esi)
-            : piecewise_creator_base<data__, dim__, tol__>(0, 0), orig_surface(os), split_param(sp), edge_to_split(esi)
+          piecewise_capped_surface_creator(const piecewise_surface_type &os, const data_type &dp, edge_cap_identifier ec)
+            : piecewise_creator_base<data__, dim__, tol__>(0, 0), orig_surface(os), delta_param(dp), edge_to_cap(ec)
           {
           }
           piecewise_capped_surface_creator(const piecewise_capped_surface_creator<data_type, dim__, tolerance_type> & gs)
             : piecewise_creator_base<data_type, dim__, tolerance_type>(gs), orig_surface(gs.orig_surface),
-              split_param(gs.split_param), edge_to_split(gs.edge_to_split)
+              delta_param(gs.delta_param), edge_to_cap(gs.edge_to_cap)
           {
           }
           virtual ~piecewise_capped_surface_creator()
           {
           }
 
-          bool set_conditions(const piecewise_surface_type &os, const data_type &sp, edge_split_identifier esi)
+          bool set_conditions(const piecewise_surface_type &os, const data_type &dp, edge_cap_identifier ec)
           {
-            // before setting things, make sure that the split parameter is within the edges min and max
+            // all deltas are positive, even on the min edges
+            if (dp<=0)
+              return false;
+
             orig_surface = os;
-            split_param = sp;
-            edge_to_split = esi;
+            edge_to_cap = ec;
+            delta_param = dp;
+
+            return true;
           }
 
           virtual bool create(piecewise_surface_type &ps) const
           {
             typedef typename eli::geom::curve::piecewise<eli::geom::curve::bezier, data_type, dim__, tolerance_type> piecewise_curve_type;
 
-            // need to implement
-            assert(false);
-
-            return false;
-          }
-#if 0
-          {
-            typedef piecewise<bezier, data_type, dim__, tolerance_type> piecewise_surface_type;
-            typedef typename piecewise_surface_type::surface_type surface_type;
-
-            index_type nribs(this->get_number_u_segments()+1), i, j;
-            std::vector<index_type> seg_degree(nribs-1);
-            std::vector<rib_data_type> rib_states(ribs);
             tolerance_type tol;
 
-            // FIX: Should be able to handle closed surfaces
-            assert(!closed);
-
-            // FIX: Need to be able to handle v-direction discontinuous fu and fuu specifications
-
-            // reset the incoming piecewise surface
-            ps.clear();
-
-            // split ribs so have same number of curves (with same joint parameters) for all ribs and get degree
-            index_type njoints(this->get_number_v_segments()+1);
-            std::vector<data_type> joints(njoints);
-            std::vector<index_type> max_jdegs(njoints-1,0);
-
-            joints[0]=this->get_v0();
-            for (j=0; j<(njoints-1); ++j)
+            // extract the curve corresonding to the edge of surface wanting to cap
+            piecewise_curve_type edge;
+            switch (edge_to_cap)
             {
-              joints[j+1]=joints[j]+this->get_segment_dv(j);
-            }
-
-            for (i=0; i<nribs; ++i)
-            {
-              std::vector<index_type> jdegs;
-              rib_states[i].split(joints.begin(), joints.end(), std::back_inserter(jdegs));
-              for (j=0; j<(njoints-1); ++j)
+              case (CAP_UMIN):
               {
-                if (jdegs[j]>max_jdegs[j])
-                {
-                  max_jdegs[j]=jdegs[j];
-                }
+                orig_surface.get_uconst_curve(edge, orig_surface.get_u0());
+                break;
+              }
+              case (CAP_UMAX):
+              {
+                orig_surface.get_uconst_curve(edge, orig_surface.get_umax());
+                break;
+              }
+              case (CAP_VMIN):
+              {
+                orig_surface.get_vconst_curve(edge, orig_surface.get_v0());
+                break;
+              }
+              case (CAP_VMAX):
+              {
+                orig_surface.get_vconst_curve(edge, orig_surface.get_vmax());
+                break;
+              }
+              default:
+              {
+                // must not want any edge capped
+                assert(edge_to_cap==CAP_NONE);
+                return false;
               }
             }
 
-            // set degree in u-direction for each rib segment strip
-            for (i=0; i<nribs; ++i)
+            // make sure extracted curve is closed
+            if (edge.open())
             {
-              rib_states[i].promote(max_jdegs.begin(), max_jdegs.end());
+              return false;
             }
 
-            // resize the piecewise surface
-            index_type u, v, nu(nribs-1), nv(njoints-1);
-
-            ps.init_uv(this->du_begin(), this->du_end(), this->dv_begin(), this->dv_end(), this->get_u0(), this->get_v0());
-
-            // build segments based on rib information
-            // here should have everything to make an nribs x njoints piecewise surface with all
-            // of the j-degrees matching in the u-direction so that can use general curve creator
-            // techniques to create control points
-            for (v=0; v<nv; ++v)
+            // make sure that the split location is different than the start/end location otherwise
+            // the edge is a point and no need to cap
+            data_type tmin(edge.get_t0()), tmax(edge.get_tmax()), tsplit((tmin+tmax)/2);
+            if (tol.approximately_equal(edge.f(tmin), edge.f(tsplit)))
             {
-              typedef eli::geom::curve::piecewise_general_creator<data_type, dim__, tolerance_type> piecewise_curve_creator_type;
-              typedef eli::geom::curve::piecewise<eli::geom::curve::bezier, data_type, dim__, tolerance_type> piecewise_curve_type;
-              typedef typename piecewise_curve_type::curve_type curve_type;
+              return false;
+            }
 
-              std::vector<typename piecewise_curve_creator_type::joint_data> joints(nu+1);
-              piecewise_curve_creator_type gc;
-              piecewise_curve_type c;
+            // split the curve at the mid-parameter location and reverse the second piece's parameterization
+            piecewise_curve_type first_half, second_half;
+            edge.split(first_half, second_half, tsplit);
+            second_half.reverse();
+            second_half.set_t0(first_half.get_t0());
 
-              std::vector<surface_type> surfs(nu);
+            assert(first_half.get_t0()==second_half.get_t0());
+            assert(first_half.get_tmax()==second_half.get_tmax());
 
-              for (j=0; j<=max_jdegs[v]; ++j)
+            // create surface connecting two edges with param spacing of 2*delta_param and points for other two edges
+            // cap u-direction goes from second_half curve to first_half curve
+            // cap v-direction follows first_half direction
+            piecewise_surface_type cap;
+            {
+              typedef typename eli::geom::surface::connection_data<data__, 3, tolerance_type> rib_data_type;
+              typedef typename eli::geom::surface::piecewise_general_skinning_surface_creator<data__, 3, tolerance_type> general_creator_type;
+
+              std::vector<rib_data_type> ribs(2);
+              std::vector<typename general_creator_type::index_type> max_degree(1);
+              general_creator_type gc;
+              bool rtn_flag;
+
+              // set the rib data
+              ribs[0].set_f(second_half);
+              ribs[1].set_f(first_half);
+
+              // set the maximum degrees of each segment
+              max_degree[0]=0;
+
+              // create surface
+              rtn_flag=gc.set_conditions(ribs, max_degree, false);
+              if (!rtn_flag)
               {
-                // cycle through each rib to set corresponding joint info
-                for (u=0; u<=nu; ++u)
-                {
-                  curve_type jcrv;
-
-                  joints[u].set_continuity(static_cast<typename piecewise_curve_creator_type::joint_continuity>(rib_states[u].get_continuity()));
-
-                  rib_states[u].get_f().get(jcrv, v);
-                  joints[u].set_f(jcrv.get_control_point(j));
-                  if (rib_states[u].use_left_fp())
-                  {
-                    rib_states[u].get_left_fp().get(jcrv, v);
-                    joints[u].set_left_fp(jcrv.get_control_point(j));
-                  }
-                  if (rib_states[u].use_right_fp())
-                  {
-                    rib_states[u].get_right_fp().get(jcrv, v);
-                    joints[u].set_right_fp(jcrv.get_control_point(j));
-                  }
-                  if (rib_states[u].use_left_fpp())
-                  {
-                    rib_states[u].get_left_fpp().get(jcrv, v);
-                    joints[u].set_left_fpp(jcrv.get_control_point(j));
-                  }
-                  if (rib_states[u].use_right_fpp())
-                  {
-                    rib_states[u].get_right_fpp().get(jcrv, v);
-                    joints[u].set_right_fpp(jcrv.get_control_point(j));
-                  }
-                }
-
-                // set the conditions for the curve creator
-                bool rtn_flag(gc.set_conditions(joints, max_degree, closed));
-                if (!rtn_flag)
-                {
-                  return false;
-                }
-
-                // set the parameterizations and create curve
-                gc.set_t0(this->get_u0());
-                for (u=0; u<nu; ++u)
-                {
-                  gc.set_segment_dt(this->get_segment_du(u), u);
-                }
-                rtn_flag=gc.create(c);
-                if (!rtn_flag)
-                {
-                  return false;
-                }
-
-                // extract the control points from piecewise curve and set the surface control points
-                for (u=0; u<nu; ++u)
-                {
-                  curve_type crv;
-
-                  c.get(crv, u);
-
-                  // resize the temp surface
-                  if (j==0)
-                  {
-                    surfs[u].resize(crv.degree(), max_jdegs[v]);
-                  }
-
-                  for (i=0; i<=crv.degree(); ++i)
-                  {
-                    surfs[u].set_control_point(crv.get_control_point(i), i, j);
-                  }
-                }
+                assert(false);
+                return false;
               }
-
-              // put these surfaces into piecewise surface
-              typename piecewise_surface_type::error_code ec;
-              for (u=0; u<nu; ++u)
+              gc.set_u0(orig_surface.get_u0()-2*delta_param);
+              gc.set_segment_du(2*delta_param, 0);
+              rtn_flag=gc.create(cap);
+              if (!rtn_flag)
               {
-                ec=ps.set(surfs[u], u, v);
-                if (ec!=piecewise_surface_type::NO_ERRORS)
+                assert(false);
+                return false;
+              }
+            }
+
+            // split the cap surface at mid point
+            cap.split_u(orig_surface.get_u0()-delta_param);
+
+            // resize output surface to needed size
+            data_type u0, v0;
+            std::vector<data_type> ucap_param, vcap_param, uparam, vparam, du, dv;
+            index_type i, j, icap_mid, umin_offset(0), vmin_offset(0);
+
+            orig_surface.get_pmap_u(uparam);
+            cap.get_pmap_uv(ucap_param, vcap_param);
+            // NOTE: This assumes that there are same number of patches on both sides of split
+            icap_mid=ucap_param.size()/2;
+            switch (edge_to_cap)
+            {
+              case (CAP_UMIN):
+              {
+                // establish the new u and v parameterization of surface
+                const index_type nucap_patch(icap_mid), nvcap_patch(cap.number_v_patches());
+                u0=ucap_param[icap_mid];
+                du.resize(uparam.size()-1+nucap_patch);
+                for (i=icap_mid; i<ucap_param.size()-1; ++i)
                 {
-                  assert(false);
-                  return false;
+                  du[i-icap_mid]=ucap_param[i+1]-ucap_param[i];
                 }
+                for (i=0; i<uparam.size()-1; ++i)
+                {
+                  du[i+nucap_patch]=uparam[i+1]-uparam[i];
+                }
+
+                // set the new v-parameterization
+                vparam.resize(2*vcap_param.size()-1);
+                data_type vmid(vcap_param[vcap_param.size()-1]);
+                for (j=0; j<vcap_param.size(); ++j)
+                {
+                  vparam[j]=vcap_param[j];
+                  vparam[vparam.size()-1-j]=2*vmid-vparam[j];
+                }
+
+                // set the v-parameters
+                v0=vparam[0];
+                dv.resize(vparam.size()-1);
+                for (j=0; j<dv.size(); ++j)
+                {
+                  dv[j]=vparam[j+1]-vparam[j];
+                }
+
+                // split a copy original surface at any new v-coordinate locations
+                piecewise_surface_type orig_copy(orig_surface);
+                typename piecewise_surface_type::surface_type patch;
+
+                for (j=0; j<vparam.size(); ++j)
+                {
+                  orig_copy.split_v(vparam[j]);
+                }
+                assert(orig_copy.number_v_patches()==(vparam.size()-1));
+
+                // resize the output surface
+                ps.init_uv(du.begin(), du.end(), dv.begin(), dv.end(), u0, v0);
+                umin_offset=nucap_patch;
+
+                // add first half of cap surfaces
+                for (i=0; i<nucap_patch; ++i)
+                {
+                  for (j=0; j<nvcap_patch; ++j)
+                  {
+                    cap.get(patch, i + nucap_patch, j);
+                    ps.set(patch, i, j);
+                  }
+                }
+
+                // reverse the cap so that the second half
+                cap.reverse_u();
+                cap.reverse_v();
+
+                // add second half of cap surfaces
+                for (i=0; i<nucap_patch; ++i)
+                {
+                  for (j=nvcap_patch; j<dv.size(); ++j)
+                  {
+                    cap.get(patch, i + nucap_patch, j-nvcap_patch);
+                    ps.set(patch, i, j);
+                  }
+                }
+
+                // add non-cap surfaces
+                for (i=0; i<orig_copy.number_u_patches(); ++i)
+                {
+                  for (j=0; j<orig_copy.number_v_patches(); ++j)
+                  {
+                    orig_copy.get(patch, i, j);
+                    ps.set(patch, i+umin_offset, j+vmin_offset);
+                  }
+                }
+
+                break;
+              }
+              case (CAP_UMAX):
+              {
+                // need to reverse u-direction
+                cap.reverse_u();
+
+                // establish the new u and v parameterization of surface
+                const index_type nucap_patch(icap_mid), nu_patch(uparam.size()-1), nvcap_patch(cap.number_v_patches());
+                du.resize(uparam.size()-1+nucap_patch);
+                for (i=0; i<uparam.size()-1; ++i)
+                {
+                  du[i]=uparam[i+1]-uparam[i];
+                }
+                for (i=nu_patch; i<du.size(); ++i)
+                {
+                  du[i]=ucap_param[(i-nu_patch)+1]-ucap_param[i-nu_patch];
+                }
+
+                // set the new v-parameterization
+                vparam.resize(2*vcap_param.size()-1);
+                data_type vmid(vcap_param[vcap_param.size()-1]);
+                for (j=0; j<vcap_param.size(); ++j)
+                {
+                  vparam[j]=vcap_param[j];
+                  vparam[vparam.size()-1-j]=2*vmid-vparam[j];
+                }
+
+                // set the v-parameters
+                v0=vparam[0];
+                dv.resize(vparam.size()-1);
+                for (j=0; j<dv.size(); ++j)
+                {
+                  dv[j]=vparam[j+1]-vparam[j];
+                }
+
+                // split a copy original surface at any new v-coordinate locations
+                piecewise_surface_type orig_copy(orig_surface);
+                typename piecewise_surface_type::surface_type patch;
+
+                for (j=0; j<vparam.size(); ++j)
+                {
+                  orig_copy.split_v(vparam[j]);
+                }
+                assert(orig_copy.number_v_patches()==(vparam.size()-1));
+
+                // resize the output surface
+                ps.init_uv(du.begin(), du.end(), dv.begin(), dv.end(), u0, v0);
+
+                // add first half of cap surfaces
+                for (i=0; i<nucap_patch; ++i)
+                {
+                  for (j=0; j<nvcap_patch; ++j)
+                  {
+                    cap.get(patch, i, j);
+                    ps.set(patch, i + nu_patch, j);
+                  }
+                }
+
+                // reverse the cap so that the second half
+                cap.reverse_u();
+                cap.reverse_v();
+
+                // add second half of cap surfaces
+                for (i=0; i<nucap_patch; ++i)
+                {
+                  for (j=nvcap_patch; j<dv.size(); ++j)
+                  {
+                    cap.get(patch, i, j-nvcap_patch);
+                    ps.set(patch, i + nu_patch, j);
+                  }
+                }
+
+                // add non-cap surfaces
+                for (i=0; i<orig_copy.number_u_patches(); ++i)
+                {
+                  for (j=0; j<orig_copy.number_v_patches(); ++j)
+                  {
+                    orig_copy.get(patch, i, j);
+                    ps.set(patch, i+umin_offset, j+vmin_offset);
+                  }
+                }
+
+                break;
+              }
+              case (CAP_VMIN):
+              {
+                assert(false);
+                return false;
+                break;
+              }
+              case (CAP_VMAX):
+              {
+                assert(false);
+                return false;
+                break;
+              }
+              default:
+              {
+                // must not want any edge capped
+                assert(edge_to_cap==CAP_NONE);
+                return false;
               }
             }
 
             return true;
           }
-#endif
 
         private:
           piecewise_surface_type orig_surface;
-          data_type split_param;
-          edge_split_identifier edge_to_split;
+          data_type delta_param;
+          edge_cap_identifier edge_to_cap;
       };
     }
   }
