@@ -90,7 +90,7 @@ namespace eli
         for (pp=0; pp<nu; ++pp)
         {
           // resize the surface patch
-          udim=c.dimension();
+          udim=c.degree();
           vdim=3;
           pc.get(c, du, pp);
           s[0].resize(udim, vdim);

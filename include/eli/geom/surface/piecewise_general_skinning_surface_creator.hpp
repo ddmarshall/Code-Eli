@@ -45,6 +45,7 @@ namespace eli
           typedef typename base_class_type::point_type point_type;
           typedef typename base_class_type::index_type index_type;
           typedef typename base_class_type::tolerance_type tolerance_type;
+          typedef typename base_class_type::piecewise_surface_type piecewise_surface_type;
 
           typedef connection_data<data_type, dim__, tolerance_type> rib_data_type;
 
@@ -140,7 +141,7 @@ namespace eli
               std::swap(joints, jts_out);
             }
 
-            // split ribs so have same number of curves (with same joint parameters) for all ribs and get degree
+            // record where the joints need to be for create()
             index_type njoints(static_cast<index_type>(joints.size()));
 
             // set the v-parameterization
@@ -161,9 +162,8 @@ namespace eli
             return true;
           }
 
-          virtual bool create(piecewise<bezier, data_type, dim__, tolerance_type> &ps) const
+          virtual bool create(piecewise_surface_type &ps) const
           {
-            typedef piecewise<bezier, data_type, dim__, tolerance_type> piecewise_surface_type;
             typedef typename piecewise_surface_type::surface_type surface_type;
 
             index_type nribs(this->get_number_u_segments()+1), i, j;
