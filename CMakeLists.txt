@@ -17,7 +17,7 @@ project(ELI)
 # set the release version number
 set(ELI_VERSION_MAJOR 0)
 set(ELI_VERSION_MINOR 3)
-set(ELI_VERSION_PATCH 3)
+set(ELI_VERSION_PATCH 4)
 
 # add the Code-Eli specific cmake files to module path
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${ELI_SOURCE_DIR}/cmake)
