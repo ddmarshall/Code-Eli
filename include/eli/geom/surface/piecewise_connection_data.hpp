@@ -13,6 +13,8 @@
 #ifndef eli_geom_surface_piecewise_connection_data_hpp
 #define eli_geom_surface_piecewise_connection_data_hpp
 
+#include "eli/code_eli.hpp"
+
 #include "eli/util/tolerance.hpp"
 
 #include "eli/geom/curve/bezier.hpp"

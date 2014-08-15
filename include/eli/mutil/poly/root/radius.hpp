@@ -15,6 +15,8 @@
 
 #include <cmath>
 
+#include "eli/code_eli.hpp"
+
 #include "eli/mutil/poly/polynomial.hpp"
 
 namespace eli

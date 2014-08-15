@@ -15,11 +15,7 @@
 
 #include <vector>
 
-#ifdef Success  // X11 #define collides with Eigen
-#undef Success
-#endif
-
-#include <Eigen/Eigen>
+#include "eli/code_eli.hpp"
 
 #include "eli/geom/curve/piecewise.hpp"
 #include "eli/geom/curve/bezier.hpp"
@@ -72,6 +68,13 @@ namespace eli
             else
               assert(false);
           }
+
+#if (defined(NDEBUG) && defined(__GNUC__))
+#  if ((__GNUC__==4) && (__GNUC_MINOR__==6))
+#    pragma GCC diagnostic push
+#    pragma GCC diagnostic ignored "-Wstrict-overflow"
+#  endif
+#endif
           data_type get_segment_dt(const index_type &i) const
           {
             if ((i<0) || (i>=static_cast<index_type>(dt.size())))
@@ -82,6 +85,11 @@ namespace eli
 
             return dt[i];
           }
+#if (defined(NDEBUG) && defined(__GNUC__))
+#  if ((__GNUC__==4) && (__GNUC_MINOR__==6))
+#    pragma GCC diagnostic pop
+#  endif
+#endif
 
           virtual bool create(piecewise<bezier, data_type, dim__, tolerance_type> &pc) const = 0;
 

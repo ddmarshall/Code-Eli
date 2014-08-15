@@ -16,6 +16,8 @@
 #include <limits>
 #include <algorithm>
 
+#include "eli/code_eli.hpp"
+
 #include "eli/mutil/nls/newton_raphson_system_method.hpp"
 
 namespace eli

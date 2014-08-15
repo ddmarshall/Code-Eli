@@ -13,14 +13,9 @@
 #ifndef minimum_distance_point_test_suite_hpp
 #define minimum_distance_point_test_suite_hpp
 
-#include <cassert>  // assert()
 #include <cmath>    // cos(), sin()
 
 #include <typeinfo> // typeid
-
-#include "Eigen/Eigen"
-
-#include "eli/code_eli.hpp"
 
 #include "eli/util/tolerance.hpp"
 

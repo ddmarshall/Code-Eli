@@ -13,6 +13,8 @@
 #ifndef eli_geom_curve_curvature_hpp
 #define eli_geom_curve_curvature_hpp
 
+#include "eli/code_eli.hpp"
+
 namespace eli
 {
   namespace geom

@@ -18,6 +18,8 @@
 #include <utility>
 #include <algorithm>
 
+#include "eli/code_eli.hpp"
+
 #include "eli/util/tolerance.hpp"
 #include "eli/geom/curve/piecewise.hpp"
 
@@ -41,7 +43,7 @@ namespace eli
       typename surface::piecewise<surface1__, data1__, dim1__, tol1__>::data_type
         minimum_distance(
           typename surface::piecewise<surface1__, data1__, dim1__, tol1__>::data_type &u,
-	      typename surface::piecewise<surface1__, data1__, dim1__, tol1__>::data_type &v,
+	        typename surface::piecewise<surface1__, data1__, dim1__, tol1__>::data_type &v,
           const surface::piecewise<surface1__, data1__, dim1__, tol1__> &ps,
           const typename surface::piecewise<surface1__, data1__, dim1__, tol1__>::point_type &pt);
     }
@@ -80,6 +82,20 @@ namespace eli
           piecewise(const piecewise<surface__, data_type, dim__, tol__> &p)
             : patches(p.patches), ukey(p.ukey), vkey(p.vkey), nu(p.nu), nv(p.nv) {}
           ~piecewise() {}
+
+          piecewise & operator=(const piecewise<surface__, data_type, dim__> &p)
+          {
+            if (this==&p)
+              return (*this);
+
+            patches=p.patches;
+            ukey=p.ukey;
+            vkey=p.vkey;
+            nu=p.nu;
+            nv=p.nv;
+
+            return (*this);
+          }
 
           bool operator==(const piecewise<surface__, data_type, dim__> &p) const
           {
@@ -572,8 +588,16 @@ namespace eli
 
             find_patch(uk, vk, uit, vit, uu, vv, u_in, vmin);
 
+            // check for out of range input
             if ((uk == -1) || (vk == -1))
               return INVALID_PARAM;
+
+            // check if no need to split
+            tolerance_type tol;
+            if (tol.approximately_equal(uu, 0))
+              return NO_ERRORS;
+            if (tol.approximately_equal(uu, 1))
+              return NO_ERRORS;
 
             return split_u(uk, uit, u_in, uu);
           }
@@ -587,8 +611,16 @@ namespace eli
 
             find_patch(uk, vk, uit, vit, uu, vv, umin, v_in);
 
+            // check for out of range input
             if ((uk == -1) || (vk == -1))
               return INVALID_PARAM;
+
+            // check if no need to split
+            tolerance_type tol;
+            if (tol.approximately_equal(vv, 0))
+              return NO_ERRORS;
+            if (tol.approximately_equal(vv, 1))
+              return NO_ERRORS;
 
             return split_v(vk, vit, v_in, vv);
           }
@@ -1445,6 +1477,10 @@ namespace eli
 
           error_code split_u(const index_type &uk, const typename keymap_type::iterator &uit, const data_type &u_in, const data_type &uu)
           {
+            tolerance_type tol;
+            assert(!tol.approximately_equal(uu, 0));
+            assert(!tol.approximately_equal(uu, 1));
+
             index_type ukr, vk;
             // Right half will be added at end of patch matrix.
             ukr=nu;
@@ -1464,6 +1500,10 @@ namespace eli
 
           error_code split_v(const index_type &vk, const typename keymap_type::iterator &vit, const data_type &v_in, const data_type &vv)
           {
+            tolerance_type tol;
+            assert(!tol.approximately_equal(vv, 0));
+            assert(!tol.approximately_equal(vv, 1));
+
             index_type uk, vkr;
             // Right half will be added at end of patch matrix.
             vkr=nv;

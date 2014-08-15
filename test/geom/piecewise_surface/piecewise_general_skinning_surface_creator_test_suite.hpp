@@ -13,7 +13,14 @@
 #ifndef piecewise_general_skinning_surface_creator_test_suite_suite_hpp
 #define piecewise_general_skinning_surface_creator_test_suite_suite_hpp
 
-#include "eli/code_eli.hpp"
+#include <cmath>    // std::pow, std::exp
+
+#include <typeinfo> // typeid
+#include <string>   // std::string
+#include <sstream>  // std::stringstream
+#include <iomanip>  // std::setw
+#include <limits>   // std::numeric_limits
+#include <iterator> // std::insert_iterator
 
 #include "eli/constants/math.hpp"
 
@@ -23,15 +30,7 @@
 #include "eli/geom/surface/piecewise.hpp"
 #include "eli/geom/surface/piecewise_general_skinning_surface_creator.hpp"
 
-#include <cmath>    // std::pow, std::exp
-#include <cassert>  // assert()
-
-#include <typeinfo> // typeid
-#include <string>   // std::string
-#include <sstream>  // std::stringstream
-#include <iomanip>  // std::setw
-#include <limits>   // std::numeric_limits
-#include <iterator> // std::insert_iterator
+#include "octave_helpers.hpp"
 
 template<typename data__>
 class piecewise_general_skinning_surface_creator_test_suite : public Test::Suite
@@ -47,7 +46,7 @@ class piecewise_general_skinning_surface_creator_test_suite : public Test::Suite
     typedef typename eli::geom::surface::connection_data<data__, 3, tolerance_type> rib_data_type;
     typedef typename rib_data_type::curve_type rib_curve_type;
     typedef typename eli::geom::curve::piecewise_linear_creator<data__, 3, tolerance_type> piecewise_line_creator_type;
-    typedef typename eli::geom::surface::general_skinning_surface_creator<data__, 3, tolerance_type> general_creator_type;
+    typedef typename eli::geom::surface::piecewise_general_skinning_surface_creator<data__, 3, tolerance_type> general_creator_type;
 
     tolerance_type tol;
 
@@ -823,11 +822,11 @@ class piecewise_general_skinning_surface_creator_test_suite : public Test::Suite
 //        if (rtn_flag && (typeid(data_type)==typeid(float)))
 //        {
 //          std::cout.flush();
-//          eli::octave_start(1);
-//          eli::octave_print(1, s, "surf", true);
-//          eli::octave_print(1, ribs[0].get_f(), "rib0", true);
-//          eli::octave_print(1, ribs[1].get_f(), "rib1", true);
-//          eli::octave_finish(1);
+//          eli::test::octave_start(1);
+//          eli::test::octave_print(1, s, "surf", true);
+//          eli::test::octave_print(1, ribs[0].get_f(), "rib0", true);
+//          eli::test::octave_print(1, ribs[1].get_f(), "rib1", true);
+//          eli::test::octave_finish(1);
 //        }
       }
 
@@ -954,13 +953,13 @@ class piecewise_general_skinning_surface_creator_test_suite : public Test::Suite
 //        if (rtn_flag && (typeid(data_type)==typeid(float)))
 //        {
 //          std::cout.flush();
-//          eli::octave_start(1);
-//          eli::octave_print(1, s, "surf", false);
-//          eli::octave_print(1, ribs[0].get_f(), "rib0", true);
-//          eli::octave_print(1, ribs[1].get_f(), "rib1", true);
-//          eli::octave_print(1, ribs[0].get_f(), ribs[0].get_right_fp(), "rve0");
-//          eli::octave_print(1, ribs[1].get_f(), ribs[1].get_left_fp(), "lve1");
-//          eli::octave_finish(1);
+//          eli::test::octave_start(1);
+//          eli::test::octave_print(1, s, "surf", false);
+//          eli::test::octave_print(1, ribs[0].get_f(), "rib0", true);
+//          eli::test::octave_print(1, ribs[1].get_f(), "rib1", true);
+//          eli::test::octave_print(1, ribs[0].get_f(), ribs[0].get_right_fp(), "rve0");
+//          eli::test::octave_print(1, ribs[1].get_f(), ribs[1].get_left_fp(), "lve1");
+//          eli::test::octave_finish(1);
 //        }
       }
 
@@ -1117,13 +1116,13 @@ class piecewise_general_skinning_surface_creator_test_suite : public Test::Suite
 //        if (rtn_flag && (typeid(data_type)==typeid(float)))
 //        {
 //          std::cout.flush();
-//          eli::octave_start(1);
-//          eli::octave_print(1, s, "surf", false);
-//          eli::octave_print(1, ribs[0].get_f(), "rib0", true);
-//          eli::octave_print(1, ribs[1].get_f(), "rib1", true);
-//          eli::octave_print(1, ribs[0].get_f(), ribs[0].get_right_fp(), "rve0");
-//          eli::octave_print(1, ribs[1].get_f(), ribs[1].get_left_fp(), "lve1");
-//          eli::octave_finish(1);
+//          eli::test::octave_start(1);
+//          eli::test::octave_print(1, s, "surf", false);
+//          eli::test::octave_print(1, ribs[0].get_f(), "rib0", true);
+//          eli::test::octave_print(1, ribs[1].get_f(), "rib1", true);
+//          eli::test::octave_print(1, ribs[0].get_f(), ribs[0].get_right_fp(), "rve0");
+//          eli::test::octave_print(1, ribs[1].get_f(), ribs[1].get_left_fp(), "lve1");
+//          eli::test::octave_finish(1);
 //        }
       }
 
@@ -1295,13 +1294,13 @@ class piecewise_general_skinning_surface_creator_test_suite : public Test::Suite
 //        if (rtn_flag && (typeid(data_type)==typeid(float)))
 //        {
 //          std::cout.flush();
-//          eli::octave_start(1);
-//          eli::octave_print(1, s, "surf", false);
-//          eli::octave_print(1, ribs[0].get_f(), "rib0", true);
-//          eli::octave_print(1, ribs[1].get_f(), "rib1", true);
-//          eli::octave_print(1, ribs[0].get_f(), ribs[0].get_right_fp(), "rve0");
-//          eli::octave_print(1, ribs[1].get_f(), ribs[1].get_left_fp(), "lve1");
-//          eli::octave_finish(1);
+//          eli::test::octave_start(1);
+//          eli::test::octave_print(1, s, "surf", false);
+//          eli::test::octave_print(1, ribs[0].get_f(), "rib0", true);
+//          eli::test::octave_print(1, ribs[1].get_f(), "rib1", true);
+//          eli::test::octave_print(1, ribs[0].get_f(), ribs[0].get_right_fp(), "rve0");
+//          eli::test::octave_print(1, ribs[1].get_f(), ribs[1].get_left_fp(), "lve1");
+//          eli::test::octave_finish(1);
 //        }
       }
 
@@ -1468,13 +1467,13 @@ class piecewise_general_skinning_surface_creator_test_suite : public Test::Suite
 //        if (rtn_flag && (typeid(data_type)==typeid(float)))
 //        {
 //          std::cout.flush();
-//          eli::octave_start(1);
-//          eli::octave_print(1, s, "surf", true);
-//          eli::octave_print(1, ribs[0].get_f(), "rib0", true);
-//          eli::octave_print(1, ribs[1].get_f(), "rib1", true);
-//          eli::octave_print(1, ribs[0].get_f(), ribs[0].get_right_fp(), "rve0");
-//          eli::octave_print(1, ribs[1].get_f(), ribs[1].get_left_fp(), "lve1");
-//          eli::octave_finish(1);
+//          eli::test::octave_start(1);
+//          eli::test::octave_print(1, s, "surf", true);
+//          eli::test::octave_print(1, ribs[0].get_f(), "rib0", true);
+//          eli::test::octave_print(1, ribs[1].get_f(), "rib1", true);
+//          eli::test::octave_print(1, ribs[0].get_f(), ribs[0].get_right_fp(), "rve0");
+//          eli::test::octave_print(1, ribs[1].get_f(), ribs[1].get_left_fp(), "lve1");
+//          eli::test::octave_finish(1);
 //        }
       }
     }
@@ -1589,11 +1588,11 @@ class piecewise_general_skinning_surface_creator_test_suite : public Test::Suite
 //        if (rtn_flag && (typeid(data_type)==typeid(float)))
 //        {
 //          std::cout.flush();
-//          eli::octave_start(1);
-//          eli::octave_print(1, s, "surf", true);
-//          eli::octave_print(1, ribs[0].get_f(), "rib0", true);
-//          eli::octave_print(1, ribs[1].get_f(), "rib1", true);
-//          eli::octave_finish(1);
+//          eli::test::octave_start(1);
+//          eli::test::octave_print(1, s, "surf", true);
+//          eli::test::octave_print(1, ribs[0].get_f(), "rib0", true);
+//          eli::test::octave_print(1, ribs[1].get_f(), "rib1", true);
+//          eli::test::octave_finish(1);
 //        }
       }
 
@@ -1717,11 +1716,11 @@ class piecewise_general_skinning_surface_creator_test_suite : public Test::Suite
 //        if (rtn_flag && (typeid(data_type)==typeid(float)))
 //        {
 //          std::cout.flush();
-//          eli::octave_start(1);
-//          eli::octave_print(1, s, "surf", true);
-//          eli::octave_print(1, ribs[0].get_f(), "rib0", true);
-//          eli::octave_print(1, ribs[1].get_f(), "rib1", true);
-//          eli::octave_finish(1);
+//          eli::test::octave_start(1);
+//          eli::test::octave_print(1, s, "surf", true);
+//          eli::test::octave_print(1, ribs[0].get_f(), "rib0", true);
+//          eli::test::octave_print(1, ribs[1].get_f(), "rib1", true);
+//          eli::test::octave_finish(1);
 //        }
       }
 
@@ -1890,13 +1889,13 @@ class piecewise_general_skinning_surface_creator_test_suite : public Test::Suite
 //        if (rtn_flag && (typeid(data_type)==typeid(float)))
 //        {
 //          std::cout.flush();
-//          eli::octave_start(1);
-//          eli::octave_print(1, s, "surf", true);
-//          eli::octave_print(1, ribs[0].get_f(), "rib0", true);
-//          eli::octave_print(1, ribs[1].get_f(), "rib1", true);
-//          eli::octave_print(1, ribs[0].get_f(), ribs[0].get_right_fp(), "rve0");
-//          eli::octave_print(1, ribs[1].get_f(), ribs[1].get_left_fp(), "lve1");
-//          eli::octave_finish(1);
+//          eli::test::octave_start(1);
+//          eli::test::octave_print(1, s, "surf", true);
+//          eli::test::octave_print(1, ribs[0].get_f(), "rib0", true);
+//          eli::test::octave_print(1, ribs[1].get_f(), "rib1", true);
+//          eli::test::octave_print(1, ribs[0].get_f(), ribs[0].get_right_fp(), "rve0");
+//          eli::test::octave_print(1, ribs[1].get_f(), ribs[1].get_left_fp(), "lve1");
+//          eli::test::octave_finish(1);
 //        }
       }
 
@@ -2107,13 +2106,13 @@ class piecewise_general_skinning_surface_creator_test_suite : public Test::Suite
 //        if (rtn_flag && (typeid(data_type)==typeid(float)))
 //        {
 //          std::cout.flush();
-//          eli::octave_start(1);
-//          eli::octave_print(1, s, "surf", true);
-//          eli::octave_print(1, ribs[0].get_f(), "rib0", true);
-//          eli::octave_print(1, ribs[1].get_f(), "rib1", true);
-//          eli::octave_print(1, ribs[0].get_f(), ribs[0].get_right_fp(), "rve0");
-//          eli::octave_print(1, ribs[1].get_f(), ribs[1].get_left_fp(), "lve1");
-//          eli::octave_finish(1);
+//          eli::test::octave_start(1);
+//          eli::test::octave_print(1, s, "surf", true);
+//          eli::test::octave_print(1, ribs[0].get_f(), "rib0", true);
+//          eli::test::octave_print(1, ribs[1].get_f(), "rib1", true);
+//          eli::test::octave_print(1, ribs[0].get_f(), ribs[0].get_right_fp(), "rve0");
+//          eli::test::octave_print(1, ribs[1].get_f(), ribs[1].get_left_fp(), "lve1");
+//          eli::test::octave_finish(1);
 //        }
       }
 
@@ -2323,13 +2322,13 @@ class piecewise_general_skinning_surface_creator_test_suite : public Test::Suite
 //        if (rtn_flag && (typeid(data_type)==typeid(float)))
 //        {
 //          std::cout.flush();
-//          eli::octave_start(1);
-//          eli::octave_print(1, s, "surf", true);
-//          eli::octave_print(1, ribs[0].get_f(), "rib0", true);
-//          eli::octave_print(1, ribs[1].get_f(), "rib1", true);
-//          eli::octave_print(1, ribs[0].get_f(), ribs[0].get_right_fp(), "rve0");
-//          eli::octave_print(1, ribs[1].get_f(), ribs[1].get_left_fp(), "lve1");
-//          eli::octave_finish(1);
+//          eli::test::octave_start(1);
+//          eli::test::octave_print(1, s, "surf", true);
+//          eli::test::octave_print(1, ribs[0].get_f(), "rib0", true);
+//          eli::test::octave_print(1, ribs[1].get_f(), "rib1", true);
+//          eli::test::octave_print(1, ribs[0].get_f(), ribs[0].get_right_fp(), "rve0");
+//          eli::test::octave_print(1, ribs[1].get_f(), ribs[1].get_left_fp(), "lve1");
+//          eli::test::octave_finish(1);
 //        }
       }
 
@@ -2540,13 +2539,13 @@ class piecewise_general_skinning_surface_creator_test_suite : public Test::Suite
 //        if (rtn_flag && (typeid(data_type)==typeid(float)))
 //        {
 //          std::cout.flush();
-//          eli::octave_start(1);
-//          eli::octave_print(1, s, "surf", true);
-//          eli::octave_print(1, ribs[0].get_f(), "rib0", true);
-//          eli::octave_print(1, ribs[1].get_f(), "rib1", true);
-//          eli::octave_print(1, ribs[0].get_f(), ribs[0].get_right_fp(), "rve0");
-//          eli::octave_print(1, ribs[1].get_f(), ribs[1].get_left_fp(), "lve1");
-//          eli::octave_finish(1);
+//          eli::test::octave_start(1);
+//          eli::test::octave_print(1, s, "surf", true);
+//          eli::test::octave_print(1, ribs[0].get_f(), "rib0", true);
+//          eli::test::octave_print(1, ribs[1].get_f(), "rib1", true);
+//          eli::test::octave_print(1, ribs[0].get_f(), ribs[0].get_right_fp(), "rve0");
+//          eli::test::octave_print(1, ribs[1].get_f(), ribs[1].get_left_fp(), "lve1");
+//          eli::test::octave_finish(1);
 //        }
       }
     }
@@ -2675,12 +2674,12 @@ class piecewise_general_skinning_surface_creator_test_suite : public Test::Suite
 //        if (rtn_flag && (typeid(data_type)==typeid(float)))
 //        {
 //          std::cout.flush();
-//          eli::octave_start(1);
-//          eli::octave_print(1, s, "surf", true);
-//          eli::octave_print(1, ribs[0].get_f(), "rib0", true);
-//          eli::octave_print(1, ribs[1].get_f(), "rib1", true);
-//          eli::octave_print(1, ribs[2].get_f(), "rib2", true);
-//          eli::octave_finish(1);
+//          eli::test::octave_start(1);
+//          eli::test::octave_print(1, s, "surf", true);
+//          eli::test::octave_print(1, ribs[0].get_f(), "rib0", true);
+//          eli::test::octave_print(1, ribs[1].get_f(), "rib1", true);
+//          eli::test::octave_print(1, ribs[2].get_f(), "rib2", true);
+//          eli::test::octave_finish(1);
 //        }
       }
 
@@ -2845,12 +2844,12 @@ class piecewise_general_skinning_surface_creator_test_suite : public Test::Suite
 //        if (rtn_flag && (typeid(data_type)==typeid(float)))
 //        {
 //          std::cout.flush();
-//          eli::octave_start(1);
-//          eli::octave_print(1, s, "surf", true);
-//          eli::octave_print(1, ribs[0].get_f(), "rib0", true);
-//          eli::octave_print(1, ribs[1].get_f(), "rib1", true);
-//          eli::octave_print(1, ribs[2].get_f(), "rib2", true);
-//          eli::octave_finish(1);
+//          eli::test::octave_start(1);
+//          eli::test::octave_print(1, s, "surf", true);
+//          eli::test::octave_print(1, ribs[0].get_f(), "rib0", true);
+//          eli::test::octave_print(1, ribs[1].get_f(), "rib1", true);
+//          eli::test::octave_print(1, ribs[2].get_f(), "rib2", true);
+//          eli::test::octave_finish(1);
 //        }
       }
 
@@ -3081,16 +3080,16 @@ class piecewise_general_skinning_surface_creator_test_suite : public Test::Suite
 //        if (rtn_flag && (typeid(data_type)==typeid(float)))
 //        {
 //          std::cout.flush();
-//          eli::octave_start(1);
-//          eli::octave_print(1, s, "surf", true);
-//          eli::octave_print(1, ribs[0].get_f(), "rib0", true);
-//          eli::octave_print(1, ribs[1].get_f(), "rib1", true);
-//          eli::octave_print(1, ribs[2].get_f(), "rib2", true);
-//          eli::octave_print(1, ribs[0].get_f(), ribs[0].get_right_fp(), "rve0");
-//          eli::octave_print(1, ribs[1].get_f(), ribs[1].get_left_fp(), "lve1");
-//          eli::octave_print(1, ribs[1].get_f(), ribs[1].get_right_fp(), "rve1");
-//          eli::octave_print(1, ribs[2].get_f(), ribs[2].get_left_fp(), "lve2");
-//          eli::octave_finish(1);
+//          eli::test::octave_start(1);
+//          eli::test::octave_print(1, s, "surf", true);
+//          eli::test::octave_print(1, ribs[0].get_f(), "rib0", true);
+//          eli::test::octave_print(1, ribs[1].get_f(), "rib1", true);
+//          eli::test::octave_print(1, ribs[2].get_f(), "rib2", true);
+//          eli::test::octave_print(1, ribs[0].get_f(), ribs[0].get_right_fp(), "rve0");
+//          eli::test::octave_print(1, ribs[1].get_f(), ribs[1].get_left_fp(), "lve1");
+//          eli::test::octave_print(1, ribs[1].get_f(), ribs[1].get_right_fp(), "rve1");
+//          eli::test::octave_print(1, ribs[2].get_f(), ribs[2].get_left_fp(), "lve2");
+//          eli::test::octave_finish(1);
 //        }
       }
 
@@ -3343,16 +3342,16 @@ class piecewise_general_skinning_surface_creator_test_suite : public Test::Suite
 //        if (rtn_flag && (typeid(data_type)==typeid(float)))
 //        {
 //          std::cout.flush();
-//          eli::octave_start(1);
-//          eli::octave_print(1, s, "surf", true);
-//          eli::octave_print(1, ribs[0].get_f(), "rib0", true);
-//          eli::octave_print(1, ribs[1].get_f(), "rib1", true);
-//          eli::octave_print(1, ribs[2].get_f(), "rib2", true);
-//          eli::octave_print(1, ribs[0].get_f(), ribs[0].get_right_fp(), "rve0");
-//          eli::octave_print(1, ribs[1].get_f(), ribs[1].get_left_fp(), "lve1");
-//          eli::octave_print(1, ribs[1].get_f(), ribs[1].get_right_fp(), "rve1");
-//          eli::octave_print(1, ribs[2].get_f(), ribs[2].get_left_fp(), "lve2");
-//          eli::octave_finish(1);
+//          eli::test::octave_start(1);
+//          eli::test::octave_print(1, s, "surf", true);
+//          eli::test::octave_print(1, ribs[0].get_f(), "rib0", true);
+//          eli::test::octave_print(1, ribs[1].get_f(), "rib1", true);
+//          eli::test::octave_print(1, ribs[2].get_f(), "rib2", true);
+//          eli::test::octave_print(1, ribs[0].get_f(), ribs[0].get_right_fp(), "rve0");
+//          eli::test::octave_print(1, ribs[1].get_f(), ribs[1].get_left_fp(), "lve1");
+//          eli::test::octave_print(1, ribs[1].get_f(), ribs[1].get_right_fp(), "rve1");
+//          eli::test::octave_print(1, ribs[2].get_f(), ribs[2].get_left_fp(), "lve2");
+//          eli::test::octave_finish(1);
 //        }
       }
 
@@ -3646,16 +3645,16 @@ class piecewise_general_skinning_surface_creator_test_suite : public Test::Suite
 //        if (rtn_flag && (typeid(data_type)==typeid(float)))
 //        {
 //          std::cout.flush();
-//          eli::octave_start(1);
-//          eli::octave_print(1, s, "surf", true);
-//          eli::octave_print(1, ribs[0].get_f(), "rib0", true);
-//          eli::octave_print(1, ribs[1].get_f(), "rib1", true);
-//          eli::octave_print(1, ribs[2].get_f(), "rib2", true);
-//          eli::octave_print(1, ribs[0].get_f(), ribs[0].get_right_fp(), "rve0");
-//          eli::octave_print(1, ribs[1].get_f(), ribs[1].get_left_fp(), "lve1");
-//          eli::octave_print(1, ribs[1].get_f(), ribs[1].get_right_fp(), "rve1");
-//          eli::octave_print(1, ribs[2].get_f(), ribs[2].get_left_fp(), "lve2");
-//          eli::octave_finish(1);
+//          eli::test::octave_start(1);
+//          eli::test::octave_print(1, s, "surf", true);
+//          eli::test::octave_print(1, ribs[0].get_f(), "rib0", true);
+//          eli::test::octave_print(1, ribs[1].get_f(), "rib1", true);
+//          eli::test::octave_print(1, ribs[2].get_f(), "rib2", true);
+//          eli::test::octave_print(1, ribs[0].get_f(), ribs[0].get_right_fp(), "rve0");
+//          eli::test::octave_print(1, ribs[1].get_f(), ribs[1].get_left_fp(), "lve1");
+//          eli::test::octave_print(1, ribs[1].get_f(), ribs[1].get_right_fp(), "rve1");
+//          eli::test::octave_print(1, ribs[2].get_f(), ribs[2].get_left_fp(), "lve2");
+//          eli::test::octave_finish(1);
 //        }
       }
 
@@ -3971,16 +3970,16 @@ class piecewise_general_skinning_surface_creator_test_suite : public Test::Suite
 //        if (rtn_flag && (typeid(data_type)==typeid(float)))
 //        {
 //          std::cout.flush();
-//          eli::octave_start(1);
-//          eli::octave_print(1, s, "surf", true);
-//          eli::octave_print(1, ribs[0].get_f(), "rib0", true);
-//          eli::octave_print(1, ribs[1].get_f(), "rib1", true);
-//          eli::octave_print(1, ribs[2].get_f(), "rib2", true);
-//          eli::octave_print(1, ribs[0].get_f(), ribs[0].get_right_fp(), "rve0");
-//          eli::octave_print(1, ribs[1].get_f(), ribs[1].get_left_fp(), "lve1");
-//          eli::octave_print(1, ribs[1].get_f(), ribs[1].get_right_fp(), "rve1");
-//          eli::octave_print(1, ribs[2].get_f(), ribs[2].get_left_fp(), "lve2");
-//          eli::octave_finish(1);
+//          eli::test::octave_start(1);
+//          eli::test::octave_print(1, s, "surf", true);
+//          eli::test::octave_print(1, ribs[0].get_f(), "rib0", true);
+//          eli::test::octave_print(1, ribs[1].get_f(), "rib1", true);
+//          eli::test::octave_print(1, ribs[2].get_f(), "rib2", true);
+//          eli::test::octave_print(1, ribs[0].get_f(), ribs[0].get_right_fp(), "rve0");
+//          eli::test::octave_print(1, ribs[1].get_f(), ribs[1].get_left_fp(), "lve1");
+//          eli::test::octave_print(1, ribs[1].get_f(), ribs[1].get_right_fp(), "rve1");
+//          eli::test::octave_print(1, ribs[2].get_f(), ribs[2].get_left_fp(), "lve2");
+//          eli::test::octave_finish(1);
 //        }
       }
 
@@ -4281,16 +4280,16 @@ class piecewise_general_skinning_surface_creator_test_suite : public Test::Suite
 //        if (rtn_flag && (typeid(data_type)==typeid(float)))
 //        {
 //          std::cout.flush();
-//          eli::octave_start(1);
-//          eli::octave_print(1, s, "surf", true);
-//          eli::octave_print(1, ribs[0].get_f(), "rib0", true);
-//          eli::octave_print(1, ribs[1].get_f(), "rib1", true);
-//          eli::octave_print(1, ribs[2].get_f(), "rib2", true);
-//          eli::octave_print(1, ribs[0].get_f(), ribs[0].get_right_fp(), "rve0");
-//          eli::octave_print(1, ribs[1].get_f(), ribs[1].get_left_fp(), "lve1");
-//          eli::octave_print(1, ribs[1].get_f(), ribs[1].get_right_fp(), "rve1");
-//          eli::octave_print(1, ribs[2].get_f(), ribs[2].get_left_fp(), "lve2");
-//          eli::octave_finish(1);
+//          eli::test::octave_start(1);
+//          eli::test::octave_print(1, s, "surf", true);
+//          eli::test::octave_print(1, ribs[0].get_f(), "rib0", true);
+//          eli::test::octave_print(1, ribs[1].get_f(), "rib1", true);
+//          eli::test::octave_print(1, ribs[2].get_f(), "rib2", true);
+//          eli::test::octave_print(1, ribs[0].get_f(), ribs[0].get_right_fp(), "rve0");
+//          eli::test::octave_print(1, ribs[1].get_f(), ribs[1].get_left_fp(), "lve1");
+//          eli::test::octave_print(1, ribs[1].get_f(), ribs[1].get_right_fp(), "rve1");
+//          eli::test::octave_print(1, ribs[2].get_f(), ribs[2].get_left_fp(), "lve2");
+//          eli::test::octave_finish(1);
 //        }
       }
     }
@@ -4427,12 +4426,12 @@ class piecewise_general_skinning_surface_creator_test_suite : public Test::Suite
 //        if (rtn_flag && (typeid(data_type)==typeid(float)))
 //        {
 //          std::cout.flush();
-//          eli::octave_start(1);
-//          eli::octave_print(1, s, "surf", true);
-//          eli::octave_print(1, ribs[0].get_f(), "rib0", true);
-//          eli::octave_print(1, ribs[1].get_f(), "rib1", true);
-//          eli::octave_print(1, ribs[2].get_f(), "rib2", true);
-//          eli::octave_finish(1);
+//          eli::test::octave_start(1);
+//          eli::test::octave_print(1, s, "surf", true);
+//          eli::test::octave_print(1, ribs[0].get_f(), "rib0", true);
+//          eli::test::octave_print(1, ribs[1].get_f(), "rib1", true);
+//          eli::test::octave_print(1, ribs[2].get_f(), "rib2", true);
+//          eli::test::octave_finish(1);
 //        }
       }
 
@@ -4611,12 +4610,12 @@ class piecewise_general_skinning_surface_creator_test_suite : public Test::Suite
 //        if (rtn_flag && (typeid(data_type)==typeid(float)))
 //        {
 //          std::cout.flush();
-//          eli::octave_start(1);
-//          eli::octave_print(1, s, "surf", true);
-//          eli::octave_print(1, ribs[0].get_f(), "rib0", true);
-//          eli::octave_print(1, ribs[1].get_f(), "rib1", true);
-//          eli::octave_print(1, ribs[2].get_f(), "rib2", true);
-//          eli::octave_finish(1);
+//          eli::test::octave_start(1);
+//          eli::test::octave_print(1, s, "surf", true);
+//          eli::test::octave_print(1, ribs[0].get_f(), "rib0", true);
+//          eli::test::octave_print(1, ribs[1].get_f(), "rib1", true);
+//          eli::test::octave_print(1, ribs[2].get_f(), "rib2", true);
+//          eli::test::octave_finish(1);
 //        }
       }
 
@@ -4756,12 +4755,12 @@ class piecewise_general_skinning_surface_creator_test_suite : public Test::Suite
 //        if (rtn_flag && (typeid(data_type)==typeid(float)))
 //        {
 //          std::cout.flush();
-//          eli::octave_start(1);
-//          eli::octave_print(1, s, "surf", true);
-//          eli::octave_print(1, ribs[0].get_f(), "rib0", true);
-//          eli::octave_print(1, ribs[1].get_f(), "rib1", true);
-//          eli::octave_print(1, ribs[2].get_f(), "rib2", true);
-//          eli::octave_finish(1);
+//          eli::test::octave_start(1);
+//          eli::test::octave_print(1, s, "surf", true);
+//          eli::test::octave_print(1, ribs[0].get_f(), "rib0", true);
+//          eli::test::octave_print(1, ribs[1].get_f(), "rib1", true);
+//          eli::test::octave_print(1, ribs[2].get_f(), "rib2", true);
+//          eli::test::octave_finish(1);
 //        }
       }
 
@@ -4952,12 +4951,12 @@ class piecewise_general_skinning_surface_creator_test_suite : public Test::Suite
 //        if (rtn_flag && (typeid(data_type)==typeid(float)))
 //        {
 //          std::cout.flush();
-//          eli::octave_start(1);
-//          eli::octave_print(1, s, "surf", true);
-//          eli::octave_print(1, ribs[0].get_f(), "rib0", true);
-//          eli::octave_print(1, ribs[1].get_f(), "rib1", true);
-//          eli::octave_print(1, ribs[2].get_f(), "rib2", true);
-//          eli::octave_finish(1);
+//          eli::test::octave_start(1);
+//          eli::test::octave_print(1, s, "surf", true);
+//          eli::test::octave_print(1, ribs[0].get_f(), "rib0", true);
+//          eli::test::octave_print(1, ribs[1].get_f(), "rib1", true);
+//          eli::test::octave_print(1, ribs[2].get_f(), "rib2", true);
+//          eli::test::octave_finish(1);
 //        }
       }
     }
@@ -5094,12 +5093,12 @@ class piecewise_general_skinning_surface_creator_test_suite : public Test::Suite
 //        if (rtn_flag && (typeid(data_type)==typeid(float)))
 //        {
 //          std::cout.flush();
-//          eli::octave_start(1);
-//          eli::octave_print(1, s, "surf", true);
-//          eli::octave_print(1, ribs[0].get_f(), "rib0", true);
-//          eli::octave_print(1, ribs[1].get_f(), "rib1", true);
-//          eli::octave_print(1, ribs[2].get_f(), "rib2", true);
-//          eli::octave_finish(1);
+//          eli::test::octave_start(1);
+//          eli::test::octave_print(1, s, "surf", true);
+//          eli::test::octave_print(1, ribs[0].get_f(), "rib0", true);
+//          eli::test::octave_print(1, ribs[1].get_f(), "rib1", true);
+//          eli::test::octave_print(1, ribs[2].get_f(), "rib2", true);
+//          eli::test::octave_finish(1);
 //        }
       }
 
@@ -5240,12 +5239,12 @@ class piecewise_general_skinning_surface_creator_test_suite : public Test::Suite
 //        if (rtn_flag && (typeid(data_type)==typeid(float)))
 //        {
 //          std::cout.flush();
-//          eli::octave_start(1);
-//          eli::octave_print(1, s, "surf", true);
-//          eli::octave_print(1, ribs[0].get_f(), "rib0", true);
-//          eli::octave_print(1, ribs[1].get_f(), "rib1", true);
-//          eli::octave_print(1, ribs[2].get_f(), "rib2", true);
-//          eli::octave_finish(1);
+//          eli::test::octave_start(1);
+//          eli::test::octave_print(1, s, "surf", true);
+//          eli::test::octave_print(1, ribs[0].get_f(), "rib0", true);
+//          eli::test::octave_print(1, ribs[1].get_f(), "rib1", true);
+//          eli::test::octave_print(1, ribs[2].get_f(), "rib2", true);
+//          eli::test::octave_finish(1);
 //        }
       }
     }

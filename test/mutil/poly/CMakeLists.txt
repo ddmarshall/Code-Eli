@@ -10,7 +10,7 @@
 #    David D. Marshall - initial code and implementation
 ################################################################################
 
-project(POLY)
+project(POLY_TEST)
 
 # add the polynomial test
 set (POLY_TEST_EXE PolyTest)

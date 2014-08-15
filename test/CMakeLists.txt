@@ -12,6 +12,10 @@
 
 project(ELI_TEST)
 
+# include common test header files
+set(_ELI_TEST_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/include)
+include_directories(${_ELI_TEST_INCLUDE_DIR})
+
 # set what libraries need to be used
 set(_ELI_TEST_LIBRARIES_LIST ${CPPTEST_LIBRARIES})
 

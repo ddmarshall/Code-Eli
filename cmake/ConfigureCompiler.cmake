@@ -103,8 +103,8 @@ if(NOT CONFIGURE_COMPILER_INCLUDED)
     endif()
   endif()
 
-  # set MS Visual 2008  & 2010 Compiler flags
-  if (MSVC90 OR MSVC10)
+  # set MS Visual Studio Compiler flags
+  if (MSVC90 OR MSVC10 OR MSVC11 OR MSVC12)
     set(CONFIGURE_COMPILER_SET_C_COMPILER_FLAGS ON)
     set(CMAKE_C_FLAGS "/DNOMINMAX /DWIN32 /D_WINDOWS /W3 /Zm1000 /Qc99"
                       CACHE STRING "Flags used by the compiler during all build types." FORCE)
@@ -221,7 +221,7 @@ if(NOT CONFIGURE_COMPILER_INCLUDED)
                         CACHE STRING "Flags used by the compiler during release builds." FORCE)
     set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "-DDEBUG -O3 -g"
                         CACHE STRING "Flags used by the compiler during release with debug info builds." FORCE)
-      set(CMAKE_CXX_FLAGS_MINSIZEREL "-DNDEBUG -DEIGEN_NO_DEBUG -Os"
+    set(CMAKE_CXX_FLAGS_MINSIZEREL "-DNDEBUG -DEIGEN_NO_DEBUG -Os"
                         CACHE STRING "Flags used by the compiler during release minsize builds." FORCE)
   endif()
   if(CMAKE_Fortran_COMPILER_ID STREQUAL "Clang")
@@ -234,7 +234,7 @@ if(NOT CONFIGURE_COMPILER_INCLUDED)
                       CACHE STRING "Flags used by the compiler during release builds." FORCE)
     set(CMAKE_Fortran_FLAGS_RELWITHDEBINFO "-DDEBUG -O3 -g"
                       CACHE STRING "Flags used by the compiler during release with debug info builds." FORCE)
-      set(CMAKE_Fortran_FLAGS_MINSIZEREL "/DNDEBUG /Os /ipo /fast"
+    set(CMAKE_Fortran_FLAGS_MINSIZEREL "-DNDEBUG -Os"
                       CACHE STRING "Flags used by the compiler during release minsize builds." FORCE)
   endif()
 

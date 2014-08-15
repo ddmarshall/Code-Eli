@@ -15,7 +15,9 @@
 
 #include <iostream>
 
-#include "traits.hpp"
+#include "eli/code_eli.hpp"
+
+#include "eli/util/traits.hpp"
 
 namespace eli
 {

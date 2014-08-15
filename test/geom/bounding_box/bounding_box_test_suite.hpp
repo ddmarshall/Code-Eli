@@ -13,14 +13,9 @@
 #ifndef bounding_box_test_suite_hpp
 #define bounding_box_test_suite_hpp
 
-#include <cassert>  // assert()
 #include <cmath>    // cos(), sin()
 
 #include <typeinfo> // typeid
-
-#include "Eigen/Eigen"
-
-#include "eli/code_eli.hpp"
 
 #include "eli/geom/general/bounding_box.hpp"
 

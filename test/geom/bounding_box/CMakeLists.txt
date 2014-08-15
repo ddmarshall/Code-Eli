@@ -10,7 +10,7 @@
 #    David D. Marshall - initial code and implementation
 ################################################################################
 
-project(GEOM)
+project(BOUNDING_BOX_TEST)
 
 #add the bounding box test
 set (BOUNDING_BOX_TEST_EXE BoundingBoxTest)

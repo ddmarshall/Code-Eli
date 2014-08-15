@@ -13,16 +13,11 @@
 #ifndef eli_mutil_poly_polynomial_hpp
 #define eli_mutil_poly_polynomial_hpp
 
-#include <cassert>
 #include <cmath>
 #include <iterator>
 #include <limits>
 
-#ifdef Success  // X11 #define collides with Eigen
-#undef Success
-#endif
-
-#include "Eigen/Eigen"
+#include "eli/code_eli.hpp"
 
 #include "eli/mutil/dm/combination.hpp"
 

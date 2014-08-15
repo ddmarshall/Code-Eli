@@ -13,7 +13,13 @@
 #ifndef piecewise_curve_test_suite_hpp
 #define piecewise_curve_test_suite_hpp
 
-#include "eli/code_eli.hpp"
+#include <cmath>    // std::pow, std::exp
+
+#include <typeinfo> // typeid
+#include <string>   // std::string
+#include <sstream>  // std::stringstream
+#include <iomanip>  // std::setw
+#include <limits>   // std::numeric_limits
 
 #include "eli/constants/math.hpp"
 #include "eli/geom/point/distance.hpp"
@@ -21,15 +27,6 @@
 #include "eli/geom/curve/length.hpp"
 #include "eli/geom/curve/curvature.hpp"
 #include "eli/geom/curve/piecewise.hpp"
-
-#include <cmath>    // std::pow, std::exp
-#include <cassert>  // assert()
-
-#include <typeinfo> // typeid
-#include <string>   // std::string
-#include <sstream>  // std::stringstream
-#include <iomanip>  // std::setw
-#include <limits>   // std::numeric_limits
 
 template<typename data__>
 class piecewise_curve_test_suite : public Test::Suite
@@ -992,7 +989,7 @@ class piecewise_curve_test_suite : public Test::Suite
     void split_test()
     {
       data_type eps(std::numeric_limits<data__>::epsilon());
-      piecewise_curve_type pwc0, pwc1;
+      piecewise_curve_type pwc0, pwc1, pwc_front, pwc_back;
       typename curve_type::control_point_type cntrl_in[4];
       typename piecewise_curve_type::error_code err;
       curve_type bc;
@@ -1126,6 +1123,112 @@ class piecewise_curve_test_suite : public Test::Suite
       TEST_ASSERT((eval_out-eval_ref).norm()<63*eps);
       eval_out=pwc0.fppp(t);
       eval_ref=pwc1.fppp(t);
+      TEST_ASSERT((eval_out-eval_ref).norm()<142*eps);
+
+      // test splitting and getting both curves out
+      pwc0=pwc1;
+      err=pwc0.split(pwc_front, pwc_back, ts);
+      TEST_ASSERT(err==piecewise_curve_type::NO_ERRORS);
+      TEST_ASSERT(pwc_front.get_t0()==pwc0.get_t0());
+      TEST_ASSERT(pwc_front.get_tmax()==ts);
+      TEST_ASSERT(pwc_back.get_t0()==ts);
+      TEST_ASSERT(pwc_back.get_tmax()==pwc0.get_tmax());
+
+      t=0;
+      eval_out=pwc_front.f(t);
+      eval_ref=pwc0.f(t);
+      TEST_ASSERT(eval_out==eval_ref);
+      eval_out=pwc_front.fp(t);
+      eval_ref=pwc0.fp(t);
+      TEST_ASSERT(eval_out==eval_ref);
+      eval_out=pwc_front.fpp(t);
+      eval_ref=pwc0.fpp(t);
+      TEST_ASSERT(eval_out==eval_ref);
+      eval_out=pwc_front.fppp(t);
+      eval_ref=pwc0.fppp(t);
+      TEST_ASSERT(eval_out==eval_ref);
+
+      t=0.5;
+      eval_out=pwc_front.f(t);
+      eval_ref=pwc0.f(t);
+      TEST_ASSERT(eval_out==eval_ref);
+      eval_out=pwc_front.fp(t);
+      eval_ref=pwc0.fp(t);
+      TEST_ASSERT(eval_out==eval_ref);
+      eval_out=pwc_front.fpp(t);
+      eval_ref=pwc0.fpp(t);
+      TEST_ASSERT(eval_out==eval_ref);
+      eval_out=pwc_front.fppp(t);
+      eval_ref=pwc0.fppp(t);
+      TEST_ASSERT(eval_out==eval_ref);
+
+      t=1;
+      eval_out=pwc_front.f(t);
+      eval_ref=pwc0.f(t);
+      TEST_ASSERT(eval_out==eval_ref);
+      eval_out=pwc_front.fp(t);
+      eval_ref=pwc0.fp(t);
+      TEST_ASSERT(eval_out==eval_ref);
+      eval_out=pwc_front.fpp(t);
+      eval_ref=pwc0.fpp(t);
+      TEST_ASSERT(eval_out==eval_ref);
+      eval_out=pwc_front.fppp(t);
+      eval_ref=pwc0.fppp(t);
+      TEST_ASSERT((eval_out-eval_ref).norm()<138*eps);
+
+      t=1.25;
+      eval_out=pwc_front.f(t);
+      eval_ref=pwc0.f(t);
+      TEST_ASSERT((eval_out-eval_ref).norm()<3*eps);
+      eval_out=pwc_front.fp(t);
+      eval_ref=pwc0.fp(t);
+      TEST_ASSERT((eval_out-eval_ref).norm()<3*eps);
+      eval_out=pwc_front.fpp(t);
+      eval_ref=pwc0.fpp(t);
+      TEST_ASSERT((eval_out-eval_ref).norm()<18*eps);
+      eval_out=pwc_front.fppp(t);
+      eval_ref=pwc0.fppp(t);
+      TEST_ASSERT((eval_out-eval_ref).norm()<138*eps);
+
+      t=1.5;
+      eval_out=pwc_front.f(t);
+      eval_ref=pwc0.f(t);
+      TEST_ASSERT((eval_out-eval_ref).norm()<3*eps);
+      eval_out=pwc_front.fp(t);
+      eval_ref=pwc0.fp(t);
+      TEST_ASSERT((eval_out-eval_ref).norm()<7*eps);
+      eval_out=pwc_front.fpp(t);
+      eval_ref=pwc0.fpp(t);
+      TEST_ASSERT((eval_out-eval_ref).norm()<35*eps);
+      eval_out=pwc_front.fppp(t);
+      eval_ref=pwc0.fppp(t);
+      TEST_ASSERT((eval_out-eval_ref).norm()<138*eps);
+
+      t=1.75;
+      eval_out=pwc_back.f(t);
+      eval_ref=pwc0.f(t);
+      TEST_ASSERT((eval_out-eval_ref).norm()<2*eps);
+      eval_out=pwc_back.fp(t);
+      eval_ref=pwc0.fp(t);
+      TEST_ASSERT((eval_out-eval_ref).norm()<3*eps);
+      eval_out=pwc_back.fpp(t);
+      eval_ref=pwc0.fpp(t);
+      TEST_ASSERT((eval_out-eval_ref).norm()<28*eps);
+      eval_out=pwc_back.fppp(t);
+      eval_ref=pwc0.fppp(t);
+      TEST_ASSERT((eval_out-eval_ref).norm()<142*eps);
+
+      eval_out=pwc_back.f(t);
+      eval_ref=pwc0.f(t);
+      TEST_ASSERT((eval_out-eval_ref).norm()<2*eps);
+      eval_out=pwc_back.fp(t);
+      eval_ref=pwc0.fp(t);
+      TEST_ASSERT((eval_out-eval_ref).norm()<9*eps);
+      eval_out=pwc_back.fpp(t);
+      eval_ref=pwc0.fpp(t);
+      TEST_ASSERT((eval_out-eval_ref).norm()<63*eps);
+      eval_out=pwc_back.fppp(t);
+      eval_ref=pwc0.fppp(t);
       TEST_ASSERT((eval_out-eval_ref).norm()<142*eps);
     }
 

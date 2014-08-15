@@ -15,6 +15,8 @@
 
 #include <vector>
 
+#include "eli/code_eli.hpp"
+
 #include "eli/mutil/poly/root/sign_changes.hpp"
 #include "eli/mutil/poly/polynomial.hpp"
 

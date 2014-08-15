@@ -16,10 +16,9 @@
 #include <list>
 #include <iterator>
 
-#include "eli/util/tolerance.hpp"
+#include "eli/code_eli.hpp"
 
-#include "eli/geom/curve/piecewise.hpp"
-#include "eli/geom/curve/piecewise_creator.hpp"
+#include "eli/util/tolerance.hpp"
 
 #include "eli/geom/surface/piecewise.hpp"
 #include "eli/geom/surface/bezier.hpp"
@@ -38,6 +37,7 @@ namespace eli
           typedef Eigen::Matrix<data_type, 1, dim__> point_type;
           typedef typename point_type::Index index_type;
           typedef tol__ tolerance_type;
+          typedef piecewise<bezier, data_type, dim__, tolerance_type> piecewise_surface_type;
 
         public:
           piecewise_creator_base(const data_type &uu0, const data_type &vv0)
@@ -83,7 +83,7 @@ namespace eli
             return dv[i];
           }
 
-          virtual bool create(piecewise<bezier, data_type, dim__, tolerance_type> &pc) const = 0;
+          virtual bool create(piecewise_surface_type &ps) const = 0;
 
         protected:
 

@@ -13,14 +13,9 @@
 #ifndef fit_container_test_suite_hpp
 #define fit_container_test_suite_hpp
 
-#include <cassert>  // assert()
 #include <cmath>    // cos(), sin()
 
 #include <typeinfo> // typeid
-
-#include "Eigen/Eigen"
-
-#include "eli/code_eli.hpp"
 
 #include "eli/constants/math.hpp"
 #include "eli/geom/curve/fit_container.hpp"

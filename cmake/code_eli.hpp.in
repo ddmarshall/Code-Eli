@@ -1,5 +1,5 @@
 /*********************************************************************************
-* Copyright (c) 2013 David D. Marshall <ddmarsha@calpoly.edu>
+* Copyright (c) 2013-2014 David D. Marshall <ddmarsha@calpoly.edu>
 *
 * All rights reserved. This program and the accompanying materials
 * are made available under the terms of the Eclipse Public License v1.0
@@ -19,188 +19,406 @@
 #define ELI_VERSION "@ELI_VERSION_MAJOR@.@ELI_VERSION_MINOR@.@ELI_VERSION_PATCH@"
 #define ELI_BUILD_TIMESTAMP @ELI_BUILD_DATE@.@ELI_BUILD_TIME@
 
-// disable warnings from Eigen that still show up
-#ifdef _MSC_VER
+//
+// This section includes all of the standard header files that should be available in
+// every Code-Eli file. This should be a short list of includes.
+//
+#include <cassert>
+
+//
+// This section is dedicated to disabling warnings from Eigen that still show up in various
+// build configurations.
+//
+#include <Eigen/src/Core/util/Macros.h>
+#define EIGEN_NUM_VERSION (EIGEN_WORLD_VERSION*10000+EIGEN_MAJOR_VERSION*100+EIGEN_MINOR_VERSION)
+#if defined _MSC_VER
+# if (_MSC_VER==1600)
+#   if (EIGEN_NUM_VERSION == 30006)
+#     pragma warning(push)
+#     pragma warning(disable : 4244) // 64-bit int to 32-bit int conversion
+#   endif
+# endif
 #elif defined __INTEL_COMPILER
-  #pragma warning( push )
-  #pragma warning disable 82 279 1595 2196 2536
+//  #pragma warning( push )
+//  #pragma warning disable 82 279 1595 2196 2536
+#elif defined __clang__
+# if defined __apple_build_version__
+#   if ( (__clang_major__ == 5) && (__clang_minor__ <= 1) )
+#     if ( (EIGEN_NUM_VERSION >= 30007) && (EIGEN_NUM_VERSION <=30200) )
+#       pragma clang diagnostic push
+#       pragma clang diagnostic ignored "-Wdeprecated-register"
+#     endif
+#   endif
+# else
+#   if ((__clang_major__==3) && (__clang_minor__>3))
+#     if ( (EIGEN_NUM_VERSION >= 30007) && (EIGEN_NUM_VERSION <=30200) )
+#       pragma clang diagnostic push
+#       pragma clang diagnostic ignored "-Wdeprecated-register"
+#     endif
+#   endif
+# endif
+#elif defined __GNUC__
+# if defined NDEBUG
+#   if ( (__GNUC__==4) && (__GNUC_MINOR__<=8) )
+#     if (EIGEN_NUM_VERSION == 30200)
+#       if (__GNUC_MINOR__>5)
+#         pragma GCC diagnostic push
+#       endif
+#       pragma GCC diagnostic ignored "-Wuninitialized"
+#       if (__GNUC_MINOR__>6)
+#         pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
+#       endif
+#     endif
+#   endif
+# endif
 #endif
 
-// Visual Studio 2008 does not have cbrt(), asinh(), acosh(), atanh(), expm1() function
-#ifdef _MSC_VER
-# if (_MSC_VER<=1600)
-    typedef int int32_t;
-    typedef unsigned int uint32_t;
-    typedef __int64 int64_t;
-    typedef unsigned __int64 uint64_t;
-#   define nullptr (0)
-#   define _NEED_EXTRA_MATH_FUNCTIONS
+// X11 define collides with Eigen
+#ifdef Success
+#undef Success
+#endif
+
+#include <Eigen/Eigen>
+#include <Eigen/StdVector>
+
+#if defined _MSC_VER
+# if (_MSC_VER==1600)
+#   if (EIGEN_NUM_VERSION == 30006)
+#     pragma warning(pop)
+#   endif
+# endif
+#elif defined __INTEL_COMPILER
+//  #pragma warning( push )
+//  #pragma warning disable 82 279 1595 2196 2536
+#elif defined __clang__
+# if defined __apple_build_version__
+#   if ( (__clang_major__ == 5) && (__clang_minor__ <= 1) )
+#     if ( (EIGEN_NUM_VERSION >= 30007) && (EIGEN_NUM_VERSION <=30200) )
+#       pragma clang diagnostic pop
+#     endif
+#   endif
+# else
+#   if ((__clang_major__==3) && (__clang_minor__>3))
+#     if ( (EIGEN_NUM_VERSION >= 30007) && (EIGEN_NUM_VERSION <=30200) )
+#       pragma clang diagnostic pop
+#     endif
+#   endif
+# endif
+#elif defined __GNUC__
+# if defined NDEBUG
+#   if ( (__GNUC__==4) && (__GNUC_MINOR__<=8) )
+#     if (EIGEN_NUM_VERSION == 30200)
+#       if (__GNUC_MINOR__>5)
+#         pragma GCC diagnostic pop
+#       endif
+#     endif
+#   endif
+# endif
+#endif
+
+//
+// This section add the various items needed to get the Visual Studio compilers to
+// successfully build.
+//
+#if defined _MSC_VER
+// Visual Studio 2008 and earlier not supported
+# if (_MSC_VER<1600)
+#   pragma message("Parts of Code-Eli will not work with this version of Visual Studio")
+// Visual Studio 2010
+# elif (_MSC_VER==1600)
 #   define ELI_NO_VECTOR_DATA
-# endif
-#endif
 
-#ifdef __INTEL_COMPILER
+#   define NEED_ROUND
+#   define NEED_TO_STRING
+#   define NEED_INT_T
+#   define NEED_CBRT
+#   define NEED_INVERSE_HYPERBOLIC_TRIG
+#   define NEED_EXTRA_EXPONENTIAL
+#   define NEED_ERF
+
+#   ifndef nullptr
+#     define nullptr (0)
+#   endif
+# elif (_MSC_VER==1700)
+#   define NEED_ROUND
+#   define NEED_CBRT
+#   define NEED_INVERSE_HYPERBOLIC_TRIG
+#   define NEED_EXTRA_EXPONENTIAL
+#   define NEED_ERF
+# endif
+#elif defined __INTEL_COMPILER
+// Intel compiler prior to version 13 not supported
 # if (__INTEL_COMPILER<1300)
-#   define _NEED_EXTRA_MATH_FUNCTIONS
+#   pragma message "Parts of Code-Eli will not work with this version of the Intel Compiler"
 # endif
-# if (__INTEL_COMPILER<1210)
-#   define nullptr (0)
+#elif defined __clang__
+// Clang prior to version 3 not supported
+# if (__clang_major__ < 3)
+#   pragma message "Parts of Code-Eli will not work with this version of Clang"
+# elif (__clang_major__ == 3)
+#   if (__clang_minor__ <= 3)
+#     define NEED_EXTRA_MATH_IN_STD
+#   endif
+# endif
+#elif defined __GNUC__
+// GCC prior to version 4 not supported
+# if (__GNUC__ < 4)
+#   pragma message "Parts of Code-Eli will not work with this version of GCC"
+# elif (__GNUC__ == 4)
+//  GCC prior to version 4.5 not supported
+#   if (__GNUC_MINOR__ < 5)
+#     pragma message "Parts of Code-Eli will not work with this version of GCC"
+#   elif (__GNUC_MINOR__ < 8)
+#     define NEED_EXTRA_MATH_IN_STD
+
+#     ifndef nullptr
+#       define nullptr __null
+#     endif
+#   endif
 # endif
 #endif
 
-#ifdef _NEED_EXTRA_MATH_FUNCTIONS
+#ifdef NEED_ROUND
+  namespace std
+  {
+    inline float round(float f)
+    {
+      if (f >= (float)(UINT_MAX)) return f; // if larger than unsigned int then return value
+      if (f <= 0.5) return 0;      // catch case of small f
+      return (float) (unsigned int) (f + 0.5f);
+    }
+
+    inline double round(double f)
+    {
+      if (f >= (double)(UINT_MAX)) return f; // if larger than unsigned int then return value
+      if (f <= 0.5) return 0;      // catch case of small f
+      return (double) (unsigned int) (f + 0.5);
+    }
+
+    inline long double round(long double f)
+    {
+      if (f >= (long double)(UINT_MAX)) return f; // if larger than unsigned int then return value
+      if (f <= 0.5) return 0;      // catch case of small f
+      return (long double) (unsigned int) (f + 0.5L);
+    }
+  }
+# undef NEED_ROUND
+#endif
+
+#ifdef NEED_TO_STRING
+# include <sstream>
+
+  namespace std
+  {
+    inline std::string to_string(int val)
+    {
+      std::string sout;
+      std::stringstream str;
+      str << val;
+      sout = str.str();
+      return sout;
+    }
+    inline std::string to_string(unsigned int val)
+    {
+      std::string sout;
+      std::stringstream str;
+      str << val;
+      sout = str.str();
+      return sout;
+    }
+    inline std::string to_string(long val)
+    {
+      std::string sout;
+      std::stringstream str;
+      str << val;
+      sout = str.str();
+      return sout;
+    }
+    inline std::string to_string(unsigned long val)
+    {
+      std::string sout;
+      std::stringstream str;
+      str << val;
+      sout = str.str();
+      return sout;
+    }
+    inline std::string to_string(float val)
+    {
+      std::string sout;
+      std::stringstream str;
+      str << val;
+      sout = str.str();
+      return sout;
+    }
+    inline std::string to_string(double val)
+    {
+      std::string sout;
+      std::stringstream str;
+      str << val;
+      sout = str.str();
+      return sout;
+    }
+  }
+# undef NEED_TO_STRING
+#endif
+
+#ifdef NEED_INT_T
+  typedef int int32_t;
+  typedef unsigned int uint32_t;
+  typedef __int64 int64_t;
+  typedef unsigned __int64 uint64_t;
+# undef NEED_INT_T
+#endif
+
+#ifdef NEED_CBRT
 # include <cmath>
-namespace std
-{
-  inline float cbrt(float v) {return ((v<0)?(-1):(1))*std::pow(std::abs(v), 1.0f/3);}
-  inline double cbrt(double v) {return ((v<0)?(-1):(1))*std::pow(std::abs(v), 1.0/3);}
-  inline long double cbrt(long double v) {return ((v<0)?(-1):(1))*std::pow(std::abs(v), 1.0L/3);}
 
-  inline float asinh(float v)
+  namespace std
   {
-    if(v>=0)
-      return std::log(v + sqrt(v*v + 1));
-    else
-      return -std::log(-v + sqrt(v*v + 1));
+    inline float cbrt(float v) {return ((v<0)?(-1):(1))*std::pow(std::abs(v), 1.0f/3);}
+    inline double cbrt(double v) {return ((v<0)?(-1):(1))*std::pow(std::abs(v), 1.0/3);}
+    inline long double cbrt(long double v) {return ((v<0)?(-1):(1))*std::pow(std::abs(v), 1.0L/3);}
   }
-  inline double asinh(double v)
-  {
-    if(v>=0)
-      return std::log(v + sqrt(v*v + 1));
-    else
-      return -std::log(-v + sqrt(v*v + 1));
-  }
-  inline long double asinh(long double v)
-  {
-    if(v>=0)
-      return std::log(v + sqrt(v*v + 1));
-    else
-      return -std::log(-v + sqrt(v*v + 1));
-  }
-
-  inline float acosh(float v)
-  {
-    if(v>=0)
-      return std::log(v - sqrt(v*v + 1));
-    else
-      return -std::log(-v - sqrt(v*v + 1));
-  }
-  inline double acosh(double v)
-  {
-    if(v>=0)
-      return std::log(v - sqrt(v*v + 1));
-    else
-      return -std::log(-v - sqrt(v*v + 1));
-  }
-  inline long double acosh(long double v)
-  {
-    if(v>=0)
-      return std::log(v - sqrt(v*v + 1));
-    else
-      return -std::log(-v - sqrt(v*v + 1));
-  }
-
-  inline float atanh(float v)
-  {
-    return std::log((1+v)/(1-v))/2;
-  }
-  inline double atanh(double v)
-  {
-    return std::log((1+v)/(1-v))/2;
-  }
-  inline long double atanh(long double v)
-  {
-    return std::log((1+v)/(1-v))/2;
-  }
-
-  inline float expm1(float v) {return std::exp(v)-1;}
-  inline double expm1(double v) {return std::exp(v)-1;}
-  inline long double expm1(long double v) {return std::exp(v)-1;}
-
-  inline float exp2(float v) {return std::pow(2, v);}
-  inline double exp2(double v) {return std::pow(2, v);}
-  inline long double exp2(long double v) {return std::pow(2, v);}
-
-  inline float log2(float v) {return std::log(v)/std::log(2.0f);}
-  inline double log2(double v) {return std::log(v)/std::log(2.0);}
-  inline long double log2(long double v) {return std::log(v)/std::log(2.0L);}
-
-  inline float log1p(float v) {return std::log(1+v);}
-  inline double log1p(double v) {return std::log(1+v);}
-  inline long double log1p(long double v) {return std::log(1+v);}
-
-  // based on "Handbook of Mathematical Functions"
-  inline float erf(float v)
-  {
-    float a1(0.254829592f), a2(-0.284496736f), a3(1.421413741f), a4(-1.453152027f), a5(1.061405429f), p(0.3275911f);
-    float t(1/(1+p*std::abs(v)));
-    return ((v<0)?(-1):(1))*(a1+t*(a2+t*(a3+t*(a4+t*a5))))*t*std::exp(-v*v);
-  }
-  inline double erf(double v)
-  {
-    double a1(0.254829592), a2(-0.284496736), a3(1.421413741), a4(-1.453152027), a5(1.061405429), p(0.3275911);
-    double t(1/(1+p*std::abs(v)));
-    return ((v<0)?(-1):(1))*(a1+t*(a2+t*(a3+t*(a4+t*a5))))*t*std::exp(-v*v);
-  }
-  inline long double erf(long double v)
-  {
-    long double a1(0.254829592L), a2(-0.284496736L), a3(1.421413741L), a4(-1.453152027L), a5(1.061405429L), p(0.3275911L);
-    long double t(1/(1+p*std::abs(v)));
-    return ((v<0)?(-1):(1))*(a1+t*(a2+t*(a3+t*(a4+t*a5))))*t*std::exp(-v*v);
-  }
-
-  inline float erfc(float v) {return 1-erf(v);}
-  inline double erfc(double v) {return 1-erf(v);}
-  inline long double erfc(long double v) {return 1-erf(v);}
-}
-#endif
-#undef _NEED_EXTRA_MATH_FUNCTIONS
-
-// GCC versions 4.5 through latest (4.7) do not put these in the std namespace like they
-// should be.
-#if defined(__GNUC__) && !defined(__INTEL_COMPILER) && !defined(__clang__)
-# if ( (__GNUC__<4) || ((__GNUC__==4) && (__GNUC_MINOR__<8)) )
-#   include <cmath>
-
-namespace std
-{
-  using ::asinh;
-  using ::acosh;
-  using ::atanh;
-  using ::expm1;
-  using ::exp2;
-  using ::log2;
-  using ::log1p;
-  using ::erf;
-  using ::erfc;
-}
-# endif
-
-// GCC version 4.5 does not have nullptr defined
-# if ( (__GNUC__<4) || ((__GNUC__==4) && (__GNUC_MINOR__<8)) )
-#  define nullptr __null
-# endif
+# undef NEED_CBRT
 #endif
 
-// Clang versions 3.0 through latest (3.3) do not put these in the std namespace like they
-// should be.
-#ifdef __clang__
-# if ( (__clang_major__ < 3) || ((__clang_major__==3) && (__clang_minor__<=3)) )
-#   include <cmath>
+#ifdef NEED_INVERSE_HYPERBOLIC_TRIG
+# include <cmath>
 
-namespace std
-{
-  using ::asinh;
-  using ::acosh;
-  using ::atanh;
-  using ::expm1;
-  using ::exp2;
-  using ::log2;
-  using ::log1p;
-  using ::erf;
-  using ::erfc;
-}
-# endif
+  namespace std
+  {
+    inline float asinh(float v)
+    {
+      if(v>=0)
+        return std::log(v + sqrt(v*v + 1));
+      else
+        return -std::log(-v + sqrt(v*v + 1));
+    }
+    inline double asinh(double v)
+    {
+      if(v>=0)
+        return std::log(v + sqrt(v*v + 1));
+      else
+        return -std::log(-v + sqrt(v*v + 1));
+    }
+    inline long double asinh(long double v)
+    {
+      if(v>=0)
+        return std::log(v + sqrt(v*v + 1));
+      else
+        return -std::log(-v + sqrt(v*v + 1));
+    }
+
+    inline float acosh(float v)
+    {
+      if(v>=0)
+        return std::log(v - sqrt(v*v + 1));
+      else
+        return -std::log(-v - sqrt(v*v + 1));
+    }
+    inline double acosh(double v)
+    {
+      if(v>=0)
+        return std::log(v - sqrt(v*v + 1));
+      else
+        return -std::log(-v - sqrt(v*v + 1));
+    }
+    inline long double acosh(long double v)
+    {
+      if(v>=0)
+        return std::log(v - sqrt(v*v + 1));
+      else
+        return -std::log(-v - sqrt(v*v + 1));
+    }
+
+    inline float atanh(float v)
+    {
+      return std::log((1+v)/(1-v))/2;
+    }
+    inline double atanh(double v)
+    {
+      return std::log((1+v)/(1-v))/2;
+    }
+    inline long double atanh(long double v)
+    {
+      return std::log((1+v)/(1-v))/2;
+    }
+  }
+# undef NEED_INVERSE_HYPERBOLIC_TRIG
+#endif
+
+#ifdef NEED_EXTRA_EXPONENTIAL
+# include <cmath>
+
+  namespace std
+  {
+    inline float expm1(float v) {return std::exp(v)-1;}
+    inline double expm1(double v) {return std::exp(v)-1;}
+    inline long double expm1(long double v) {return std::exp(v)-1;}
+
+    inline float exp2(float v) {return std::pow(2.0f, v);}
+    inline double exp2(double v) {return std::pow(2.0, v);}
+    inline long double exp2(long double v) {return std::pow(2.0L, v);}
+
+    inline float log2(float v) {return std::log(v)/std::log(2.0f);}
+    inline double log2(double v) {return std::log(v)/std::log(2.0);}
+    inline long double log2(long double v) {return std::log(v)/std::log(2.0L);}
+
+    inline float log1p(float v) {return std::log(1+v);}
+    inline double log1p(double v) {return std::log(1+v);}
+    inline long double log1p(long double v) {return std::log(1+v);}
+  }
+# undef NEED_EXTRA_EXPONENTIAL
+#endif
+
+#ifdef NEED_ERF
+# include <cmath>
+
+  namespace std
+  {
+    // based on "Handbook of Mathematical Functions"
+    inline float erf(float v)
+    {
+      float a1(0.254829592f), a2(-0.284496736f), a3(1.421413741f), a4(-1.453152027f), a5(1.061405429f), p(0.3275911f);
+      float t(1/(1+p*std::abs(v)));
+      return ((v<0)?(-1):(1))*(a1+t*(a2+t*(a3+t*(a4+t*a5))))*t*std::exp(-v*v);
+    }
+    inline double erf(double v)
+    {
+      double a1(0.254829592), a2(-0.284496736), a3(1.421413741), a4(-1.453152027), a5(1.061405429), p(0.3275911);
+      double t(1/(1+p*std::abs(v)));
+      return ((v<0)?(-1):(1))*(a1+t*(a2+t*(a3+t*(a4+t*a5))))*t*std::exp(-v*v);
+    }
+    inline long double erf(long double v)
+    {
+      long double a1(0.254829592L), a2(-0.284496736L), a3(1.421413741L), a4(-1.453152027L), a5(1.061405429L), p(0.3275911L);
+      long double t(1/(1+p*std::abs(v)));
+      return ((v<0)?(-1):(1))*(a1+t*(a2+t*(a3+t*(a4+t*a5))))*t*std::exp(-v*v);
+    }
+
+    inline float erfc(float v) {return 1-erf(v);}
+    inline double erfc(double v) {return 1-erf(v);}
+    inline long double erfc(long double v) {return 1-erf(v);}
+  }
+# undef NEED_ERF
+#endif
+
+#ifdef NEED_EXTRA_MATH_IN_STD
+# include <cmath>
+
+  namespace std
+  {
+    using ::asinh;
+    using ::acosh;
+    using ::atanh;
+    using ::expm1;
+    using ::exp2;
+    using ::log2;
+    using ::log1p;
+    using ::erf;
+    using ::erfc;
+  }
+# undef NEED_EXTRA_MATH_IN_STD
 #endif
 
 #endif

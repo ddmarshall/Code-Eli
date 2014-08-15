@@ -13,6 +13,8 @@
 #ifndef eli_mutil_nls_secant_method_hpp
 #define eli_mutil_nls_secant_method_hpp
 
+#include "eli/code_eli.hpp"
+
 #include "eli/mutil/nls/iterative_root_base.hpp"
 
 namespace eli

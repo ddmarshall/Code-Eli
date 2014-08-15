@@ -17,8 +17,6 @@
 #include <string>
 #include <vector>
 
-#include "eli/code_eli.hpp"
-
 #include "eli/constants/math.hpp"
 
 #include "eli/geom/curve/bezier.hpp"

@@ -10,7 +10,7 @@
 #    David D. Marshall - initial code and implementation
 ################################################################################
 
-project(UTIL)
+project(UTIL_TESTS)
 
 # add the tolerance test
 set (TOLERANCE_TEST_EXE ToleranceTest)

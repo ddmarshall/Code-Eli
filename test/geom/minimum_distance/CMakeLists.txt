@@ -10,7 +10,7 @@
 #    David D. Marshall - initial code and implementation
 ################################################################################
 
-project(GEOM)
+project(MINIMUM_DISTANCE_TEST)
 
 # add the minimum_distance test
 set (MINIMUM_DISTANCE_TEST_EXE MinimumDistanceTest)

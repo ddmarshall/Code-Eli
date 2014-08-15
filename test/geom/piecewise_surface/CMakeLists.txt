@@ -10,7 +10,7 @@
 #    David D. Marshall - initial code and implementation
 ################################################################################
 
-project(GEOM)
+project(PIECEWISE_SURFACE_TESTS)
 
 # add the piecewise_surface test
 set (PIECEWISE_SURFACE_TEST_EXE PiecewiseSurfaceTest)
@@ -34,8 +34,10 @@ add_test(NAME ${PIECEWISE_SURFACE_TEST_EXE} COMMAND $<TARGET_FILE:${PIECEWISE_SU
 # add the piecewise_surface_creator test
 set (PIECEWISE_SURFACE_CREATOR_TEST_EXE PiecewiseSurfaceCreatorTest)
 set (PIECEWISE_SURFACE_CREATOR_TEST_SOURCE ${PROJECT_SOURCE_DIR}/piecewise_surface_creator_test.cpp)
-set (PIECEWISE_SURFACE_CREATOR_TEST_HEADER ${PROJECT_SOURCE_DIR}/piecewise_body_of_revolution_creator_test_suite.hpp
+set (PIECEWISE_SURFACE_CREATOR_TEST_HEADER ${_ELI_TEST_INCLUDE_DIR}/octave_helpers.hpp
+                                           ${PROJECT_SOURCE_DIR}/piecewise_body_of_revolution_creator_test_suite.hpp
                                            ${PROJECT_SOURCE_DIR}/piecewise_general_skinning_surface_creator_test_suite.hpp
+                                           ${PROJECT_SOURCE_DIR}/piecewise_capped_surface_creator_test_suite.hpp
                                            ${ELI_SOURCE_DIR}/include/eli/constants/math.hpp
                                            ${ELI_SOURCE_DIR}/include/eli/util/tolerance.hpp
                                            ${ELI_SOURCE_DIR}/include/eli/geom/general/continuity.hpp
@@ -50,7 +52,8 @@ set (PIECEWISE_SURFACE_CREATOR_TEST_HEADER ${PROJECT_SOURCE_DIR}/piecewise_body_
                                            ${ELI_SOURCE_DIR}/include/eli/geom/surface/piecewise_creator_base.hpp
                                            ${ELI_SOURCE_DIR}/include/eli/geom/surface/piecewise_body_of_revolution_creator.hpp
                                            ${ELI_SOURCE_DIR}/include/eli/geom/surface/piecewise_connection_data.hpp
-                                           ${ELI_SOURCE_DIR}/include/eli/geom/surface/piecewise_general_skinning_surface_creator.hpp)
+                                           ${ELI_SOURCE_DIR}/include/eli/geom/surface/piecewise_general_skinning_surface_creator.hpp
+                                           ${ELI_SOURCE_DIR}/include/eli/geom/surface/piecewise_capped_surface_creator.hpp)
 
 add_executable(${PIECEWISE_SURFACE_CREATOR_TEST_EXE} ${PIECEWISE_SURFACE_CREATOR_TEST_SOURCE} ${PIECEWISE_SURFACE_CREATOR_TEST_HEADER})
 target_link_libraries(${PIECEWISE_SURFACE_CREATOR_TEST_EXE} ${_ELI_TEST_LIBRARIES_LIST})

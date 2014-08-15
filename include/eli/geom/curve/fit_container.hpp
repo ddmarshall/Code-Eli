@@ -13,16 +13,15 @@
 #ifndef geom_curve_fit_container_hpp
 #define geom_curve_fit_container_hpp
 
-#include <cassert>
 #include <map>
+
+#include "eli/code_eli.hpp"
 
 #include "eli/mutil/fd/d1o2.hpp"
 #include "eli/mutil/fd/d2o2.hpp"
 
 #include "eli/geom/point/distance.hpp"
 #include "eli/geom/general/continuity.hpp"
-
-#include "Eigen/StdVector"
 
 namespace eli
 {

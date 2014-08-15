@@ -14,6 +14,9 @@
 #define eli_geom_curve_piecewise_hpp
 
 #include <map>
+#include <iterator>
+
+#include "eli/code_eli.hpp"
 
 #include "eli/constants/math.hpp"
 #include "eli/util/tolerance.hpp"
@@ -307,6 +310,17 @@ namespace eli
             }
 
             return true;
+          }
+
+          piecewise & operator=(const piecewise<curve__, data_type, dim__> &p)
+          {
+            if (this==&p)
+              return (*this);
+            segments=p.segments;
+            tmax=p.tmax;
+            tol=p.tol;
+
+            return (*this);
           }
 
           bool operator!=(const piecewise<curve__, data_type, dim__> &p) const
@@ -1057,6 +1071,99 @@ namespace eli
             return split_seg(it, tt);
           }
 
+          error_code split(piecewise<curve__, data_type, dim__> &before, piecewise<curve__, data_type, dim__> &after, const data_type &tsplit) const
+          {
+            // find segment that corresponds to given t
+            typename segment_collection_type::const_iterator it, iit;
+            data_type tt;
+            error_code ec;
+
+            find_segment(it, tt, tsplit);
+
+            // do some checking to see if even need to split
+            if (it==segments.end())
+              return INVALID_PARAM;
+
+            // if found end of segment adjust to make beginning of next
+            if (tol.approximately_equal(tt, 1))
+            {
+              ++it;
+              tt=0;
+
+              // catch case that wanted to split at end
+              if (it==segments.end())
+              {
+                before=(*this);
+                after.clear();
+                return NO_ERRORS;
+              }
+            }
+
+            // catch case that wanted to split at beginning
+            if ((tol.approximately_equal(tt, 0)) && (it==segments.begin()))
+            {
+              before.clear();
+              after=(*this);
+              return NO_ERRORS;
+            }
+
+            // fill first half
+            before.clear();
+            after.clear();
+            before.set_t0(get_t0());
+            for (iit=segments.cbegin(); iit!=it; ++iit)
+            {
+              ec=before.push_back(iit->second, get_delta_t(iit));
+              if (ec!=NO_ERRORS)
+              {
+                before.clear();
+                assert(false);
+                return ec;
+              }
+            }
+
+            // split the segment and replace (if needed)
+            if (!tol.approximately_equal(tt, 0))
+            {
+              data_type delta_t(get_delta_t(it));
+              curve_type cl, cr;
+
+              // split underlying curve and add left to before and right to after
+              it->second.split(cl, cr, tt);
+              ec=before.push_back(cl, tt*delta_t);
+              if (ec!=NO_ERRORS)
+              {
+                before.clear();
+                assert(false);
+                return ec;
+              }
+
+              after.set_t0(it->first+tt*delta_t);
+              after.push_back(cr, (1-tt)*delta_t);
+            }
+            else
+            {
+              after.set_t0(it->first);
+              after.push_back(it->second, get_delta_t(it));
+            }
+
+            // fill second half
+            iit=it;
+            for (++iit; iit!=segments.cend(); ++iit)
+            {
+              ec=after.push_back(iit->second, get_delta_t(iit));
+              if (ec!=NO_ERRORS)
+              {
+                before.clear();
+                after.clear();
+                assert(false);
+                return ec;
+              }
+            }
+
+            return NO_ERRORS;
+          }
+
           void to_cubic(const data_type &ttol)
           {
             typename segment_collection_type::iterator it;
@@ -1315,7 +1422,7 @@ namespace eli
             if (it==segments.end())
             {
               assert(false);
-              return eli::geom::general::NOT_CONNECTED;
+              return false;
             }
 
             if (tt==0)

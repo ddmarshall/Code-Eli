@@ -13,11 +13,7 @@
 #ifndef eli_geom_intersect_minimum_distance_bounding_box_hpp
 #define eli_geom_intersect_minimum_distance_bounding_box_hpp
 
-#ifdef Success  // X11 #define collides with Eigen
-#undef Success
-#endif
-
-#include "Eigen/Eigen"
+#include "eli/code_eli.hpp"
 
 #include "eli/geom/point/distance.hpp"
 #include "eli/geom/general/bounding_box.hpp"

@@ -14,15 +14,12 @@
 #define ad_dual_test_suite_hpp
 
 #include <cmath>    // std::pow, std::exp
-#include <cassert>  // assert()
 
 #include <typeinfo> // typeid
 #include <string>   // std::string
 #include <sstream>  // std::stringstream
 #include <iomanip>  // std::setw
 #include <limits>   // std::numeric_limits
-
-#include "eli/code_eli.hpp"
 
 #include "eli/constants/math.hpp"
 #include "eli/mutil/ad/dual.hpp"
@@ -1215,7 +1212,7 @@ class ad_dual_test_suite : public Test::Suite
       dref.set_nonreal(d4.nonreal()*std::sinh(d4.real()));
       d0=std::cosh(std::cosh(d1+d2));
 #if defined(_MSC_VER) && defined(NDEBUG) && !defined(_WIN64)
-      TEST_ASSERT(d0.nearly(dref, static_cast<data__>(1e-4)));
+      TEST_ASSERT(d0.nearly(dref, static_cast<data__>(2e-3)));
 #else
       TEST_ASSERT(d0.nearly(dref, tol));
 #endif
@@ -1358,7 +1355,7 @@ class ad_dual_test_suite : public Test::Suite
       dref.set_nonreal(d4.nonreal()*sinh(d4.real()));
       d0=cosh(cosh(d1+d2));
 #if defined(_MSC_VER) && defined(NDEBUG) && !defined(_WIN64)
-      TEST_ASSERT(d0.nearly(dref, static_cast<data__>(1e-4)));
+      TEST_ASSERT(d0.nearly(dref, static_cast<data__>(2e-3)));
 #else
       TEST_ASSERT(d0.nearly(dref, tol));
 #endif

@@ -19,8 +19,6 @@
 #include <iomanip>  // std::setw
 #include <limits>   // std::numeric_limits
 
-#include "eli/code_eli.hpp"
-
 #include "eli/mutil/poly/polynomial.hpp"
 #include "eli/mutil/poly/root/descartes_rule.hpp"
 #include "eli/mutil/poly/root/sturm_count.hpp"

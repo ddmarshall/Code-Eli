@@ -18,11 +18,7 @@
 #include <list>
 #include <algorithm>
 
-#ifdef Success  // X11 #define collides with Eigen
-#undef Success
-#endif
-
-#include "Eigen/Eigen"
+#include "eli/code_eli.hpp"
 
 #include "eli/mutil/nls/newton_raphson_constrained_method.hpp"
 
@@ -110,7 +106,7 @@ namespace eli
               }
               else if (t<=pc->get_t0())
               {
-                rtn=(g(pc->get_t0()+.01)-g(pc->get_t0()))/static_cast<typename curve__::data_type>(0.01);
+                rtn=(g(pc->get_t0()+static_cast<typename curve__::data_type>(0.01))-g(pc->get_t0()))/static_cast<typename curve__::data_type>(0.01);
               }
               else
               {

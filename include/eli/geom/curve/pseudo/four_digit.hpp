@@ -18,11 +18,7 @@
 #include <iomanip>   // std::setw
 #include <algorithm> // std::transform
 
-#ifdef Success // X11 #define collides with Eigen
-#undef Success
-#endif
-
-#include <Eigen/Eigen>
+#include "eli/code_eli.hpp"
 
 namespace eli
 {
@@ -81,7 +77,7 @@ namespace eli
 
             bool set_camber(const data_type &cam, const data_type &cam_loc)
             {
-              if ( (cam<9) && (cam_loc<9) )
+              if ( (cam<50) && (cam_loc<10) && (cam_loc>0))
               {
                 camber=cam;
                 camber_loc=cam_loc;

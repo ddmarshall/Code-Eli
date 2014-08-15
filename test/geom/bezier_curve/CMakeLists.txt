@@ -10,7 +10,7 @@
 #    David D. Marshall - initial code and implementation
 ################################################################################
 
-project(GEOM)
+project(BEZIER_CURVE_TESTS)
 
 # add the bezier_curve test
 set (BEZIER_CURVE_TEST_EXE BezierCurveTest)

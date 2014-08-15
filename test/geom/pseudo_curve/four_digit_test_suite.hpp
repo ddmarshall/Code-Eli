@@ -13,21 +13,18 @@
 #ifndef four_digit_test_suite_hpp
 #define four_digit_test_suite_hpp
 
-#include "eli/code_eli.hpp"
-
-#include "eli/constants/math.hpp"
-#include "eli/mutil/fd/d1o2.hpp"
-#include "eli/mutil/fd/d2o2.hpp"
-#include "eli/geom/curve/pseudo/four_digit.hpp"
-
 #include <cmath>    // std::pow, std::exp
-#include <cassert>  // assert()
 
 #include <typeinfo> // typeid
 #include <string>   // std::string
 #include <sstream>  // std::stringstream
 #include <iomanip>  // std::setw
 #include <limits>   // std::numeric_limits
+
+#include "eli/constants/math.hpp"
+#include "eli/mutil/fd/d1o2.hpp"
+#include "eli/mutil/fd/d2o2.hpp"
+#include "eli/geom/curve/pseudo/four_digit.hpp"
 
 template<typename data__>
 class four_digit_test_suite : public Test::Suite
@@ -92,12 +89,12 @@ class four_digit_test_suite : public Test::Suite
       airfoil_thickness_coefficient_type a, a_ref;
 
       af.set_sharp_trailing_edge(false);
-      a_ref << 0.2969, -0.1260, -0.3516, 0.2843, -0.1015;
+      a_ref << static_cast<data_type>(0.2969), static_cast<data_type>(-0.1260), static_cast<data_type>(-0.3516), static_cast<data_type>(0.2843), static_cast<data_type>(-0.1015);
       a=af.get_thickness_coefficients();
       TEST_ASSERT((a-a_ref).norm()<1e-4);
 
       af.set_sharp_trailing_edge(true);
-      a_ref << 0.2983, -0.1325, -0.3286, 0.2442, -0.0815;
+      a_ref << static_cast<data_type>(0.2983), static_cast<data_type>(-0.1325), static_cast<data_type>(-0.3286), static_cast<data_type>(0.2442), static_cast<data_type>(-0.0815);
       a=af.get_thickness_coefficients();
       TEST_ASSERT((a-a_ref).norm()<1e-4);
     }
@@ -125,7 +122,9 @@ class four_digit_test_suite : public Test::Suite
       // test the name
       std::string name, name_ref;
 
-      name_ref="NACA "+std::to_string((int)round(cam))+std::to_string((int)round(cam_loc))+std::to_string((int)round(th));
+      name_ref="NACA "+std::to_string(static_cast<int>(std::round(cam)))
+                      +std::to_string(static_cast<int>(std::round(cam_loc)))
+                      +std::to_string(static_cast<int>(std::round(th)));
       name=af.get_name();
       TEST_ASSERT(name==name_ref);
     }
@@ -137,7 +136,7 @@ class four_digit_test_suite : public Test::Suite
         airfoil_type af;
         std::vector<data_type> x(18), y(18);
         airfoil_point_type xout;
-        const data_type tol(1e-5);
+        const data_type tol(static_cast<data_type>(1e-5));
 
         // create 0021 airfoil to test against Abbott & von Doenhoff data NACA Report 824 p. 330
         af.set_thickness(21);
@@ -174,7 +173,7 @@ class four_digit_test_suite : public Test::Suite
         airfoil_type af;
         std::vector<data_type> x(18), y(18);
         airfoil_point_type xout;
-        const data_type tol(1e-5);
+        const data_type tol(static_cast<data_type>(1e-5));
 
         // create 0021 airfoil to test against Abbott & von Doenhoff data NACA Report 824 p. 330
         af.set_thickness(21);
@@ -276,7 +275,7 @@ class four_digit_test_suite : public Test::Suite
         airfoil_type af;
         airfoil_point_type xr, xp, xpp, xp_ref, xpp_ref;
         data_type xi, x[3], y[3];
-        const data_type dxi(1e2*std::sqrt(std::numeric_limits<data_type>::epsilon()));
+        const data_type dxi(static_cast<data_type>(1e2)*std::sqrt(std::numeric_limits<data_type>::epsilon()));
         eli::mutil::fd::d1o2<data_type> d1_calc;
         eli::mutil::fd::d2o2<data_type> d2_calc;
 
@@ -392,7 +391,7 @@ class four_digit_test_suite : public Test::Suite
       airfoil_type af;
       std::vector<data_type> x(18), y(18);
       airfoil_point_type xout;
-      const data_type tol(1e-5);
+      const data_type tol(static_cast<data_type>(1e-5));
 
       // create 2300 airfoil to test against externally calculated data
       af.set_camber(2, 3);
@@ -468,7 +467,7 @@ class four_digit_test_suite : public Test::Suite
         airfoil_type af;
         airfoil_point_type xr, xp, xpp, xp_ref, xpp_ref;
         data_type xi, x[3], y[3];
-        const data_type dxi(1e2*std::sqrt(std::numeric_limits<data_type>::epsilon()));
+        const data_type dxi(static_cast<data_type>(1e2)*std::sqrt(std::numeric_limits<data_type>::epsilon()));
         eli::mutil::fd::d1o2<data_type> d1_calc;
         eli::mutil::fd::d2o2<data_type> d2_calc;
 
@@ -490,7 +489,7 @@ class four_digit_test_suite : public Test::Suite
         if (typeid(data_type)==typeid(float))
         {
           TEST_ASSERT((xp-xp_ref).norm()<1e-6);
-          TEST_ASSERT((xpp-xpp_ref).norm()<1e-6);
+          TEST_ASSERT((xpp-xpp_ref).norm()<5e-5);
         }
         else
         {
@@ -511,7 +510,7 @@ class four_digit_test_suite : public Test::Suite
         if (typeid(data_type)==typeid(float))
         {
           TEST_ASSERT((xp-xp_ref).norm()<1e-6);
-          TEST_ASSERT((xpp-xpp_ref).norm()<5e-6);
+          TEST_ASSERT((xpp-xpp_ref).norm()<1e-5);
         }
         else
         {
@@ -583,7 +582,7 @@ class four_digit_test_suite : public Test::Suite
       airfoil_type af;
       std::vector<data_type> xi(36), x(36), y(36);
       airfoil_point_type xout;
-      const data_type tol(3e-3);
+      const data_type tol(static_cast<data_type>(3e-3));
 
       // create 2412 airfoil to test against Abbott & von Doenhoff data NACA Report 824 p. 358
       af.set_camber(2, 4);
@@ -647,7 +646,7 @@ class four_digit_test_suite : public Test::Suite
       airfoil_type af;
       airfoil_point_type xr, xp, xpp, xp_ref, xpp_ref;
       data_type xi, x[3], y[3];
-      const data_type dxi(1e2*std::sqrt(std::numeric_limits<data_type>::epsilon()));
+      const data_type dxi(static_cast<data_type>(1e2)*std::sqrt(std::numeric_limits<data_type>::epsilon()));
       eli::mutil::fd::d1o2<data_type> d1_calc;
       eli::mutil::fd::d2o2<data_type> d2_calc;
 
