@@ -202,11 +202,11 @@ namespace eli
                 const index_type nucap_patch(icap_mid), nvcap_patch(cap.number_v_patches());
                 u0=ucap_param[icap_mid];
                 du.resize(uparam.size()-1+nucap_patch);
-                for (i=icap_mid; i<ucap_param.size()-1; ++i)
+                for (i=icap_mid; i<static_cast<index_type>(ucap_param.size())-1; ++i)
                 {
                   du[i-icap_mid]=ucap_param[i+1]-ucap_param[i];
                 }
-                for (i=0; i<uparam.size()-1; ++i)
+                for (i=0; i<static_cast<index_type>(uparam.size())-1; ++i)
                 {
                   du[i+nucap_patch]=uparam[i+1]-uparam[i];
                 }
@@ -214,7 +214,7 @@ namespace eli
                 // set the new v-parameterization
                 vparam.resize(2*vcap_param.size()-1);
                 data_type vmid(vcap_param[vcap_param.size()-1]);
-                for (j=0; j<vcap_param.size(); ++j)
+                for (j=0; j<static_cast<index_type>(vcap_param.size()); ++j)
                 {
                   vparam[j]=vcap_param[j];
                   vparam[vparam.size()-1-j]=2*vmid-vparam[j];
@@ -223,7 +223,7 @@ namespace eli
                 // set the v-parameters
                 v0=vparam[0];
                 dv.resize(vparam.size()-1);
-                for (j=0; j<dv.size(); ++j)
+                for (j=0; j<static_cast<index_type>(dv.size()); ++j)
                 {
                   dv[j]=vparam[j+1]-vparam[j];
                 }
@@ -232,11 +232,11 @@ namespace eli
                 piecewise_surface_type orig_copy(orig_surface);
                 typename piecewise_surface_type::surface_type patch;
 
-                for (j=0; j<vparam.size(); ++j)
+                for (j=0; j<static_cast<index_type>(vparam.size()); ++j)
                 {
                   orig_copy.split_v(vparam[j]);
                 }
-                assert(orig_copy.number_v_patches()==(vparam.size()-1));
+                assert(orig_copy.number_v_patches()==(static_cast<index_type>(vparam.size())-1));
 
                 // resize the output surface
                 ps.init_uv(du.begin(), du.end(), dv.begin(), dv.end(), u0, v0);
@@ -259,7 +259,7 @@ namespace eli
                 // add second half of cap surfaces
                 for (i=0; i<nucap_patch; ++i)
                 {
-                  for (j=nvcap_patch; j<dv.size(); ++j)
+                  for (j=nvcap_patch; j<static_cast<index_type>(dv.size()); ++j)
                   {
                     cap.get(patch, i + nucap_patch, j-nvcap_patch);
                     ps.set(patch, i, j);
@@ -286,11 +286,11 @@ namespace eli
                 // establish the new u and v parameterization of surface
                 const index_type nucap_patch(icap_mid), nu_patch(uparam.size()-1), nvcap_patch(cap.number_v_patches());
                 du.resize(uparam.size()-1+nucap_patch);
-                for (i=0; i<uparam.size()-1; ++i)
+                for (i=0; i<static_cast<index_type>(uparam.size())-1; ++i)
                 {
                   du[i]=uparam[i+1]-uparam[i];
                 }
-                for (i=nu_patch; i<du.size(); ++i)
+                for (i=nu_patch; i<static_cast<index_type>(du.size()); ++i)
                 {
                   du[i]=ucap_param[(i-nu_patch)+1]-ucap_param[i-nu_patch];
                 }
@@ -298,7 +298,7 @@ namespace eli
                 // set the new v-parameterization
                 vparam.resize(2*vcap_param.size()-1);
                 data_type vmid(vcap_param[vcap_param.size()-1]);
-                for (j=0; j<vcap_param.size(); ++j)
+                for (j=0; j<static_cast<index_type>(vcap_param.size()); ++j)
                 {
                   vparam[j]=vcap_param[j];
                   vparam[vparam.size()-1-j]=2*vmid-vparam[j];
@@ -307,7 +307,7 @@ namespace eli
                 // set the v-parameters
                 v0=vparam[0];
                 dv.resize(vparam.size()-1);
-                for (j=0; j<dv.size(); ++j)
+                for (j=0; j<static_cast<index_type>(dv.size()); ++j)
                 {
                   dv[j]=vparam[j+1]-vparam[j];
                 }
@@ -316,11 +316,11 @@ namespace eli
                 piecewise_surface_type orig_copy(orig_surface);
                 typename piecewise_surface_type::surface_type patch;
 
-                for (j=0; j<vparam.size(); ++j)
+                for (j=0; j<static_cast<index_type>(vparam.size()); ++j)
                 {
                   orig_copy.split_v(vparam[j]);
                 }
-                assert(orig_copy.number_v_patches()==(vparam.size()-1));
+                assert(orig_copy.number_v_patches()==(static_cast<index_type>(vparam.size())-1));
 
                 // resize the output surface
                 ps.init_uv(du.begin(), du.end(), dv.begin(), dv.end(), u0, v0);
@@ -342,7 +342,7 @@ namespace eli
                 // add second half of cap surfaces
                 for (i=0; i<nucap_patch; ++i)
                 {
-                  for (j=nvcap_patch; j<dv.size(); ++j)
+                  for (j=nvcap_patch; j<static_cast<index_type>(dv.size()); ++j)
                   {
                     cap.get(patch, i, j-nvcap_patch);
                     ps.set(patch, i + nu_patch, j);
