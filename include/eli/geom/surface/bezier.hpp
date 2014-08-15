@@ -26,6 +26,7 @@
 #include "eli/geom/curve/equivalent_curves.hpp"
 #include "eli/geom/general/continuity.hpp"
 #include "eli/geom/general/bounding_box.hpp"
+#include "eli/geom/point/distance.hpp"
 
 namespace eli
 {
@@ -105,6 +106,32 @@ namespace eli
 
             if (B_v.size()!=bs.B_v.size())
               return false;
+
+            return true;
+          }
+
+          bool abouteq(const bezier<data_type, dim__, tol__> &bs, const data_type &ttol2 ) const
+          {
+            if (this==&bs)
+              return true;
+
+            if (B_u.size()!=bs.B_u.size())
+              return false;
+
+            if (B_v.size()!=bs.B_v.size())
+              return false;
+
+            index_type i, j, degu(degree_u()), degv(degree_v());
+            for (j=0; j<=degv; ++j)
+            {
+              for (i=0; i<=degu; ++i)
+              {
+                if ( eli::geom::point::distance2( B_u[j].row(i), bs.B_u[j].row(i) ) > ttol2 )
+                {
+                  return false;
+                }
+              }
+            }
 
             return true;
           }
