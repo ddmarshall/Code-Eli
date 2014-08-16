@@ -809,7 +809,7 @@ namespace eli
             for (iv=0; iv<nv; ++iv)
             {
               get_vconst_curve(c, pmap[iv]);
-              c.find_discontinuities(eli::geom::general::G1, ldis);
+              c.find_discontinuities(angle_tol, ldis);
 
               // merge these parameters with current list
               ldis_out.clear();
@@ -826,7 +826,7 @@ namespace eli
             for (iu=0; iu<nu; ++iu)
             {
               get_uconst_curve(c, pmap[iu]);
-              c.find_discontinuities(eli::geom::general::G1, ldis);
+              c.find_discontinuities(angle_tol, ldis);
 
               // merge these parameters with current list
               ldis_out.clear();
