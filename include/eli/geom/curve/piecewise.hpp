@@ -1554,6 +1554,125 @@ namespace eli
             return eli::geom::utility::report_point_continuity(itfirst->second, dtfirst, itsecond->second, dtsecond, tol);
           }
 
+          bool smooth(const data_type &angle_tol, const data_type &t) const
+          {
+            // find segment that corresponds to given t
+            typename segment_collection_type::const_iterator it, itfirst, itsecond;
+            data_type tt(0);
+            find_segment(it, tt, t);
+
+            if (it==segments.end())
+            {
+              assert(false);
+              return false;
+            }
+
+            if (tt==0)
+            {
+              if (it==segments.begin())
+              {
+                if (open())
+                {
+                  return false;
+                }
+                else
+                {
+                  typename segment_collection_type::const_iterator itlast(segments.end());
+
+                  --itlast;
+                  itfirst=itlast;
+                  itsecond=it;
+                }
+              }
+              else
+              {
+                  itsecond=it;
+                  itfirst=it; --itfirst;
+              }
+            }
+            else if (tt==1)
+            {
+              typename segment_collection_type::const_iterator itlast(segments.end());
+
+              --itlast;
+              if (it==itlast)
+              {
+                if (open())
+                {
+                  return false;
+                }
+                else
+                {
+                  itfirst=it;
+                  itsecond=segments.begin();
+                }
+              }
+              else
+              {
+                itfirst=it;
+                itsecond=it; ++itsecond;
+              }
+            }
+            else
+            {
+              return true;
+            }
+
+            data_type dtfirst = get_delta_t(itfirst);
+            data_type dtsecond = get_delta_t(itsecond);
+
+            // check if coincident points
+            if (eli::geom::utility::check_point_continuity(itfirst->second, dtfirst, itsecond->second, dtsecond, eli::geom::general::C0, tol))
+            {
+              // check if angles between fp's are less than angle
+              point_type fp1(itfirst->second.fp(1));
+              point_type fp2(itsecond->second.fp(0));
+              data_type val;
+
+              val=fp1.norm();
+              // NOTE: This is a case where the geometric tolerance object should catch this
+              if (val>tol.get_relative_tolerance())
+              {
+                fp1/=val;
+              }
+              else
+              {
+                fp1.setZero();
+                // catch case where both vectors are nearly zero
+                if (tol.approximately_equal(fp1, fp2))
+                {
+                  return true;
+                }
+              }
+              val=fp2.norm();
+              // NOTE: This is a case where the geometric tolerance object should catch this
+              if (val>tol.get_relative_tolerance())
+              {
+                fp2/=val;
+              }
+              else
+              {
+                fp2.setZero();
+                // since other vector was non zero (otherwise previous else case would have triggered)
+                if (tol.approximately_equal(fp1, fp2))
+                {
+                  return true;
+                }
+                // know the vectors are not in same direction
+                else
+                {
+                  return false;
+                }
+              }
+
+              val=std::abs(1-fp1.dot(fp2));
+              return (val<=angle_tol);
+            }
+
+            // check the continuity of the two sections
+            return false;
+          }
+
           void find_discontinuities(eli::geom::general::continuity cont, std::vector<data_type> &tdisc) const
           {
             // clear input vector
@@ -1576,6 +1695,34 @@ namespace eli
             for (i=istart; i<njoints; ++i)
             {
               if (!continuous(cont, joints[i]))
+              {
+                tdisc.push_back(joints[i]);
+              }
+            }
+          }
+
+          void find_discontinuities(const data_type &angle_tol, std::vector<data_type> &tdisc) const
+          {
+            // clear input vector
+            tdisc.clear();
+
+            index_type i, istart(0), njoints(number_segments()+1);
+            std::vector<data_type> joints;
+
+            // get all of the joints
+            get_parameters(std::back_inserter(joints));
+
+            // if curve is open then don't check last joint
+            if (open())
+            {
+              ++istart;
+              --njoints;
+            }
+
+            // check each joint (after starting joint) if it is continuous
+            for (i=istart; i<njoints; ++i)
+            {
+              if (!smooth(angle_tol, joints[i]))
               {
                 tdisc.push_back(joints[i]);
               }

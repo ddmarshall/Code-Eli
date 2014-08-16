@@ -783,6 +783,62 @@ namespace eli
             }
           }
 
+          void find_interior_feature_edges(std::vector<data_type> &uconst, std::vector<data_type> &vconst, const data_type &angle_tol) const
+          {
+            index_type nu, nv, iu, iv;
+
+            piecewise_curve_type c;
+            std::vector<data_type> pmap, ldis, ldis_out;
+            tolerance_type tol;
+
+            // initialize the output
+            uconst.clear();
+            vconst.clear();
+
+            // unnamed function to test if two parameters are close enough
+            auto comp = [&tol](const data_type &x1, const data_type &x2)->bool
+            {
+              return tol.approximately_less_than(x1, x2);
+            };
+
+            // extract each v-const curve that is an edge of one of the patches to find u-parameters
+            // that contain C0 only edges
+            get_pmap_v(pmap);
+            nv=pmap.size();
+            assert(nv-1==number_v_patches());
+            for (iv=0; iv<nv; ++iv)
+            {
+              get_vconst_curve(c, pmap[iv]);
+              c.find_discontinuities(angle_tol, ldis);
+
+              // merge these parameters with current list
+              ldis_out.clear();
+              std::set_union(uconst.begin(), uconst.end(), ldis.begin(), ldis.end(), std::back_inserter(ldis_out), comp);
+              std::swap(uconst, ldis_out);
+            }
+
+            // extract each u-const curve that is an edge of one of the patches to find v-parameters
+            // that contain C0 only edges
+            pmap.clear();
+            get_pmap_u(pmap);
+            nu=pmap.size();
+            assert(nu-1==number_u_patches());
+            for (iu=0; iu<nu; ++iu)
+            {
+              get_uconst_curve(c, pmap[iu]);
+              c.find_discontinuities(angle_tol, ldis);
+
+              // merge these parameters with current list
+              ldis_out.clear();
+              std::set_union(vconst.begin(), vconst.end(), ldis.begin(), ldis.end(), std::back_inserter(ldis_out), comp);
+              std::swap(vconst, ldis_out);
+            }
+
+            // TODO: Need to compare actual control points next to edges to catch cases where the
+            //       patch corners satisfy the constraints but internally the constraints are not.
+
+          }
+
           void find_interior_C0_edges(std::vector<data_type> &uconst, std::vector<data_type> &vconst) const
           {
             index_type nu, nv, iu, iv;
@@ -809,7 +865,7 @@ namespace eli
             for (iv=0; iv<nv; ++iv)
             {
               get_vconst_curve(c, pmap[iv]);
-              c.find_discontinuities(eli::geom::general::C1, ldis);
+              c.find_discontinuities(eli::geom::general::G1, ldis);
 
               // merge these parameters with current list
               ldis_out.clear();
@@ -826,7 +882,7 @@ namespace eli
             for (iu=0; iu<nu; ++iu)
             {
               get_uconst_curve(c, pmap[iu]);
-              c.find_discontinuities(eli::geom::general::C1, ldis);
+              c.find_discontinuities(eli::geom::general::G1, ldis);
 
               // merge these parameters with current list
               ldis_out.clear();
