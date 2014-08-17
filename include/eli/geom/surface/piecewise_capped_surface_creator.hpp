@@ -285,6 +285,7 @@ namespace eli
 
                 // establish the new u and v parameterization of surface
                 const index_type nucap_patch(icap_mid), nu_patch(uparam.size()-1), nvcap_patch(cap.number_v_patches());
+                u0=uparam[0];
                 du.resize(uparam.size()-1+nucap_patch);
                 for (i=0; i<static_cast<index_type>(uparam.size())-1; ++i)
                 {
