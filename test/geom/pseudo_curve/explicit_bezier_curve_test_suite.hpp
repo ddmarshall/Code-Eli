@@ -23,9 +23,9 @@
 
 #include "eli/constants/math.hpp"
 #include "eli/geom/point/distance.hpp"
-#include "eli/geom/curve/explicit_bezier.hpp"
 #include "eli/geom/curve/length.hpp"
 #include "eli/geom/curve/curvature.hpp"
+#include "eli/geom/curve/pseudo/explicit_bezier.hpp"
 
 template<typename data__>
 class explicit_bezier_curve_test_suite : public Test::Suite
