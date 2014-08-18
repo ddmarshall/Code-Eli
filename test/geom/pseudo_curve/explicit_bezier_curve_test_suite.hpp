@@ -31,7 +31,7 @@ template<typename data__>
 class explicit_bezier_curve_test_suite : public Test::Suite
 {
   private:
-    typedef eli::geom::curve::explicit_bezier<data__> curve_type;
+    typedef eli::geom::curve::pseudo::explicit_bezier<data__> curve_type;
     typedef typename curve_type::control_point_type control_point_type;
     typedef typename curve_type::point_type point_type;
     typedef typename curve_type::data_type data_type;
