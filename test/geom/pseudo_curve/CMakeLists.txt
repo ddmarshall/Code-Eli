@@ -19,12 +19,13 @@ set (EXPLICIT_BEZIER_CURVE_TEST_HEADER ${PROJECT_SOURCE_DIR}/explicit_bezier_cur
                                        ${ELI_SOURCE_DIR}/include/eli/constants/math.hpp
                                        ${ELI_SOURCE_DIR}/include/eli/util/tolerance.hpp
                                        ${ELI_SOURCE_DIR}/include/eli/mutil/quad.hpp
-                                       ${ELI_SOURCE_DIR}/include/eli/mutil/opt/least_squares.hpp
                                        ${ELI_SOURCE_DIR}/include/eli/mutil/dm/binomial_coefficient.hpp
                                        ${ELI_SOURCE_DIR}/include/eli/geom/utility/bezier.hpp
                                        ${ELI_SOURCE_DIR}/include/eli/geom/general/continuity.hpp
                                        ${ELI_SOURCE_DIR}/include/eli/geom/general/bounding_box.hpp
                                        ${ELI_SOURCE_DIR}/include/eli/geom/point/distance.hpp
+                                       ${ELI_SOURCE_DIR}/include/eli/geom/curve/length.hpp
+                                       ${ELI_SOURCE_DIR}/include/eli/geom/curve/bezier.hpp
                                        ${ELI_SOURCE_DIR}/include/eli/geom/curve/pseudo/explicit_bezier.hpp
                                        ${ELI_SOURCE_DIR}/include/eli/geom/curve/length.hpp
                                        ${ELI_SOURCE_DIR}/include/eli/geom/curve/curvature.hpp)
