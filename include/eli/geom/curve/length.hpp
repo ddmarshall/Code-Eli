@@ -25,20 +25,6 @@ namespace eli
   {
     namespace curve
     {
-      namespace internal
-      {
-        template <typename curve__>
-        struct length_functor
-        {
-          const curve__ *pcurve;
-
-          typename curve__::data_type operator()(const typename curve__::data_type &t)
-          {
-            return pcurve->fp(t).norm();
-          }
-        };
-      }
-
       template<template<typename, unsigned short, typename> class curve__, typename data__, unsigned short dim__, typename tol__>
       void length(typename piecewise<curve__, data__, dim__, tol__>::data_type &len,
                   const piecewise<curve__, data__, dim__, tol__> &pc,
@@ -107,7 +93,6 @@ namespace eli
       {
         eli::mutil::quad::simpson<typename curve__::data_type> quad;
         typename eli::mutil::quad::simpson<typename curve__::data_type>::adaptive_params ap;
-        internal::length_functor<curve__> f;
 
         // short circuit for invalid parameters
         if (t0>=t1)
@@ -116,7 +101,10 @@ namespace eli
           return;
         }
 
-        f.pcurve=&c;
+        auto f = [c](const typename curve__::data_type &t)->typename curve__::data_type
+        {
+            return c.fp(t).norm();
+        };
 
         // set the specified tolerance
         ap.tolerance=tol;

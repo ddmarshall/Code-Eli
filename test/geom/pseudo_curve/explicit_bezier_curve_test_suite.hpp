@@ -698,8 +698,8 @@ class explicit_bezier_curve_test_suite : public Test::Suite
 
       // calculate the length of curve
       data_type tol(std::sqrt(eps));
-      length(length_cal, ebc, tol);
-      length(length_ref, bc, tol);
+      eli::geom::curve::length(length_cal, ebc, tol);
+      eli::geom::curve::length(length_ref, bc, tol);
       TEST_ASSERT(length_cal==length_ref);
 
       // test computing some segment length
@@ -707,8 +707,8 @@ class explicit_bezier_curve_test_suite : public Test::Suite
       t0 = static_cast<data__>(0.2);
       t1 = static_cast<data__>(0.7);
 
-      length(length_cal, ebc, t0, t1, tol);
-      length(length_ref, bc, t0, t1, tol);
+      eli::geom::curve::length(length_cal, ebc, t0, t1, tol);
+      eli::geom::curve::length(length_ref, bc, t0, t1, tol);
       TEST_ASSERT(length_cal==length_ref);
     }
 };
