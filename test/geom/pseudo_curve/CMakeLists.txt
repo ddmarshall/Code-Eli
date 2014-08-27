@@ -85,3 +85,22 @@ add_executable(${NACA_AIRFOIL_TEST_EXE} ${NACA_AIRFOIL_TEST_SOURCE} ${NACA_AIRFO
 target_link_libraries(${NACA_AIRFOIL_TEST_EXE} ${_ELI_TEST_LIBRARIES_LIST})
 add_test(NAME ${NACA_AIRFOIL_TEST_EXE} COMMAND $<TARGET_FILE:${NACA_AIRFOIL_TEST_EXE}> --text)
 
+# add the CST airfoil test
+set (CST_AIRFOIL_TEST_EXE CSTAirfoilTest)
+set (CST_AIRFOIL_TEST_SOURCE ${PROJECT_SOURCE_DIR}/cst_airfoil_test.cpp)
+set (CST_AIRFOIL_TEST_HEADER ${_ELI_TEST_INCLUDE_DIR}/octave_helpers.hpp
+                             ${PROJECT_SOURCE_DIR}/cst_airfoil_test_suite.hpp
+                             ${ELI_SOURCE_DIR}/include/eli/constants/math.hpp
+                             ${ELI_SOURCE_DIR}/include/eli/util/tolerance.hpp
+                             ${ELI_SOURCE_DIR}/include/eli/mutil/fd/d1o2.hpp
+                             ${ELI_SOURCE_DIR}/include/eli/mutil/fd/d2o2.hpp
+                             ${ELI_SOURCE_DIR}/include/eli/geom/point/distance.hpp
+                             ${ELI_SOURCE_DIR}/include/eli/geom/curve/pseudo/explicit_bezier.hpp
+                             ${ELI_SOURCE_DIR}/include/eli/geom/curve/pseudo/cst_airfoil.hpp
+                             ${ELI_SOURCE_DIR}/include/eli/geom/curve/length.hpp
+                             ${ELI_SOURCE_DIR}/include/eli/geom/curve/curvature.hpp)
+
+add_executable(${CST_AIRFOIL_TEST_EXE} ${CST_AIRFOIL_TEST_SOURCE} ${CST_AIRFOIL_TEST_HEADER})
+target_link_libraries(${CST_AIRFOIL_TEST_EXE} ${_ELI_TEST_LIBRARIES_LIST})
+add_test(NAME ${CST_AIRFOIL_TEST_EXE} COMMAND $<TARGET_FILE:${CST_AIRFOIL_TEST_EXE}> --text)
+
