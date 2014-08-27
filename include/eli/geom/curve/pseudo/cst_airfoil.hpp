@@ -1,5 +1,5 @@
 /*********************************************************************************
-* Copyright (c) 2013 David D. Marshall <ddmarsha@calpoly.edu>
+* Copyright (c) 2014 David D. Marshall <ddmarsha@calpoly.edu>
 *
 * All rights reserved. This program and the accompanying materials
 * are made available under the terms of the Eclipse Public License v1.0
@@ -10,8 +10,8 @@
 *    David D. Marshall - initial code and implementation
 ********************************************************************************/
 
-#ifndef eli_geom_curve_cst_airfoil_hpp
-#define eli_geom_curve_cst_airfoil_hpp
+#ifndef eli_geom_curve_pseudo_cst_airfoil_hpp
+#define eli_geom_curve_pseudo_cst_airfoil_hpp
 
 #include "eli/code_eli.hpp"
 
