@@ -59,11 +59,11 @@ add_test(NAME ${EXPLICIT_BEZIER_CURVE_TEST_EXE} COMMAND $<TARGET_FILE:${EXPLICIT
 set (NACA_AIRFOIL_TEST_EXE NACAAirfoilTest)
 set (NACA_AIRFOIL_TEST_SOURCE ${PROJECT_SOURCE_DIR}/naca_airfoil_test.cpp)
 set (NACA_AIRFOIL_TEST_HEADER ${PROJECT_SOURCE_DIR}/four_digit_test_suite.hpp
-                                           ${ELI_SOURCE_DIR}/include/eli/constants/math.hpp
-                                           ${ELI_SOURCE_DIR}/include/eli/util/tolerance.hpp
-                                           ${ELI_SOURCE_DIR}/include/eli/mutil/fd/d1o2.hpp
-                                           ${ELI_SOURCE_DIR}/include/eli/mutil/fd/d2o2.hpp
-                                           ${ELI_SOURCE_DIR}/include/eli/geom/curve/pseudo/four_digit.hpp)
+                              ${ELI_SOURCE_DIR}/include/eli/constants/math.hpp
+                              ${ELI_SOURCE_DIR}/include/eli/util/tolerance.hpp
+                              ${ELI_SOURCE_DIR}/include/eli/mutil/fd/d1o2.hpp
+                              ${ELI_SOURCE_DIR}/include/eli/mutil/fd/d2o2.hpp
+                              ${ELI_SOURCE_DIR}/include/eli/geom/curve/pseudo/four_digit.hpp)
 
 add_executable(${NACA_AIRFOIL_TEST_EXE} ${NACA_AIRFOIL_TEST_SOURCE} ${NACA_AIRFOIL_TEST_HEADER})
 target_link_libraries(${NACA_AIRFOIL_TEST_EXE} ${_ELI_TEST_LIBRARIES_LIST})
