@@ -54,7 +54,7 @@ class cst_airfoil_test_suite : public Test::Suite
       TEST_ADD(cst_airfoil_test_suite<float>::assignment_test);
       TEST_ADD(cst_airfoil_test_suite<float>::evaluation_test);
       TEST_ADD(cst_airfoil_test_suite<float>::derivative_test);
-//      TEST_ADD(cst_airfoil_test_suite<float>::promotion_test);
+      TEST_ADD(cst_airfoil_test_suite<float>::promotion_test);
 //      TEST_ADD(cst_airfoil_test_suite<float>::demotion_test);
 //      TEST_ADD(cst_airfoil_test_suite<float>::length_test);
     }
@@ -64,7 +64,7 @@ class cst_airfoil_test_suite : public Test::Suite
       TEST_ADD(cst_airfoil_test_suite<double>::assignment_test);
       TEST_ADD(cst_airfoil_test_suite<double>::evaluation_test);
       TEST_ADD(cst_airfoil_test_suite<double>::derivative_test);
-//      TEST_ADD(cst_airfoil_test_suite<double>::promotion_test);
+      TEST_ADD(cst_airfoil_test_suite<double>::promotion_test);
 //      TEST_ADD(cst_airfoil_test_suite<double>::demotion_test);
 //      TEST_ADD(cst_airfoil_test_suite<double>::length_test);
     }
@@ -74,7 +74,7 @@ class cst_airfoil_test_suite : public Test::Suite
       TEST_ADD(cst_airfoil_test_suite<long double>::assignment_test);
       TEST_ADD(cst_airfoil_test_suite<long double>::evaluation_test);
       TEST_ADD(cst_airfoil_test_suite<long double>::derivative_test);
-//      TEST_ADD(cst_airfoil_test_suite<long double>::promotion_test);
+      TEST_ADD(cst_airfoil_test_suite<long double>::promotion_test);
 //      TEST_ADD(cst_airfoil_test_suite<long double>::demotion_test);
 //      TEST_ADD(cst_airfoil_test_suite<long double>::length_test);
     }
@@ -273,153 +273,35 @@ class cst_airfoil_test_suite : public Test::Suite
 
     void promotion_test()
     {
-      typedef eli::geom::curve::bezier<data__, 2> bezier_curve_type;
-      data_type eps(std::numeric_limits<data__>::epsilon());
+      typedef eli::geom::curve::pseudo::explicit_bezier<data__> reference_curve_type;
 
-      control_point_type cntrl_in(5, 1);
-      typename bezier_curve_type::control_point_type bez_cntrl(5,2);
       curve_type ebc;
-      bezier_curve_type bc;
-      typename curve_type::point_type eval_out, eval_ref;
-      typename curve_type::data_type t, curv_out, curv_ref;
+      control_point_type cntrl_in[5], cntrl_out;
+      reference_curve_type ref_crv;
 
-      // set control points and create curves
-      cntrl_in << 2.0,
-                  1.5,
-                  0.0,
-                  1.0,
-                  0.5;
-      bez_cntrl.col(0) << 0, 0.25, 0.5, 0.75, 1;
-      bez_cntrl.col(1)=cntrl_in;
-      ebc.set_control_points(cntrl_in);
-      bc.set_control_points(bez_cntrl);
+      // set control points
+      cntrl_in[0] << 2;
+      cntrl_in[1] << static_cast<data_type>(1.5);
+      cntrl_in[2] << 0;
+      cntrl_in[3] << 1;
+      cntrl_in[4] << static_cast<data_type>(0.5);
+
+      ebc.resize(4);
+      ref_crv.resize(4);
+      for (index_type i=0; i<=ebc.degree(); ++i)
+      {
+        ebc.set_control_point(cntrl_in[i], i);
+        ref_crv.set_control_point(cntrl_in[i], i);
+      }
 
       ebc.degree_promote();
-      bc.degree_promote();
+      ref_crv.degree_promote();
 
       // test to see if degree has increased
-      TEST_ASSERT(ebc.degree()==bc.degree());
-
-      // test evaluation at end points
-      t=0;
-      eval_out=ebc.f(t);
-      eval_ref=bc.f(t);
-      TEST_ASSERT(eval_out==eval_ref);
-      t=1;
-      eval_out=ebc.f(t);
-      eval_ref=bc.f(t);
-      TEST_ASSERT(eval_out==eval_ref);
-
-      // test evaluation at interior point
-      t=0.45;
-      eval_out=ebc.f(t);
-      eval_ref=bc.f(t);
-      if (typeid(data_type)==typeid(double))
+      TEST_ASSERT(ebc.degree()==ref_crv.degree());
+      for (index_type i=0; i<ebc.degree(); ++i)
       {
-        TEST_ASSERT((eval_out-eval_ref).norm()<2.1*eps);
-      }
-      else
-      {
-        TEST_ASSERT(eval_out==eval_ref);
-      }
-
-      // test 1st derivative at end points
-      t=0;
-      eval_out=ebc.fp(t);
-      eval_ref=bc.fp(t);
-      TEST_ASSERT(eval_out==eval_ref);
-      t=1;
-      eval_out=ebc.fp(t);
-      eval_ref=bc.fp(t);
-      if (typeid(data_type)==typeid(double))
-      {
-        TEST_ASSERT((eval_out-eval_ref).norm()<24.1*eps);
-      }
-      else
-      {
-        TEST_ASSERT(eval_out==eval_ref);
-      }
-
-      // test 1st derivative at interior point
-      t=0.45;
-      eval_out=ebc.fp(t);
-      eval_ref=bc.fp(t);
-      if ((typeid(data_type)==typeid(float)) || (typeid(data_type)==typeid(double)))
-      {
-        TEST_ASSERT((eval_out-eval_ref).norm()<4.1*eps);
-      }
-      else
-      {
-        TEST_ASSERT(eval_out==eval_ref);
-      }
-
-      // test 2nd derivative at end points
-      t=0;
-      eval_out=ebc.fpp(t);
-      eval_ref=bc.fpp(t);
-      TEST_ASSERT(eval_out==eval_ref);
-      t=1;
-      eval_out=ebc.fpp(t);
-      eval_ref=bc.fpp(t);
-      TEST_ASSERT(eval_out==eval_ref);
-
-      // test 2nd derivative at interior point
-      t=0.45;
-      eval_out=ebc.fpp(t);
-      eval_ref=bc.fpp(t);
-      if (typeid(data_type)==typeid(double))
-      {
-        TEST_ASSERT((eval_out-eval_ref).norm()<9.1*eps);
-      }
-      else
-      {
-        TEST_ASSERT(eval_out==eval_ref);
-      }
-
-      // test 3rd derivative at end points
-      t=0;
-      eval_out=ebc.fppp(t);
-      eval_ref=bc.fppp(t);
-      TEST_ASSERT(eval_out==eval_ref);
-      t=1;
-      eval_out=ebc.fppp(t);
-      eval_ref=bc.fppp(t);
-      TEST_ASSERT(eval_out==eval_ref);
-
-      // test 3rd derivative at interior point
-      t=0.45;
-      eval_out=ebc.fppp(t);
-      eval_ref=bc.fppp(t);
-      TEST_ASSERT(eval_out==eval_ref);
-
-      // test curvature at end points
-      t=0;
-      eli::geom::curve::curvature(curv_out, ebc, t);
-      eli::geom::curve::curvature(curv_ref, bc, t);
-      TEST_ASSERT(curv_out==curv_ref);
-      t=1;
-      eli::geom::curve::curvature(curv_out, ebc, t);
-      eli::geom::curve::curvature(curv_ref, bc, t);
-      if (typeid(data_type)==typeid(double))
-      {
-        TEST_ASSERT(std::abs(curv_out-curv_ref)<47.1*eps);
-      }
-      else
-      {
-        TEST_ASSERT(curv_out==curv_ref);
-      }
-
-      // test curvature at interior point
-      t=0.45;
-      eli::geom::curve::curvature(curv_out, ebc, t);
-      eli::geom::curve::curvature(curv_ref, bc, t);
-      if ((typeid(data_type)==typeid(float)) || (typeid(data_type)==typeid(double)))
-      {
-        TEST_ASSERT(std::abs(curv_out-curv_ref)<6.1*eps);
-      }
-      else
-      {
-        TEST_ASSERT(curv_out==curv_ref);
+        TEST_ASSERT(tol.approximately_equal(ebc.get_control_point(i), ref_crv.get_control_point(i)));
       }
     }
 
