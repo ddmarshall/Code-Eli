@@ -96,6 +96,7 @@ set (CST_AIRFOIL_TEST_HEADER ${_ELI_TEST_INCLUDE_DIR}/octave_helpers.hpp
                              ${ELI_SOURCE_DIR}/include/eli/mutil/fd/d2o2.hpp
                              ${ELI_SOURCE_DIR}/include/eli/geom/point/distance.hpp
                              ${ELI_SOURCE_DIR}/include/eli/geom/curve/pseudo/explicit_bezier.hpp
+                             ${ELI_SOURCE_DIR}/include/eli/geom/curve/pseudo/cst_base.hpp
                              ${ELI_SOURCE_DIR}/include/eli/geom/curve/pseudo/cst_airfoil.hpp
                              ${ELI_SOURCE_DIR}/include/eli/geom/curve/length.hpp
                              ${ELI_SOURCE_DIR}/include/eli/geom/curve/curvature.hpp)

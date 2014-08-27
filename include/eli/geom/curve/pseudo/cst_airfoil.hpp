@@ -30,7 +30,7 @@ namespace eli
     namespace curve
     {
       template<typename data__, typename tol__=eli::util::tolerance<data__> >
-      class cst_shape_base
+      class cst_base
       {
         private:
           typedef pseudo::explicit_bezier<data__, tol__> shape_curve_type;
@@ -44,15 +44,15 @@ namespace eli
           typedef typename shape_curve_type::tolerance_type tolerance_type;
 
         public:
-          cst_shape_base() : N1(0.5), N2(1), delta_te(0), shape_function(1) {}
-          cst_shape_base(const index_type &dim) : N1(0.5), N2(1), delta_te(0), shape_function(dim) {}
-          cst_shape_base(const data_type &N1r, const data_type &N2r, const index_type &dim)
+          cst_base() : N1(0.5), N2(1), delta_te(0), shape_function(1) {}
+          cst_base(const index_type &dim) : N1(0.5), N2(1), delta_te(0), shape_function(dim) {}
+          cst_base(const data_type &N1r, const data_type &N2r, const index_type &dim)
             : N1(N1r), N2(N2r), delta_te(0), shape_function(dim) {}
-          cst_shape_base(const cst_shape_base<data_type, tolerance_type> &cst)
+          cst_base(const cst_base<data_type, tolerance_type> &cst)
             : N1(cst.N1), N2(cst.N2), delta_te(cst.delta_te), shape_function(cst.shape_function) {}
-          ~cst_shape_base() {}
+          ~cst_base() {}
 
-          bool operator==(const cst_shape_base<data_type, tolerance_type> &cst) const
+          bool operator==(const cst_base<data_type, tolerance_type> &cst) const
           {
             if (this==&cst)
               return true;
@@ -61,12 +61,12 @@ namespace eli
             return (shape_function==cst.shape_function);
           }
 
-          bool operator!=(const cst_shape_base<data_type, tolerance_type> &cst) const
+          bool operator!=(const cst_base<data_type, tolerance_type> &cst) const
           {
             return !operator==(cst);
           }
 
-          cst_shape_base & operator=(const cst_shape_base<data_type, tolerance_type> &cst)
+          cst_base & operator=(const cst_base<data_type, tolerance_type> &cst)
           {
             if (this == &cst)
             {
@@ -658,10 +658,10 @@ namespace eli
     namespace curve
     {
       template<typename data__, typename tol__=eli::util::tolerance<data__> >
-      class cst_airfoil : public cst_shape_base<data__, tol__>
+      class cst_airfoil : public cst_base<data__, tol__>
       {
         private:
-          typedef cst_shape_base<data__, tol__> base_class_type;
+          typedef cst_base<data__, tol__> base_class_type;
 
         public:
           typedef typename base_class_type::data_type data_type;
@@ -672,9 +672,9 @@ namespace eli
           typedef typename base_class_type::tolerance_type tolerance_type;
 
         public:
-          cst_airfoil() : cst_shape_base<data_type, tolerance_type> (0.5, 1, 1) {}
-          cst_airfoil(index_type dim) : cst_shape_base<data_type, tolerance_type>(0.5, 1, dim) {}
-          cst_airfoil(const cst_airfoil<data_type, tolerance_type> &cst) : cst_shape_base<data_type, tolerance_type>(cst) {}
+          cst_airfoil() : cst_base<data_type, tolerance_type> (0.5, 1, 1) {}
+          cst_airfoil(index_type dim) : cst_base<data_type, tolerance_type>(0.5, 1, dim) {}
+          cst_airfoil(const cst_airfoil<data_type, tolerance_type> &cst) : cst_base<data_type, tolerance_type>(cst) {}
           ~cst_airfoil() {}
 
           bool operator==(const cst_airfoil<data_type, tolerance_type> &cst) const
