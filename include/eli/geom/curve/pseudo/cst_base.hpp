@@ -76,6 +76,8 @@ namespace eli
             N1=cst.N1;
             N2=cst.N2;
             shape_function=cst.shape_function;
+
+            return (*this);
           }
 
           static dimension_type dimension() {return 2;}
@@ -175,8 +177,8 @@ namespace eli
           }
 
         private:
-          data_type delta_te;
           data_type N1, N2;
+          data_type delta_te;
           shape_curve_type shape_function;
 
         private:
@@ -261,7 +263,7 @@ namespace eli
           data_type class_fp(const data_type &t) const
           {
             const data_type one_half(static_cast<data_type>(0.5)), three_half(static_cast<data_type>(1.5));
-            const data_type one_quarter(static_cast<data_type>(0.25)), three_quarter(static_cast<data_type>(0.75));
+            const data_type one_quarter(static_cast<data_type>(0.25));
             const data_type max_val(std::numeric_limits<data_type>::max());
 
             // front is special
@@ -391,7 +393,7 @@ namespace eli
               }
               if (N2==one_half)
               {
-                return 0.5/std::sqrt(1-t);
+                return one_half/std::sqrt(1-t);
               }
 
               return N2*std::pow(1-t, N2-1);
@@ -423,10 +425,10 @@ namespace eli
               }
               if (N2==one_half)
               {
-                0.5*(1-2*t)/std::sqrt(t*(1-t));
+                return one_half*(1-2*t)/std::sqrt(t*(1-t));
               }
 
-              return 0.5*std::sqrt(t)*std::pow(1-t, N2-1)*(1-(1+2*N2)*t);
+              return one_half*std::sqrt(t)*std::pow(1-t, N2-1)*(1-(1+2*N2)*t);
             }
             if (N2==0)
             {
@@ -438,7 +440,7 @@ namespace eli
             }
             if (N2==one_half)
             {
-              return 0.5*(2*N1-(1+2*N1)*t)*std::pow(t, N1-1)/std::sqrt(1-t);
+              return one_half*(2*N1-(1+2*N1)*t)*std::pow(t, N1-1)/std::sqrt(1-t);
             }
 
             return (N1-(N1+N2)*t)*std::pow(t, N1-1)*std::pow(1-t, N2-1);
@@ -446,7 +448,7 @@ namespace eli
 
           data_type class_fpp(const data_type &t) const
           {
-            const data_type one_half(static_cast<data_type>(0.5)), three_half(static_cast<data_type>(1.5));
+            const data_type one_half(static_cast<data_type>(0.5));
             const data_type one_quarter(static_cast<data_type>(0.25)), three_quarter(static_cast<data_type>(0.75));
             const data_type max_val(std::numeric_limits<data_type>::max());
 
@@ -590,7 +592,7 @@ namespace eli
               }
               if (N2==one_half)
               {
-                return -0.25/std::sqrt(1-t)/(1-t);
+                return -one_quarter/std::sqrt(1-t)/(1-t);
               }
 
               return N2*(N2-1)*std::pow(1-t, N2-2);
@@ -641,7 +643,7 @@ namespace eli
             if (N2==one_half)
             {
               data_type N12(N1*N1);
-              return 0.25*(((4*N12-1)*t+4*(N1-2*N12))*t+4*(N12-N1))*std::pow(t, N1-2)/((1-t)*std::sqrt(1-t));
+              return one_quarter*(((4*N12-1)*t+4*(N1-2*N12))*t+4*(N12-N1))*std::pow(t, N1-2)/((1-t)*std::sqrt(1-t));
             }
 
             return (t*(t*(N1*(1-N1)+N2*(1-N2))+2*N1*(1-(N1+N2)))+N1*(1-N1))*std::pow(t, N1-2)*std::pow(1-t, N2-2);
