@@ -55,8 +55,7 @@ class cst_airfoil_test_suite : public Test::Suite
       TEST_ADD(cst_airfoil_test_suite<float>::evaluation_test);
       TEST_ADD(cst_airfoil_test_suite<float>::derivative_test);
       TEST_ADD(cst_airfoil_test_suite<float>::promotion_test);
-//      TEST_ADD(cst_airfoil_test_suite<float>::demotion_test);
-//      TEST_ADD(cst_airfoil_test_suite<float>::length_test);
+      TEST_ADD(cst_airfoil_test_suite<float>::demotion_test);
     }
     void AddTests(const double &)
     {
@@ -65,8 +64,7 @@ class cst_airfoil_test_suite : public Test::Suite
       TEST_ADD(cst_airfoil_test_suite<double>::evaluation_test);
       TEST_ADD(cst_airfoil_test_suite<double>::derivative_test);
       TEST_ADD(cst_airfoil_test_suite<double>::promotion_test);
-//      TEST_ADD(cst_airfoil_test_suite<double>::demotion_test);
-//      TEST_ADD(cst_airfoil_test_suite<double>::length_test);
+      TEST_ADD(cst_airfoil_test_suite<double>::demotion_test);
     }
     void AddTests(const long double &)
     {
@@ -75,8 +73,7 @@ class cst_airfoil_test_suite : public Test::Suite
       TEST_ADD(cst_airfoil_test_suite<long double>::evaluation_test);
       TEST_ADD(cst_airfoil_test_suite<long double>::derivative_test);
       TEST_ADD(cst_airfoil_test_suite<long double>::promotion_test);
-//      TEST_ADD(cst_airfoil_test_suite<long double>::demotion_test);
-//      TEST_ADD(cst_airfoil_test_suite<long double>::length_test);
+      TEST_ADD(cst_airfoil_test_suite<long double>::demotion_test);
     }
 
   public:
@@ -309,163 +306,151 @@ class cst_airfoil_test_suite : public Test::Suite
     {
       // no constraint
       {
-        typedef eli::geom::curve::bezier<data__, 2> bezier_curve_type;
+        typedef eli::geom::curve::pseudo::explicit_bezier<data__> reference_curve_type;
 
-        control_point_type cntrl_in(9, 1), cntrl_out;
-        typename bezier_curve_type::control_point_type bez_cntrl(9,2), bez_cntrl_out;
         curve_type ebc;
-        bezier_curve_type bc;
+        control_point_type cntrl_in[5], cntrl_out;
+        reference_curve_type ref_crv;
 
-        // set control points and create curves
-        cntrl_in << 2.0,
-                    1.5,
-                    1.0,
-                    0.5,
-                    0.0,
-                   -0.5,
-                   -1.0,
-                    1.0,
-                    0.5;
-        bez_cntrl.col(0) << 0, 0.125, 0.25, 0.325, 0.5, 0.625, 0.75, 0.875, 1;
-        bez_cntrl.col(1)=cntrl_in;
-        ebc.set_control_points(cntrl_in);
-        bc.set_control_points(bez_cntrl);
+        // set control points
+        cntrl_in[0] << 2;
+        cntrl_in[1] << static_cast<data_type>(1.5);
+        cntrl_in[2] << 0;
+        cntrl_in[3] << 1;
+        cntrl_in[4] << static_cast<data_type>(0.5);
+
+        ebc.resize(4);
+        ref_crv.resize(4);
+        for (index_type i=0; i<=ebc.degree(); ++i)
+        {
+          ebc.set_control_point(cntrl_in[i], i);
+          ref_crv.set_control_point(cntrl_in[i], i);
+        }
 
         ebc.degree_demote(eli::geom::general::NOT_CONNECTED);
-        bc.degree_demote(eli::geom::general::NOT_CONNECTED);
-        bc.get_control_points(bez_cntrl_out);
-        ebc.get_control_points(cntrl_out);
-        TEST_ASSERT(bez_cntrl_out.col(1)==cntrl_out);
+        ref_crv.degree_demote(eli::geom::general::NOT_CONNECTED);
+
+
+        // test to see if degree has increased
+        TEST_ASSERT(ebc.degree()==ref_crv.degree());
+        for (index_type i=0; i<ebc.degree(); ++i)
+        {
+          TEST_ASSERT(tol.approximately_equal(ebc.get_control_point(i), ref_crv.get_control_point(i)));
+        }
       }
 
       // C0 constraint
       {
-        typedef eli::geom::curve::bezier<data__, 2> bezier_curve_type;
+        typedef eli::geom::curve::pseudo::explicit_bezier<data__> reference_curve_type;
 
-        control_point_type cntrl_in(9, 1), cntrl_out;
-        typename bezier_curve_type::control_point_type bez_cntrl(9,2), bez_cntrl_out;
         curve_type ebc;
-        bezier_curve_type bc;
+        control_point_type cntrl_in[5], cntrl_out;
+        reference_curve_type ref_crv;
 
-        // set control points and create curves
-        cntrl_in << 2.0,
-                    1.5,
-                    1.0,
-                    0.5,
-                    0.0,
-                   -0.5,
-                   -1.0,
-                    1.0,
-                    0.5;
-        bez_cntrl.col(0) << 0, 0.125, 0.25, 0.325, 0.5, 0.625, 0.75, 0.875, 1;
-        bez_cntrl.col(1)=cntrl_in;
-        ebc.set_control_points(cntrl_in);
-        bc.set_control_points(bez_cntrl);
+        // set control points
+        cntrl_in[0] << 2;
+        cntrl_in[1] << static_cast<data_type>(1.5);
+        cntrl_in[2] << 0;
+        cntrl_in[3] << 1;
+        cntrl_in[4] << static_cast<data_type>(0.5);
+
+        ebc.resize(4);
+        ref_crv.resize(4);
+        for (index_type i=0; i<=ebc.degree(); ++i)
+        {
+          ebc.set_control_point(cntrl_in[i], i);
+          ref_crv.set_control_point(cntrl_in[i], i);
+        }
 
         ebc.degree_demote(eli::geom::general::C0);
-        bc.degree_demote(eli::geom::general::C0);
-        bc.get_control_points(bez_cntrl_out);
-        ebc.get_control_points(cntrl_out);
-        TEST_ASSERT(bez_cntrl_out.col(1)==cntrl_out);
+        ref_crv.degree_demote(eli::geom::general::C0);
+
+
+        // test to see if degree has increased
+        TEST_ASSERT(ebc.degree()==ref_crv.degree());
+        for (index_type i=0; i<ebc.degree(); ++i)
+        {
+          TEST_ASSERT(tol.approximately_equal(ebc.get_control_point(i), ref_crv.get_control_point(i)));
+        }
       }
 
       // C1 constraint
       {
-        typedef eli::geom::curve::bezier<data__, 2> bezier_curve_type;
+        typedef eli::geom::curve::pseudo::explicit_bezier<data__> reference_curve_type;
 
-        control_point_type cntrl_in(9, 1), cntrl_out;
-        typename bezier_curve_type::control_point_type bez_cntrl(9,2), bez_cntrl_out;
         curve_type ebc;
-        bezier_curve_type bc;
+        control_point_type cntrl_in[9], cntrl_out;
+        reference_curve_type ref_crv;
 
-        // set control points and create curves
-        cntrl_in << 2.0,
-                    1.5,
-                    1.0,
-                    0.5,
-                    0.0,
-                   -0.5,
-                   -1.0,
-                    1.0,
-                    0.5;
-        bez_cntrl.col(0) << 0, 0.125, 0.25, 0.325, 0.5, 0.625, 0.75, 0.875, 1;
-        bez_cntrl.col(1)=cntrl_in;
-        ebc.set_control_points(cntrl_in);
-        bc.set_control_points(bez_cntrl);
+        // set control points
+        cntrl_in[0] << 2;
+        cntrl_in[1] << static_cast<data_type>(1.5);
+        cntrl_in[2] << 1;
+        cntrl_in[3] << static_cast<data_type>(0.5);
+        cntrl_in[4] << 0;
+        cntrl_in[5] << static_cast<data_type>(-0.5);
+        cntrl_in[6] << -1;
+        cntrl_in[7] << 1;
+        cntrl_in[8] << static_cast<data_type>(0.5);
+
+        ebc.resize(8);
+        ref_crv.resize(8);
+        for (index_type i=0; i<=ebc.degree(); ++i)
+        {
+          ebc.set_control_point(cntrl_in[i], i);
+          ref_crv.set_control_point(cntrl_in[i], i);
+        }
 
         ebc.degree_demote(eli::geom::general::C1);
-        bc.degree_demote(eli::geom::general::C1);
-        bc.get_control_points(bez_cntrl_out);
-        ebc.get_control_points(cntrl_out);
-        TEST_ASSERT(bez_cntrl_out.col(1)==cntrl_out);
+        ref_crv.degree_demote(eli::geom::general::C1);
+
+
+        // test to see if degree has increased
+        TEST_ASSERT(ebc.degree()==ref_crv.degree());
+        for (index_type i=0; i<ebc.degree(); ++i)
+        {
+          TEST_ASSERT(tol.approximately_equal(ebc.get_control_point(i), ref_crv.get_control_point(i)));
+        }
       }
 
       // C2 constraint
       {
-        typedef eli::geom::curve::bezier<data__, 2> bezier_curve_type;
+        typedef eli::geom::curve::pseudo::explicit_bezier<data__> reference_curve_type;
 
-        control_point_type cntrl_in(9, 1), cntrl_out;
-        typename bezier_curve_type::control_point_type bez_cntrl(9,2), bez_cntrl_out;
         curve_type ebc;
-        bezier_curve_type bc;
+        control_point_type cntrl_in[9], cntrl_out;
+        reference_curve_type ref_crv;
 
-        // set control points and create curves
-        cntrl_in << 2.0,
-                    1.5,
-                    1.0,
-                    0.5,
-                    0.0,
-                   -0.5,
-                   -1.0,
-                    1.0,
-                    0.5;
-        bez_cntrl.col(0) << 0, 0.125, 0.25, 0.325, 0.5, 0.625, 0.75, 0.875, 1;
-        bez_cntrl.col(1)=cntrl_in;
-        ebc.set_control_points(cntrl_in);
-        bc.set_control_points(bez_cntrl);
+        // set control points
+        cntrl_in[0] << 2;
+        cntrl_in[1] << static_cast<data_type>(1.5);
+        cntrl_in[2] << 1;
+        cntrl_in[3] << static_cast<data_type>(0.5);
+        cntrl_in[4] << 0;
+        cntrl_in[5] << static_cast<data_type>(-0.5);
+        cntrl_in[6] << -1;
+        cntrl_in[7] << 1;
+        cntrl_in[8] << static_cast<data_type>(0.5);
+
+        ebc.resize(8);
+        ref_crv.resize(8);
+        for (index_type i=0; i<=ebc.degree(); ++i)
+        {
+          ebc.set_control_point(cntrl_in[i], i);
+          ref_crv.set_control_point(cntrl_in[i], i);
+        }
 
         ebc.degree_demote(eli::geom::general::C2);
-        bc.degree_demote(eli::geom::general::C2);
-        bc.get_control_points(bez_cntrl_out);
-        ebc.get_control_points(cntrl_out);
-        TEST_ASSERT(bez_cntrl_out.col(1)==cntrl_out);
+        ref_crv.degree_demote(eli::geom::general::C2);
+
+
+        // test to see if degree has increased
+        TEST_ASSERT(ebc.degree()==ref_crv.degree());
+        for (index_type i=0; i<ebc.degree(); ++i)
+        {
+          TEST_ASSERT(tol.approximately_equal(ebc.get_control_point(i), ref_crv.get_control_point(i)));
+        }
       }
-    }
-
-    void length_test()
-    {
-      typedef eli::geom::curve::bezier<data__, 2> bezier_curve_type;
-      data_type eps(std::numeric_limits<data__>::epsilon());
-
-      control_point_type cntrl_in(5, 1);
-      typename bezier_curve_type::control_point_type bez_cntrl(5,2);
-      curve_type ebc;
-      bezier_curve_type bc;
-      typename curve_type::data_type length_cal, length_ref;
-
-      // set control points and create curves
-      cntrl_in << 2.0,
-                  1.5,
-                  0.0,
-                  1.0,
-                  0.5;
-      bez_cntrl.col(0) << 0, 0.25, 0.5, 0.75, 1;
-      bez_cntrl.col(1)=cntrl_in;
-      ebc.set_control_points(cntrl_in);
-      bc.set_control_points(bez_cntrl);
-
-      // calculate the length of curve
-      data_type tol(std::sqrt(eps));
-      length(length_cal, ebc, tol);
-      length(length_ref, bc, tol);
-      TEST_ASSERT(length_cal==length_ref);
-
-      // test computing some segment length
-      typename curve_type::data_type t0(0.2), t1(0.7);
-
-      length(length_cal, ebc, t0, t1, tol);
-      length(length_ref, bc, t0, t1, tol);
-      TEST_ASSERT(length_cal==length_ref);
     }
 };
 #endif
