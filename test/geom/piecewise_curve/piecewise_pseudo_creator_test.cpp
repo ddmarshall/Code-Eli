@@ -21,6 +21,8 @@
 #include <cpptest.h> // CppTest Framework
 
 #include "piecewise_four_digit_creator_test_suite.hpp"         // piecewise_four_digit_creator_test_suite
+#include "piecewise_explicit_bezier_creator_test_suite.hpp"    // piecewise_explicit_bezier_creator_test_suite
+#include "piecewise_cst_airfoil_creator_test_suite.hpp"        // piecewise_cst_airfoil_creator_test_suite
 
 enum TestType {testTypeText, testTypeCompiler, testTypeHTML};
 
@@ -154,6 +156,12 @@ int main(int argc, char *argv[])
     ts.add(std::auto_ptr<Test::Suite>(new piecewise_four_digit_creator_test_suite<float>()));
     ts.add(std::auto_ptr<Test::Suite>(new piecewise_four_digit_creator_test_suite<double>()));
     ts.add(std::auto_ptr<Test::Suite>(new piecewise_four_digit_creator_test_suite<long double>()));
+    ts.add(std::auto_ptr<Test::Suite>(new piecewise_explicit_bezier_creator_test_suite<float>()));
+    ts.add(std::auto_ptr<Test::Suite>(new piecewise_explicit_bezier_creator_test_suite<double>()));
+    ts.add(std::auto_ptr<Test::Suite>(new piecewise_explicit_bezier_creator_test_suite<long double>()));
+    ts.add(std::auto_ptr<Test::Suite>(new piecewise_cst_airfoil_creator_test_suite<float>()));
+    ts.add(std::auto_ptr<Test::Suite>(new piecewise_cst_airfoil_creator_test_suite<double>()));
+    ts.add(std::auto_ptr<Test::Suite>(new piecewise_cst_airfoil_creator_test_suite<long double>()));
 
     //
     // NOTE: End of section that should be changed
