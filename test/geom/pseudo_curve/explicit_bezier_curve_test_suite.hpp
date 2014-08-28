@@ -112,18 +112,6 @@ class explicit_bezier_curve_test_suite : public Test::Suite
       std::cout << "plot(xpts, ypts, 'bo', xint, yint, 'k-');" << std::endl;
     }
 
-    void create_circle(std::vector<point_type, Eigen::aligned_allocator<point_type> > &pts)
-    {
-      // NOTE: This will create a semi-circle
-      size_t n=pts.size();
-      for (size_t i=0; i<n; ++i)
-      {
-        data__ theta(eli::constants::math<data__>::pi()*static_cast<data__>(i)/(n-1));
-        pts[i](0)=(1-std::cos(theta))/2;
-        pts[i](1)=std::sin(theta);
-      }
-    }
-
     void assignment_test()
     {
       curve_type ebc1(3), ebc2;
