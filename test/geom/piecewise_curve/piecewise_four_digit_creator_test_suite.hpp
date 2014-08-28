@@ -37,7 +37,7 @@ class piecewise_four_digit_creator_test_suite : public Test::Suite
     typedef typename piecewise_curve_type::data_type data_type;
     typedef typename piecewise_curve_type::index_type index_type;
     typedef typename piecewise_curve_type::tolerance_type tolerance_type;
-    typedef eli::geom::curve::piecewise_four_digit_creator<data__, 3, tolerance_type> point_creator_type;
+    typedef eli::geom::curve::piecewise_four_digit_creator<data__, 3, tolerance_type> four_digit_type;
 
     tolerance_type tol;
 
@@ -176,7 +176,7 @@ class piecewise_four_digit_creator_test_suite : public Test::Suite
 
     void create_airfoil_test()
     {
-      point_creator_type af;
+      four_digit_type af;
 
       data_type th, cam, cam_loc;
       bool rtn;
