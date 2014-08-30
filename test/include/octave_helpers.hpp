@@ -17,6 +17,7 @@
 
 #include "eli/geom/curve/bezier.hpp"
 #include "eli/geom/curve/piecewise.hpp"
+#include "eli/geom/curve/pseudo/explicit_bezier.hpp"
 #include "eli/geom/surface/bezier.hpp"
 #include "eli/geom/surface/piecewise.hpp"
 
@@ -56,6 +57,357 @@ namespace eli
       std::cout << "xlabel('x');" << std::endl;
       std::cout << "ylabel('y');" << std::endl;
       std::cout << "zlabel('z');" << std::endl;
+    }
+
+    template<typename data__>
+    void octave_print(int figno, const eli::geom::curve::bezier<data__, 2> &bc,
+                      const std::string &name="", bool show_control_points=true)
+    {
+
+      typedef eli::geom::curve::piecewise<eli::geom::curve::bezier, data__, 2> piecewise_curve_type;
+      typedef typename piecewise_curve_type::curve_type curve_type;
+      typedef typename piecewise_curve_type::data_type data_type;
+      typedef typename piecewise_curve_type::index_type index_type;
+
+      std::string nm, cpxbuf, cpybuf, cxbuf, cybuf;
+
+      index_type i;
+      data_type tmin(0), tmax(1);
+
+      // build name
+      if (name=="")
+      {
+        nm=random_string(5);
+      }
+      else
+      {
+        nm=name;
+      }
+
+      // set control points
+      if (show_control_points)
+      {
+        cpxbuf=nm+"_curv_cp_x=[";
+        cpybuf=nm+"_curv_cp_y=[";
+        {
+          index_type bez_deg;
+          bez_deg=bc.degree();
+          for (i=0; i<=bez_deg; ++i)
+          {
+            cpxbuf+=std::to_string(bc.get_control_point(i).x());
+            cpybuf+=std::to_string(bc.get_control_point(i).y());
+            if (i<bez_deg)
+            {
+              cpxbuf+=", ";
+              cpybuf+=", ";
+            }
+          }
+        }
+        cpxbuf+="];";
+        cpybuf+="];";
+      }
+
+      // initialize the t parameters
+      index_type nt(33);
+      std::vector<data__> t(nt);
+      for (i=0; i<nt; ++i)
+      {
+        t[i]=tmin+(tmax-tmin)*static_cast<data__>(i)/(nt-1);
+      }
+
+      // set the curve points
+      cxbuf=nm+"_curv_x=[";
+      cybuf=nm+"_curv_y=[";
+      for (i=0; i<nt; ++i)
+      {
+        cxbuf+=std::to_string(bc.f(t[i]).x());
+        cybuf+=std::to_string(bc.f(t[i]).y());
+        if (i<nt)
+        {
+          cxbuf+=", ";
+          cybuf+=", ";
+        }
+      }
+      cxbuf+="];";
+      cybuf+="];";
+
+      std::cout << "% curve: " << nm << std::endl;
+      std::cout << "figure(" << figno << ");" << std::endl;
+      std::cout << cxbuf << std::endl;
+      std::cout << cybuf << std::endl;
+      if (show_control_points)
+      {
+        std::cout << cpxbuf << std::endl;
+        std::cout << cpybuf << std::endl;
+      }
+      std::cout << "setenv('GNUTERM', 'x11');" << std::endl;
+      std::cout << "plot(" << nm << "_curv_x, "
+                           << nm << "_curv_y, "
+                           << "'-g');" << std::endl;
+      if (show_control_points)
+      {
+        std::cout << "plot(" << nm << "_curv_cp_x', "
+                             << nm << "_curv_cp_y', "
+                             << "'-o', 'Color', [0 0.5 0], 'MarkerFaceColor', [0 0.5 0]);" << std::endl;
+      }
+    }
+
+    template<typename data__>
+    void octave_print(int figno, const eli::geom::curve::bezier<data__, 3> &bc,
+                      const std::string &name="", bool show_control_points=true)
+    {
+
+      typedef eli::geom::curve::piecewise<eli::geom::curve::bezier, data__, 3> piecewise_curve_type;
+      typedef typename piecewise_curve_type::curve_type curve_type;
+      typedef typename piecewise_curve_type::data_type data_type;
+      typedef typename piecewise_curve_type::index_type index_type;
+
+      std::string nm, cpxbuf, cpybuf, cpzbuf, cxbuf, cybuf, czbuf;
+
+      index_type i;
+      data_type tmin(0), tmax(1);
+
+      // build name
+      if (name=="")
+      {
+        nm=random_string(5);
+      }
+      else
+      {
+        nm=name;
+      }
+
+      // set control points
+      if (show_control_points)
+      {
+        cpxbuf=nm+"_curv_cp_x=[";
+        cpybuf=nm+"_curv_cp_y=[";
+        cpzbuf=nm+"_curv_cp_z=[";
+        {
+          index_type bez_deg;
+          bez_deg=bc.degree();
+          for (i=0; i<=bez_deg; ++i)
+          {
+            cpxbuf+=std::to_string(bc.get_control_point(i).x());
+            cpybuf+=std::to_string(bc.get_control_point(i).y());
+            cpzbuf+=std::to_string(bc.get_control_point(i).z());
+            if (i<bez_deg)
+            {
+              cpxbuf+=", ";
+              cpybuf+=", ";
+              cpzbuf+=", ";
+            }
+          }
+        }
+        cpxbuf+="];";
+        cpybuf+="];";
+        cpzbuf+="];";
+      }
+
+      // initialize the t parameters
+      index_type nt(33);
+      std::vector<data__> t(nt);
+      for (i=0; i<nt; ++i)
+      {
+        t[i]=tmin+(tmax-tmin)*static_cast<data__>(i)/(nt-1);
+      }
+
+      // set the curve points
+      cxbuf=nm+"_curv_x=[";
+      cybuf=nm+"_curv_y=[";
+      czbuf=nm+"_curv_z=[";
+      for (i=0; i<nt; ++i)
+      {
+        cxbuf+=std::to_string(bc.f(t[i]).x());
+        cybuf+=std::to_string(bc.f(t[i]).y());
+        czbuf+=std::to_string(bc.f(t[i]).z());
+        if (i<nt)
+        {
+          cxbuf+=", ";
+          cybuf+=", ";
+          czbuf+=", ";
+        }
+      }
+      cxbuf+="];";
+      cybuf+="];";
+      czbuf+="];";
+
+      std::cout << "% curve: " << nm << std::endl;
+      std::cout << "figure(" << figno << ");" << std::endl;
+      std::cout << cxbuf << std::endl;
+      std::cout << cybuf << std::endl;
+      std::cout << czbuf << std::endl;
+      if (show_control_points)
+      {
+        std::cout << cpxbuf << std::endl;
+        std::cout << cpybuf << std::endl;
+        std::cout << cpzbuf << std::endl;
+      }
+      std::cout << "setenv('GNUTERM', 'x11');" << std::endl;
+      std::cout << "plot3(" << nm << "_curv_x, "
+                            << nm << "_curv_y, "
+                            << nm << "_curv_z, "
+                            << "'-g');" << std::endl;
+      if (show_control_points)
+      {
+        std::cout << "plot3(" << nm << "_curv_cp_x', "
+                              << nm << "_curv_cp_y', "
+                              << nm << "_curv_cp_z', "
+                              << "'-o', 'Color', [0 0.5 0], 'MarkerFaceColor', [0 0.5 0]);" << std::endl;
+      }
+    }
+
+    template<typename data__>
+    void octave_print(int figno, const eli::geom::curve::pseudo::explicit_bezier<data__> &ebc,
+                      const std::string &name="")
+    {
+      typedef eli::geom::curve::pseudo::explicit_bezier<data__> explicit_bezier_curve_type;
+      typedef typename explicit_bezier_curve_type::data_type data_type;
+      typedef typename explicit_bezier_curve_type::index_type index_type;
+
+      std::string nm, cxbuf, cybuf;
+
+      index_type i, pp, ns;
+      data_type tmin(0), tmax(1);
+
+      // build name
+      if (name=="")
+      {
+        nm=random_string(5);
+      }
+      else
+      {
+        nm=name;
+      }
+
+      // initialize the t parameters
+      index_type nt(33);
+      std::vector<data__> t(nt);
+      for (i=0; i<nt; ++i)
+      {
+        t[i]=tmin+(tmax-tmin)*static_cast<data__>(i)/(nt-1);
+      }
+
+      // set the curve points
+      cxbuf=nm+"_curv_x=[";
+      cybuf=nm+"_curv_y=[";
+      for (i=0; i<nt; ++i)
+      {
+        cxbuf+=std::to_string(ebc.f(t[i]).x());
+        cybuf+=std::to_string(ebc.f(t[i]).y());
+        if (i<nt)
+        {
+          cxbuf+=", ";
+          cybuf+=", ";
+        }
+      }
+      cxbuf+="];";
+      cybuf+="];";
+
+      std::cout << "% curve: " << nm << std::endl;
+      std::cout << "figure(" << figno << ");" << std::endl;
+      std::cout << cxbuf << std::endl;
+      std::cout << cybuf << std::endl;
+      std::cout << "setenv('GNUTERM', 'x11');" << std::endl;
+      std::cout << "plot(" << nm << "_curv_x, "
+                           << nm << "_curv_y, '-c');" << std::endl;
+    }
+
+    template<typename data__>
+    void octave_print(int figno, const eli::geom::curve::piecewise<eli::geom::curve::bezier, data__, 2> &pc,
+                      const std::string &name="", bool show_control_points=true)
+    {
+      typedef eli::geom::curve::piecewise<eli::geom::curve::bezier, data__, 2> piecewise_curve_type;
+      typedef typename piecewise_curve_type::curve_type curve_type;
+      typedef typename piecewise_curve_type::data_type data_type;
+      typedef typename piecewise_curve_type::index_type index_type;
+
+      std::string nm, cpxbuf, cpybuf, cxbuf, cybuf;
+
+      index_type i, pp, ns;
+      data_type tmin(pc.get_parameter_min()), tmax(pc.get_parameter_max());
+
+      ns=pc.number_segments();
+
+      // build name
+      if (name=="")
+      {
+        nm=random_string(5);
+      }
+      else
+      {
+        nm=name;
+      }
+
+      // set control points
+      if (show_control_points)
+      {
+        cpxbuf=nm+"_curv_cp_x=[";
+        cpybuf=nm+"_curv_cp_y=[";
+        for (pp=0; pp<ns; ++pp)
+        {
+          index_type bez_deg;
+          curve_type bez;
+          pc.get(bez, pp);
+          bez_deg=bez.degree();
+          for (i=0; i<=bez_deg; ++i)
+          {
+            cpxbuf+=std::to_string(bez.get_control_point(i).x());
+            cpybuf+=std::to_string(bez.get_control_point(i).y());
+            if ((pp<(ns-1)) || ((pp==(ns-1)) && (i<bez_deg)))
+            {
+              cpxbuf+=", ";
+              cpybuf+=", ";
+            }
+          }
+        }
+        cpxbuf+="];";
+        cpybuf+="];";
+      }
+
+      // initialize the t parameters
+      index_type nt(129);
+      std::vector<data__> t(nt);
+      for (i=0; i<nt; ++i)
+      {
+        t[i]=tmin+(tmax-tmin)*static_cast<data__>(i)/(nt-1);
+      }
+
+      // set the curve points
+      cxbuf=nm+"_curv_x=[";
+      cybuf=nm+"_curv_y=[";
+      for (i=0; i<nt; ++i)
+      {
+        cxbuf+=std::to_string(pc.f(t[i]).x());
+        cybuf+=std::to_string(pc.f(t[i]).y());
+        if (i<nt)
+        {
+          cxbuf+=", ";
+          cybuf+=", ";
+        }
+      }
+      cxbuf+="];";
+      cybuf+="];";
+
+      std::cout << "% curve: " << nm << std::endl;
+      std::cout << "figure(" << figno << ");" << std::endl;
+      std::cout << cxbuf << std::endl;
+      std::cout << cybuf << std::endl;
+      if (show_control_points)
+      {
+        std::cout << cpxbuf << std::endl;
+        std::cout << cpybuf << std::endl;
+      }
+      std::cout << "setenv('GNUTERM', 'x11');" << std::endl;
+      std::cout << "plot(" << nm << "_curv_x, "
+                           << nm << "_curv_y, "
+                           << "'-g');" << std::endl;
+      if (show_control_points)
+      {
+        std::cout << "plot3(" << nm << "_curv_cp_x', "
+                              << nm << "_curv_cp_y', "
+                              << "'-o', 'Color', [0 0.5 0], 'MarkerFaceColor', [0 0.5 0]);" << std::endl;
+      }
     }
 
     template<typename data__>
@@ -156,13 +508,102 @@ namespace eli
       std::cout << "setenv('GNUTERM', 'x11');" << std::endl;
       std::cout << "plot3(" << nm << "_curv_x, "
                             << nm << "_curv_y, "
-                            << nm << "_curv_z, '-g');" << std::endl;
+                            << nm << "_curv_z, "
+                            << "'-g');" << std::endl;
       if (show_control_points)
       {
         std::cout << "plot3(" << nm << "_curv_cp_x', "
                               << nm << "_curv_cp_y', "
-                              << nm << "_curv_cp_z', '-o', 'Color', [0 0.5 0], 'MarkerFaceColor', [0 0.5 0]);" << std::endl;
+                              << nm << "_curv_cp_z', "
+                              << "'-o', 'Color', [0 0.5 0], 'MarkerFaceColor', [0 0.5 0]);" << std::endl;
       }
+    }
+
+    template<typename data__>
+    void octave_print(int figno, const eli::geom::curve::piecewise<eli::geom::curve::bezier, data__, 2> &pc,
+                      const eli::geom::curve::piecewise<eli::geom::curve::bezier, data__, 2> &vec,
+                      const std::string &name="")
+    {
+      typedef eli::geom::curve::piecewise<eli::geom::curve::bezier, data__, 2> piecewise_curve_type;
+      typedef typename piecewise_curve_type::data_type data_type;
+      typedef typename piecewise_curve_type::index_type index_type;
+      typedef typename piecewise_curve_type::tolerance_type tolerance_type;
+
+      std::string nm(random_string(5)), vecxbuf, vecybuf, cxbuf, cybuf;
+
+      index_type i, pp, ns;
+      data_type tmin, tmax;
+
+      tolerance_type tol;
+
+      ns=pc.number_segments();
+      pc.get_parameter_min(tmin);
+      pc.get_parameter_max(tmax);
+
+      // check parameterization of vec curve
+      if (!tol.approximately_equal(vec.get_t0(), tmin))
+      {
+        return;
+      }
+      if (!tol.approximately_equal(vec.get_tmax(), tmax))
+      {
+        return;
+      }
+
+      // build name
+      if (name=="")
+      {
+        nm=random_string(5);
+      }
+      else
+      {
+        nm=name;
+      }
+
+      // initialize the t parameters
+      index_type nt(11);
+      std::vector<data__> t(nt);
+      for (i=0; i<nt; ++i)
+      {
+        t[i]=tmin+(tmax-tmin)*static_cast<data__>(i)/(nt-1);
+      }
+
+      // set the surface points
+      cxbuf=nm+"_loc_x=[";
+      cybuf=nm+"_loc_y=[";
+      vecxbuf=nm+"_vec_x=[";
+      vecybuf=nm+"_vec_y=[";
+      for (i=0; i<nt; ++i)
+      {
+        cxbuf+=std::to_string(pc.f(t[i]).x());
+        cybuf+=std::to_string(pc.f(t[i]).y());
+        vecxbuf+=std::to_string(vec.f(t[i]).x());
+        vecybuf+=std::to_string(vec.f(t[i]).y());
+        if (i<nt)
+        {
+          cxbuf+=", ";
+          cybuf+=", ";
+          vecxbuf+=", ";
+          vecybuf+=", ";
+        }
+      }
+      cxbuf+="];";
+      cybuf+="];";
+      vecxbuf+="];";
+      vecybuf+="];";
+
+      std::cout << "% curve: " << nm << std::endl;
+      std::cout << "figure(" << figno << ");" << std::endl;
+      std::cout << cxbuf << std::endl;
+      std::cout << cybuf << std::endl;
+      std::cout << vecxbuf << std::endl;
+      std::cout << vecybuf << std::endl;
+      std::cout << "setenv('GNUTERM', 'x11');" << std::endl;
+      std::cout << "quiver(" << nm << "_loc_x, "
+                             << nm << "_loc_y, "
+                             << nm << "_vec_x, "
+                             << nm << "_vec_y, "
+                             << "'r');" << std::endl;
     }
 
     template<typename data__>
