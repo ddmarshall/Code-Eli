@@ -148,6 +148,11 @@ namespace eli
               y_curve.degree_promote();
             }
 
+            void degree_promote_to(const index_type target_degree)
+            {
+              y_curve.degree_promote_to(target_degree);
+            }
+
             bool degree_demote(const geom::general::continuity &continuity_degree=geom::general::C0)
             {
               return y_curve.degree_demote(continuity_degree);
