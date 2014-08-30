@@ -27,6 +27,8 @@
 #include "eli/geom/curve/piecewise.hpp"
 #include "eli/geom/curve/piecewise_explicit_bezier_creator.hpp"
 
+#include "octave_helpers.hpp"
+
 template<typename data__>
 class piecewise_explicit_bezier_creator_test_suite : public Test::Suite
 {

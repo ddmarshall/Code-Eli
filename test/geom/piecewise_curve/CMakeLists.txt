@@ -33,7 +33,8 @@ add_test(NAME ${PIECEWISE_CURVE_TEST_EXE} COMMAND $<TARGET_FILE:${PIECEWISE_CURV
 # add the piecewise_curve_creator test
 set (PIECEWISE_CURVE_CREATOR_TEST_EXE PiecewiseCurveCreatorTest)
 set (PIECEWISE_CURVE_CREATOR_TEST_SOURCE ${PROJECT_SOURCE_DIR}/piecewise_curve_creator_test.cpp)
-set (PIECEWISE_CURVE_CREATOR_TEST_HEADER ${PROJECT_SOURCE_DIR}/piecewise_point_creator_test_suite.hpp
+set (PIECEWISE_CURVE_CREATOR_TEST_HEADER ${_ELI_TEST_INCLUDE_DIR}/octave_helpers.hpp
+                                         ${PROJECT_SOURCE_DIR}/piecewise_point_creator_test_suite.hpp
                                          ${PROJECT_SOURCE_DIR}/piecewise_polygon_creator_test_suite.hpp
                                          ${PROJECT_SOURCE_DIR}/piecewise_circle_creator_test_suite.hpp
                                          ${PROJECT_SOURCE_DIR}/piecewise_cubic_spline_creator_test_suite.hpp
@@ -63,7 +64,8 @@ add_test(NAME ${PIECEWISE_CURVE_CREATOR_TEST_EXE} COMMAND $<TARGET_FILE:${PIECEW
 # add the piecewise_pseudo_creator test
 set (PIECEWISE_PSEUDO_CREATOR_TEST_EXE PiecewisePseudoCreatorTest)
 set (PIECEWISE_PSEUDO_CREATOR_TEST_SOURCE ${PROJECT_SOURCE_DIR}/piecewise_pseudo_creator_test.cpp)
-set (PIECEWISE_PSEUDO_CREATOR_TEST_HEADER ${PROJECT_SOURCE_DIR}/piecewise_four_digit_creator_test_suite.hpp
+set (PIECEWISE_PSEUDO_CREATOR_TEST_HEADER ${_ELI_TEST_INCLUDE_DIR}/octave_helpers.hpp
+                                          ${PROJECT_SOURCE_DIR}/piecewise_four_digit_creator_test_suite.hpp
                                           ${PROJECT_SOURCE_DIR}/piecewise_explicit_bezier_creator_test_suite.hpp
                                           ${ELI_SOURCE_DIR}/include/eli/constants/math.hpp
                                           ${ELI_SOURCE_DIR}/include/eli/util/tolerance.hpp
