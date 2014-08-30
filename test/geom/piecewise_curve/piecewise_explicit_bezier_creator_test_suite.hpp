@@ -39,9 +39,8 @@ class piecewise_explicit_bezier_creator_test_suite : public Test::Suite
     typedef typename piecewise_curve_type::data_type data_type;
     typedef typename piecewise_curve_type::index_type index_type;
     typedef typename piecewise_curve_type::tolerance_type tolerance_type;
-#if 0
-    typedef eli::geom::curve::piecewise_explicit_bezier_creator<data__, 3, tolerance_type> explicit_bezier_type;
-#endif
+    typedef eli::geom::curve::pseudo::explicit_bezier<data__> explicit_bezier_type;
+    typedef typename explicit_bezier_type::control_point_type control_point_type;
 
     tolerance_type tol;
 
@@ -75,44 +74,74 @@ class piecewise_explicit_bezier_creator_test_suite : public Test::Suite
 
     void create_curve_test()
     {
-#if 0
-      point_creator_type af;
+      typedef eli::geom::curve::bezier<data__, 3> bezier_curve_type;
 
-      data_type th, cam, cam_loc;
-      bool rtn;
+      eli::geom::curve::piecewise_explicit_bezier_creator<data_type, 3, tolerance_type> pebc;
+      piecewise_curve_type pc1, pc_ref;
+      control_point_type cntrl_in[5];
+      typename bezier_curve_type::control_point_type bez_cntrl[5];
+      explicit_bezier_type ebc;
+      bezier_curve_type bc, bc_out;
+      typename explicit_bezier_type::data_type t0, t1;
+      bool rtn_flag;
 
-      // set airfoil thickness
-      th=24;
-      rtn=af.set_thickness(th);
-      TEST_ASSERT(rtn);
-      TEST_ASSERT(af.get_thickness()==th);
+      // set control points and create curves
+      cntrl_in[0] << 2.0;
+      cntrl_in[1] << 1.5;
+      cntrl_in[2] << 0.0;
+      cntrl_in[3] << 1.0;
+      cntrl_in[4] << 0.5;
+      bez_cntrl[0] << 0,    2,   0;
+      bez_cntrl[1] << 0.25, 1.5, 0;
+      bez_cntrl[2] << 0.5,  0,   0;
+      bez_cntrl[3] << 0.75, 1,   0;
+      bez_cntrl[4] << 1,    0.5, 0;
 
-      // set airfoil camber
-      cam=2;
-      cam_loc=3;
-      rtn=af.set_camber(cam, cam_loc);
-      TEST_ASSERT(rtn);
-      TEST_ASSERT(af.get_maximum_camber()==cam);
-      TEST_ASSERT(af.get_maximum_camber_location()==cam_loc);
+      ebc.resize(4);
+      bc.resize(4);
+      for (index_type i=0; i<5; ++i)
+      {
+        ebc.set_control_point(cntrl_in[i], i);
+        bc.set_control_point(bez_cntrl[i], i);
+      }
 
-      // test the name
-      std::string name, name_ref;
+      // set the parameterization
+      t0=-1;
+      t1=1;
 
-      af.set_sharp_trailing_edge(true);
+      // build reference piecewise curve
+      pc_ref.clear();
+      pc_ref.set_t0(t0);
+      pc_ref.push_back(bc, t1-t0);
 
-      name_ref="NACA "+std::to_string(static_cast<int>(std::round(cam)))
-                      +std::to_string(static_cast<int>(std::round(cam_loc)))
-                      +std::to_string(static_cast<int>(std::round(th)));
-      name=af.get_name();
-      TEST_ASSERT(name==name_ref);
+      // create curve
+      rtn_flag=pebc.set_conditions(ebc, false);
+      TEST_ASSERT(rtn_flag);
+      pebc.set_t0(t0);
+      pebc.set_segment_dt(t1-t0, 0);
+      rtn_flag=pebc.create(pc1);
+      TEST_ASSERT(rtn_flag);
 
+      // extract control points and test
+      TEST_ASSERT(pc1.number_segments()==1);
+      TEST_ASSERT(pc1.get_t0()==t0);
+      TEST_ASSERT(pc1.get_tmax()==t1);
+      pc1.get(bc_out, 0);
+      for (index_type i=0; i<5; ++i)
+      {
+        TEST_ASSERT(tol.approximately_equal(bc_out.get_control_point(i), bez_cntrl[i]));
+      }
 
-      piecewise_curve_type af_pwc;
-
-      af.create(af_pwc);
-
-//      octave_print(1, af_pwc);
-#endif
+      if (typeid(data_type)==typeid(float))
+      {
+        std::cout.flush();
+        eli::test::octave_start(1);
+//        eli::test::octave_print(1, ebc, "explicit_bezier");
+//        eli::test::octave_print(1, bc, "bezier");
+//        eli::test::octave_print(1, pc_ref, "ref_piecewise");
+        eli::test::octave_print(1, pc1, "exp_piecewise");
+        eli::test::octave_finish(1);
+      }
     }
 };
 
