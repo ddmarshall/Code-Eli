@@ -132,16 +132,16 @@ class piecewise_explicit_bezier_creator_test_suite : public Test::Suite
         TEST_ASSERT(tol.approximately_equal(bc_out.get_control_point(i), bez_cntrl[i]));
       }
 
-      if (typeid(data_type)==typeid(float))
-      {
-        std::cout.flush();
-        eli::test::octave_start(1);
+//      if (typeid(data_type)==typeid(float))
+//      {
+//        std::cout.flush();
+//        eli::test::octave_start(1);
 //        eli::test::octave_print(1, ebc, "explicit_bezier");
 //        eli::test::octave_print(1, bc, "bezier");
 //        eli::test::octave_print(1, pc_ref, "ref_piecewise");
-        eli::test::octave_print(1, pc1, "exp_piecewise");
-        eli::test::octave_finish(1);
-      }
+//        eli::test::octave_print(1, pc1, "exp_piecewise");
+//        eli::test::octave_finish(1);
+//      }
     }
 };
 
