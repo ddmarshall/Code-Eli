@@ -38,7 +38,7 @@ template<typename data__>
 class cst_airfoil_test_suite : public Test::Suite
 {
   private:
-    typedef eli::geom::curve::cst_airfoil<data__> curve_type;
+    typedef eli::geom::curve::pseudo::cst_airfoil<data__> curve_type;
     typedef typename curve_type::point_type point_type;
     typedef typename curve_type::data_type data_type;
     typedef typename curve_type::index_type index_type;
