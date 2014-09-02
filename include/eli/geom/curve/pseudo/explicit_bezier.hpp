@@ -17,10 +17,9 @@
 
 #include "eli/util/tolerance.hpp"
 
-#include "eli/geom/point/distance.hpp"
-#include "eli/geom/curve/bezier.hpp"
 #include "eli/geom/general/continuity.hpp"
-#include "eli/geom/curve/fit_container.hpp"
+
+#include "eli/geom/curve/bezier.hpp"
 
 namespace eli
 {

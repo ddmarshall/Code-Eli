@@ -148,7 +148,7 @@ int main(int argc, char *argv[])
     // NOTE: This is where changes should be needed
     //
     Test::Suite ts;
-    std::string ostr_filename("airfoil_test_results.html");
+    std::string ostr_filename("naca_airfoil_test_results.html");
 
     // add the cppack test suites
     ts.add(std::auto_ptr<Test::Suite>(new four_digit_test_suite<float>()));
