@@ -14,5 +14,6 @@
 #define eli_geom_curve_pseudo_hpp
 
 #include "eli/geom/curve/pseudo/four_digit.hpp"
+#include "eli/geom/curve/pseudo/explicit_bezier.hpp"
 
 #endif

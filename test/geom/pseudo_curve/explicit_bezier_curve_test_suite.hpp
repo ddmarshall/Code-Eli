@@ -23,15 +23,15 @@
 
 #include "eli/constants/math.hpp"
 #include "eli/geom/point/distance.hpp"
-#include "eli/geom/curve/explicit_bezier.hpp"
 #include "eli/geom/curve/length.hpp"
 #include "eli/geom/curve/curvature.hpp"
+#include "eli/geom/curve/pseudo/explicit_bezier.hpp"
 
 template<typename data__>
 class explicit_bezier_curve_test_suite : public Test::Suite
 {
   private:
-    typedef eli::geom::curve::explicit_bezier<data__> curve_type;
+    typedef eli::geom::curve::pseudo::explicit_bezier<data__> curve_type;
     typedef typename curve_type::control_point_type control_point_type;
     typedef typename curve_type::point_type point_type;
     typedef typename curve_type::data_type data_type;
@@ -110,18 +110,6 @@ class explicit_bezier_curve_test_suite : public Test::Suite
       std::cout << "];" << std::endl;
 
       std::cout << "plot(xpts, ypts, 'bo', xint, yint, 'k-');" << std::endl;
-    }
-
-    void create_circle(std::vector<point_type, Eigen::aligned_allocator<point_type> > &pts)
-    {
-      // NOTE: This will create a semi-circle
-      size_t n=pts.size();
-      for (size_t i=0; i<n; ++i)
-      {
-        data__ theta(eli::constants::math<data__>::pi()*static_cast<data__>(i)/(n-1));
-        pts[i](0)=(1-std::cos(theta))/2;
-        pts[i](1)=std::sin(theta);
-      }
     }
 
     void assignment_test()
@@ -698,8 +686,8 @@ class explicit_bezier_curve_test_suite : public Test::Suite
 
       // calculate the length of curve
       data_type tol(std::sqrt(eps));
-      length(length_cal, ebc, tol);
-      length(length_ref, bc, tol);
+      eli::geom::curve::length(length_cal, ebc, tol);
+      eli::geom::curve::length(length_ref, bc, tol);
       TEST_ASSERT(length_cal==length_ref);
 
       // test computing some segment length
@@ -707,8 +695,8 @@ class explicit_bezier_curve_test_suite : public Test::Suite
       t0 = static_cast<data__>(0.2);
       t1 = static_cast<data__>(0.7);
 
-      length(length_cal, ebc, t0, t1, tol);
-      length(length_ref, bc, t0, t1, tol);
+      eli::geom::curve::length(length_cal, ebc, t0, t1, tol);
+      eli::geom::curve::length(length_ref, bc, t0, t1, tol);
       TEST_ASSERT(length_cal==length_ref);
     }
 };
