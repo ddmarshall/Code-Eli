@@ -420,7 +420,7 @@ namespace eli
             }
 
             // reset the number of segments
-            this->set_number_segments(nsegs);
+            this->set_num_segs(nsegs);
 
             joints=jnts;
             max_degree=maxd;
