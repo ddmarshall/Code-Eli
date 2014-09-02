@@ -25,42 +25,45 @@ namespace eli
   {
     namespace curve
     {
-      template<typename data__, typename tol__=eli::util::tolerance<data__> >
-      class cst_airfoil : public cst_base<data__, tol__>
+      namespace pseudo
       {
-        private:
-          typedef cst_base<data__, tol__> base_class_type;
+        template<typename data__, typename tol__=eli::util::tolerance<data__> >
+        class cst_airfoil : public cst_base<data__, tol__>
+        {
+          private:
+            typedef cst_base<data__, tol__> base_class_type;
 
-        public:
-          typedef typename base_class_type::data_type data_type;
-          typedef typename base_class_type::point_type point_type;
-          typedef typename base_class_type::dimension_type dimension_type;
-          typedef typename base_class_type::control_point_type control_point_type;
-          typedef typename base_class_type::index_type index_type;
-          typedef typename base_class_type::tolerance_type tolerance_type;
+          public:
+            typedef typename base_class_type::data_type data_type;
+            typedef typename base_class_type::point_type point_type;
+            typedef typename base_class_type::dimension_type dimension_type;
+            typedef typename base_class_type::control_point_type control_point_type;
+            typedef typename base_class_type::index_type index_type;
+            typedef typename base_class_type::tolerance_type tolerance_type;
 
-        public:
-          cst_airfoil() : cst_base<data_type, tolerance_type> (0.5, 1, 1) {}
-          cst_airfoil(index_type dim) : cst_base<data_type, tolerance_type>(0.5, 1, dim) {}
-          cst_airfoil(const cst_airfoil<data_type, tolerance_type> &cst) : cst_base<data_type, tolerance_type>(cst) {}
-          ~cst_airfoil() {}
+          public:
+            cst_airfoil() : cst_base<data_type, tolerance_type> (0.5, 1, 1) {}
+            cst_airfoil(index_type dim) : cst_base<data_type, tolerance_type>(0.5, 1, dim) {}
+            cst_airfoil(const cst_airfoil<data_type, tolerance_type> &cst) : cst_base<data_type, tolerance_type>(cst) {}
+            ~cst_airfoil() {}
 
-          bool operator==(const cst_airfoil<data_type, tolerance_type> &cst) const
-          {
-            return base_class_type::operator==(cst);
-          }
+            bool operator==(const cst_airfoil<data_type, tolerance_type> &cst) const
+            {
+              return base_class_type::operator==(cst);
+            }
 
-          bool operator!=(const cst_airfoil<data_type, tolerance_type> &cst) const
-          {
-            return base_class_type::operator!=(cst);
-          }
+            bool operator!=(const cst_airfoil<data_type, tolerance_type> &cst) const
+            {
+              return base_class_type::operator!=(cst);
+            }
 
-          cst_airfoil & operator=(const cst_airfoil<data_type, tolerance_type> &cst)
-          {
-            base_class_type::operator=(cst);
-            return (*this);
-          }
-      };
+            cst_airfoil & operator=(const cst_airfoil<data_type, tolerance_type> &cst)
+            {
+              base_class_type::operator=(cst);
+              return (*this);
+            }
+        };
+      }
     }
   }
 }
