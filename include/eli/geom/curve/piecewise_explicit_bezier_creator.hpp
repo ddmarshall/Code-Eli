@@ -43,7 +43,7 @@ namespace eli
 
           piecewise_explicit_bezier_creator() : piecewise_creator_base<data_type, dim__, tolerance_type>(1, 0), rev(false) {}
           piecewise_explicit_bezier_creator(const piecewise_explicit_bezier_creator<data_type, dim__, tolerance_type> &peb)
-            : piecewise_creator_base<data_type, dim__, tolerance_type>(peb), rev(peb.rev) {}
+            : piecewise_creator_base<data_type, dim__, tolerance_type>(peb), eb(peb.eb), rev(peb.rev) {}
           ~piecewise_explicit_bezier_creator() {}
 
           void set_curve(const explicit_bezier_type &ex_bez)
@@ -129,14 +129,6 @@ namespace eli
 
             return true;
           }
-
-        protected:
-          virtual void number_segments_changed()
-          {
-            // cannot change number of segments
-            assert(false);
-            this->set_number_segments(1);
-          };
 
         private:
           explicit_bezier_type eb;
