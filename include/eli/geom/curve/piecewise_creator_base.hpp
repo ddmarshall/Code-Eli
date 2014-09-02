@@ -48,15 +48,6 @@ namespace eli
           {
             return static_cast<index_type>(dt.size());
           }
-          void set_number_segments(const index_type &ns)
-          {
-            dt.resize(ns);
-            for (index_type i=0; i<ns; ++i)
-              dt[i]=1;
-
-            // tell child classes that number of segments changed
-            number_segments_changed();
-          }
 
           void set_t0(const data_type &tt0) {t0=tt0;}
           data_type get_t0() const {return t0;}
@@ -93,8 +84,15 @@ namespace eli
 
           virtual bool create(piecewise<bezier, data_type, dim__, tolerance_type> &pc) const = 0;
 
-        private:
-          virtual void number_segments_changed() {};
+        protected:
+          void set_num_segs(const index_type &ns)
+          {
+            size_t old_size(static_cast<index_type>(dt.size()));
+
+            dt.resize(ns);
+            for (index_type i=old_size; i<ns; ++i)
+              dt[i]=1;
+          }
 
         private:
           std::vector<data_type> dt;

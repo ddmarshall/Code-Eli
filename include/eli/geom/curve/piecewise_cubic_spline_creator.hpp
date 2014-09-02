@@ -87,6 +87,12 @@ namespace eli
             }
           }
 
+          void set_number_segments(const index_type &ns)
+          {
+            this->set_num_segs(ns);
+            control_point.resize(3*ns+1);
+          }
+
           virtual bool create(piecewise<bezier, data_type, dim__, tolerance_type> &pc) const
           {
             typedef piecewise<bezier, data_type, dim__, tolerance_type> piecewise_curve_type;
@@ -954,8 +960,6 @@ namespace eli
 
         private:
           typedef std::vector<point_type, Eigen::aligned_allocator<point_type>> point_collection_type;
-
-          void number_segments_changed() {control_point.resize(3*this->get_number_segments()+1);}
 
           template<typename Derived1__, typename Derived2__, typename point_it__>
           void create_cubic_spline_base_matrix(Eigen::MatrixBase<Derived1__> &M, Eigen::MatrixBase<Derived2__> &b, point_it__ itb)

@@ -60,6 +60,12 @@ namespace eli
             return corner[i];
           }
 
+          void set_number_segments(const index_type &ns)
+          {
+            this->set_num_segs(ns);
+            corner.resize(ns+1);
+          }
+
           virtual bool create(piecewise<bezier, data_type, dim__, tolerance_type> &pc) const
           {
             typedef piecewise<bezier, data_type, dim__, tolerance_type> piecewise_curve_type;
@@ -98,9 +104,6 @@ namespace eli
 
             return true;
           }
-
-        private:
-          void number_segments_changed() {corner.resize(this->get_number_segments()+1);}
 
         private:
           std::vector<point_type, Eigen::aligned_allocator<point_type>> corner;
