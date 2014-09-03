@@ -13,6 +13,7 @@
 #ifndef eli_geom_curve_piecewise_creator_hpp
 #define eli_geom_curve_piecewise_creator_hpp
 
+#include "eli/geom/curve/piecewise_creator_base.hpp"
 #include "eli/geom/curve/piecewise_circle_creator.hpp"
 #include "eli/geom/curve/piecewise_point_creator.hpp"
 #include "eli/geom/curve/piecewise_linear_creator.hpp"
@@ -20,5 +21,6 @@
 #include "eli/geom/curve/piecewise_cubic_spline_creator.hpp"
 #include "eli/geom/curve/piecewise_superellipse_creator.hpp"
 #include "eli/geom/curve/piecewise_four_digit_creator.hpp"
+#include "eli/geom/curve/piecewise_general_creator.hpp"
 
 #endif
