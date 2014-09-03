@@ -42,9 +42,12 @@ namespace eli
           public:
             polynomial()
             {
+              coefficient_type a(1);
+              a << 0;
+
               for (dimension_type i=0; i<dim__; ++i)
               {
-                poly[i].set_roots(0);
+                poly[i].set_coefficients(a);
               }
             }
             polynomial(const polynomial<data_type, dim__, tolerance_type> &pol)
