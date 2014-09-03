@@ -27,6 +27,8 @@
 #include "eli/geom/curve/curvature.hpp"
 #include "eli/geom/curve/pseudo/polynomial.hpp"
 
+#include "octave_helpers.hpp"
+
 template<typename data__>
 class polynomial_curve_test_suite : public Test::Suite
 {
@@ -35,6 +37,7 @@ class polynomial_curve_test_suite : public Test::Suite
     typedef typename curve_type::point_type point_type;
     typedef typename curve_type::data_type data_type;
     typedef typename curve_type::index_type index_type;
+    typedef typename curve_type::coefficient_type coefficient_type;
 
   protected:
     void AddTests(const float &)
@@ -43,7 +46,6 @@ class polynomial_curve_test_suite : public Test::Suite
       TEST_ADD(polynomial_curve_test_suite<float>::assignment_test);
       TEST_ADD(polynomial_curve_test_suite<float>::evaluation_test);
       TEST_ADD(polynomial_curve_test_suite<float>::derivative_test);
-      TEST_ADD(polynomial_curve_test_suite<float>::length_test);
     }
     void AddTests(const double &)
     {
@@ -51,7 +53,6 @@ class polynomial_curve_test_suite : public Test::Suite
       TEST_ADD(polynomial_curve_test_suite<double>::assignment_test);
       TEST_ADD(polynomial_curve_test_suite<double>::evaluation_test);
       TEST_ADD(polynomial_curve_test_suite<double>::derivative_test);
-      TEST_ADD(polynomial_curve_test_suite<double>::length_test);
     }
     void AddTests(const long double &)
     {
@@ -59,7 +60,6 @@ class polynomial_curve_test_suite : public Test::Suite
       TEST_ADD(polynomial_curve_test_suite<long double>::assignment_test);
       TEST_ADD(polynomial_curve_test_suite<long double>::evaluation_test);
       TEST_ADD(polynomial_curve_test_suite<long double>::derivative_test);
-      TEST_ADD(polynomial_curve_test_suite<long double>::length_test);
     }
 
   public:
@@ -104,94 +104,82 @@ class polynomial_curve_test_suite : public Test::Suite
 
     void assignment_test()
     {
-#if 0
-      curve_type ebc1(3), ebc2;
-      control_point_type cntrl_in[4];
+      curve_type c1, c2;
+      coefficient_type coef1(6), coef2(1), coef_out;
 
-      // test default constructor then set control points
-      cntrl_in[0] << 2.0;
-      cntrl_in[1] << 1.0;
-      cntrl_in[2] << 3.5;
-      cntrl_in[3] << 4.0;
-
-      for (index_type i=0; i<4; ++i)
-      {
-        ebc1.set_control_point(cntrl_in[i], i);
-      }
-
-      for (index_type i=0; i<4; ++i)
-      {
-        TEST_ASSERT(ebc1.get_control_point(i)==cntrl_in[i]);
-      }
-
-      // test copy ctr
-      curve_type ebcc1(ebc1);
-      for (index_type i=0; i<4; ++i)
-      {
-        TEST_ASSERT(ebcc1.get_control_point(i)==cntrl_in[i]);
-      }
+      // test setting coefficients
+      coef1 << 2, 0, 1, 4, 1, 8;
+      coef2 << 0;
+      c1.set_coefficients(coef1, 0);
+      c1.set_coefficients(coef2, 1);
+      c1.set_coefficients(coef2, 2);
+      c1.get_coefficients(coef_out, 0);
+      TEST_ASSERT(coef1==coef_out);
+      coef_out.setZero();
+      c1.get_coefficients(coef_out, 1);
+      TEST_ASSERT(coef2==coef_out);
+      coef_out.setZero();
+      c1.get_coefficients(coef_out, 2);
+      TEST_ASSERT(coef2==coef_out);
+      coef_out.setZero();
 
       // test assignment operator
-      ebc2=ebc1;
-      for (index_type i=0; i<4; ++i)
-      {
-        TEST_ASSERT(ebc2.get_control_point(i)==cntrl_in[i]);
-      }
+      c2=c1;
+      c2.get_coefficients(coef_out, 0);
+      TEST_ASSERT(coef1==coef_out);
+      coef_out.setZero();
+      c2.get_coefficients(coef_out, 1);
+      TEST_ASSERT(coef2==coef_out);
+      coef_out.setZero();
+      c2.get_coefficients(coef_out, 2);
+      TEST_ASSERT(coef2==coef_out);
+      coef_out.setZero();
 
-      // test order
-      TEST_ASSERT(ebc2.degree()==3);
-#endif
+      // test equivalence operator
+      TEST_ASSERT(c1==c2);
+      coef2 << 1;
+      c2.set_coefficients(coef2, 2);
+      TEST_ASSERT(c1!=c2);
+
+      // test copy ctr
+      curve_type c3(c1);
+      TEST_ASSERT(c3==c1);
     }
 
     void evaluation_test()
     {
-#if 0
-      typedef eli::geom::curve::bezier<data__, 2> bezier_curve_type;
-      data_type eps(std::numeric_limits<data__>::epsilon());
+      curve_type c;
+      coefficient_type coef1(5), coef2(2);
+      point_type eval_out, eval_ref;
+      data_type t;
 
-      control_point_type cntrl_in[5];
-      typename bezier_curve_type::control_point_type bez_cntrl[5];
-      curve_type ebc;
-      bezier_curve_type bc;
-      typename curve_type::point_type eval_out, eval_ref;
-      typename curve_type::data_type t;
+      // set coefficients
+      coef1 << 2, 4, 3, 1, 2;
+      coef2 << 1, 1;
+      c.set_coefficients(coef1, 0);
+      c.set_coefficients(coef2, 1);
 
-      // set control points and create curves
-      cntrl_in[0] << 2.0;
-      cntrl_in[1] << 1.5;
-      cntrl_in[2] << 0.0;
-      cntrl_in[3] << 1.0;
-      cntrl_in[4] << 0.5;
-      bez_cntrl[0] << 0,    2;
-      bez_cntrl[1] << 0.25, 1.5;
-      bez_cntrl[2] << 0.5,  0;
-      bez_cntrl[3] << 0.75, 1;
-      bez_cntrl[4] << 1,    0.5;
-
-      ebc.resize(4);
-      bc.resize(4);
-      for (index_type i=0; i<5; ++i)
-      {
-        ebc.set_control_point(cntrl_in[i], i);
-        bc.set_control_point(bez_cntrl[i], i);
-      }
-
-      // test evaluation at end points
+      // test evaluation at points
       t=0;
-      eval_out=ebc.f(t);
-      eval_ref=bc.f(t);
+      eval_out=c.f(t);
+      eval_ref << coef1(0), coef2(0), 0;
       TEST_ASSERT(eval_out==eval_ref);
       t=1;
-      eval_out=ebc.f(t);
-      eval_ref=bc.f(t);
+      eval_out=c.f(t);
+      eval_ref << coef1.sum(), coef2.sum(), 0;
+      TEST_ASSERT(eval_out==eval_ref);
+      t=10;
+      eval_out=c.f(t);
+      eval_ref << 21342, 11, 0;
       TEST_ASSERT(eval_out==eval_ref);
 
-      // test evaluation at interior point
-      t=static_cast<data__>(0.45);
-      eval_out=ebc.f(t);
-      eval_ref=bc.f(t);
-      TEST_ASSERT((eval_out-eval_ref).norm()<1.1*eps);
-#endif
+//      if (typeid(data_type)==typeid(float))
+//      {
+//        std::cout.flush();
+//        eli::test::octave_start(1);
+//        eli::test::octave_print(1, c, "poly");
+//        eli::test::octave_finish(1);
+//      }
     }
 
     void derivative_test()
@@ -311,55 +299,6 @@ class polynomial_curve_test_suite : public Test::Suite
       {
         TEST_ASSERT(curv_out==curv_ref);
       }
-#endif
-    }
-
-    void length_test()
-    {
-#if 0
-      data_type eps(std::numeric_limits<data__>::epsilon());
-      typedef eli::geom::curve::bezier<data__, 2> bezier_curve_type;
-      control_point_type cntrl_in[5];
-      typename bezier_curve_type::control_point_type bez_cntrl[5];
-      curve_type ebc;
-      bezier_curve_type bc;
-      typename curve_type::point_type eval_out, eval_ref;
-      typename curve_type::data_type length_cal, length_ref;
-
-      // set control points and create curves
-      cntrl_in[0] << 2.0;
-      cntrl_in[1] << 1.5;
-      cntrl_in[2] << 0.0;
-      cntrl_in[3] << 1.0;
-      cntrl_in[4] << 0.5;
-      bez_cntrl[0] << 0,    2;
-      bez_cntrl[1] << 0.25, 1.5;
-      bez_cntrl[2] << 0.5,  0;
-      bez_cntrl[3] << 0.75, 1;
-      bez_cntrl[4] << 1,    0.5;
-
-      ebc.resize(4);
-      bc.resize(4);
-      for (index_type i=0; i<5; ++i)
-      {
-        ebc.set_control_point(cntrl_in[i], i);
-        bc.set_control_point(bez_cntrl[i], i);
-      }
-
-      // calculate the length of curve
-      data_type tol(std::sqrt(eps));
-      eli::geom::curve::length(length_cal, ebc, tol);
-      eli::geom::curve::length(length_ref, bc, tol);
-      TEST_ASSERT(length_cal==length_ref);
-
-      // test computing some segment length
-      typename curve_type::data_type t0, t1;
-      t0 = static_cast<data__>(0.2);
-      t1 = static_cast<data__>(0.7);
-
-      eli::geom::curve::length(length_cal, ebc, t0, t1, tol);
-      eli::geom::curve::length(length_ref, bc, t0, t1, tol);
-      TEST_ASSERT(length_cal==length_ref);
 #endif
     }
 };

@@ -63,13 +63,21 @@ namespace eli
 
             bool operator==(const polynomial<data_type, dim__, tolerance_type> &pol) const
             {
+              tolerance_type tol;
+
               if (this==&pol)
                 return true;
               for (dimension_type i=0; i<dim__; ++i)
               {
-                if (pol.poly[i]!=poly[i])
-                {
+                if (pol.poly[i].degree()!=poly[i].degree())
                   return false;
+
+                for (index_type j=0; j<=poly[i].degree(); ++j)
+                {
+                  if (!tol.approximately_equal(pol.poly[i].coefficient(j), poly[i].coefficient(j)))
+                  {
+                    return false;
+                  }
                 }
               }
               return true;
