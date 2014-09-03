@@ -72,36 +72,6 @@ class polynomial_curve_test_suite : public Test::Suite
     }
 
   private:
-    void octave_print(int figno, const std::vector<point_type, Eigen::aligned_allocator<point_type> > &pts, const curve_type &bez) const
-    {
-      size_t i;
-
-      std::cout << "figure(" << figno << ");" << std::endl;
-      std::cout << "xpts=[" << pts[0].x();
-      for (i=1; i<pts.size(); ++i)
-        std::cout << ", " << pts[i].x();
-      std::cout << "];" << std::endl;
-      std::cout << "ypts=[" << pts[0].y();
-      for (i=1; i<pts.size(); ++i)
-        std::cout << ", " << pts[i].y();
-      std::cout << "];" << std::endl;
-
-      std::vector<data_type> t(101);
-      for (i=0; i<t.size(); ++i)
-        t[i]=static_cast<data_type>(i)/(t.size()-1);
-
-      std::cout << "xint=[" << bez.f(t[0])(0);
-      for (i=1; i<t.size(); ++i)
-        std::cout << ", " << bez.f(t[i])(0);
-      std::cout << "];" << std::endl;
-      std::cout << "yint=[" << bez.f(t[0])(1);
-      for (i=1; i<t.size(); ++i)
-        std::cout << ", " << bez.f(t[i])(1);
-      std::cout << "];" << std::endl;
-
-      std::cout << "plot(xpts, ypts, 'bo', xint, yint, 'k-');" << std::endl;
-    }
-
     void assignment_test()
     {
       curve_type c1, c2;
