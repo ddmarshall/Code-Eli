@@ -10,8 +10,8 @@
 *    David D. Marshall - initial code and implementation
 ********************************************************************************/
 
-#ifndef four_digit_hpp
-#define four_digit_hpp
+#ifndef eli_geom_curve_pseudo_four_digit_hpp
+#define eli_geom_curve_pseudo_four_digit_hpp
 
 #include <string>    // std::string
 #include <sstream>   // std::ostringstream, std::istringstream

@@ -20,11 +20,12 @@
 #include "eli/geom/curve/pseudo.hpp"
 
 // include helpers
-#include "eli/geom/curve/piecewise_circle_creator.hpp"
-#include "eli/geom/curve/piecewise_spline_creator.hpp"
+#include "eli/geom/curve/piecewise_creator.hpp"
 #include "eli/geom/curve/fit_container.hpp"
 #include "eli/geom/curve/length.hpp"
 #include "eli/geom/curve/curvature.hpp"
 #include "eli/geom/curve/torsion.hpp"
+#include "eli/geom/curve/equivalent_curves.hpp"
+#include "eli/geom/curve/pseudo.hpp"
 
 #endif
