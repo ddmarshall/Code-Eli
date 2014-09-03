@@ -10,8 +10,8 @@
 *    David D. Marshall - initial code and implementation
 ********************************************************************************/
 
-#ifndef eli_geom_curve_explicit_bezier_hpp
-#define eli_geom_curve_explicit_bezier_hpp
+#ifndef eli_geom_curve_pseudo_explicit_bezier_hpp
+#define eli_geom_curve_pseudo_explicit_bezier_hpp
 
 #include "eli/code_eli.hpp"
 
