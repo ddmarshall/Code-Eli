@@ -57,7 +57,8 @@ add_test(NAME ${EXPLICIT_BEZIER_CURVE_TEST_EXE} COMMAND $<TARGET_FILE:${EXPLICIT
 # add the polynomial_curve test
 set (POLYNOMIAL_CURVE_TEST_EXE PolynomialCurveTest)
 set (POLYNOMIAL_CURVE_TEST_SOURCE ${PROJECT_SOURCE_DIR}/polynomial_curve_test.cpp)
-set (POLYNOMIAL_CURVE_TEST_HEADER ${PROJECT_SOURCE_DIR}/polynomial_curve_test_suite.hpp
+set (POLYNOMIAL_CURVE_TEST_HEADER ${_ELI_TEST_INCLUDE_DIR}/octave_helpers.hpp
+                                  ${PROJECT_SOURCE_DIR}/polynomial_curve_test_suite.hpp
                                   ${ELI_SOURCE_DIR}/include/eli/constants/math.hpp
                                   ${ELI_SOURCE_DIR}/include/eli/util/tolerance.hpp
                                   ${ELI_SOURCE_DIR}/include/eli/mutil/quad.hpp
