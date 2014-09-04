@@ -92,7 +92,7 @@ namespace eli
 
             index_type degree(dimension_type i) const
             {
-              if (i>=i)
+              if (i>=dim__)
                 return -1;
 
               return poly[i].degree();
