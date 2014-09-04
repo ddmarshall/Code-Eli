@@ -154,122 +154,58 @@ class polynomial_curve_test_suite : public Test::Suite
 
     void derivative_test()
     {
-#if 0
-      typedef eli::geom::curve::bezier<data__, 2> bezier_curve_type;
-      data_type eps(std::numeric_limits<data__>::epsilon());
-      control_point_type cntrl_in[5];
-      typename bezier_curve_type::control_point_type bez_cntrl[5];
-      curve_type ebc;
-      bezier_curve_type bc;
-      typename curve_type::point_type eval_out, eval_ref;
-      typename curve_type::data_type t;
+      curve_type c;
+      coefficient_type coef1(5), coef2(2);
+      point_type eval_out, eval_ref;
+      data_type t;
 
-      // set control points and create curves
-      cntrl_in[0] << 2.0;
-      cntrl_in[1] << 1.5;
-      cntrl_in[2] << 0.0;
-      cntrl_in[3] << 1.0;
-      cntrl_in[4] << 0.5;
-      bez_cntrl[0] << 0,    2;
-      bez_cntrl[1] << 0.25, 1.5;
-      bez_cntrl[2] << 0.5,  0;
-      bez_cntrl[3] << 0.75, 1;
-      bez_cntrl[4] << 1,    0.5;
+      // set coefficients
+      coef1 << 2, 4, 3, 1, 2;
+      coef2 << 1, 1;
+      c.set_coefficients(coef1, 0);
+      c.set_coefficients(coef2, 1);
 
-      ebc.resize(4);
-      bc.resize(4);
-      for (index_type i=0; i<5; ++i)
-      {
-        ebc.set_control_point(cntrl_in[i], i);
-        bc.set_control_point(bez_cntrl[i], i);
-      }
-
-      // test 1st derivative at end points
+      // test evaluation of f' at points
       t=0;
-      eval_out=ebc.fp(t);
-      eval_ref=bc.fp(t);
+      eval_out=c.fp(t);
+      eval_ref << coef1(1), coef2(1), 0;
       TEST_ASSERT(eval_out==eval_ref);
       t=1;
-      eval_out=ebc.fp(t);
-      eval_ref=bc.fp(t);
+      eval_out=c.fp(t);
+      eval_ref << (4+6+3+8), 1, 0;
+      TEST_ASSERT(eval_out==eval_ref);
+      t=10;
+      eval_out=c.fp(t);
+      eval_ref << (4+60+300+8000), 1, 0;
       TEST_ASSERT(eval_out==eval_ref);
 
-      // test 1st derivative at interior point
-      t=static_cast<data__>(0.45);
-      eval_out=ebc.fp(t);
-      eval_ref=bc.fp(t);
-      if (typeid(data__)==typeid(float))
-      {
-        TEST_ASSERT((eval_out-eval_ref).norm()<3*eps);
-      }
-      else
-      {
-        TEST_ASSERT(eval_out==eval_ref);
-      }
-
-      // test 2nd derivative at end points
+      // test evaluation of f'' at points
       t=0;
-      eval_out=ebc.fpp(t);
-      eval_ref=bc.fpp(t);
+      eval_out=c.fpp(t);
+      eval_ref << 2*coef1(2), 0, 0;
       TEST_ASSERT(eval_out==eval_ref);
       t=1;
-      eval_out=ebc.fpp(t);
-      eval_ref=bc.fpp(t);
+      eval_out=c.fpp(t);
+      eval_ref << (6+6+24), 0, 0;
+      TEST_ASSERT(eval_out==eval_ref);
+      t=10;
+      eval_out=c.fpp(t);
+      eval_ref << (6+60+2400), 0, 0;
       TEST_ASSERT(eval_out==eval_ref);
 
-      // test 2nd derivative at interior point
-      t=static_cast<data__>(0.45);
-      eval_out=ebc.fpp(t);
-      eval_ref=bc.fpp(t);
-      if (typeid(data__)==typeid(float))
-      {
-        TEST_ASSERT((eval_out-eval_ref).norm()<17*eps);
-      }
-      else
-      {
-        TEST_ASSERT(eval_out==eval_ref);
-      }
-
-      // test 3rd derivative at end points
+      // test evaluation of f''' at points
       t=0;
-      eval_out=ebc.fppp(t);
-      eval_ref=bc.fppp(t);
+      eval_out=c.fppp(t);
+      eval_ref << 6*coef1(3), 0, 0;
       TEST_ASSERT(eval_out==eval_ref);
       t=1;
-      eval_out=ebc.fppp(t);
-      eval_ref=bc.fppp(t);
+      eval_out=c.fppp(t);
+      eval_ref << (6+48), 0, 0;
       TEST_ASSERT(eval_out==eval_ref);
-
-      // test 3rd derivative at interior point
-      t=static_cast<data__>(0.45);
-      eval_out=ebc.fppp(t);
-      eval_ref=bc.fppp(t);
+      t=10;
+      eval_out=c.fppp(t);
+      eval_ref << (6+480), 0, 0;
       TEST_ASSERT(eval_out==eval_ref);
-
-      // test curvature at end points
-      data_type curv_out, curv_ref;
-      t=0;
-      eli::geom::curve::curvature(curv_out, ebc, t);
-      eli::geom::curve::curvature(curv_ref, bc, t);
-      TEST_ASSERT(curv_out==curv_ref);
-      t=1;
-      eli::geom::curve::curvature(curv_out, ebc, t);
-      eli::geom::curve::curvature(curv_ref, bc, t);
-      TEST_ASSERT(curv_out==curv_ref);
-
-      // test curvature at interior point
-      t=static_cast<data__>(0.45);
-      eli::geom::curve::curvature(curv_out, ebc, t);
-      eli::geom::curve::curvature(curv_ref, bc, t);
-      if (typeid(data__)==typeid(float))
-      {
-        TEST_ASSERT((eval_out-eval_ref).norm()<3*eps);
-      }
-      else
-      {
-        TEST_ASSERT(curv_out==curv_ref);
-      }
-#endif
     }
 };
 #endif
