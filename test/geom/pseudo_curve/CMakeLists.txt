@@ -27,7 +27,6 @@ set (EXPLICIT_BEZIER_CURVE_TEST_HEADER ${PROJECT_SOURCE_DIR}/explicit_bezier_cur
                                        ${ELI_SOURCE_DIR}/include/eli/geom/curve/length.hpp
                                        ${ELI_SOURCE_DIR}/include/eli/geom/curve/bezier.hpp
                                        ${ELI_SOURCE_DIR}/include/eli/geom/curve/pseudo/explicit_bezier.hpp
-                                       ${ELI_SOURCE_DIR}/include/eli/geom/curve/length.hpp
                                        ${ELI_SOURCE_DIR}/include/eli/geom/curve/curvature.hpp)
 
 add_executable(${EXPLICIT_BEZIER_CURVE_TEST_EXE} ${EXPLICIT_BEZIER_CURVE_TEST_SOURCE} ${EXPLICIT_BEZIER_CURVE_TEST_HEADER})
@@ -54,6 +53,23 @@ add_test(NAME ${EXPLICIT_BEZIER_CURVE_TEST_EXE} COMMAND $<TARGET_FILE:${EXPLICIT
 #add_executable(${EXPLICIT_BEZIER_CURVE_FIT_TEST_EXE} ${EXPLICIT_BEZIER_CURVE_FIT_TEST_SOURCE} ${EXPLICIT_BEZIER_CURVE_FIT_TEST_HEADER})
 #target_link_libraries(${EXPLICIT_BEZIER_CURVE_FIT_TEST_EXE} ${_ELI_TEST_LIBRARIES_LIST})
 #add_test(NAME ${EXPLICIT_BEZIER_CURVE_FIT_TEST_EXE} COMMAND $<TARGET_FILE:${EXPLICIT_BEZIER_CURVE_FIT_TEST_EXE}> --text)
+
+# add the polynomial_curve test
+set (POLYNOMIAL_CURVE_TEST_EXE PolynomialCurveTest)
+set (POLYNOMIAL_CURVE_TEST_SOURCE ${PROJECT_SOURCE_DIR}/polynomial_curve_test.cpp)
+set (POLYNOMIAL_CURVE_TEST_HEADER ${_ELI_TEST_INCLUDE_DIR}/octave_helpers.hpp
+                                  ${PROJECT_SOURCE_DIR}/polynomial_curve_test_suite.hpp
+                                  ${ELI_SOURCE_DIR}/include/eli/constants/math.hpp
+                                  ${ELI_SOURCE_DIR}/include/eli/util/tolerance.hpp
+                                  ${ELI_SOURCE_DIR}/include/eli/mutil/quad.hpp
+                                  ${ELI_SOURCE_DIR}/include/eli/mutil/poly/polynomial.hpp
+                                  ${ELI_SOURCE_DIR}/include/eli/geom/curve/length.hpp
+                                  ${ELI_SOURCE_DIR}/include/eli/geom/curve/pseudo/polynomial.hpp
+                                  ${ELI_SOURCE_DIR}/include/eli/geom/curve/curvature.hpp)
+
+add_executable(${POLYNOMIAL_CURVE_TEST_EXE} ${POLYNOMIAL_CURVE_TEST_SOURCE} ${POLYNOMIAL_CURVE_TEST_HEADER})
+target_link_libraries(${POLYNOMIAL_CURVE_TEST_EXE} ${_ELI_TEST_LIBRARIES_LIST})
+add_test(NAME ${POLYNOMIAL_CURVE_TEST_EXE} COMMAND $<TARGET_FILE:${POLYNOMIAL_CURVE_TEST_EXE}> --text)
 
 # add the NACA airfoil test
 set (NACA_AIRFOIL_TEST_EXE NACAAirfoilTest)
