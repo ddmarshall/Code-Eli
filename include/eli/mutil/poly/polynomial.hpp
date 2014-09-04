@@ -235,8 +235,11 @@ namespace eli
             {
               rtn=t*(static_cast<data_type>(i)*a(i)+rtn);
             }
-            i=1;
-            rtn+=static_cast<data_type>(i)*a(i);
+            if (n>0)
+            {
+              i=1;
+              rtn+=static_cast<data_type>(i)*a(i);
+            }
 
             return rtn;
           }
@@ -258,8 +261,11 @@ namespace eli
             {
               rtn=t*(static_cast<data_type>(i)*static_cast<data_type>(i-1)*a(i)+rtn);
             }
-            i=2;
-            rtn+=static_cast<data_type>(i)*static_cast<data_type>(i-1)*a(i);
+            if (n>1)
+            {
+              i=2;
+              rtn+=static_cast<data_type>(i)*static_cast<data_type>(i-1)*a(i);
+            }
 
             return rtn;
           }
@@ -281,8 +287,11 @@ namespace eli
             {
               rtn=t*(static_cast<data_type>(i)*static_cast<data_type>(i-1)*static_cast<data_type>(i-2)*a(i)+rtn);
             }
-            i=3;
-            rtn+=static_cast<data_type>(i)*static_cast<data_type>(i-1)*static_cast<data_type>(i-2)*a(i);
+            if (n>2)
+            {
+              i=3;
+              rtn+=static_cast<data_type>(i)*static_cast<data_type>(i-1)*static_cast<data_type>(i-2)*a(i);
+            }
 
             return rtn;
           }
