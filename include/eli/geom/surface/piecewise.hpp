@@ -156,6 +156,38 @@ namespace eli
               return &patches[uk][vk];
           }
 
+          surface_type * get_patch( const index_type &ui, const index_type &vi, double &ustart, double &du, double &vstart, double &dv)
+          {
+              index_type uk, vk;
+              typename keymap_type::const_iterator uit, vit;
+
+              find_patch( uk, vk, uit, vit, ui, vi );
+
+              ustart = uit->first;
+              du = ukey.get_delta_parm( uit );
+
+              vstart = vit->first;
+              dv = vkey.get_delta_parm( vit );
+
+              return &patches[uk][vk];
+          }
+
+          const surface_type * get_patch( const index_type &ui, const index_type &vi, double &ustart, double &du, double &vstart, double &dv) const
+          {
+              index_type uk, vk;
+              typename keymap_type::const_iterator uit, vit;
+
+              find_patch( uk, vk, uit, vit, ui, vi );
+
+              ustart = uit->first;
+              du = ukey.get_delta_parm( uit );
+
+              vstart = vit->first;
+              dv = vkey.get_delta_parm( vit );
+
+              return &patches[uk][vk];
+          }
+
           surface_type * get_patch_unordered( const index_type &uk, const index_type &vk)
           {
               return &patches[uk][vk];
