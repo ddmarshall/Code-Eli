@@ -1570,6 +1570,49 @@ namespace eli
             nv = nv_in;
           }
 
+          error_code subsurf(piecewise<surface__, data_type, dim__, tol__> &surf, const typename keymap_type::const_iterator &ustart, const typename keymap_type::const_iterator &uend, const typename keymap_type::const_iterator &vstart, const typename keymap_type::const_iterator &vend ) const
+          {
+            surf.clear();
+
+            surf.set_u0( ustart->first );
+            surf.set_v0( vstart->first );
+
+            typename keymap_type::const_iterator uit, vit;
+
+            index_type nusub = 0;
+            for ( uit = ustart; uit != uend; uit++ )
+            {
+              data_type du = ukey.get_delta_parm( uit );
+              surf.ukey.append( du );
+              nusub++;
+            }
+
+            index_type nvsub = 0;
+            for ( vit = vstart; vit != vend; vit++ )
+            {
+              data_type dv = vkey.get_delta_parm( vit );
+              surf.vkey.append( dv );
+                nvsub++;
+            }
+
+            surf.resize_store( nusub, nvsub );
+
+            index_type ikstore, jkstore;
+            ikstore = 0;
+            for ( uit = ustart; uit != uend; uit++ )
+            {
+              jkstore = 0;
+              for ( vit = vstart; vit != vend; vit++ )
+              {
+                surf.patches[ikstore][jkstore] = patches[(*uit).second][(*vit).second];
+                jkstore++;
+              }
+              ikstore++;
+            }
+
+            return NO_ERRORS;
+          }
+
           error_code split_u(const index_type &uk, const typename keymap_type::iterator &uit, const data_type &u_in, const data_type &uu)
           {
             tolerance_type tol;
