@@ -634,6 +634,39 @@ namespace eli
             return split_u(uk, uit, u_in, uu);
           }
 
+          error_code split_u(piecewise<surface__, data_type, dim__, tol__> &before, piecewise<surface__, data_type, dim__, tol__> &after, const data_type &u_in) const
+          {
+            before.clear();
+            after.clear();
+
+            if (u_in < ukey.get_pmin())
+            {
+              after=(*this);
+              return NO_ERRORS;
+            }
+
+            if (u_in > ukey.get_pmax())
+            {
+              before=(*this);
+              return NO_ERRORS;
+            }
+
+            piecewise<surface__, data_type, dim__, tol__> s(*this);
+
+            error_code spliterr = s.split_u( u_in );
+
+            typename keymap_type::const_iterator uit, vit;
+            data_type uu(0), vv(0);
+            data_type vmin = vkey.get_pmin();
+
+            s.find_patch(uit, vit, uu, vv, u_in, vmin);
+
+            s.subsurf(before, s.ukey.key.begin(), uit, s.vkey.key.begin(), s.vkey.key.end());
+            s.subsurf(after, uit, s.ukey.key.end(), s.vkey.key.begin(), s.vkey.key.end());
+
+            return spliterr;
+          }
+
           error_code split_v(const data_type &v_in)
           {
             index_type uk, vk;
@@ -655,6 +688,39 @@ namespace eli
               return NO_ERRORS;
 
             return split_v(vk, vit, v_in, vv);
+          }
+
+          error_code split_v(piecewise<surface__, data_type, dim__, tol__> &before, piecewise<surface__, data_type, dim__, tol__> &after, const data_type &v_in) const
+          {
+            before.clear();
+            after.clear();
+
+            if (v_in < vkey.get_pmin())
+            {
+              after=(*this);
+              return NO_ERRORS;
+            }
+
+            if (v_in > vkey.get_pmax())
+            {
+              before=(*this);
+              return NO_ERRORS;
+            }
+
+            piecewise<surface__, data_type, dim__, tol__> s(*this);
+
+            error_code spliterr = s.split_v( v_in );
+
+            typename keymap_type::const_iterator uit, vit;
+            data_type uu(0), vv(0);
+            data_type umin = ukey.get_pmin();
+
+            s.find_patch(uit, vit, uu, vv, umin, v_in);
+
+            s.subsurf(before, s.ukey.key.begin(), s.ukey.key.end(), s.vkey.key.begin(), vit);
+            s.subsurf(after, s.ukey.key.begin(), s.ukey.key.end(), vit, s.vkey.key.end());
+
+            return spliterr;
           }
 
           void to_cubic_u(const data_type &ttol)
