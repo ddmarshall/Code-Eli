@@ -1211,6 +1211,13 @@ namespace eli
               append(nseg, dp);
             }
 
+            void append(const data_type &dp = 1)
+            {
+              typename keymap_type::iterator itguess = key.end();
+              itguess = key.insert(itguess, std::make_pair(pmax, key.size()));
+              pmax += dp;
+            }
+
             void append(const index_type &nseg, const data_type &dp = 1)
             {
               typename keymap_type::iterator itguess = key.end();
