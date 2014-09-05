@@ -1251,7 +1251,7 @@ namespace eli
             void parameter_report() const
             {
               printf("Parameter report:\n");
-              typename keymap_type::iterator it;
+              typename keymap_type::const_iterator it;
 
               int i = 0;
               // cycle through all segments to get each bounding box to add
