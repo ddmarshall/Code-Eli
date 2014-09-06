@@ -118,6 +118,7 @@ namespace eli
           typedef tol__ tolerance_type;
           typedef Eigen::Matrix<data_type, dim__, dim__> rotation_matrix_type;
           typedef eli::geom::general::bounding_box<data_type, dim__, tolerance_type> bounding_box_type;
+          typedef Eigen::Matrix<data_type, Eigen::Dynamic, dim__> monomial_coefficient_type;
 
         public:
           bezier() : B(1, dim__) {}
@@ -220,6 +221,12 @@ namespace eli
             }
 
             return B.row(i);
+          }
+
+          void get_monomial_coefficients(monomial_coefficient_type &a) const
+          {
+            a.resize(degree()+1, dim__);
+            eli::geom::utility::bezier_control_points_to_monomial(a, B);
           }
 
           void reflect_xy()

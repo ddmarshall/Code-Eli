@@ -406,6 +406,28 @@ namespace eli
             Tppp(jj)*=t;
       }
 
+      template<typename Derived1, typename Derived2>
+      void bezier_control_points_to_monomial(Eigen::MatrixBase<Derived1> &a, const Eigen::MatrixBase<Derived2> &cp)
+      {
+        // do some checks on incoming matrix dimensions
+        assert(cp.cols()==a.cols());
+        assert(cp.rows()==a.rows());
+
+        typename Derived1::Index i, j, deg(a.rows()-1);
+        typename Derived1::Scalar bc1, bc2, sgn;
+
+        a.setZero();
+        for (j=0; j<=deg; ++j)
+        {
+          eli::mutil::dm::binomial_coefficient(bc1, deg, j);
+          for (i=0; i<=j; ++i)
+          {
+            sgn=(((j-i)%2)==0)?(1):(-1);
+            eli::mutil::dm::binomial_coefficient(bc2, j, i);
+            a.row(j)+=bc1*bc2*sgn*cp.row(i);
+          }
+        }
+      }
     }
   }
 }
