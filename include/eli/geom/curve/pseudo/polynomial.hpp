@@ -98,7 +98,7 @@ namespace eli
               return poly[i].degree();
             }
 
-            void set_coefficients(const coefficient_type &a, const dimension_type &i)
+            void set_coefficients(const coefficient_type &a, dimension_type i)
             {
               if (i<dim__)
               {
@@ -106,11 +106,19 @@ namespace eli
               }
             }
 
-            void get_coefficients(coefficient_type &a, const dimension_type &i) const
+            void get_coefficients(coefficient_type &a, dimension_type i) const
             {
               if (i<dim__)
               {
                 poly[i].get_coefficients(a);
+              }
+            }
+
+            index_type get_degree(dimension_type i) const
+            {
+              if (i<dim__)
+              {
+                poly[i].degree();
               }
             }
 

@@ -67,6 +67,7 @@ set (PIECEWISE_PSEUDO_CREATOR_TEST_SOURCE ${PROJECT_SOURCE_DIR}/piecewise_pseudo
 set (PIECEWISE_PSEUDO_CREATOR_TEST_HEADER ${_ELI_TEST_INCLUDE_DIR}/octave_helpers.hpp
                                           ${PROJECT_SOURCE_DIR}/piecewise_four_digit_creator_test_suite.hpp
                                           ${PROJECT_SOURCE_DIR}/piecewise_explicit_bezier_creator_test_suite.hpp
+                                          ${PROJECT_SOURCE_DIR}/piecewise_polynomial_creator_test_suite.hpp
                                           ${ELI_SOURCE_DIR}/include/eli/constants/math.hpp
                                           ${ELI_SOURCE_DIR}/include/eli/util/tolerance.hpp
                                           ${ELI_SOURCE_DIR}/include/eli/mutil/fd/d1o2.hpp
@@ -79,8 +80,10 @@ set (PIECEWISE_PSEUDO_CREATOR_TEST_HEADER ${_ELI_TEST_INCLUDE_DIR}/octave_helper
                                           ${ELI_SOURCE_DIR}/include/eli/geom/curve/piecewise_creator_base.hpp
                                           ${ELI_SOURCE_DIR}/include/eli/geom/curve/piecewise_four_digit_creator.hpp
                                           ${ELI_SOURCE_DIR}/include/eli/geom/curve/piecewise_explicit_bezier_creator.hpp
+                                          ${ELI_SOURCE_DIR}/include/eli/geom/curve/piecewise_polynomial_creator.hpp
                                           ${ELI_SOURCE_DIR}/include/eli/geom/curve/pseudo/four_digit.hpp
-                                          ${ELI_SOURCE_DIR}/include/eli/geom/curve/pseudo/explicit_bezier.hpp)
+                                          ${ELI_SOURCE_DIR}/include/eli/geom/curve/pseudo/explicit_bezier.hpp
+                                          ${ELI_SOURCE_DIR}/include/eli/geom/curve/pseudo/polynomial.hpp)
 
 add_executable(${PIECEWISE_PSEUDO_CREATOR_TEST_EXE} ${PIECEWISE_PSEUDO_CREATOR_TEST_SOURCE} ${PIECEWISE_PSEUDO_CREATOR_TEST_HEADER})
 target_link_libraries(${PIECEWISE_PSEUDO_CREATOR_TEST_EXE} ${_ELI_TEST_LIBRARIES_LIST})
