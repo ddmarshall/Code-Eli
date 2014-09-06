@@ -114,6 +114,14 @@ namespace eli
               }
             }
 
+            index_type get_degree(dimension_type i) const
+            {
+              if (i<dim__)
+              {
+                poly[i].degree();
+              }
+            }
+
             point_type f(const data_type &t) const
             {
               point_type rtn;
