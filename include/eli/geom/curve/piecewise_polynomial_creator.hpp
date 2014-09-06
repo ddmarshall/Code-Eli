@@ -32,6 +32,7 @@ namespace eli
       class piecewise_polynomial_creator : public piecewise_creator_base<data__, dim__, tol__>
       {
         public:
+          typedef unsigned short dimension_type;
           typedef piecewise_creator_base<data__, dim__, tol__> base_class_type;
           typedef typename base_class_type::data_type data_type;
           typedef typename base_class_type::point_type point_type;
@@ -50,7 +51,7 @@ namespace eli
             poly=p;
           }
 
-          void get_curve(polynomial_type &p) const
+          void get_polynomial(polynomial_type &p) const
           {
             p=poly;
           }
@@ -64,11 +65,15 @@ namespace eli
 
           virtual bool create(piecewise<bezier, data_type, dim__, tolerance_type> &pc) const
           {
-#if 0
             typedef piecewise<bezier, data_type, dim__, tolerance_type> piecewise_curve_type;
             typedef typename piecewise_curve_type::curve_type curve_type;
-            typedef typename curve_type::control_point_type control_point_type;
+            typedef Eigen::Matrix<data_type, Eigen::Dynamic, dim__> control_point_collection_type;
             typedef typename piecewise_curve_type::error_code error_code;
+
+            curve_type c;
+            control_point_collection_type cp, coeff;
+            polynomial_coefficient_type a[dim__];
+            index_type deg[dim__], bez_deg;
 
             // make sure only have one segment
             if (this->get_number_segments()!=1)
@@ -77,39 +82,38 @@ namespace eli
               return false;
             }
 
-            curve_type c;
-            control_point_type cp;
-            eb_control_point_type eb_cp;
-            index_type i, deg(eb.degree());
-
-            // create the control points for the x-dimension
-            polynomial_type x_eb(1);
-
-            eb_cp << 0;
-            x_eb.set_control_point(eb_cp, 0);
-            eb_cp << 1;
-            x_eb.set_control_point(eb_cp, 1);
-            x_eb.degree_promote_to(deg);
-
-            // make sure have same degree for x- and y-coordinates
-            if (x_eb.degree()!=deg)
+            // extract all coefficients and degrees
+            bez_deg=0;
+            for (dimension_type j=0; j<dim__; ++j)
             {
-              assert(false);
-              return false;
+              deg[j]=poly.degree(j);
+              if (deg[j]>bez_deg)
+              {
+                bez_deg=deg[j];
+              }
+              poly.get_coefficients(a[j], j);
             }
 
-            // cycle through each control point and add to bezier curve
-            c.resize(deg);
-            for (i=0; i<=deg; ++i)
+            // build the coefficient matrix needed for conversion
+            coeff.resize(bez_deg+1, dim__);
+            coeff.setZero();
+            for (dimension_type j=0; j<dim__; ++j)
             {
-              cp.setZero();
-              cp(0) = x_eb.get_control_point(i).x();
-              cp(1) = eb.get_control_point(i).x();
-              c.set_control_point(cp, i);
+              for (index_type i=0; i<=deg[j]; ++i)
+              {
+                coeff(i, j)=a[j][i];
+              }
             }
-            if (rev)
+
+            // build the control points
+            cp.resize(bez_deg+1, dim__);
+            eli::geom::utility::monomial_to_bezier_control_points(cp, coeff);
+
+            // create the curve
+            c.resize(bez_deg);
+            for (index_type i=0; i<=bez_deg; ++i)
             {
-              c.reverse();
+              c.set_control_point(cp.row(i), i);
             }
 
             // set the piecewise curve
@@ -124,8 +128,6 @@ namespace eli
             }
 
             return true;
-#endif
-            return false;
           }
 
         private:

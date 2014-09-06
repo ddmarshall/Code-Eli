@@ -407,6 +407,29 @@ namespace eli
       }
 
       template<typename Derived1, typename Derived2>
+      void monomial_to_bezier_control_points(Eigen::MatrixBase<Derived1> &cp, const Eigen::MatrixBase<Derived2> &a)
+      {
+        // do some checks on incoming matrix dimensions
+        assert(cp.cols()==a.cols());
+        assert(cp.rows()==a.rows());
+
+        typename Derived1::Index i, j, deg(cp.rows()-1);
+        typename Derived1::Scalar bc;
+
+        cp.setZero();
+        for (j=0; j<=deg; ++j)
+        {
+          for (i=0; i<=j; ++i)
+          {
+            eli::mutil::dm::binomial_coefficient(bc, deg-i, j-i);
+            cp.row(j)+=bc*a.row(i);
+          }
+          eli::mutil::dm::binomial_coefficient(bc, deg, j);
+          cp.row(j)/=bc;
+        }
+      }
+
+      template<typename Derived1, typename Derived2>
       void bezier_control_points_to_monomial(Eigen::MatrixBase<Derived1> &a, const Eigen::MatrixBase<Derived2> &cp)
       {
         // do some checks on incoming matrix dimensions

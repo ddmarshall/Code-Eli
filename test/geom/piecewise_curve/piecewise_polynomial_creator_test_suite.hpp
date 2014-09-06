@@ -40,7 +40,7 @@ class piecewise_polynomial_creator_test_suite : public Test::Suite
     typedef typename piecewise_curve_type::index_type index_type;
     typedef typename piecewise_curve_type::tolerance_type tolerance_type;
     typedef eli::geom::curve::pseudo::polynomial<data__, 3> polynomial_type;
-    typedef typename polynomial_type::coefficient_type control_point_type;
+    typedef typename polynomial_type::coefficient_type coefficient_type;
 
     tolerance_type tol;
 
@@ -49,16 +49,19 @@ class piecewise_polynomial_creator_test_suite : public Test::Suite
     {
       // add the tests
       TEST_ADD(piecewise_polynomial_creator_test_suite<float>::create_curve_test);
+      TEST_ADD(piecewise_polynomial_creator_test_suite<float>::full_cycle_test);
     }
     void AddTests(const double &)
     {
       // add the tests
       TEST_ADD(piecewise_polynomial_creator_test_suite<double>::create_curve_test);
+      TEST_ADD(piecewise_polynomial_creator_test_suite<double>::full_cycle_test);
     }
     void AddTests(const long double &)
     {
       // add the tests
       TEST_ADD(piecewise_polynomial_creator_test_suite<long double>::create_curve_test);
+      TEST_ADD(piecewise_polynomial_creator_test_suite<long double>::full_cycle_test);
     }
 
   public:
@@ -74,76 +77,128 @@ class piecewise_polynomial_creator_test_suite : public Test::Suite
 
     void create_curve_test()
     {
-#if 0
-      typedef eli::geom::curve::bezier<data__, 3> bezier_curve_type;
-
-      eli::geom::curve::piecewise_polynomial_creator<data_type, 3, tolerance_type> pebc;
-      piecewise_curve_type pc1, pc_ref;
-      control_point_type cntrl_in[5];
-      typename bezier_curve_type::control_point_type bez_cntrl[5];
-      polynomial_type ebc;
-      bezier_curve_type bc, bc_out;
-      typename polynomial_type::data_type t0, t1;
+      eli::geom::curve::piecewise_polynomial_creator<data_type, 3, tolerance_type> ppc;
+      piecewise_curve_type pc;
+      polynomial_type c;
+      coefficient_type coef1(5), coef2(2);
+      point_type eval_out, eval_ref;
+      data_type t, t0, t1;
       bool rtn_flag;
 
-      // set control points and create curves
-      cntrl_in[0] << 2.0;
-      cntrl_in[1] << 1.5;
-      cntrl_in[2] << 0.0;
-      cntrl_in[3] << 1.0;
-      cntrl_in[4] << 0.5;
-      bez_cntrl[0] << 0,    2,   0;
-      bez_cntrl[1] << 0.25, 1.5, 0;
-      bez_cntrl[2] << 0.5,  0,   0;
-      bez_cntrl[3] << 0.75, 1,   0;
-      bez_cntrl[4] << 1,    0.5, 0;
-
-      ebc.resize(4);
-      bc.resize(4);
-      for (index_type i=0; i<5; ++i)
-      {
-        ebc.set_control_point(cntrl_in[i], i);
-        bc.set_control_point(bez_cntrl[i], i);
-      }
+      // set coefficients
+      coef1 << 2, 4, 3, 1, 2;
+      coef2 << 1, 1;
+      c.set_coefficients(coef1, 0);
+      c.set_coefficients(coef2, 1);
 
       // set the parameterization
       t0=-1;
       t1=1;
 
-      // build reference piecewise curve
-      pc_ref.clear();
-      pc_ref.set_t0(t0);
-      pc_ref.push_back(bc, t1-t0);
-
       // create curve
-      rtn_flag=pebc.set_conditions(ebc, false);
+      rtn_flag=ppc.set_conditions(c);
       TEST_ASSERT(rtn_flag);
-      pebc.set_t0(t0);
-      pebc.set_segment_dt(t1-t0, 0);
-      rtn_flag=pebc.create(pc1);
+      ppc.set_t0(t0);
+      ppc.set_segment_dt(t1-t0, 0);
+      rtn_flag=ppc.create(pc);
       TEST_ASSERT(rtn_flag);
 
-      // extract control points and test
-      TEST_ASSERT(pc1.number_segments()==1);
-      TEST_ASSERT(pc1.get_t0()==t0);
-      TEST_ASSERT(pc1.get_tmax()==t1);
-      pc1.get(bc_out, 0);
-      for (index_type i=0; i<5; ++i)
-      {
-        TEST_ASSERT(tol.approximately_equal(bc_out.get_control_point(i), bez_cntrl[i]));
-      }
+      // test evaluation at ends
+      t=t0;
+      eval_out=pc.f(t);
+      eval_ref=c.f((t-t0)/(t1-t0));
+      TEST_ASSERT(tol.approximately_equal(eval_out, eval_ref));
+      t=t1;
+      eval_out=pc.f(t);
+      eval_ref=c.f((t-t0)/(t1-t0));
+      TEST_ASSERT(tol.approximately_equal(eval_out, eval_ref));
+
+      // test evaluation at interior point
+      t=(t1-t0)*static_cast<data_type>(0.2)+t0;
+      eval_out=pc.f(t);
+      eval_ref=c.f((t-t0)/(t1-t0));
+      TEST_ASSERT(tol.approximately_equal(eval_out, eval_ref));
 
 //      if (typeid(data_type)==typeid(float))
 //      {
 //        std::cout.flush();
 //        eli::test::octave_start(1);
-//        eli::test::octave_print(1, ebc, "polynomial");
-//        eli::test::octave_print(1, bc, "bezier");
-//        eli::test::octave_print(1, pc_ref, "ref_piecewise");
-//        eli::test::octave_print(1, pc1, "exp_piecewise");
+//        eli::test::octave_print(1, c, "poly");
+//        eli::test::octave_print(1, pc, "piecewise");
 //        eli::test::octave_finish(1);
 //      }
-#endif
+    }
+
+    void full_cycle_test()
+    {
+      eli::geom::curve::piecewise_polynomial_creator<data_type, 3, tolerance_type> ppc;
+      piecewise_curve_type pc;
+      polynomial_type c;
+      coefficient_type coef1(5), coef2(2);
+      point_type eval_out, eval_ref;
+      data_type t0, t1;
+      bool rtn_flag;
+
+      // set coefficients
+      coef1 << 2, 4, 3, 1, 2;
+      coef2 << 1, 1;
+      c.set_coefficients(coef1, 0);
+      c.set_coefficients(coef2, 1);
+
+      // set the parameterization
+      t0=-1;
+      t1=1;
+
+      // create curve
+      rtn_flag=ppc.set_conditions(c);
+      TEST_ASSERT(rtn_flag);
+      ppc.set_t0(t0);
+      ppc.set_segment_dt(t1-t0, 0);
+      rtn_flag=ppc.create(pc);
+      TEST_ASSERT(rtn_flag);
+
+      // extract the curve and obtain the monomial coefficients
+      curve_type crv;
+      typename curve_type::monomial_coefficient_type coef_out;
+
+      pc.get(crv, 0);
+      crv.get_monomial_coefficients(coef_out);
+
+      // test the coefficients
+      index_type i;
+
+      i=0;
+      TEST_ASSERT(tol.approximately_equal(coef_out(i, 0), coef1(i)));
+      i=1;
+      TEST_ASSERT(tol.approximately_equal(coef_out(i, 0), coef1(i)));
+      i=2;
+      TEST_ASSERT(tol.approximately_equal(coef_out(i, 0), coef1(i)));
+      i=3;
+      TEST_ASSERT(tol.approximately_equal(coef_out(i, 0), coef1(i)));
+      i=4;
+      TEST_ASSERT(tol.approximately_equal(coef_out(i, 0), coef1(i)));
+
+      i=0;
+      TEST_ASSERT(tol.approximately_equal(coef_out(i, 1), coef2(i)));
+      i=1;
+      TEST_ASSERT(tol.approximately_equal(coef_out(i, 1), coef2(i)));
+      i=2;
+      TEST_ASSERT(tol.approximately_equal(coef_out(i, 1), 0));
+      i=3;
+      TEST_ASSERT(tol.approximately_equal(coef_out(i, 1), 0));
+      i=4;
+      TEST_ASSERT(tol.approximately_equal(coef_out(i, 1), 0));
+
+      i=0;
+      TEST_ASSERT(tol.approximately_equal(coef_out(i, 2), 0));
+      i=1;
+      TEST_ASSERT(tol.approximately_equal(coef_out(i, 2), 0));
+      i=2;
+      TEST_ASSERT(tol.approximately_equal(coef_out(i, 2), 0));
+      i=3;
+      TEST_ASSERT(tol.approximately_equal(coef_out(i, 2), 0));
+      i=4;
+      TEST_ASSERT(tol.approximately_equal(coef_out(i, 2), 0));
     }
 };
 
