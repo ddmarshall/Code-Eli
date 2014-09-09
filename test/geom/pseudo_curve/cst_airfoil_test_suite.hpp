@@ -88,7 +88,7 @@ class cst_airfoil_test_suite : public Test::Suite
   private:
     void assignment_test()
     {
-      curve_type ebc1, ebc2;
+      curve_type cst1, cst2;
       control_point_type cntrl_in[4], cntrl_out;
 
       // test default constructor then set control points
@@ -97,35 +97,45 @@ class cst_airfoil_test_suite : public Test::Suite
       cntrl_in[2] << static_cast<data_type>(3.5);
       cntrl_in[3] << 4;
 
-      ebc1.resize(3);
-      for (index_type i=0; i<=ebc1.degree(); ++i)
+      cst1.resize_upper(3);
+      for (index_type i=0; i<=cst1.upper_degree(); ++i)
       {
-        ebc1.set_control_point(cntrl_in[i], i);
+        cst1.set_upper_control_point(cntrl_in[i], i);
+      }
+      cst1.resize_lower(3);
+      for (index_type i=0; i<=cst1.lower_degree(); ++i)
+      {
+        cst1.set_lower_control_point(-cntrl_in[i], i);
       }
 
       // test order
-      TEST_ASSERT(ebc1.degree()==3);
+      TEST_ASSERT(cst1.upper_degree()==3);
+      TEST_ASSERT(cst1.lower_degree()==3);
 
       // test control points
-      for (index_type i=0; i<=ebc1.degree(); ++i)
+      for (index_type i=0; i<=cst1.upper_degree(); ++i)
       {
-        TEST_ASSERT(tol.approximately_equal(ebc1.get_control_point(i), cntrl_in[i]));
+        TEST_ASSERT(tol.approximately_equal(cst1.get_upper_control_point(i), cntrl_in[i]));
+      }
+      for (index_type i=0; i<=cst1.lower_degree(); ++i)
+      {
+        TEST_ASSERT(tol.approximately_equal(cst1.get_lower_control_point(i), -cntrl_in[i]));
       }
 
       // test copy ctr
-      curve_type ebcc2(ebc1);
-      TEST_ASSERT(ebcc2==ebc1);
+      curve_type cstc2(cst1);
+      TEST_ASSERT(cstc2==cst1);
 
       // test assignment operator
-      ebc2=ebc1;
-      TEST_ASSERT(ebc2==ebc1);
+      cst2=cst1;
+      TEST_ASSERT(cst2==cst1);
     }
 
     void evaluation_test()
     {
       typedef eli::geom::curve::pseudo::explicit_bezier<data_type> explicit_bezier_curve_type;
 
-      explicit_bezier_curve_type ebc(7);
+      explicit_bezier_curve_type ebcu(7), ebcl(7);
       curve_type cst(7);
       control_point_type cp[8];
       data_type dte(0.01), t[6];
@@ -141,10 +151,12 @@ class cst_airfoil_test_suite : public Test::Suite
       cp[5] << static_cast<data_type>(0.137218405082418);
       cp[6] << static_cast<data_type>(0.140720628655908);
       cp[7] << static_cast<data_type>(0.141104769355436);
-      for (i=0; i<=cst.degree(); ++i)
+      for (i=0; i<=cst.upper_degree(); ++i)
       {
-        ebc.set_control_point(cp[i], i);
-        cst.set_control_point(cp[i], i);
+        ebcu.set_control_point(cp[i], i);
+        cst.set_upper_control_point(cp[i], i);
+        ebcl.set_control_point(-cp[i], i);
+        cst.set_lower_control_point(-cp[i], i);
       }
 
       // set the trailing edge thickness of CST airfoil
@@ -158,45 +170,74 @@ class cst_airfoil_test_suite : public Test::Suite
       t[4] = static_cast<data_type>(0.73);
       t[5] = static_cast<data_type>(1);
 
-      // evaluate the point
+      // evaluate the points on lower surface
       point_type dte_vec;
+      i=1;
+      pt_out = cst.f(-t[i]);
+      dte_vec << 0, -t[i]*dte/2;
+      pt_ref = std::sqrt(t[i])*(1-t[i])*ebcu.f(t[i])+dte_vec;
+      pt_ref(1)*=-1;
+      TEST_ASSERT(tol.approximately_equal(pt_out, pt_ref));
+      i=2;
+      pt_out = cst.f(-t[i]);
+      dte_vec << 0, -t[i]*dte/2;
+      pt_ref = std::sqrt(t[i])*(1-t[i])*ebcu.f(t[i])+dte_vec;
+      pt_ref(1)*=-1;
+      TEST_ASSERT(tol.approximately_equal(pt_out, pt_ref));
+      i=3;
+      pt_out = cst.f(-t[i]);
+      dte_vec << 0, -t[i]*dte/2;
+      pt_ref = std::sqrt(t[i])*(1-t[i])*ebcu.f(t[i])+dte_vec;
+      pt_ref(1)*=-1;
+      TEST_ASSERT(tol.approximately_equal(pt_out, pt_ref));
+      i=4;
+      pt_out = cst.f(-t[i]);
+      dte_vec << 0, -t[i]*dte/2;
+      pt_ref = std::sqrt(t[i])*(1-t[i])*ebcu.f(t[i])+dte_vec;
+      pt_ref(1)*=-1;
+      TEST_ASSERT(tol.approximately_equal(pt_out, pt_ref));
+      i=5;
+      pt_out = cst.f(-t[i]);
+      dte_vec << 0, -t[i]*dte/2;
+      pt_ref = std::sqrt(t[i])*(1-t[i])*ebcu.f(t[i])+dte_vec;
+      pt_ref(1)*=-1;
+      TEST_ASSERT(tol.approximately_equal(pt_out, pt_ref));
+
+      // evaluate the points on upper surface
       i=0;
       pt_out = cst.f(t[i]);
-      dte_vec << 0, t[i]*dte;
-      pt_ref = std::sqrt(t[i])*(1-t[i])*ebc.f(t[i])+dte_vec;
+      dte_vec << 0, t[i]*dte/2;
+      pt_ref = std::sqrt(t[i])*(1-t[i])*ebcu.f(t[i])+dte_vec;
       TEST_ASSERT(tol.approximately_equal(pt_out, pt_ref));
       i=1;
       pt_out = cst.f(t[i]);
-      dte_vec << 0, t[i]*dte;
-      pt_ref = std::sqrt(t[i])*(1-t[i])*ebc.f(t[i])+dte_vec;
+      dte_vec << 0, t[i]*dte/2;
+      pt_ref = std::sqrt(t[i])*(1-t[i])*ebcu.f(t[i])+dte_vec;
       TEST_ASSERT(tol.approximately_equal(pt_out, pt_ref));
       i=2;
       pt_out = cst.f(t[i]);
-      dte_vec << 0, t[i]*dte;
-      pt_ref = std::sqrt(t[i])*(1-t[i])*ebc.f(t[i])+dte_vec;
+      dte_vec << 0, t[i]*dte/2;
+      pt_ref = std::sqrt(t[i])*(1-t[i])*ebcu.f(t[i])+dte_vec;
       TEST_ASSERT(tol.approximately_equal(pt_out, pt_ref));
       i=3;
       pt_out = cst.f(t[i]);
-      dte_vec << 0, t[i]*dte;
-      pt_ref = std::sqrt(t[i])*(1-t[i])*ebc.f(t[i])+dte_vec;
+      dte_vec << 0, t[i]*dte/2;
+      pt_ref = std::sqrt(t[i])*(1-t[i])*ebcu.f(t[i])+dte_vec;
       TEST_ASSERT(tol.approximately_equal(pt_out, pt_ref));
       i=4;
       pt_out = cst.f(t[i]);
-      dte_vec << 0, t[i]*dte;
-      pt_ref = std::sqrt(t[i])*(1-t[i])*ebc.f(t[i])+dte_vec;
+      dte_vec << 0, t[i]*dte/2;
+      pt_ref = std::sqrt(t[i])*(1-t[i])*ebcu.f(t[i])+dte_vec;
       TEST_ASSERT(tol.approximately_equal(pt_out, pt_ref));
       i=5;
       pt_out = cst.f(t[i]);
-      dte_vec << 0, t[i]*dte;
-      pt_ref = std::sqrt(t[i])*(1-t[i])*ebc.f(t[i])+dte_vec;
+      dte_vec << 0, t[i]*dte/2;
+      pt_ref = std::sqrt(t[i])*(1-t[i])*ebcu.f(t[i])+dte_vec;
       TEST_ASSERT(tol.approximately_equal(pt_out, pt_ref));
     }
 
     void derivative_test()
     {
-      typedef eli::geom::curve::pseudo::explicit_bezier<data_type> explicit_bezier_curve_type;
-
-      explicit_bezier_curve_type ebc(7);
       curve_type cst(7);
       control_point_type cp[8];
       data_type dte(0.01), t[6];
@@ -212,10 +253,10 @@ class cst_airfoil_test_suite : public Test::Suite
       cp[5] << static_cast<data_type>(0.137218405082418);
       cp[6] << static_cast<data_type>(0.140720628655908);
       cp[7] << static_cast<data_type>(0.141104769355436);
-      for (i=0; i<=cst.degree(); ++i)
+      for (i=0; i<=cst.upper_degree(); ++i)
       {
-        ebc.set_control_point(cp[i], i);
-        cst.set_control_point(cp[i], i);
+        cst.set_upper_control_point(cp[i], i);
+        cst.set_lower_control_point(-cp[i], i);
       }
 
       // set the trailing edge thickness of CST airfoil
@@ -233,6 +274,42 @@ class cst_airfoil_test_suite : public Test::Suite
       eli::mutil::fd::d1o2<data_type> d1_calc;
       eli::mutil::fd::d2o2<data_type> d2_calc;
 
+      // evaluate points on the lower surface
+      for (i=0; i<6; ++i)
+      {
+        pt=cst.f(-t[i]-dt); x[0]=pt(0); y[0]=pt(1);
+        pt=cst.f(-t[i]);    x[1]=pt(0); y[1]=pt(1);
+        pt=cst.f(-t[i]+dt); x[2]=pt(0); y[2]=pt(1);
+        d1_calc.evaluate(xp_ref(0), x, dt);
+        d1_calc.evaluate(xp_ref(1), y, dt);
+        d2_calc.evaluate(xpp_ref(0), x, dt);
+        d2_calc.evaluate(xpp_ref(1), y, dt);
+        xp=cst.fp(-t[i]);
+        xpp=cst.fpp(-t[i]);
+        if (typeid(data_type)==typeid(float))
+        {
+          TEST_ASSERT((xp-xp_ref).norm()<6e-3);
+          if (i==0)
+          {
+            TEST_ASSERT((xpp-xpp_ref).norm()<7e-2);
+          }
+          else if (i==1)
+          {
+            TEST_ASSERT((xpp-xpp_ref).norm()<4e-3);
+          }
+          else
+          {
+            TEST_ASSERT((xpp-xpp_ref).norm()<3e-3);
+          }
+        }
+        else
+        {
+          TEST_ASSERT(tol.approximately_equal(xp, xp_ref));
+          TEST_ASSERT((xpp-xpp_ref).norm()<3e-5);
+        }
+      }
+
+      // evaluate points on the upper surface
       for (i=0; i<6; ++i)
       {
         pt=cst.f(t[i]-dt); x[0]=pt(0); y[0]=pt(1);
@@ -272,9 +349,9 @@ class cst_airfoil_test_suite : public Test::Suite
     {
       typedef eli::geom::curve::pseudo::explicit_bezier<data__> reference_curve_type;
 
-      curve_type ebc;
+      curve_type cst;
       control_point_type cntrl_in[5], cntrl_out;
-      reference_curve_type ref_crv;
+      reference_curve_type refu, refl;
 
       // set control points
       cntrl_in[0] << 2;
@@ -283,69 +360,47 @@ class cst_airfoil_test_suite : public Test::Suite
       cntrl_in[3] << 1;
       cntrl_in[4] << static_cast<data_type>(0.5);
 
-      ebc.resize(4);
-      ref_crv.resize(4);
-      for (index_type i=0; i<=ebc.degree(); ++i)
+      cst.resize_upper(4);
+      cst.resize_lower(4);
+      refu.resize(4);
+      refl.resize(4);
+      for (index_type i=0; i<=cst.upper_degree(); ++i)
       {
-        ebc.set_control_point(cntrl_in[i], i);
-        ref_crv.set_control_point(cntrl_in[i], i);
+        cst.set_upper_control_point(cntrl_in[i], i);
+        refu.set_control_point(cntrl_in[i], i);
+        cst.set_lower_control_point(-cntrl_in[i], i);
+        refl.set_control_point(-cntrl_in[i], i);
       }
 
-      ebc.degree_promote();
-      ref_crv.degree_promote();
-
-      // test to see if degree has increased
-      TEST_ASSERT(ebc.degree()==ref_crv.degree());
-      for (index_type i=0; i<ebc.degree(); ++i)
+      // test promote lower surface
+      cst.lower_degree_promote();
+      refl.degree_promote();
+      TEST_ASSERT(cst.lower_degree()==refl.degree());
+      for (index_type i=0; i<cst.lower_degree(); ++i)
       {
-        TEST_ASSERT(tol.approximately_equal(ebc.get_control_point(i), ref_crv.get_control_point(i)));
+        TEST_ASSERT(tol.approximately_equal(cst.get_lower_control_point(i), refl.get_control_point(i)));
+      }
+
+      // test promote upper surface
+      cst.upper_degree_promote();
+      refu.degree_promote();
+      TEST_ASSERT(cst.upper_degree()==refu.degree());
+      for (index_type i=0; i<cst.upper_degree(); ++i)
+      {
+        TEST_ASSERT(tol.approximately_equal(cst.get_upper_control_point(i), refu.get_control_point(i)));
       }
     }
 
     void demotion_test()
     {
-      // no constraint
-      {
-        typedef eli::geom::curve::pseudo::explicit_bezier<data__> reference_curve_type;
-
-        curve_type ebc;
-        control_point_type cntrl_in[5], cntrl_out;
-        reference_curve_type ref_crv;
-
-        // set control points
-        cntrl_in[0] << 2;
-        cntrl_in[1] << static_cast<data_type>(1.5);
-        cntrl_in[2] << 0;
-        cntrl_in[3] << 1;
-        cntrl_in[4] << static_cast<data_type>(0.5);
-
-        ebc.resize(4);
-        ref_crv.resize(4);
-        for (index_type i=0; i<=ebc.degree(); ++i)
-        {
-          ebc.set_control_point(cntrl_in[i], i);
-          ref_crv.set_control_point(cntrl_in[i], i);
-        }
-
-        ebc.degree_demote(eli::geom::general::NOT_CONNECTED);
-        ref_crv.degree_demote(eli::geom::general::NOT_CONNECTED);
-
-
-        // test to see if degree has increased
-        TEST_ASSERT(ebc.degree()==ref_crv.degree());
-        for (index_type i=0; i<ebc.degree(); ++i)
-        {
-          TEST_ASSERT(tol.approximately_equal(ebc.get_control_point(i), ref_crv.get_control_point(i)));
-        }
-      }
-
       // C0 constraint
       {
         typedef eli::geom::curve::pseudo::explicit_bezier<data__> reference_curve_type;
 
-        curve_type ebc;
+        curve_type cst, cst_orig;
         control_point_type cntrl_in[5], cntrl_out;
-        reference_curve_type ref_crv;
+        reference_curve_type refu, refl;
+        point_type pt, pt_ref;
 
         // set control points
         cntrl_in[0] << 2;
@@ -354,102 +409,148 @@ class cst_airfoil_test_suite : public Test::Suite
         cntrl_in[3] << 1;
         cntrl_in[4] << static_cast<data_type>(0.5);
 
-        ebc.resize(4);
-        ref_crv.resize(4);
-        for (index_type i=0; i<=ebc.degree(); ++i)
+        cst.resize_upper(4);
+        cst.resize_lower(4);
+        refu.resize(4);
+        refl.resize(4);
+        for (index_type i=0; i<=cst.upper_degree(); ++i)
         {
-          ebc.set_control_point(cntrl_in[i], i);
-          ref_crv.set_control_point(cntrl_in[i], i);
+          cst.set_upper_control_point(cntrl_in[i], i);
+          cst.set_lower_control_point(cntrl_in[i], i);
+          refu.set_control_point(cntrl_in[i], i);
+          refl.set_control_point(cntrl_in[i], i);
         }
+        cst_orig=cst;
 
-        ebc.degree_demote(eli::geom::general::C0);
-        ref_crv.degree_demote(eli::geom::general::C0);
-
-
-        // test to see if degree has increased
-        TEST_ASSERT(ebc.degree()==ref_crv.degree());
-        for (index_type i=0; i<ebc.degree(); ++i)
+        // demote the lower surface
+        cst.lower_degree_demote(eli::geom::general::C0);
+        refl.degree_demote(eli::geom::general::NOT_CONNECTED);
+        TEST_ASSERT(cst.lower_degree()==refl.degree());
+        for (index_type i=0; i<cst.lower_degree(); ++i)
         {
-          TEST_ASSERT(tol.approximately_equal(ebc.get_control_point(i), ref_crv.get_control_point(i)));
+          TEST_ASSERT(tol.approximately_equal(cst.get_lower_control_point(i), refl.get_control_point(i)));
         }
+        TEST_ASSERT(tol.approximately_equal(cst.f(-1), cst_orig.f(-1)));
+        TEST_ASSERT(tol.approximately_equal(cst.f(0), cst_orig.f(0)));
+
+        // demote the upper surface
+        cst.upper_degree_demote(eli::geom::general::C0);
+        refu.degree_demote(eli::geom::general::NOT_CONNECTED);
+        TEST_ASSERT(cst.upper_degree()==refu.degree());
+        for (index_type i=0; i<cst.upper_degree(); ++i)
+        {
+          TEST_ASSERT(tol.approximately_equal(cst.get_upper_control_point(i), refu.get_control_point(i)));
+        }
+        TEST_ASSERT(tol.approximately_equal(cst.f(0), cst_orig.f(0)));
+        TEST_ASSERT(tol.approximately_equal(cst.f(1), cst_orig.f(1)));
       }
 
       // C1 constraint
       {
         typedef eli::geom::curve::pseudo::explicit_bezier<data__> reference_curve_type;
 
-        curve_type ebc;
-        control_point_type cntrl_in[9], cntrl_out;
-        reference_curve_type ref_crv;
+        curve_type cst, cst_orig;
+        control_point_type cntrl_in[5], cntrl_out;
+        reference_curve_type refu, refl;
 
         // set control points
         cntrl_in[0] << 2;
         cntrl_in[1] << static_cast<data_type>(1.5);
-        cntrl_in[2] << 1;
-        cntrl_in[3] << static_cast<data_type>(0.5);
-        cntrl_in[4] << 0;
-        cntrl_in[5] << static_cast<data_type>(-0.5);
-        cntrl_in[6] << -1;
-        cntrl_in[7] << 1;
-        cntrl_in[8] << static_cast<data_type>(0.5);
+        cntrl_in[2] << 0;
+        cntrl_in[3] << 1;
+        cntrl_in[4] << static_cast<data_type>(0.5);
 
-        ebc.resize(8);
-        ref_crv.resize(8);
-        for (index_type i=0; i<=ebc.degree(); ++i)
+        cst.resize_upper(4);
+        cst.resize_lower(4);
+        refu.resize(4);
+        refl.resize(4);
+        for (index_type i=0; i<=cst.upper_degree(); ++i)
         {
-          ebc.set_control_point(cntrl_in[i], i);
-          ref_crv.set_control_point(cntrl_in[i], i);
+          cst.set_upper_control_point(cntrl_in[i], i);
+          cst.set_lower_control_point(cntrl_in[i], i);
+          refu.set_control_point(cntrl_in[i], i);
+          refl.set_control_point(cntrl_in[i], i);
         }
+        cst_orig=cst;
 
-        ebc.degree_demote(eli::geom::general::C1);
-        ref_crv.degree_demote(eli::geom::general::C1);
-
-
-        // test to see if degree has increased
-        TEST_ASSERT(ebc.degree()==ref_crv.degree());
-        for (index_type i=0; i<ebc.degree(); ++i)
+        // demote the lower surface
+        cst.lower_degree_demote(eli::geom::general::C1);
+        refl.degree_demote(eli::geom::general::C0);
+        TEST_ASSERT(cst.lower_degree()==refl.degree());
+        for (index_type i=0; i<cst.lower_degree(); ++i)
         {
-          TEST_ASSERT(tol.approximately_equal(ebc.get_control_point(i), ref_crv.get_control_point(i)));
+          TEST_ASSERT(tol.approximately_equal(cst.get_lower_control_point(i), refl.get_control_point(i)));
         }
+        TEST_ASSERT(tol.approximately_equal(cst.f(-1), cst_orig.f(-1)));
+        TEST_ASSERT(tol.approximately_equal(cst.fp(-1), cst_orig.fp(-1)));
+        TEST_ASSERT(tol.approximately_equal(cst.f(0), cst_orig.f(0)));
+
+        // demote the upper surface
+        cst.upper_degree_demote(eli::geom::general::C1);
+        refu.degree_demote(eli::geom::general::C0);
+        TEST_ASSERT(cst.upper_degree()==refu.degree());
+        for (index_type i=0; i<cst.upper_degree(); ++i)
+        {
+          TEST_ASSERT(tol.approximately_equal(cst.get_upper_control_point(i), refu.get_control_point(i)));
+        }
+        TEST_ASSERT(tol.approximately_equal(cst.f(0), cst_orig.f(0)));
+        TEST_ASSERT(tol.approximately_equal(cst.f(1), cst_orig.f(1)));
+        TEST_ASSERT(tol.approximately_equal(cst.fp(1), cst_orig.fp(1)));
       }
 
       // C2 constraint
       {
         typedef eli::geom::curve::pseudo::explicit_bezier<data__> reference_curve_type;
 
-        curve_type ebc;
-        control_point_type cntrl_in[9], cntrl_out;
-        reference_curve_type ref_crv;
+        curve_type cst, cst_orig;
+        control_point_type cntrl_in[5], cntrl_out;
+        reference_curve_type refu, refl;
 
         // set control points
         cntrl_in[0] << 2;
         cntrl_in[1] << static_cast<data_type>(1.5);
-        cntrl_in[2] << 1;
-        cntrl_in[3] << static_cast<data_type>(0.5);
-        cntrl_in[4] << 0;
-        cntrl_in[5] << static_cast<data_type>(-0.5);
-        cntrl_in[6] << -1;
-        cntrl_in[7] << 1;
-        cntrl_in[8] << static_cast<data_type>(0.5);
+        cntrl_in[2] << 0;
+        cntrl_in[3] << 1;
+        cntrl_in[4] << static_cast<data_type>(0.5);
 
-        ebc.resize(8);
-        ref_crv.resize(8);
-        for (index_type i=0; i<=ebc.degree(); ++i)
+        cst.resize_upper(4);
+        cst.resize_lower(4);
+        refu.resize(4);
+        refl.resize(4);
+        for (index_type i=0; i<=cst.upper_degree(); ++i)
         {
-          ebc.set_control_point(cntrl_in[i], i);
-          ref_crv.set_control_point(cntrl_in[i], i);
+          cst.set_upper_control_point(cntrl_in[i], i);
+          cst.set_lower_control_point(cntrl_in[i], i);
+          refu.set_control_point(cntrl_in[i], i);
+          refl.set_control_point(cntrl_in[i], i);
         }
+        cst_orig=cst;
 
-        ebc.degree_demote(eli::geom::general::C2);
-        ref_crv.degree_demote(eli::geom::general::C2);
-
-
-        // test to see if degree has increased
-        TEST_ASSERT(ebc.degree()==ref_crv.degree());
-        for (index_type i=0; i<ebc.degree(); ++i)
+        // demote the lower surface
+        cst.lower_degree_demote(eli::geom::general::C2);
+        refl.degree_demote(eli::geom::general::C1);
+        TEST_ASSERT(cst.lower_degree()==refl.degree());
+        for (index_type i=0; i<cst.lower_degree(); ++i)
         {
-          TEST_ASSERT(tol.approximately_equal(ebc.get_control_point(i), ref_crv.get_control_point(i)));
+          TEST_ASSERT(tol.approximately_equal(cst.get_lower_control_point(i), refl.get_control_point(i)));
         }
+        TEST_ASSERT(tol.approximately_equal(cst.f(-1), cst_orig.f(-1)));
+        TEST_ASSERT(tol.approximately_equal(cst.fp(-1), cst_orig.fp(-1)));
+        TEST_ASSERT(tol.approximately_equal(cst.fpp(-1), cst_orig.fpp(-1)));
+        TEST_ASSERT(tol.approximately_equal(cst.f(0), cst_orig.f(0)));
+
+        // demote the upper surface
+        cst.upper_degree_demote(eli::geom::general::C2);
+        refu.degree_demote(eli::geom::general::C1);
+        TEST_ASSERT(cst.upper_degree()==refu.degree());
+        for (index_type i=0; i<cst.upper_degree(); ++i)
+        {
+          TEST_ASSERT(tol.approximately_equal(cst.get_upper_control_point(i), refu.get_control_point(i)));
+        }
+        TEST_ASSERT(tol.approximately_equal(cst.f(0), cst_orig.f(0)));
+        TEST_ASSERT(tol.approximately_equal(cst.f(1), cst_orig.f(1)));
+        TEST_ASSERT(tol.approximately_equal(cst.fp(1), cst_orig.fp(1)));
+        TEST_ASSERT(tol.approximately_equal(cst.fpp(1), cst_orig.fpp(1)));
       }
     }
 };
