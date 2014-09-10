@@ -44,6 +44,7 @@ namespace eli
             typedef typename shape_curve_type::control_point_type control_point_type;
             typedef typename shape_curve_type::index_type index_type;
             typedef typename shape_curve_type::tolerance_type tolerance_type;
+            typedef typename shape_curve_type::monomial_coefficient_type monomial_coefficient_type;
 
           public:
             cst_base() : N1(0.5), N2(1), delta_te(0), shape_function(1) {}
@@ -142,6 +143,11 @@ namespace eli
             control_point_type get_control_point(const index_type &i) const
             {
               return shape_function.get_control_point(i);
+            }
+
+            void get_monomial_coefficients(monomial_coefficient_type &a) const
+            {
+              shape_function.get_monomial_coefficients(a);
             }
 
             point_type f(const data_type &t) const

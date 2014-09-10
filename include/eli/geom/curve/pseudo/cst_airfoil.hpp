@@ -84,6 +84,7 @@ namespace eli
             typedef typename airfoil_curve_type::index_type index_type;
             typedef typename airfoil_curve_type::control_point_type control_point_type;
             typedef typename airfoil_curve_type::tolerance_type tolerance_type;
+            typedef typename airfoil_curve_type::monomial_coefficient_type monomial_coefficient_type;
 
           public:
             cst_airfoil() {}
@@ -213,8 +214,8 @@ namespace eli
               return lower.degree_demote(explicit_cont);
             }
 
-            data_type get_u_min() const {return static_cast<data_type>(-1);}
-            data_type get_u_max() const {return static_cast<data_type>(1);}
+            data_type get_t0() const {return static_cast<data_type>(-1);}
+            data_type get_tmax() const {return static_cast<data_type>(1);}
 
             const data_type & get_trailing_edge_thickness() const
             {
@@ -242,6 +243,16 @@ namespace eli
             control_point_type get_lower_control_point(const index_type &i) const
             {
               return lower.get_control_point(i);
+            }
+
+            void get_upper_monomial_coefficients(monomial_coefficient_type &a) const
+            {
+              upper.get_monomial_coefficients(a);
+            }
+
+            void get_lower_monomial_coefficients(monomial_coefficient_type &a) const
+            {
+              lower.get_monomial_coefficients(a);
             }
 
             point_type f(const data_type &t) const
