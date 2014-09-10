@@ -60,6 +60,8 @@ namespace eli
                 return true;
               if ((N1!=cst.N1) || (N2!=cst.N2))
                 return false;
+              if (delta_te!=cst.delta_te)
+                return false;
               return (shape_function==cst.shape_function);
             }
 
@@ -77,6 +79,7 @@ namespace eli
 
               N1=cst.N1;
               N2=cst.N2;
+              delta_te=cst.delta_te;
               shape_function=cst.shape_function;
 
               return (*this);
