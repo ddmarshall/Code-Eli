@@ -47,12 +47,12 @@ namespace eli
             typedef typename shape_curve_type::monomial_coefficient_type monomial_coefficient_type;
 
           public:
-            cst_base() : N1(0.5), N2(1), delta_te(0), shape_function(1) {}
-            cst_base(const index_type &dim) : N1(0.5), N2(1), delta_te(0), shape_function(dim) {}
-            cst_base(const data_type &N1r, const data_type &N2r, const index_type &dim)
-              : N1(N1r), N2(N2r), delta_te(0), shape_function(dim) {}
+            cst_base() : N1(0.5), N2(1), delta_te(0), shape_function(1), upper(true) {}
+            cst_base(const index_type &dim) : N1(0.5), N2(1), delta_te(0), shape_function(dim), upper(true) {}
+            cst_base(const data_type &N1r, const data_type &N2r, const index_type &dim, bool u)
+              : N1(N1r), N2(N2r), delta_te(0), shape_function(dim), upper(u) {}
             cst_base(const cst_base<data_type, tolerance_type> &cst)
-              : N1(cst.N1), N2(cst.N2), delta_te(cst.delta_te), shape_function(cst.shape_function) {}
+              : N1(cst.N1), N2(cst.N2), delta_te(cst.delta_te), shape_function(cst.shape_function), upper(cst.upper) {}
             virtual ~cst_base() {}
 
             bool operator==(const cst_base<data_type, tolerance_type> &cst) const
@@ -62,6 +62,8 @@ namespace eli
               if ((N1!=cst.N1) || (N2!=cst.N2))
                 return false;
               if (delta_te!=cst.delta_te)
+                return false;
+              if (upper!=cst.upper)
                 return false;
               return (shape_function==cst.shape_function);
             }
@@ -82,6 +84,7 @@ namespace eli
               N2=cst.N2;
               delta_te=cst.delta_te;
               shape_function=cst.shape_function;
+              upper=cst.upper;
 
               return (*this);
             }
@@ -150,25 +153,39 @@ namespace eli
               shape_function.get_monomial_coefficients(a);
             }
 
+            bool upper_curve() const
+            {
+              return upper;
+            }
+            bool set_upper_curve(bool u)
+            {
+              upper=u;
+            }
+
             point_type f(const data_type &t) const
             {
+              data_type dte(upper?delta_te:-delta_te);
               point_type rtn;
-              rtn = class_f(t)*shape_function.f(t);
-              rtn(1)+=t*delta_te;
+              rtn = shape_function.f(t);
+              rtn(1)=class_f(t)*rtn(1)+t*dte;
               return rtn;
             }
 
             point_type fp(const data_type &t) const
             {
+              data_type dte(upper?delta_te:-delta_te);
               point_type rtn;
-              rtn = class_fp(t)*shape_function.f(t)+class_f(t)*shape_function.fp(t);
-              rtn(1)+=delta_te;
+              rtn = shape_function.f(t);
+              rtn(1)=cpass_fp(t)*rtn(1)+class_f(t)*shape_function.fp(t)(1)+dte;
               return rtn;
             }
 
             point_type fpp(const data_type &t) const
             {
-              return class_fpp(t)*shape_function.f(t)+2*class_fp(t)*shape_function.fp(t)+class_f(t)*shape_function.fpp(t);
+              point_type rtn;
+              rtn = shape_function.f(t);
+              rtn(1)=class_fpp(t)*rtn(1)+2*class_fp(t)*shape_function.fp(t)(1)+class_f(t)*shape_function.fpp(t)(1);
+              return rtn;
             }
 
           protected:
@@ -194,6 +211,7 @@ namespace eli
             data_type N1, N2;
             data_type delta_te;
             shape_curve_type shape_function;
+            bool upper;
 
           private:
             data_type class_f(const data_type &t) const

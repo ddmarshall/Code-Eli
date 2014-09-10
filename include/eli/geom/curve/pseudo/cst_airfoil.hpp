@@ -43,7 +43,7 @@ namespace eli
 
           public:
             cst_airfoil_curve() : cst_base<data_type, tolerance_type> (0.5, 1, 1) {}
-            cst_airfoil_curve(index_type dim) : cst_base<data_type, tolerance_type>(0.5, 1, dim) {}
+            cst_airfoil_curve(index_type dim, bool u) : cst_base<data_type, tolerance_type>(0.5, 1, dim, u) {}
             cst_airfoil_curve(const cst_airfoil_curve<data_type, tolerance_type> &cst) : cst_base<data_type, tolerance_type>(cst) {}
             ~cst_airfoil_curve() {}
 
@@ -88,7 +88,7 @@ namespace eli
 
           public:
             cst_airfoil() {}
-            cst_airfoil(index_type deg) : upper(deg), lower(deg) {}
+            cst_airfoil(index_type deg) : upper(deg, true), lower(deg, false) {}
             cst_airfoil(index_type degu, index_type degl) : upper(degu), lower(degl) {}
             cst_airfoil(const cst_airfoil<data_type, tolerance_type> &a) : upper(a.upper), lower(a.lower) {}
             ~cst_airfoil(){}
