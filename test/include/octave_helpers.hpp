@@ -19,6 +19,7 @@
 #include "eli/geom/curve/piecewise.hpp"
 #include "eli/geom/curve/pseudo/explicit_bezier.hpp"
 #include "eli/geom/curve/pseudo/polynomial.hpp"
+#include "eli/geom/curve/pseudo/cst_airfoil.hpp"
 #include "eli/geom/surface/bezier.hpp"
 #include "eli/geom/surface/piecewise.hpp"
 
@@ -430,6 +431,62 @@ namespace eli
       std::cout << "plot3(" << nm << "_curv_x, "
                             << nm << "_curv_y, "
                             << nm << "_curv_z, '-c');" << std::endl;
+    }
+
+    template<typename data__>
+    void octave_print(int figno, const eli::geom::curve::pseudo::cst_airfoil<data__> &cst,
+                      const std::string &name="")
+    {
+      typedef eli::geom::curve::pseudo::cst_airfoil<data__> cst_airfoil_curve_type;
+      typedef typename cst_airfoil_curve_type::data_type data_type;
+      typedef typename cst_airfoil_curve_type::index_type index_type;
+
+      std::string nm, cxbuf, cybuf;
+
+      index_type i, pp, ns;
+      data_type tmin(cst.get_t0()), tmax(1);
+
+      // build name
+      if (name=="")
+      {
+        nm=random_string(5);
+      }
+      else
+      {
+        nm=name;
+      }
+
+      // initialize the t parameters
+      index_type nt(33);
+      std::vector<data__> t(nt);
+      for (i=0; i<nt; ++i)
+      {
+        t[i]=tmin+(tmax-tmin)*static_cast<data__>(i)/(nt-1);
+      }
+
+      // set the curve points
+      cxbuf=nm+"_curv_x=[";
+      cybuf=nm+"_curv_y=[";
+      for (i=0; i<nt; ++i)
+      {
+        cxbuf+=std::to_string(cst.f(t[i]).x());
+        cybuf+=std::to_string(cst.f(t[i]).y());
+        if (i<nt)
+        {
+          cxbuf+=", ";
+          cybuf+=", ";
+        }
+      }
+      cxbuf+="];";
+      cybuf+="];";
+
+      std::cout << "% curve: " << nm << std::endl;
+      std::cout << "figure(" << figno << ");" << std::endl;
+      std::cout << cxbuf << std::endl;
+      std::cout << cybuf << std::endl;
+      std::cout << "setenv('GNUTERM', 'x11');" << std::endl;
+      std::cout << "plot(" << nm << "_curv_x, "
+                           << nm << "_curv_y, '-c');" << std::endl;
     }
 
     template<typename data__>
