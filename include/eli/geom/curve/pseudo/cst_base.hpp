@@ -109,6 +109,9 @@ namespace eli
               N2_out=N2;
             }
 
+            data_type get_t0() const {return static_cast<data_type>(0);}
+            data_type get_tmax() const {return static_cast<data_type>(1);}
+
             bool open() const
             {
               return true;

@@ -93,6 +93,9 @@ namespace eli
               return y_curve.get_control_point(i);
             }
 
+            data_type get_t0() const {return static_cast<data_type>(0);}
+            data_type get_tmax() const {return static_cast<data_type>(1);}
+
             void reverse()
             {
               y_curve.reverse();

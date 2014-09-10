@@ -269,7 +269,7 @@ namespace eli
       std::string nm, cxbuf, cybuf;
 
       index_type i, pp, ns;
-      data_type tmin(0), tmax(1);
+      data_type tmin(ebc.get_t0()), tmax(ebc.get_tmax());
 
       // build name
       if (name=="")
