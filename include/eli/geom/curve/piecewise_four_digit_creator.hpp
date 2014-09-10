@@ -114,8 +114,8 @@ namespace eli
             index_type ile(1+(npt-1)/2);
 
             // Set up initial parameter and parameter step.
-            data_type xi(af.get_u_min());
-            data_type dxi((af.get_u_max()-af.get_u_min())/(npt-1));
+            data_type xi(af.get_t0());
+            data_type dxi((af.get_tmax()-af.get_t0())/(npt-1));
             std::vector< data_type > xis;
             xis.resize(npt);
 
@@ -128,7 +128,7 @@ namespace eli
               }
               else if(i==npt-1)
               {
-                xi=af.get_u_max();  // Force exact floating point value for te.
+                xi=af.get_tmax();  // Force exact floating point value for te.
               }
 
               temppt = af.f(xi);
