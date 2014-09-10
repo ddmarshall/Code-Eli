@@ -65,11 +65,10 @@ namespace eli
     void octave_print(int figno, const eli::geom::curve::bezier<data__, 2> &bc,
                       const std::string &name="", bool show_control_points=true)
     {
-
-      typedef eli::geom::curve::piecewise<eli::geom::curve::bezier, data__, 2> piecewise_curve_type;
-      typedef typename piecewise_curve_type::curve_type curve_type;
-      typedef typename piecewise_curve_type::data_type data_type;
-      typedef typename piecewise_curve_type::index_type index_type;
+      typedef eli::geom::curve::bezier<data__, 2> curve_type;
+      typedef typename curve_type::data_type data_type;
+      typedef typename curve_type::point_type point_type;
+      typedef typename curve_type::index_type index_type;
 
       std::string nm, cpxbuf, cpybuf, cxbuf, cybuf;
 
@@ -96,8 +95,10 @@ namespace eli
           bez_deg=bc.degree();
           for (i=0; i<=bez_deg; ++i)
           {
-            cpxbuf+=std::to_string(bc.get_control_point(i).x());
-            cpybuf+=std::to_string(bc.get_control_point(i).y());
+            point_type pt(bc.get_control_point(i));
+
+            cpxbuf+=std::to_string(pt.x());
+            cpybuf+=std::to_string(pt.y());
             if (i<bez_deg)
             {
               cpxbuf+=", ";
@@ -122,9 +123,11 @@ namespace eli
       cybuf=nm+"_curv_y=[";
       for (i=0; i<nt; ++i)
       {
-        cxbuf+=std::to_string(bc.f(t[i]).x());
-        cybuf+=std::to_string(bc.f(t[i]).y());
-        if (i<nt)
+        point_type pt(bc.f(t[i]));
+
+        cxbuf+=std::to_string(pt.x());
+        cybuf+=std::to_string(pt.y());
+        if (i<(nt-1))
         {
           cxbuf+=", ";
           cybuf+=", ";
@@ -158,11 +161,10 @@ namespace eli
     void octave_print(int figno, const eli::geom::curve::bezier<data__, 3> &bc,
                       const std::string &name="", bool show_control_points=true)
     {
-
-      typedef eli::geom::curve::piecewise<eli::geom::curve::bezier, data__, 3> piecewise_curve_type;
-      typedef typename piecewise_curve_type::curve_type curve_type;
-      typedef typename piecewise_curve_type::data_type data_type;
-      typedef typename piecewise_curve_type::index_type index_type;
+      typedef eli::geom::curve::bezier<data__, 3> curve_type;
+      typedef typename curve_type::data_type data_type;
+      typedef typename curve_type::point_type point_type;
+      typedef typename curve_type::index_type index_type;
 
       std::string nm, cpxbuf, cpybuf, cpzbuf, cxbuf, cybuf, czbuf;
 
@@ -190,9 +192,11 @@ namespace eli
           bez_deg=bc.degree();
           for (i=0; i<=bez_deg; ++i)
           {
-            cpxbuf+=std::to_string(bc.get_control_point(i).x());
-            cpybuf+=std::to_string(bc.get_control_point(i).y());
-            cpzbuf+=std::to_string(bc.get_control_point(i).z());
+            point_type pt(bc.get_control_point(i));
+
+            cpxbuf+=std::to_string(pt.x());
+            cpybuf+=std::to_string(pt.y());
+            cpzbuf+=std::to_string(pt.z());
             if (i<bez_deg)
             {
               cpxbuf+=", ";
@@ -220,10 +224,12 @@ namespace eli
       czbuf=nm+"_curv_z=[";
       for (i=0; i<nt; ++i)
       {
-        cxbuf+=std::to_string(bc.f(t[i]).x());
-        cybuf+=std::to_string(bc.f(t[i]).y());
-        czbuf+=std::to_string(bc.f(t[i]).z());
-        if (i<nt)
+        point_type pt(bc.f(t[i]));
+
+        cxbuf+=std::to_string(pt.x());
+        cybuf+=std::to_string(pt.y());
+        czbuf+=std::to_string(pt.z());
+        if (i<(nt-1))
         {
           cxbuf+=", ";
           cybuf+=", ";
@@ -265,6 +271,7 @@ namespace eli
     {
       typedef eli::geom::curve::pseudo::explicit_bezier<data__> explicit_bezier_curve_type;
       typedef typename explicit_bezier_curve_type::data_type data_type;
+      typedef typename explicit_bezier_curve_type::point_type point_type;
       typedef typename explicit_bezier_curve_type::index_type index_type;
 
       std::string nm, cxbuf, cybuf;
@@ -295,9 +302,11 @@ namespace eli
       cybuf=nm+"_curv_y=[";
       for (i=0; i<nt; ++i)
       {
-        cxbuf+=std::to_string(ebc.f(t[i]).x());
-        cybuf+=std::to_string(ebc.f(t[i]).y());
-        if (i<nt)
+        point_type pt(ebc.f(t[i]));
+
+        cxbuf+=std::to_string(pt.x());
+        cybuf+=std::to_string(pt.y());
+        if (i<(nt-1))
         {
           cxbuf+=", ";
           cybuf+=", ";
@@ -321,6 +330,7 @@ namespace eli
     {
       typedef eli::geom::curve::pseudo::explicit_bezier<data__> explicit_bezier_curve_type;
       typedef typename explicit_bezier_curve_type::data_type data_type;
+      typedef typename explicit_bezier_curve_type::point_type point_type;
       typedef typename explicit_bezier_curve_type::index_type index_type;
 
       std::string nm, cxbuf, cybuf;
@@ -351,9 +361,11 @@ namespace eli
       cybuf=nm+"_curv_y=[";
       for (i=0; i<nt; ++i)
       {
-        cxbuf+=std::to_string(pol.f(t[i]).x());
-        cybuf+=std::to_string(pol.f(t[i]).y());
-        if (i<nt)
+        point_type pt(pol.f(t[i]));
+
+        cxbuf+=std::to_string(pt.x());
+        cybuf+=std::to_string(pt.y());
+        if (i<(nt-1))
         {
           cxbuf+=", ";
           cybuf+=", ";
@@ -377,6 +389,7 @@ namespace eli
     {
       typedef eli::geom::curve::pseudo::explicit_bezier<data__> explicit_bezier_curve_type;
       typedef typename explicit_bezier_curve_type::data_type data_type;
+      typedef typename explicit_bezier_curve_type::point_type point_type;
       typedef typename explicit_bezier_curve_type::index_type index_type;
 
       std::string nm, cxbuf, cybuf, czbuf;
@@ -408,10 +421,12 @@ namespace eli
       czbuf=nm+"_curv_z=[";
       for (i=0; i<nt; ++i)
       {
-        cxbuf+=std::to_string(pol.f(t[i]).x());
-        cybuf+=std::to_string(pol.f(t[i]).y());
-        czbuf+=std::to_string(pol.f(t[i]).z());
-        if (i<nt)
+        point_type pt(pol.f(t[i]));
+
+        cxbuf+=std::to_string(pt.x());
+        cybuf+=std::to_string(pt.y());
+        czbuf+=std::to_string(pt.z());
+        if (i<(nt-1))
         {
           cxbuf+=", ";
           cybuf+=", ";
@@ -439,12 +454,13 @@ namespace eli
     {
       typedef eli::geom::curve::pseudo::cst_airfoil<data__> cst_airfoil_curve_type;
       typedef typename cst_airfoil_curve_type::data_type data_type;
+      typedef typename cst_airfoil_curve_type::point_type point_type;
       typedef typename cst_airfoil_curve_type::index_type index_type;
 
       std::string nm, cxbuf, cybuf;
 
       index_type i, pp, ns;
-      data_type tmin(cst.get_t0()), tmax(1);
+      data_type tmin(cst.get_t0()), tmax(cst.get_tmax());
 
       // build name
       if (name=="")
@@ -469,9 +485,11 @@ namespace eli
       cybuf=nm+"_curv_y=[";
       for (i=0; i<nt; ++i)
       {
-        cxbuf+=std::to_string(cst.f(t[i]).x());
-        cybuf+=std::to_string(cst.f(t[i]).y());
-        if (i<nt)
+        point_type pt(cst.f(t[i]));
+        
+        cxbuf+=std::to_string(pt.x());
+        cybuf+=std::to_string(pt.y());
+        if (i<(nt-1))
         {
           cxbuf+=", ";
           cybuf+=", ";
@@ -496,6 +514,7 @@ namespace eli
       typedef eli::geom::curve::piecewise<eli::geom::curve::bezier, data__, 2> piecewise_curve_type;
       typedef typename piecewise_curve_type::curve_type curve_type;
       typedef typename piecewise_curve_type::data_type data_type;
+      typedef typename piecewise_curve_type::point_type point_type;
       typedef typename piecewise_curve_type::index_type index_type;
 
       std::string nm, cpxbuf, cpybuf, cxbuf, cybuf;
@@ -528,8 +547,10 @@ namespace eli
           bez_deg=bez.degree();
           for (i=0; i<=bez_deg; ++i)
           {
-            cpxbuf+=std::to_string(bez.get_control_point(i).x());
-            cpybuf+=std::to_string(bez.get_control_point(i).y());
+            point_type pt(bez.get_control_point(i));
+
+            cpxbuf+=std::to_string(pt.x());
+            cpybuf+=std::to_string(pt.y());
             if ((pp<(ns-1)) || ((pp==(ns-1)) && (i<bez_deg)))
             {
               cpxbuf+=", ";
@@ -554,9 +575,11 @@ namespace eli
       cybuf=nm+"_curv_y=[";
       for (i=0; i<nt; ++i)
       {
-        cxbuf+=std::to_string(pc.f(t[i]).x());
-        cybuf+=std::to_string(pc.f(t[i]).y());
-        if (i<nt)
+        point_type pt(pc.f(t[i]));
+
+        cxbuf+=std::to_string(pt.x());
+        cybuf+=std::to_string(pt.y());
+        if (i<(nt-1))
         {
           cxbuf+=", ";
           cybuf+=", ";
@@ -593,6 +616,7 @@ namespace eli
       typedef eli::geom::curve::piecewise<eli::geom::curve::bezier, data__, 3> piecewise_curve_type;
       typedef typename piecewise_curve_type::curve_type curve_type;
       typedef typename piecewise_curve_type::data_type data_type;
+      typedef typename piecewise_curve_type::point_type point_type;
       typedef typename piecewise_curve_type::index_type index_type;
 
       std::string nm, cpxbuf, cpybuf, cpzbuf, cxbuf, cybuf, czbuf;
@@ -626,9 +650,11 @@ namespace eli
           bez_deg=bez.degree();
           for (i=0; i<=bez_deg; ++i)
           {
-            cpxbuf+=std::to_string(bez.get_control_point(i).x());
-            cpybuf+=std::to_string(bez.get_control_point(i).y());
-            cpzbuf+=std::to_string(bez.get_control_point(i).z());
+            point_type pt(bez.get_control_point(i));
+
+            cpxbuf+=std::to_string(pt.x());
+            cpybuf+=std::to_string(pt.y());
+            cpzbuf+=std::to_string(pt.z());
             if ((pp<(ns-1)) || ((pp==(ns-1)) && (i<bez_deg)))
             {
               cpxbuf+=", ";
@@ -656,10 +682,12 @@ namespace eli
       czbuf=nm+"_curv_z=[";
       for (i=0; i<nt; ++i)
       {
-        cxbuf+=std::to_string(pc.f(t[i]).x());
-        cybuf+=std::to_string(pc.f(t[i]).y());
-        czbuf+=std::to_string(pc.f(t[i]).z());
-        if (i<nt)
+        point_type pt(pc.f(t[i]));
+
+        cxbuf+=std::to_string(pt.x());
+        cybuf+=std::to_string(pt.y());
+        czbuf+=std::to_string(pt.z());
+        if (i<(nt-1))
         {
           cxbuf+=", ";
           cybuf+=", ";
@@ -702,6 +730,7 @@ namespace eli
     {
       typedef eli::geom::curve::piecewise<eli::geom::curve::bezier, data__, 2> piecewise_curve_type;
       typedef typename piecewise_curve_type::data_type data_type;
+      typedef typename piecewise_curve_type::point_type point_type;
       typedef typename piecewise_curve_type::index_type index_type;
       typedef typename piecewise_curve_type::tolerance_type tolerance_type;
 
@@ -751,11 +780,13 @@ namespace eli
       vecybuf=nm+"_vec_y=[";
       for (i=0; i<nt; ++i)
       {
-        cxbuf+=std::to_string(pc.f(t[i]).x());
-        cybuf+=std::to_string(pc.f(t[i]).y());
-        vecxbuf+=std::to_string(vec.f(t[i]).x());
-        vecybuf+=std::to_string(vec.f(t[i]).y());
-        if (i<nt)
+        point_type pt(pc.f(t[i])), v(vec.f(t[i]));
+
+        cxbuf+=std::to_string(pt.x());
+        cybuf+=std::to_string(pt.y());
+        vecxbuf+=std::to_string(v.x());
+        vecybuf+=std::to_string(v.y());
+        if (i<(nt-1))
         {
           cxbuf+=", ";
           cybuf+=", ";
@@ -789,6 +820,7 @@ namespace eli
     {
       typedef eli::geom::curve::piecewise<eli::geom::curve::bezier, data__, 3> piecewise_curve_type;
       typedef typename piecewise_curve_type::data_type data_type;
+      typedef typename piecewise_curve_type::point_type point_type;
       typedef typename piecewise_curve_type::index_type index_type;
       typedef typename piecewise_curve_type::tolerance_type tolerance_type;
 
@@ -840,13 +872,15 @@ namespace eli
       veczbuf=nm+"_vec_z=[";
       for (i=0; i<nt; ++i)
       {
-        cxbuf+=std::to_string(pc.f(t[i]).x());
-        cybuf+=std::to_string(pc.f(t[i]).y());
-        czbuf+=std::to_string(pc.f(t[i]).z());
-        vecxbuf+=std::to_string(vec.f(t[i]).x());
-        vecybuf+=std::to_string(vec.f(t[i]).y());
-        veczbuf+=std::to_string(vec.f(t[i]).z());
-        if (i<nt)
+        point_type pt(pc.f(t[i])), v(vec.f(t[i]));
+
+        cxbuf+=std::to_string(pt.x());
+        cybuf+=std::to_string(pt.y());
+        czbuf+=std::to_string(pt.z());
+        vecxbuf+=std::to_string(v.x());
+        vecybuf+=std::to_string(v.y());
+        veczbuf+=std::to_string(v.z());
+        if (i<(nt-1))
         {
           cxbuf+=", ";
           cybuf+=", ";
@@ -888,6 +922,7 @@ namespace eli
       typedef eli::geom::surface::piecewise<eli::geom::surface::bezier, data__, 3> piecewise_surface_type;
       typedef typename piecewise_surface_type::surface_type surface_type;
       typedef typename piecewise_surface_type::data_type data_type;
+      typedef typename piecewise_surface_type::point_type point_type;
       typedef typename piecewise_surface_type::index_type index_type;
 
       std::string nm, sxbuf, sybuf, szbuf;
@@ -936,9 +971,11 @@ namespace eli
             {
               for (j=0; j<=bez.degree_v(); ++j)
               {
-                cpxbuf[ppqq]+=std::to_string(bez.get_control_point(i, j).x());
-                cpybuf[ppqq]+=std::to_string(bez.get_control_point(i, j).y());
-                cpzbuf[ppqq]+=std::to_string(bez.get_control_point(i, j).z());
+                point_type pt(bez.get_control_point(i, j));
+
+                cpxbuf[ppqq]+=std::to_string(pt.x());
+                cpybuf[ppqq]+=std::to_string(pt.y());
+                cpzbuf[ppqq]+=std::to_string(pt.z());
 
                 if ((i==bez.degree_u()) && (j==bez.degree_v()))
                 {
@@ -984,9 +1021,11 @@ namespace eli
       {
         for (j=0; j<nv; ++j)
         {
-          sxbuf+=std::to_string(ps.f(u[i], v[j]).x());
-          sybuf+=std::to_string(ps.f(u[i], v[j]).y());
-          szbuf+=std::to_string(ps.f(u[i], v[j]).z());
+          point_type pt(ps.f(u[i], v[j]));
+
+          sxbuf+=std::to_string(pt.x());
+          sybuf+=std::to_string(pt.y());
+          szbuf+=std::to_string(pt.z());
           if (j==(nv-1))
           {
             if (i<(nu-1))
