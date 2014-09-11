@@ -26,6 +26,7 @@
 #include "eli/mutil/fd/d2o2.hpp"
 #include "eli/geom/curve/piecewise.hpp"
 #include "eli/geom/curve/piecewise_cst_airfoil_creator.hpp"
+#include "eli/geom/curve/pseudo/cst_airfoil.hpp"
 
 template<typename data__>
 class piecewise_cst_airfoil_creator_test_suite : public Test::Suite
@@ -37,9 +38,8 @@ class piecewise_cst_airfoil_creator_test_suite : public Test::Suite
     typedef typename piecewise_curve_type::data_type data_type;
     typedef typename piecewise_curve_type::index_type index_type;
     typedef typename piecewise_curve_type::tolerance_type tolerance_type;
-#if 0
-    typedef eli::geom::curve::piecewise_cst_airfoil_creator<data__, 3, tolerance_type> cst_airfoil_type;
-#endif
+    typedef eli::geom::curve::pseudo::cst_airfoil<data_type> cst_airfoil_type;
+    typedef typename cst_airfoil_type::control_point_type cst_airfoil_control_point_type;
 
     tolerance_type tol;
 
@@ -73,44 +73,110 @@ class piecewise_cst_airfoil_creator_test_suite : public Test::Suite
 
     void create_airfoil_test()
     {
-#if 0
-      point_creator_type af;
+      typedef eli::geom::curve::piecewise_cst_airfoil_creator<data__, 3, tolerance_type> airfoil_creator_type;
 
-      data_type th, cam, cam_loc;
-      bool rtn;
+      airfoil_creator_type pcst;
+      piecewise_curve_type pc;
+      cst_airfoil_type cst(7);
+      cst_airfoil_control_point_type cp[8];
+      data_type dte(2*0.00126), ti, t0, t1, t2, t[6];
+      point_type pt_out, pt_ref;
+      typename cst_airfoil_type::point_type pt2_ref;
+      index_type i;
+      bool rtn_flag;
 
-      // set airfoil thickness
-      th=24;
-      rtn=af.set_thickness(th);
-      TEST_ASSERT(rtn);
-      TEST_ASSERT(af.get_thickness()==th);
+      // set the control points
+      cp[0] << static_cast<data_type>(0.170987592880629);
+      cp[1] << static_cast<data_type>(0.157286894410384);
+      cp[2] << static_cast<data_type>(0.162311658384540);
+      cp[3] << static_cast<data_type>(0.143623187913493);
+      cp[4] << static_cast<data_type>(0.149218456400780);
+      cp[5] << static_cast<data_type>(0.137218405082418);
+      cp[6] << static_cast<data_type>(0.140720628655908);
+      cp[7] << static_cast<data_type>(0.141104769355436);
+      for (i=0; i<=cst.upper_degree(); ++i)
+      {
+        cst.set_upper_control_point(cp[i], i);
+        cst.set_lower_control_point(-cp[i], i);
+      }
 
-      // set airfoil camber
-      cam=2;
-      cam_loc=3;
-      rtn=af.set_camber(cam, cam_loc);
-      TEST_ASSERT(rtn);
-      TEST_ASSERT(af.get_maximum_camber()==cam);
-      TEST_ASSERT(af.get_maximum_camber_location()==cam_loc);
+      // set the trailing edge thickness of CST airfoil
+      cst.set_trailing_edge_thickness(dte);
 
-      // test the name
-      std::string name, name_ref;
+      // set the parameterization
+      t0=-1;
+      t1=0;
+      t2=1;
 
-      af.set_sharp_trailing_edge(true);
+      // set the parameters to evaluate the tests
+      t[0] = t0+(t2-t0)*static_cast<data_type>(0);
+      t[1] = t0+(t2-t0)*static_cast<data_type>(0.1);
+      t[2] = t0+(t2-t0)*static_cast<data_type>(0.27);
+      t[3] = t0+(t2-t0)*static_cast<data_type>(0.5);
+      t[4] = t0+(t2-t0)*static_cast<data_type>(0.73);
+      t[5] = t0+(t2-t0)*static_cast<data_type>(1);
 
-      name_ref="NACA "+std::to_string(static_cast<int>(std::round(cam)))
-                      +std::to_string(static_cast<int>(std::round(cam_loc)))
-                      +std::to_string(static_cast<int>(std::round(th)));
-      name=af.get_name();
-      TEST_ASSERT(name==name_ref);
+      // create curve
+      rtn_flag=pcst.set_conditions(cst);
+      TEST_ASSERT(rtn_flag);
+      pcst.set_t0(t0);
+      pcst.set_segment_dt(t1-t0, 0);
+      pcst.set_segment_dt(t2-t1, 1);
+      rtn_flag=pcst.create(pc);
+      TEST_ASSERT(rtn_flag);
 
+      // evaluate the points (note need to transform parameterization to match points
+      i=0;
+      ti=t[i];
+      pt_out=pc.f((ti<0)?-std::sqrt(-ti) : std::sqrt(ti));
+      ti=2*(t[i]-t0)/(t2-t0)-1;
+      pt2_ref=cst.f(ti);
+      pt_ref << pt2_ref(0), pt2_ref(1), 0;
+      TEST_ASSERT(tol.approximately_equal(pt_out, pt_ref));
+      i=1;
+      ti=t[i];
+      pt_out=pc.f((ti<0)?-std::sqrt(-ti) : std::sqrt(ti));
+      ti=2*(t[i]-t0)/(t2-t0)-1;
+      pt2_ref=cst.f(ti);
+      pt_ref << pt2_ref(0), pt2_ref(1), 0;
+      TEST_ASSERT(tol.approximately_equal(pt_out, pt_ref));
+      i=2;
+      ti=t[i];
+      pt_out=pc.f((ti<0)?-std::sqrt(-ti) : std::sqrt(ti));
+      ti=2*(t[i]-t0)/(t2-t0)-1;
+      pt2_ref=cst.f(ti);
+      pt_ref << pt2_ref(0), pt2_ref(1), 0;
+      TEST_ASSERT(tol.approximately_equal(pt_out, pt_ref));
+      i=3;
+      ti=t[i];
+      pt_out=pc.f((ti<0)?-std::sqrt(-ti) : std::sqrt(ti));
+      ti=2*(t[i]-t0)/(t2-t0)-1;
+      pt2_ref=cst.f(ti);
+      pt_ref << pt2_ref(0), pt2_ref(1), 0;
+      TEST_ASSERT(tol.approximately_equal(pt_out, pt_ref));
+      i=4;
+      ti=t[i];
+      pt_out=pc.f((ti<0)?-std::sqrt(-ti) : std::sqrt(ti));
+      ti=2*(t[i]-t0)/(t2-t0)-1;
+      pt2_ref=cst.f(ti);
+      pt_ref << pt2_ref(0), pt2_ref(1), 0;
+      TEST_ASSERT(tol.approximately_equal(pt_out, pt_ref));
+      i=5;
+      ti=t[i];
+      pt_out=pc.f((ti<0)?-std::sqrt(-ti) : std::sqrt(ti));
+      ti=2*(t[i]-t0)/(t2-t0)-1;
+      pt2_ref=cst.f(ti);
+      pt_ref << pt2_ref(0), pt2_ref(1), 0;
+      TEST_ASSERT(tol.approximately_equal(pt_out, pt_ref));
 
-      piecewise_curve_type af_pwc;
-
-      af.create(af_pwc);
-
-//      octave_print(1, af_pwc);
-#endif
+//      if (typeid(data_type)==typeid(float))
+//      {
+//        std::cout.flush();
+//        eli::test::octave_start(1);
+//        eli::test::octave_print(1, cst, "cst");
+//        eli::test::octave_print(1, pc, "piecewise");
+//        eli::test::octave_finish(1);
+//      }
     }
 };
 

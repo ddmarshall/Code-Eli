@@ -20,6 +20,7 @@
 #include "eli/geom/curve/piecewise.hpp"
 #include "eli/geom/curve/piecewise_creator_base.hpp"
 #include "eli/geom/curve/bezier.hpp"
+#include "eli/geom/curve/piecewise_polynomial_creator.hpp"
 #include "eli/geom/curve/pseudo/cst_airfoil.hpp"
 
 namespace eli
@@ -40,97 +41,132 @@ namespace eli
           typedef eli::geom::curve::pseudo::cst_airfoil<data_type> cst_airfoil_type;
           typedef typename cst_airfoil_type::point_type cst_airfoil_point_type;
           typedef typename cst_airfoil_type::control_point_type cst_airfoil_control_point_type;
+          typedef unsigned short dimension_type;
 
-          piecewise_cst_airfoil_creator() : piecewise_creator_base<data_type, dim__, tolerance_type>(2, 0) {}
+          piecewise_cst_airfoil_creator() : piecewise_creator_base<data_type, dim__, tolerance_type>(2, 0), cst(1) {}
           piecewise_cst_airfoil_creator(const piecewise_cst_airfoil_creator<data_type, dim__, tolerance_type> &pca)
-            : piecewise_creator_base<data_type, dim__, tolerance_type>(pca), csta(pca.csta) {}
+            : piecewise_creator_base<data_type, dim__, tolerance_type>(pca), cst(pca.cst) {}
           ~piecewise_cst_airfoil_creator() {}
 
-          void set_curve(const cst_airfoil_type &ex_ca)
+          void set_airfoil(const cst_airfoil_type &ca)
           {
-            csta = ex_ca;
+            cst = ca;
           }
 
-          void get_curve(cst_airfoil_type &ex_ca) const
+          void get_airfoil(cst_airfoil_type &ca) const
           {
-            ex_ca = csta;
+            ca = cst;
           }
 
-          bool set_conditions(const cst_airfoil_type &ex_ca)
+          bool set_conditions(const cst_airfoil_type &ca)
           {
-            csta = ex_ca;
+            set_airfoil(ca);
 
             return true;
           }
 
+
+          /** This method creates an exact bezier representation of a CST airfoil upper and 
+           *  lower surface. It uses the method from "Creating Exact Bezier Representations of CST
+           *  Shapes" by Marshall, AIAA paper 2013-3077.
+           */
           virtual bool create(piecewise<bezier, data_type, dim__, tolerance_type> &pc) const
           {
-#if 0
             typedef piecewise<bezier, data_type, dim__, tolerance_type> piecewise_curve_type;
             typedef typename piecewise_curve_type::curve_type curve_type;
             typedef typename curve_type::control_point_type control_point_type;
             typedef typename piecewise_curve_type::error_code error_code;
 
-            // make sure only have one segment
-            if (this->get_number_segments()!=1)
+            typename curve_type::monomial_coefficient_type bezu_mono_coef, bezl_mono_coef;
+            typename cst_airfoil_type::monomial_coefficient_type cstu_mono_coef, cstl_mono_coef;
+
+            // extract the monomial coefficients from the CST airfoil
+            cst.get_upper_monomial_coefficients(cstu_mono_coef);
+            cst.get_lower_monomial_coefficients(cstl_mono_coef);
+
+            // convert the original coefficients to new monomial coefficients
+            index_type i, nu(cstu_mono_coef.rows()-1), nl(cstl_mono_coef.rows()-1);
+            data_type dte(cst.get_trailing_edge_thickness()/2);
+            bezu_mono_coef.resize(2*nu+3+1, dim__);
+            bezl_mono_coef.resize(2*nl+3+1, dim__);
+            bezu_mono_coef.setZero();
+            bezl_mono_coef.setZero();
+
+            // upper
+            i=0;
+            bezu_mono_coef(2*i+1, 1)=cstu_mono_coef(i, 0);
+            bezu_mono_coef(2*i+2, 0)=1;
+            bezu_mono_coef(2*i+2, 1)=dte;
+            for (i=1; i<=nu; ++i)
+            {
+              bezu_mono_coef(2*i+1, 1)=cstu_mono_coef(i, 0)-cstu_mono_coef(i-1, 0);
+            }
+            i=nu+1;
+            bezu_mono_coef(2*i+1, 1)=-cstu_mono_coef(i-1);
+
+            // lower
+            i=0;
+            bezl_mono_coef(2*i+1, 1)=cstl_mono_coef(i, 0);
+            bezl_mono_coef(2*i+2, 0)=1;
+            bezl_mono_coef(2*i+2, 1)=-dte;
+            for (i=1; i<=nu; ++i)
+            {
+              bezl_mono_coef(2*i+1, 1)=cstl_mono_coef(i, 0)-cstl_mono_coef(i-1, 0);
+            }
+            i=nu+1;
+            bezl_mono_coef(2*i+1, 1)=-cstl_mono_coef(i-1);
+
+            // create the lower and upper curve
+            piecewise_polynomial_creator<data_type, dim__, tolerance_type> poly_creator;
+            pseudo::polynomial<data__, dim__> cu, cl;
+            bool rtn_flag;
+
+            for (dimension_type j=0; j<dim__; ++j)
+            {
+              cu.set_coefficients(bezu_mono_coef.col(j), j);
+              cl.set_coefficients(bezl_mono_coef.col(j), j);
+            }
+
+            // lower
+            rtn_flag=poly_creator.set_conditions(cl);
+            if (!rtn_flag)
             {
               assert(false);
               return false;
             }
-
-            curve_type c;
-            control_point_type cp;
-            cst_airfoil_control_point_type eb_cp;
-            index_type i, deg(eb.degree());
-
-            // create the control points for the x-dimension
-            explicit_bezier_type x_eb(1);
-
-            eb_cp << 0;
-            x_eb.set_control_point(eb_cp, 0);
-            eb_cp << 1;
-            x_eb.set_control_point(eb_cp, 1);
-            x_eb.degree_promote_to(deg);
-
-            // make sure have same degree for x- and y-coordinates
-            if (x_eb.degree()!=deg)
+            poly_creator.set_t0(this->get_t0());
+            poly_creator.set_segment_dt(this->get_segment_dt(0), 0);
+            rtn_flag=poly_creator.create(pc);
+            if (!rtn_flag)
             {
               assert(false);
               return false;
             }
+            pc.reverse();
 
-            // cycle through each control point and add to bezier curve
-            c.resize(deg);
-            for (i=0; i<=deg; ++i)
-            {
-              cp.setZero();
-              cp(0) = x_eb.get_control_point(i).x();
-              cp(1) = eb.get_control_point(i).x();
-              c.set_control_point(cp, i);
-            }
-            if (rev)
-            {
-              c.reverse();
-            }
-
-            // set the piecewise curve
-            pc.clear();
-            pc.set_t0(this->get_t0());
-            error_code err = pc.push_back(c, this->get_segment_dt(0));
-
-            if (err!=piecewise_curve_type::NO_ERRORS)
+            // upper
+            piecewise_curve_type pc_temp;
+            rtn_flag=poly_creator.set_conditions(cu);
+            if (!rtn_flag)
             {
               assert(false);
               return false;
             }
+            poly_creator.set_t0(this->get_t0()+this->get_segment_dt(0));
+            poly_creator.set_segment_dt(this->get_segment_dt(1), 0);
+            rtn_flag=poly_creator.create(pc_temp);
+            if (!rtn_flag)
+            {
+              assert(false);
+              return false;
+            }
+            pc.push_back(pc_temp);
 
             return true;
-#endif
-            return false;
           }
 
         private:
-          cst_airfoil_type csta;
+          cst_airfoil_type cst;
       };
     }
   }
