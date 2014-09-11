@@ -43,6 +43,7 @@ namespace eli
             typedef typename curve_type::index_type index_type;
             typedef geom::curve::fit_container<data_type, index_type, 2, 1> fit_container_type;
             typedef typename curve_type::tolerance_type tolerance_type;
+            typedef typename curve_type::monomial_coefficient_type monomial_coefficient_type;
 
           public:
             explicit_bezier() {}
@@ -92,6 +93,14 @@ namespace eli
             {
               return y_curve.get_control_point(i);
             }
+
+            void get_monomial_coefficients(monomial_coefficient_type &a) const
+            {
+              y_curve.get_monomial_coefficients(a);
+            }
+
+            data_type get_t0() const {return static_cast<data_type>(0);}
+            data_type get_tmax() const {return static_cast<data_type>(1);}
 
             void reverse()
             {

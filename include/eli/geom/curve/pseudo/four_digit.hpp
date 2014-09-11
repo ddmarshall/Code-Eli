@@ -53,8 +53,8 @@ namespace eli
 
             coefficient_type get_thickness_coefficients() const {return a;}
 
-            data_type get_u_min() const {return static_cast<data_type>(-1);}
-            data_type get_u_max() const {return static_cast<data_type>(1);}
+            data_type get_t0() const {return static_cast<data_type>(-1);}
+            data_type get_tmax() const {return static_cast<data_type>(1);}
 
             void set_sharp_trailing_edge(bool fl)
             {
