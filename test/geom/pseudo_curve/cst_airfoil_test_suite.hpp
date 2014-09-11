@@ -171,68 +171,62 @@ class cst_airfoil_test_suite : public Test::Suite
       t[5] = static_cast<data_type>(1);
 
       // evaluate the points on lower surface
-      point_type dte_vec;
       i=1;
       pt_out = cst.f(-t[i]);
-      dte_vec << 0, -t[i]*dte/2;
-      pt_ref = std::sqrt(t[i])*(1-t[i])*ebcu.f(t[i])+dte_vec;
-      pt_ref(1)*=-1;
+      pt_ref = ebcu.f(t[i]);
+      pt_ref(1) = -(std::sqrt(t[i])*(1-t[i])*pt_ref(1)+t[i]*dte/2);
       TEST_ASSERT(tol.approximately_equal(pt_out, pt_ref));
       i=2;
       pt_out = cst.f(-t[i]);
-      dte_vec << 0, -t[i]*dte/2;
-      pt_ref = std::sqrt(t[i])*(1-t[i])*ebcu.f(t[i])+dte_vec;
-      pt_ref(1)*=-1;
+      pt_ref = ebcu.f(t[i]);
+      pt_ref(1) = -(std::sqrt(t[i])*(1-t[i])*pt_ref(1)+t[i]*dte/2);
       TEST_ASSERT(tol.approximately_equal(pt_out, pt_ref));
       i=3;
       pt_out = cst.f(-t[i]);
-      dte_vec << 0, -t[i]*dte/2;
-      pt_ref = std::sqrt(t[i])*(1-t[i])*ebcu.f(t[i])+dte_vec;
-      pt_ref(1)*=-1;
+      pt_ref = ebcu.f(t[i]);
+      pt_ref(1) = -(std::sqrt(t[i])*(1-t[i])*pt_ref(1)+t[i]*dte/2);
       TEST_ASSERT(tol.approximately_equal(pt_out, pt_ref));
       i=4;
       pt_out = cst.f(-t[i]);
-      dte_vec << 0, -t[i]*dte/2;
-      pt_ref = std::sqrt(t[i])*(1-t[i])*ebcu.f(t[i])+dte_vec;
-      pt_ref(1)*=-1;
+      pt_ref = ebcu.f(t[i]);
+      pt_ref(1) = -(std::sqrt(t[i])*(1-t[i])*pt_ref(1)+t[i]*dte/2);
       TEST_ASSERT(tol.approximately_equal(pt_out, pt_ref));
       i=5;
       pt_out = cst.f(-t[i]);
-      dte_vec << 0, -t[i]*dte/2;
-      pt_ref = std::sqrt(t[i])*(1-t[i])*ebcu.f(t[i])+dte_vec;
-      pt_ref(1)*=-1;
+      pt_ref = ebcu.f(t[i]);
+      pt_ref(1) = -(std::sqrt(t[i])*(1-t[i])*pt_ref(1)+t[i]*dte/2);
       TEST_ASSERT(tol.approximately_equal(pt_out, pt_ref));
 
       // evaluate the points on upper surface
       i=0;
       pt_out = cst.f(t[i]);
-      dte_vec << 0, t[i]*dte/2;
-      pt_ref = std::sqrt(t[i])*(1-t[i])*ebcu.f(t[i])+dte_vec;
+      pt_ref = ebcu.f(t[i]);
+      pt_ref(1) = std::sqrt(t[i])*(1-t[i])*pt_ref(1)+t[i]*dte/2;
       TEST_ASSERT(tol.approximately_equal(pt_out, pt_ref));
       i=1;
       pt_out = cst.f(t[i]);
-      dte_vec << 0, t[i]*dte/2;
-      pt_ref = std::sqrt(t[i])*(1-t[i])*ebcu.f(t[i])+dte_vec;
+      pt_ref = ebcu.f(t[i]);
+      pt_ref(1) = std::sqrt(t[i])*(1-t[i])*pt_ref(1)+t[i]*dte/2;
       TEST_ASSERT(tol.approximately_equal(pt_out, pt_ref));
       i=2;
       pt_out = cst.f(t[i]);
-      dte_vec << 0, t[i]*dte/2;
-      pt_ref = std::sqrt(t[i])*(1-t[i])*ebcu.f(t[i])+dte_vec;
+      pt_ref = ebcu.f(t[i]);
+      pt_ref(1) = std::sqrt(t[i])*(1-t[i])*pt_ref(1)+t[i]*dte/2;
       TEST_ASSERT(tol.approximately_equal(pt_out, pt_ref));
       i=3;
       pt_out = cst.f(t[i]);
-      dte_vec << 0, t[i]*dte/2;
-      pt_ref = std::sqrt(t[i])*(1-t[i])*ebcu.f(t[i])+dte_vec;
+      pt_ref = ebcu.f(t[i]);
+      pt_ref(1) = std::sqrt(t[i])*(1-t[i])*pt_ref(1)+t[i]*dte/2;
       TEST_ASSERT(tol.approximately_equal(pt_out, pt_ref));
       i=4;
       pt_out = cst.f(t[i]);
-      dte_vec << 0, t[i]*dte/2;
-      pt_ref = std::sqrt(t[i])*(1-t[i])*ebcu.f(t[i])+dte_vec;
+      pt_ref = ebcu.f(t[i]);
+      pt_ref(1) = std::sqrt(t[i])*(1-t[i])*pt_ref(1)+t[i]*dte/2;
       TEST_ASSERT(tol.approximately_equal(pt_out, pt_ref));
       i=5;
       pt_out = cst.f(t[i]);
-      dte_vec << 0, t[i]*dte/2;
-      pt_ref = std::sqrt(t[i])*(1-t[i])*ebcu.f(t[i])+dte_vec;
+      pt_ref = ebcu.f(t[i]);
+      pt_ref(1) = std::sqrt(t[i])*(1-t[i])*pt_ref(1)+t[i]*dte/2;
       TEST_ASSERT(tol.approximately_equal(pt_out, pt_ref));
     }
 
@@ -305,7 +299,7 @@ class cst_airfoil_test_suite : public Test::Suite
         else
         {
           TEST_ASSERT(tol.approximately_equal(xp, xp_ref));
-          TEST_ASSERT((xpp-xpp_ref).norm()<3e-5);
+          TEST_ASSERT((xpp-xpp_ref).norm()<8e-5);
         }
       }
 
@@ -340,7 +334,7 @@ class cst_airfoil_test_suite : public Test::Suite
         else
         {
           TEST_ASSERT(tol.approximately_equal(xp, xp_ref));
-          TEST_ASSERT((xpp-xpp_ref).norm()<3e-5);
+          TEST_ASSERT((xpp-xpp_ref).norm()<8e-5);
         }
       }
     }

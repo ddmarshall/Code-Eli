@@ -42,7 +42,7 @@ namespace eli
             typedef typename base_class_type::tolerance_type tolerance_type;
 
           public:
-            cst_airfoil_curve() : cst_base<data_type, tolerance_type> (0.5, 1, 1) {}
+            cst_airfoil_curve() : cst_base<data_type, tolerance_type> (0.5, 1, 1, true) {}
             cst_airfoil_curve(index_type dim, bool u) : cst_base<data_type, tolerance_type>(0.5, 1, dim, u) {}
             cst_airfoil_curve(const cst_airfoil_curve<data_type, tolerance_type> &cst) : cst_base<data_type, tolerance_type>(cst) {}
             ~cst_airfoil_curve() {}
@@ -217,7 +217,7 @@ namespace eli
             data_type get_t0() const {return static_cast<data_type>(-1);}
             data_type get_tmax() const {return static_cast<data_type>(1);}
 
-            const data_type & get_trailing_edge_thickness() const
+            data_type get_trailing_edge_thickness() const
             {
               return upper.get_trailing_edge_thickness()+lower.get_trailing_edge_thickness();
             }

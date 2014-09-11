@@ -157,7 +157,7 @@ namespace eli
             {
               return upper;
             }
-            bool set_upper_curve(bool u)
+            void set_upper_curve(bool u)
             {
               upper=u;
             }
@@ -175,16 +175,16 @@ namespace eli
             {
               data_type dte(upper?delta_te:-delta_te);
               point_type rtn;
-              rtn = shape_function.f(t);
-              rtn(1)=cpass_fp(t)*rtn(1)+class_f(t)*shape_function.fp(t)(1)+dte;
+              rtn = shape_function.fp(t);
+              rtn(1)=class_fp(t)*shape_function.f(t)(1)+class_f(t)*rtn(1)+dte;
               return rtn;
             }
 
             point_type fpp(const data_type &t) const
             {
               point_type rtn;
-              rtn = shape_function.f(t);
-              rtn(1)=class_fpp(t)*rtn(1)+2*class_fp(t)*shape_function.fp(t)(1)+class_f(t)*shape_function.fpp(t)(1);
+              rtn = shape_function.fpp(t);
+              rtn(1)=class_fpp(t)*shape_function.f(t)(1)+2*class_fp(t)*shape_function.fp(t)(1)+class_f(t)*rtn(1);
               return rtn;
             }
 
