@@ -83,7 +83,61 @@ namespace eli
   //            if (fpx==0)
   //              return iterative_root_base<data__>::no_root_found;
 
-              dx=-fpx.lu().solve(eval1);
+              bool invertible;
+              bool modified = false;
+
+              if ( N__ < 4 )
+              {
+                typename iterative_system_root_base<data__, N__, NSOL__>::jacobian_matrix inverse;
+                fpx.computeInverseWithCheck(inverse, invertible);
+
+                std::vector < bool > zerodx( N__ );
+
+                if ( !invertible )
+                {
+                  for (size_t i=0; i<N__; ++i)
+                  {
+                    if ( abs(fpx(i,i)) < 1e-6 )
+                    {
+                      zerodx[i] = true;
+                      fpx(i,i) = 1.0;
+                    }
+                    else
+                    {
+                      zerodx[i] = false;
+                    }
+                  }
+                  modified = true;
+                  fpx.computeInverseWithCheck(inverse, invertible);
+                  assert(invertible);
+                }
+
+                if ( invertible )
+                {
+                  dx = - inverse * eval1;
+
+                  if ( modified )
+                  {
+                    for (size_t i=0; i<N__; ++i)
+                    {
+                      if ( zerodx[i] )
+                      {
+                        dx(i) = 0;
+                      }
+                    }
+                  }
+                }
+                else
+                {
+                  dx.setZero();
+                }
+
+              }
+              else
+              {
+                dx=-fpx.lu().solve(eval1);
+              }
+
               dx=calculate_delta_factor(x, dx);
               x+=dx;
               fx=fun(x);
