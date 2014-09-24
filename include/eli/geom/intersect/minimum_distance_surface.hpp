@@ -155,7 +155,10 @@ namespace eli
 
       template<typename surface__>
       typename surface__::data_type minimum_distance(typename surface__::data_type &u, typename surface__::data_type &v, const surface__ &s, const typename surface__::point_type &pt,
-                                                     const typename surface__::data_type &u0, const typename surface__::data_type &v0)
+                                                     const typename surface__::data_type &u0, const typename surface__::data_type &v0,
+                                                     bool ulbnded = false, bool uubnded = false, bool vlbnded = false, bool vubnded = false,
+                                                     const typename surface__::data_type &ulb = 0, const typename surface__::data_type &uub = 0,
+                                                     const typename surface__::data_type &vlb = 0, const typename surface__::data_type &vub = 0)
       {
         typedef eli::mutil::nls::newton_raphson_constrained_system_method<typename surface__::data_type, 2, 1> nonlinear_solver_type;
         nonlinear_solver_type nrm;
@@ -178,23 +181,61 @@ namespace eli
         nrm.set_absolute_tolerance(tol.get_absolute_tolerance());
         nrm.set_max_iteration(20);
         nrm.set_norm_type(nonlinear_solver_type::max_norm);
-        if (s.open_u())
+
+        if (!ulbnded && !uubnded)
+        {
+          if (s.open_u())
+          {
+            nrm.set_lower_condition(0, umin, nonlinear_solver_type::NRC_EXCLUSIVE);
+            nrm.set_upper_condition(0, umax, nonlinear_solver_type::NRC_EXCLUSIVE);
+          }
+          else
+          {
+            nrm.set_periodic_condition(0, umin, umax);
+          }
+        }
+        else if (!ulbnded && uubnded)
         {
           nrm.set_lower_condition(0, umin, nonlinear_solver_type::NRC_EXCLUSIVE);
+          nrm.set_upper_condition(0, uub, nonlinear_solver_type::NRC_EXCLUSIVE);
+        }
+        else if (ulbnded && !uubnded)
+        {
+          nrm.set_lower_condition(0, ulb, nonlinear_solver_type::NRC_EXCLUSIVE);
           nrm.set_upper_condition(0, umax, nonlinear_solver_type::NRC_EXCLUSIVE);
         }
         else
         {
-          nrm.set_periodic_condition(0, umin, umax);
+          nrm.set_lower_condition(0, ulb, nonlinear_solver_type::NRC_EXCLUSIVE);
+          nrm.set_upper_condition(0, uub, nonlinear_solver_type::NRC_EXCLUSIVE);
         }
-        if (s.open_v())
+
+        if (!vlbnded && !vubnded)
+        {
+          if (s.open_v())
+          {
+            nrm.set_lower_condition(1, vmin, nonlinear_solver_type::NRC_EXCLUSIVE);
+            nrm.set_upper_condition(1, vmax, nonlinear_solver_type::NRC_EXCLUSIVE);
+          }
+          else
+          {
+            nrm.set_periodic_condition(1, vmin, vmax);
+          }
+        }
+        else if (!vlbnded && vubnded)
         {
           nrm.set_lower_condition(1, vmin, nonlinear_solver_type::NRC_EXCLUSIVE);
+          nrm.set_upper_condition(1, vub, nonlinear_solver_type::NRC_EXCLUSIVE);
+        }
+        else if (vlbnded && !vubnded)
+        {
+          nrm.set_lower_condition(1, vlb, nonlinear_solver_type::NRC_EXCLUSIVE);
           nrm.set_upper_condition(1, vmax, nonlinear_solver_type::NRC_EXCLUSIVE);
         }
         else
         {
-          nrm.set_periodic_condition(1, vmin, vmax);
+          nrm.set_lower_condition(1, vlb, nonlinear_solver_type::NRC_EXCLUSIVE);
+          nrm.set_upper_condition(1, vub, nonlinear_solver_type::NRC_EXCLUSIVE);
         }
 
         // set the initial guess
