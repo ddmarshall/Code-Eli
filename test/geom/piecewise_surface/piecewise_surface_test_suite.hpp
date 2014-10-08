@@ -891,7 +891,7 @@ class piecewise_surface_test_suite : public Test::Suite
 
     void split_test()
     {
-      piecewise_surface_type ps1, ps2;
+      piecewise_surface_type ps1, ps2, pbefore, pafter;
       data_type u, v;
 
       // create 3x2 patches with unit spacing
@@ -1006,6 +1006,91 @@ class piecewise_surface_test_suite : public Test::Suite
       TEST_ASSERT(tol.approximately_equal(ps1.f(u, v), ps2.f(u, v)));
       TEST_ASSERT(tol.approximately_equal(ps1.f_u(u, v), ps2.f_u(u, v)));
       TEST_ASSERT(tol.approximately_equal(ps1.f_v(u, v), ps2.f_v(u, v)));
+
+      // split u-direction
+      ps2 = ps1;
+      ps2.split_u(pbefore, pafter, 1.5);
+
+      // test evaluation before split
+      u=0.25;
+      v=1.5;
+      TEST_ASSERT(tol.approximately_equal(ps1.f(u, v), pbefore.f(u, v)));
+      TEST_ASSERT(tol.approximately_equal(ps1.f_u(u, v), pbefore.f_u(u, v)));
+      TEST_ASSERT(tol.approximately_equal(ps1.f_v(u, v), pbefore.f_v(u, v)));
+
+      // test evaluation before split
+      u=1.25;
+      v=1.75;
+      TEST_ASSERT(tol.approximately_equal(ps1.f(u, v), pbefore.f(u, v)));
+      TEST_ASSERT(tol.approximately_equal(ps1.f_u(u, v), pbefore.f_u(u, v)));
+      TEST_ASSERT(tol.approximately_equal(ps1.f_v(u, v), pbefore.f_v(u, v)));
+
+      // test evaluation at split, before surface
+      u=1.5;
+      v=1.75;
+      TEST_ASSERT(tol.approximately_equal(ps1.f(u, v), pbefore.f(u, v)));
+      TEST_ASSERT(tol.approximately_equal(ps1.f_u(u, v), pbefore.f_u(u, v)));
+      TEST_ASSERT(tol.approximately_equal(ps1.f_v(u, v), pbefore.f_v(u, v)));
+
+      // test evaluation at split, after surface
+      u=1.5;
+      v=0.75;
+      TEST_ASSERT(tol.approximately_equal(ps1.f(u, v), pafter.f(u, v)));
+      TEST_ASSERT(tol.approximately_equal(ps1.f_u(u, v), pafter.f_u(u, v)));
+      TEST_ASSERT(tol.approximately_equal(ps1.f_v(u, v), pafter.f_v(u, v)));
+
+      // test evaluation after split
+      u=1.75;
+      v=0.75;
+      TEST_ASSERT(tol.approximately_equal(ps1.f(u, v), pafter.f(u, v)));
+      TEST_ASSERT(tol.approximately_equal(ps1.f_u(u, v), pafter.f_u(u, v)));
+      TEST_ASSERT(tol.approximately_equal(ps1.f_v(u, v), pafter.f_v(u, v)));
+
+      // test evaluation after split
+      u=2.25;
+      v=0.25;
+      TEST_ASSERT(tol.approximately_equal(ps1.f(u, v), pafter.f(u, v)));
+      TEST_ASSERT(tol.approximately_equal(ps1.f_u(u, v), pafter.f_u(u, v)));
+      TEST_ASSERT(tol.approximately_equal(ps1.f_v(u, v), pafter.f_v(u, v)));
+
+      // split v-direction
+      ps2=ps1;
+      ps2.split_v(pbefore, pafter, 1.5);
+
+      // test evaluation before split
+      u=0.25;
+      v=0.5;
+      TEST_ASSERT(tol.approximately_equal(ps1.f(u, v), pbefore.f(u, v)));
+      TEST_ASSERT(tol.approximately_equal(ps1.f_u(u, v), pbefore.f_u(u, v)));
+      TEST_ASSERT(tol.approximately_equal(ps1.f_v(u, v), pbefore.f_v(u, v)));
+
+      // test evaluation before split
+      u=1.25;
+      v=0.75;
+      TEST_ASSERT(tol.approximately_equal(ps1.f(u, v), pbefore.f(u, v)));
+      TEST_ASSERT(tol.approximately_equal(ps1.f_u(u, v), pbefore.f_u(u, v)));
+      TEST_ASSERT(tol.approximately_equal(ps1.f_v(u, v), pbefore.f_v(u, v)));
+
+      // test evaluation at split
+      u=1.5;
+      v=1.5;
+      TEST_ASSERT(tol.approximately_equal(ps1.f(u, v), pbefore.f(u, v)));
+      TEST_ASSERT(tol.approximately_equal(ps1.f_u(u, v), pbefore.f_u(u, v)));
+      TEST_ASSERT(tol.approximately_equal(ps1.f_v(u, v), pbefore.f_v(u, v)));
+
+      // test evaluation at split
+      u=1.5;
+      v=1.5;
+      TEST_ASSERT(tol.approximately_equal(ps1.f(u, v), pafter.f(u, v)));
+      TEST_ASSERT(tol.approximately_equal(ps1.f_u(u, v), pafter.f_u(u, v)));
+      TEST_ASSERT(tol.approximately_equal(ps1.f_v(u, v), pafter.f_v(u, v)));
+
+      // test evaluation after split
+      u=1.75;
+      v=1.75;
+      TEST_ASSERT(tol.approximately_equal(ps1.f(u, v), pafter.f(u, v)));
+      TEST_ASSERT(tol.approximately_equal(ps1.f_u(u, v), pafter.f_u(u, v)));
+      TEST_ASSERT(tol.approximately_equal(ps1.f_v(u, v), pafter.f_v(u, v)));
     }
 
     void to_cubic_test()

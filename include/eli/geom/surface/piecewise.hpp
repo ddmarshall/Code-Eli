@@ -156,6 +156,38 @@ namespace eli
               return &patches[uk][vk];
           }
 
+          surface_type * get_patch( const index_type &ui, const index_type &vi, double &ustart, double &du, double &vstart, double &dv)
+          {
+              index_type uk, vk;
+              typename keymap_type::const_iterator uit, vit;
+
+              find_patch( uk, vk, uit, vit, ui, vi );
+
+              ustart = uit->first;
+              du = ukey.get_delta_parm( uit );
+
+              vstart = vit->first;
+              dv = vkey.get_delta_parm( vit );
+
+              return &patches[uk][vk];
+          }
+
+          const surface_type * get_patch( const index_type &ui, const index_type &vi, double &ustart, double &du, double &vstart, double &dv) const
+          {
+              index_type uk, vk;
+              typename keymap_type::const_iterator uit, vit;
+
+              find_patch( uk, vk, uit, vit, ui, vi );
+
+              ustart = uit->first;
+              du = ukey.get_delta_parm( uit );
+
+              vstart = vit->first;
+              dv = vkey.get_delta_parm( vit );
+
+              return &patches[uk][vk];
+          }
+
           surface_type * get_patch_unordered( const index_type &uk, const index_type &vk)
           {
               return &patches[uk][vk];
@@ -602,6 +634,39 @@ namespace eli
             return split_u(uk, uit, u_in, uu);
           }
 
+          error_code split_u(piecewise<surface__, data_type, dim__, tol__> &before, piecewise<surface__, data_type, dim__, tol__> &after, const data_type &u_in) const
+          {
+            before.clear();
+            after.clear();
+
+            if (u_in < ukey.get_pmin())
+            {
+              after=(*this);
+              return NO_ERRORS;
+            }
+
+            if (u_in > ukey.get_pmax())
+            {
+              before=(*this);
+              return NO_ERRORS;
+            }
+
+            piecewise<surface__, data_type, dim__, tol__> s(*this);
+
+            error_code spliterr = s.split_u( u_in );
+
+            typename keymap_type::const_iterator uit, vit;
+            data_type uu(0), vv(0);
+            data_type vmin = vkey.get_pmin();
+
+            s.find_patch(uit, vit, uu, vv, u_in, vmin);
+
+            s.subsurf(before, s.ukey.key.begin(), uit, s.vkey.key.begin(), s.vkey.key.end());
+            s.subsurf(after, uit, s.ukey.key.end(), s.vkey.key.begin(), s.vkey.key.end());
+
+            return spliterr;
+          }
+
           error_code split_v(const data_type &v_in)
           {
             index_type uk, vk;
@@ -623,6 +688,39 @@ namespace eli
               return NO_ERRORS;
 
             return split_v(vk, vit, v_in, vv);
+          }
+
+          error_code split_v(piecewise<surface__, data_type, dim__, tol__> &before, piecewise<surface__, data_type, dim__, tol__> &after, const data_type &v_in) const
+          {
+            before.clear();
+            after.clear();
+
+            if (v_in < vkey.get_pmin())
+            {
+              after=(*this);
+              return NO_ERRORS;
+            }
+
+            if (v_in > vkey.get_pmax())
+            {
+              before=(*this);
+              return NO_ERRORS;
+            }
+
+            piecewise<surface__, data_type, dim__, tol__> s(*this);
+
+            error_code spliterr = s.split_v( v_in );
+
+            typename keymap_type::const_iterator uit, vit;
+            data_type uu(0), vv(0);
+            data_type umin = ukey.get_pmin();
+
+            s.find_patch(uit, vit, uu, vv, umin, v_in);
+
+            s.subsurf(before, s.ukey.key.begin(), s.ukey.key.end(), s.vkey.key.begin(), vit);
+            s.subsurf(after, s.ukey.key.begin(), s.ukey.key.end(), vit, s.vkey.key.end());
+
+            return spliterr;
           }
 
           void to_cubic_u(const data_type &ttol)
@@ -1179,6 +1277,13 @@ namespace eli
               append(nseg, dp);
             }
 
+            void append(const data_type &dp = 1)
+            {
+              typename keymap_type::iterator itguess = key.end();
+              itguess = key.insert(itguess, std::make_pair(pmax, key.size()));
+              pmax += dp;
+            }
+
             void append(const index_type &nseg, const data_type &dp = 1)
             {
               typename keymap_type::iterator itguess = key.end();
@@ -1219,7 +1324,7 @@ namespace eli
             void parameter_report() const
             {
               printf("Parameter report:\n");
-              typename keymap_type::iterator it;
+              typename keymap_type::const_iterator it;
 
               int i = 0;
               // cycle through all segments to get each bounding box to add
@@ -1529,6 +1634,49 @@ namespace eli
               patches[i].resize(nv_in);
 
             nv = nv_in;
+          }
+
+          error_code subsurf(piecewise<surface__, data_type, dim__, tol__> &surf, const typename keymap_type::const_iterator &ustart, const typename keymap_type::const_iterator &uend, const typename keymap_type::const_iterator &vstart, const typename keymap_type::const_iterator &vend ) const
+          {
+            surf.clear();
+
+            surf.set_u0( ustart->first );
+            surf.set_v0( vstart->first );
+
+            typename keymap_type::const_iterator uit, vit;
+
+            index_type nusub = 0;
+            for ( uit = ustart; uit != uend; uit++ )
+            {
+              data_type du = ukey.get_delta_parm( uit );
+              surf.ukey.append( du );
+              nusub++;
+            }
+
+            index_type nvsub = 0;
+            for ( vit = vstart; vit != vend; vit++ )
+            {
+              data_type dv = vkey.get_delta_parm( vit );
+              surf.vkey.append( dv );
+                nvsub++;
+            }
+
+            surf.resize_store( nusub, nvsub );
+
+            index_type ikstore, jkstore;
+            ikstore = 0;
+            for ( uit = ustart; uit != uend; uit++ )
+            {
+              jkstore = 0;
+              for ( vit = vstart; vit != vend; vit++ )
+              {
+                surf.patches[ikstore][jkstore] = patches[(*uit).second][(*vit).second];
+                jkstore++;
+              }
+              ikstore++;
+            }
+
+            return NO_ERRORS;
           }
 
           error_code split_u(const index_type &uk, const typename keymap_type::iterator &uit, const data_type &u_in, const data_type &uu)
