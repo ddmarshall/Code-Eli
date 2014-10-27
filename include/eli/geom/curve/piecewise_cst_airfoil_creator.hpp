@@ -74,8 +74,6 @@ namespace eli
           {
             typedef piecewise<bezier, data_type, dim__, tolerance_type> piecewise_curve_type;
             typedef typename piecewise_curve_type::curve_type curve_type;
-            typedef typename curve_type::control_point_type control_point_type;
-            typedef typename piecewise_curve_type::error_code error_code;
 
             typename curve_type::monomial_coefficient_type bezu_mono_coef, bezl_mono_coef;
             typename cst_airfoil_type::monomial_coefficient_type cstu_mono_coef, cstl_mono_coef;

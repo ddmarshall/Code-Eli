@@ -43,6 +43,7 @@ class minimum_distance_surface_test_suite : public Test::Suite
       TEST_ADD(minimum_distance_surface_test_suite<float>::point_closed_test);
       TEST_ADD(minimum_distance_surface_test_suite<float>::point_piecewise_01_smooth_test);
       TEST_ADD(minimum_distance_surface_test_suite<float>::point_piecewise_trange_smooth_test);
+      TEST_ADD(minimum_distance_surface_test_suite<float>::degen_point_test);
     }
     void AddTests(const double &)
     {
@@ -51,6 +52,7 @@ class minimum_distance_surface_test_suite : public Test::Suite
       TEST_ADD(minimum_distance_surface_test_suite<double>::point_closed_test);
       TEST_ADD(minimum_distance_surface_test_suite<double>::point_piecewise_01_smooth_test);
       TEST_ADD(minimum_distance_surface_test_suite<double>::point_piecewise_trange_smooth_test);
+      TEST_ADD(minimum_distance_surface_test_suite<double>::degen_point_test);
     }
     void AddTests(const long double &)
     {
@@ -59,6 +61,7 @@ class minimum_distance_surface_test_suite : public Test::Suite
       TEST_ADD(minimum_distance_surface_test_suite<long double>::point_closed_test);
       TEST_ADD(minimum_distance_surface_test_suite<long double>::point_piecewise_01_smooth_test);
       TEST_ADD(minimum_distance_surface_test_suite<long double>::point_piecewise_trange_smooth_test);
+      TEST_ADD(minimum_distance_surface_test_suite<long double>::degen_point_test);
     }
 
   public:
@@ -4067,6 +4070,94 @@ class minimum_distance_surface_test_suite : public Test::Suite
       }
     }
 
+    void degen_point_test()
+    {
+      const index_type n(3), m(3), ns(1), ms(3);
+      surface_type s(n, m);
+      point_type cp[ns*3+1][ms*3+1];
+      point_type tst_pts[3];
+      point_type pt;
+      data_type dist, u, v, u_guess, v_guess;
+      index_type i, j, is, js;
+      piecewise_surface_type pws;
+
+      pws.init_uv(ns, ms);
+
+      // create surface with specified control points
+      cp[0][0] << 3.58152, 0.825, -0.51;
+      cp[0][1] << 3.58152, 0.825, -0.593333;
+      cp[0][2] << 3.58152, 0.825, -0.676667;
+      cp[0][3] << 3.58152, 0.825, -0.76;
+      cp[0][4] << 3.58152, 0.825, -0.829036;
+      cp[0][5] << 3.58152, 0.769036, -0.885;
+      cp[0][6] << 3.58152, 0.7, -0.885;
+      cp[0][7] << 3.58152, 0.466667, -0.885;
+      cp[0][8] << 3.58152, 0.233333, -0.885;
+      cp[0][9] << 3.58152, 0, -0.885;
+
+      cp[1][0] << 4.07102, 0.825, -0.51;
+      cp[1][1] << 4.07102, 0.825, -0.593333;
+      cp[1][2] << 4.07102, 0.825, -0.676667;
+      cp[1][3] << 4.07102, 0.825, -0.76;
+      cp[1][4] << 4.07102, 0.825, -0.829036;
+      cp[1][5] << 4.07102, 0.769036, -0.885;
+      cp[1][6] << 4.07102, 0.7, -0.885;
+      cp[1][7] << 4.07102, 0.466667, -0.885;
+      cp[1][8] << 4.07102, 0.233333, -0.885;
+      cp[1][9] << 4.07102, 0, -0.885;
+
+      cp[2][0] << 4.95652, 0.548302, -0.51;
+      cp[2][1] << 4.95652, 0.548302, -0.567115;
+      cp[2][2] << 4.95652, 0.536403, -0.62423;
+      cp[2][3] << 4.95652, 0.515085, -0.678866;
+      cp[2][4] << 4.95652, 0.493766, -0.733501;
+      cp[2][5] << 4.95652, 0.463027, -0.785658;
+      cp[2][6] << 4.95652, 0.425347, -0.832857;
+      cp[2][7] << 4.95652, 0.319843, -0.965015;
+      cp[2][8] << 4.95652, 0.159922, -1.0583;
+      cp[2][9] << 4.95652, 1.1102e-16, -1.0583;
+
+      cp[3][0] << 4.95652, 0, -0.51;
+      cp[3][1] << 4.95652, 0, -0.51;
+      cp[3][2] << 4.95652, 0, -0.51;
+      cp[3][3] << 4.95652, 0, -0.51;
+      cp[3][4] << 4.95652, 0, -0.51;
+      cp[3][5] << 4.95652, 0, -0.51;
+      cp[3][6] << 4.95652, 0, -0.51;
+      cp[3][7] << 4.95652, 0, -0.51;
+      cp[3][8] << 4.95652, 0, -0.51;
+      cp[3][9] << 4.95652, 0, -0.51;
+
+      for ( is = 0; is < ns; is++ )
+      {
+        for ( js = 0; js < ms; js++ )
+        {
+          for (i=0; i<=n; ++i)
+          {
+            for (j=0; j<=m; ++j)
+            {
+              s.set_control_point(cp[is*3 + i][js * 3 + j], i, j);
+            }
+          }
+          pws.set( s, is, js );
+        }
+      }
+
+      u_guess = ( pws.get_umax() + pws.get_u0() ) / 2.0;
+      v_guess = ( pws.get_vmax() + pws.get_v0() ) / 2.0;
+
+      tst_pts[0] << -3.65833, 0, -0.875;
+      tst_pts[1] << -3.25, 0, -0.875;
+      tst_pts[2] << -2.84167, 0, -0.875;
+
+      for (i=0; i<3; ++i)
+      {
+        pt = tst_pts[i];
+        dist=eli::geom::intersect::minimum_distance(u, v, pws, pt, u_guess, v_guess);
+      }
+
+//      octave_print( 1, pws );
+    }
 
 };
 
