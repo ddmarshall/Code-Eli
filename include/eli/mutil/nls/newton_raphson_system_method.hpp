@@ -79,25 +79,25 @@ namespace eli
             count=0;
             while (!this->test_converged(count, rel_tol_norm, abs_tol_norm) && !all_zero)
             {
-  // Don't have any easy (efficient) way of determining if matrix in invertible
+  // FIX: Don't have any easy (efficient) way of determining if matrix in invertible
   //            if (fpx==0)
   //              return iterative_root_base<data__>::no_root_found;
 
               bool invertible;
               bool modified = false;
 
-              if ( N__ < 4 )
+              if (N__ < 4)
               {
                 typename iterative_system_root_base<data__, N__, NSOL__>::jacobian_matrix inverse;
                 fpx.computeInverseWithCheck(inverse, invertible);
 
-                std::vector < bool > zerodx( N__ );
+                std::vector<bool> zerodx(N__);
 
-                if ( !invertible )
+                if (!invertible)
                 {
                   for (size_t i=0; i<N__; ++i)
                   {
-                    if ( abs(fpx(i,i)) < 1e-6 )
+                    if (std::abs(fpx(i,i)) < std::sqrt(std::numeric_limits<data__>::epsilon()))
                     {
                       zerodx[i] = true;
                       fpx(i,i) = 1.0;
@@ -112,15 +112,15 @@ namespace eli
                   assert(invertible);
                 }
 
-                if ( invertible )
+                if (invertible)
                 {
                   dx = - inverse * eval1;
 
-                  if ( modified )
+                  if (modified)
                   {
                     for (size_t i=0; i<N__; ++i)
                     {
-                      if ( zerodx[i] )
+                      if (zerodx[i])
                       {
                         dx(i) = 0;
                       }
