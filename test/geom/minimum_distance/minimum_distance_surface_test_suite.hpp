@@ -4077,10 +4077,9 @@ class minimum_distance_surface_test_suite : public Test::Suite
       point_type cp[ns*3+1][ms*3+1];
       point_type tst_pts[3];
       point_type pt;
-      data_type dist, u, v, dist_ref, u_guess, v_guess;
+      data_type dist, u, v, u_guess, v_guess;
       index_type i, j, is, js;
       piecewise_surface_type pws;
-      typename piecewise_surface_type::error_code err;
 
       pws.init_uv(ns, ms);
 
