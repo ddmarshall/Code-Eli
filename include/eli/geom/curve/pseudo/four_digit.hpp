@@ -35,6 +35,7 @@ namespace eli
             typedef data__ data_type;
             typedef Eigen::Matrix<data_type, 1, 2> point_type;
             typedef Eigen::Matrix<data_type, 5, 1> coefficient_type;
+            typedef typename point_type::Index index_type;
 
           public:
             four_digit() : thickness(00), camber(0), camber_loc(0), sharp_te(false)
