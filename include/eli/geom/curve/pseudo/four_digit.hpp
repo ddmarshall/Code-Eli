@@ -64,9 +64,10 @@ namespace eli
             }
             bool sharp_trailing_edge() const {return sharp_te;}
 
+            // Valid values of thickness are greater than 0 and less than 100
             bool set_thickness(const data_type &t)
             {
-              if (t<100)
+              if ((t>0) && (t<100))
               {
                 thickness=t;
                 recalc_params();
@@ -76,17 +77,33 @@ namespace eli
             }
             data_type get_thickness() const {return thickness;}
 
+            // valid camber values are greater than or equal to zero and less or equal to 9
+            // valid camber location values are zero or greater than or equal to 1 and less than or equal to 9
+            //
+            // note that if either is zero then they both should be zero
             bool set_camber(const data_type &cam, const data_type &cam_loc)
             {
-              if ( (cam<50) && (cam_loc<10) && (cam_loc>0))
+              if ((cam == 0) || (cam_loc == 0))
               {
-                camber=cam;
-                camber_loc=cam_loc;
+                camber = 0;
+                camber_loc = 0;
                 recalc_params();
                 return true;
               }
 
-              return false;
+              if ((cam<0) || (cam>9))
+              {
+                return false;
+              }
+              if ((cam_loc<1) || (cam_loc>9))
+              {
+                return false;
+              }
+
+              camber=cam;
+              camber_loc=cam_loc;
+              recalc_params();
+              return true;
             }
             data_type get_maximum_camber() const {return camber;}
             data_type get_maximum_camber_location() const {return camber_loc;}
