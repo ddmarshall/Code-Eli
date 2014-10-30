@@ -328,10 +328,10 @@ namespace eli
     void octave_print(int figno, const eli::geom::curve::pseudo::polynomial<data__, 2> &pol,
                       const std::string &name="")
     {
-      typedef eli::geom::curve::pseudo::explicit_bezier<data__> explicit_bezier_curve_type;
-      typedef typename explicit_bezier_curve_type::data_type data_type;
-      typedef typename explicit_bezier_curve_type::point_type point_type;
-      typedef typename explicit_bezier_curve_type::index_type index_type;
+      typedef eli::geom::curve::pseudo::polynomial<data__, 2> polynomial_curve_type;
+      typedef typename polynomial_curve_type::data_type data_type;
+      typedef typename polynomial_curve_type::point_type point_type;
+      typedef typename polynomial_curve_type::index_type index_type;
 
       std::string nm, cxbuf, cybuf;
 
@@ -387,10 +387,10 @@ namespace eli
     void octave_print(int figno, const eli::geom::curve::pseudo::polynomial<data__, 3> &pol,
                       const std::string &name="")
     {
-      typedef eli::geom::curve::pseudo::explicit_bezier<data__> explicit_bezier_curve_type;
-      typedef typename explicit_bezier_curve_type::data_type data_type;
-      typedef typename explicit_bezier_curve_type::point_type point_type;
-      typedef typename explicit_bezier_curve_type::index_type index_type;
+      typedef eli::geom::curve::pseudo::polynomial<data__, 3> polynomial_curve_type;
+      typedef typename polynomial_curve_type::data_type data_type;
+      typedef typename polynomial_curve_type::point_type point_type;
+      typedef typename polynomial_curve_type::index_type index_type;
 
       std::string nm, cxbuf, cybuf, czbuf;
 
