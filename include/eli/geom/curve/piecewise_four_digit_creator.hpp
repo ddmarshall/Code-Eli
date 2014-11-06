@@ -15,9 +15,12 @@
 
 #include "eli/code_eli.hpp"
 
+#include "eli/mutil/dm/binomial_coefficient.hpp"
 #include "eli/geom/curve/piecewise_creator_base.hpp"
+#include "eli/geom/curve/piecewise_polynomial_creator.hpp"
 #include "eli/geom/curve/piecewise.hpp"
 #include "eli/geom/curve/bezier.hpp"
+#include "eli/geom/curve/pseudo/polynomial.hpp"
 #include "eli/geom/curve/pseudo/four_digit.hpp"
 
 namespace eli
@@ -36,8 +39,11 @@ namespace eli
           typedef typename base_class_type::index_type index_type;
           typedef typename base_class_type::tolerance_type tolerance_type;
           typedef eli::geom::curve::pseudo::four_digit<data_type> airfoil_type;
-          typedef typename airfoil_type::point_type af_point_type;
 
+        private:
+          typedef eli::mutil::poly::polynomial<data_type> polynomial_type;
+
+        public:
           piecewise_four_digit_creator() : piecewise_creator_base<data_type, dim__, tolerance_type>(4, 0) {}
           piecewise_four_digit_creator(const piecewise_four_digit_creator<data_type, dim__, tolerance_type> &ppc)
             : piecewise_creator_base<data_type, dim__, tolerance_type>(ppc) {}
@@ -92,109 +98,373 @@ namespace eli
             typedef piecewise<bezier, data_type, dim__, tolerance_type> piecewise_curve_type;
             typedef typename piecewise_curve_type::curve_type curve_type;
             typedef typename piecewise_curve_type::error_code error_code;
-            typedef typename curve_type::fit_container_type fit_container_type;
-            typedef typename curve_type::dimension_type dimension_type;
+            typedef typename airfoil_type::coefficient_type coefficient_type;
 
-            af_point_type temppt;
+            // get the airfoil information
+            data_type t, m, p;
+            coefficient_type a(af.get_thickness_coefficients());
+            bool symmetric;
 
-            std::vector<point_type, Eigen::aligned_allocator<point_type> > pts;
+            t=get_thickness()/100;
+            m=get_maximum_camber()/100;
+            p=get_maximum_camber_location()/10;
+            symmetric = ((m<=0) || (p<=0));
 
-//            point_type d1start, d1end, d2start, d2end;
-
-            index_type i;
-            index_type nseg(this->get_number_segments());
-
-            // Number of sample points per segment.
-            index_type nref=25;
-
-            // Number of points evaluated around airfoil.
-            index_type npt = nref*nseg+1;
-            pts.resize(npt);
-            // Leading edge point index.
-            index_type ile(1+(npt-1)/2);
-
-            // Set up initial parameter and parameter step.
-            data_type xi(af.get_t0());
-            data_type dxi((af.get_tmax()-af.get_t0())/(npt-1));
-            std::vector< data_type > xis;
-            xis.resize(npt);
-
-            // Evaluate airfoil.
-            for( i = 0; i < npt; i++ )
+            // build thickness polynomial coefficients
+            polynomial_type thickness;
             {
-              if(i==ile)
-              {
-                xi=0;  // Force exact floating point value for le.
-              }
-              else if(i==npt-1)
-              {
-                xi=af.get_tmax();  // Force exact floating point value for te.
-              }
+              typename polynomial_type::coefficient_type delta(9, 1);
 
-              temppt = af.f(xi);
-              pts[i] = point_type(temppt.x(), temppt.y(), 0);
-              xis[i] = xi;
-              xi += dxi;
+              delta << 0, a(0), a(1), 0, a(2), 0, a(3), 0, a(4);
+              delta *= (t/0.20);
+              thickness.set_coefficients(delta);
             }
 
-            pc.clear();
-            pc.set_t0(this->get_t0());
-
-            index_type istart(0), iend(nref);
-
-//            temppt = af.fp(xis[istart]);
-//            temppt = af.tangent(xis[istart]);
-//            d1start = point_type(temppt.x(), temppt.y(), 0);
-//            temppt = af.fpp(xis[istart]);
-//            d2start = point_type(temppt.x(), temppt.y(), 0);
-
-            for( i = 0; i < nseg; i++ )
+            // build the camber terms
+            polynomial_type camber_x, camber_front_y, camber_back_y;
+            data_type t_split(std::sqrt(p));
             {
-//              temppt = af.fp(xis[iend]);
-//              temppt = af.tangent(xis[iend]);
-//              d1end = point_type(temppt.x(), temppt.y(), 0);
-//              temppt = af.fpp(xis[iend]);
-//              d2end = point_type(temppt.x(), temppt.y(), 0);
+              typename polynomial_type::coefficient_type x(3, 1), y(5, 1);
 
-              // set up fit container
-              fit_container_type fcon;
+              x << 0, 0, 1;
+              camber_x.set_coefficients(x);
 
-              fcon.set_points(pts.begin()+istart, pts.begin()+iend+1);
-              fcon.add_start_C0_constraint();
-              fcon.add_end_C0_constraint();
+              if (symmetric)
+              {
+                y.setZero();
+              }
+              else
+              {
+                y << 0, 0, 2*m/p, 0, -m/p/p;
+              }
+              camber_front_y.set_coefficients(y);
 
-// C1 and C2 fits are problematic.  I believe this is because they fit the magnitude of the
-// supplied derivative, not just its direction (for first derivatives).  In general,
-// using af.tangent works better than af.fp.  Results can be obtained for low order curves.
-// The resulting curves blow up for higher order, or for C2 using .fp or .tangent.
+              if (symmetric)
+              {
+                y.setZero();
+              }
+              else
+              {
+                y << m*(1-2*p), 0, 2*m*p, 0, -m;
+                y /= (1-p)*(1-p);
+              }
+              camber_back_y.set_coefficients(y);
+            }
 
-//              fcon.add_start_C1_constraint(d1start);
-//              fcon.add_end_C1_constraint(d1end);
-//              fcon.add_start_C2_constraint(d1start,d2start);
-//              fcon.add_end_C2_constraint(d1end,d2end);
+            polynomial_type camber_front_cos, camber_front_sin, camber_back_cos, camber_back_sin;
+            {
+              if (symmetric)
+              {
+                typename polynomial_type::coefficient_type cterm(1,1), sterm(1,1);
 
-              // do fit
-              dimension_type dim(10);
-              curve_type bez;
+                cterm(0)=1;
+                sterm(0)=0;
 
-              bez.fit(fcon, dim);
+                camber_front_cos.set_coefficients(cterm);
+                camber_front_sin.set_coefficients(sterm);
+                camber_back_cos.set_coefficients(cterm);
+                camber_back_sin.set_coefficients(sterm);
+              }
+              else
+              {
+                typename polynomial_type::coefficient_type cterm, sterm;
+                data_type a;
+                index_type d;
 
-              // Push back to piecewise curve.
-              error_code err = pc.push_back(bez, this->get_segment_dt(i));
-              if (err!=piecewise_curve_type::NO_ERRORS)
+                // apply heuristic for number of terms to include in trig. expansion
+                if ((p>=2) && (p<=6) && (m<=0.04))
+                {
+                  d=3;
+                }
+                else
+                {
+                  d=6;
+                }
+
+                // build the front terms
+                a=2*m/p/p;
+                build_cos_term(cterm, a, p, 0, d);
+                build_sin_term(sterm, a, p, cterm);
+                camber_front_cos.set_coefficients(cterm);
+                camber_front_sin.set_coefficients(sterm);
+
+                // build the back terms
+                a=2*m/(1-p)/(1-p);
+                build_cos_term(cterm, a, p, 1, d);
+                build_sin_term(sterm, a, p, cterm);
+                camber_back_cos.set_coefficients(cterm);
+                camber_back_sin.set_coefficients(sterm);
+              }
+            }
+
+            // combine the thickness and camber terms
+            pseudo::polynomial<data_type, dim__> cu_front, cl_front, cu_back, cl_back;
+            {
+              polynomial_type front_upper_x, front_upper_y, front_lower_x, front_lower_y;
+              polynomial_type back_upper_x, back_upper_y, back_lower_x, back_lower_y;
+              polynomial_type delta_cos, delta_sin;
+
+              // build front curves
+              delta_cos.multiply(thickness, camber_front_cos);
+              delta_sin.multiply(thickness, camber_front_sin);
+              front_upper_x.subtract(camber_x, delta_sin);
+              front_upper_y.add(camber_front_y, delta_cos);
+              front_lower_x.add(camber_x, delta_sin);
+              front_lower_y.subtract(camber_front_y, delta_cos);
+
+              // build back curves
+              delta_cos.multiply(thickness, camber_back_cos);
+              delta_sin.multiply(thickness, camber_back_sin);
+              back_upper_x.subtract(camber_x, delta_sin);
+              back_upper_y.add(camber_back_y, delta_cos);
+              back_lower_x.add(camber_x, delta_sin);
+              back_lower_y.subtract(camber_back_y, delta_cos);
+
+              // set the polynomial pseudo-curve coefficients
+              typename polynomial_type::coefficient_type co;
+              front_upper_x.get_coefficients(co); cu_front.set_coefficients(co, 0);
+              front_upper_y.get_coefficients(co); cu_front.set_coefficients(co, 1);
+              back_upper_x.get_coefficients(co);  cu_back.set_coefficients(co, 0);
+              back_upper_y.get_coefficients(co);  cu_back.set_coefficients(co, 1);
+              front_lower_x.get_coefficients(co); cl_front.set_coefficients(co, 0);
+              front_lower_y.get_coefficients(co); cl_front.set_coefficients(co, 1);
+              back_lower_x.get_coefficients(co);  cl_back.set_coefficients(co, 0);
+              back_lower_y.get_coefficients(co);  cl_back.set_coefficients(co, 1);
+            }
+
+            // create airfoil
+            piecewise_polynomial_creator<data_type, dim__, tolerance_type> poly_creator;
+            piecewise_curve_type pc_temp;
+            typename curve_type::control_point_type cp, cp_split;
+            curve_type c;
+            bool rtn_flag;
+            error_code er;
+
+            //
+            // lower surface
+            //
+
+            // build lower aft curve
+            rtn_flag=poly_creator.set_conditions(cl_back);
+            if (!rtn_flag)
+            {
+              assert(false);
+              return false;
+            }
+            poly_creator.set_t0(0);
+            poly_creator.set_segment_dt(1, 0);
+            rtn_flag=poly_creator.create(pc_temp);
+            if (!rtn_flag)
+            {
+              assert(false);
+              return false;
+            }
+            pc_temp.reverse();
+            // if symmetric airfoil, then only one curve for lower surface
+            if (symmetric)
+            {
+              pc_temp.get(c, 0);
+            }
+            // else need to split curve and extract the aft portion for airfoil
+            else
+            {
+              er=pc_temp.split(1-t_split);
+              if (er!=piecewise_curve_type::NO_ERRORS)
+              {
+                pc.clear();
+                return false;
+              }
+              pc_temp.get(c, 0);
+              cp_split=c.get_control_point(c.degree());
+            }
+            if (sharp_trailing_edge())
+            {
+              cp.setZero();
+              cp(0)=1;
+              c.set_control_point(cp, 0);
+            }
+            er=pc.push_back(c, 1-t_split);
+            if (er!=piecewise_curve_type::NO_ERRORS)
+            {
+              pc.clear();
+              return false;
+            }
+
+            // if not symmetric airfoil then need to get the front portion of curve
+            if (!symmetric)
+            {
+              rtn_flag=poly_creator.set_conditions(cl_front);
+              if (!rtn_flag)
               {
                 assert(false);
                 return false;
               }
-
-              istart = iend;
-//              d1start = d1end;
-//              d2start = d2end;
-
-              iend = iend + nref;
+              poly_creator.set_t0(0);
+              poly_creator.set_segment_dt(1, 0);
+              rtn_flag=poly_creator.create(pc_temp);
+              if (!rtn_flag)
+              {
+                assert(false);
+                return false;
+              }
+              pc_temp.reverse();
+              er=pc_temp.split(1-t_split);
+              if (er!=piecewise_curve_type::NO_ERRORS)
+              {
+                pc.clear();
+                return false;
+              }
+              pc_temp.get(c, 1);
+              c.set_control_point(cp_split, 0);
+              er=pc.push_back(c, t_split);
+              if (er!=piecewise_curve_type::NO_ERRORS)
+              {
+                pc.clear();
+                return false;
+              }
             }
 
-            return false;
+            //
+            // upper surface
+            //
+
+            // build upper front curve
+            rtn_flag=poly_creator.set_conditions(cu_front);
+            if (!rtn_flag)
+            {
+              assert(false);
+              return false;
+            }
+            poly_creator.set_t0(0);
+            poly_creator.set_segment_dt(1, 0);
+            rtn_flag=poly_creator.create(pc_temp);
+            if (!rtn_flag)
+            {
+              assert(false);
+              return false;
+            }
+            // if symmetric airfoil, then only one curve for upper surface
+            if (symmetric)
+            {
+              pc_temp.get(c, 0);
+              if (sharp_trailing_edge())
+              {
+                cp.setZero();
+                cp(0)=1;
+                c.set_control_point(cp, c.degree());
+              }
+              er=pc.push_back(c, 1);
+            }
+            // else need to split curve and extract the front portion for airfoil
+            else
+            {
+              er=pc_temp.split(t_split);
+              if (er!=piecewise_curve_type::NO_ERRORS)
+              {
+                pc.clear();
+                return false;
+              }
+              pc_temp.get(c, 0);
+              cp_split=c.get_control_point(c.degree());
+              er=pc.push_back(c, t_split);
+            }
+            if (er!=piecewise_curve_type::NO_ERRORS)
+            {
+              pc.clear();
+              return false;
+            }
+
+            // if not symmetric airfoil then need to get the aft portion of curve
+            if (!symmetric)
+            {
+              rtn_flag=poly_creator.set_conditions(cu_back);
+              if (!rtn_flag)
+              {
+                assert(false);
+                return false;
+              }
+              poly_creator.set_t0(0);
+              poly_creator.set_segment_dt(1, 0);
+              rtn_flag=poly_creator.create(pc_temp);
+              if (!rtn_flag)
+              {
+                assert(false);
+                return false;
+              }
+              er=pc_temp.split(t_split);
+              if (er!=piecewise_curve_type::NO_ERRORS)
+              {
+                pc.clear();
+                return false;
+              }
+              pc_temp.get(c, 1);
+              c.set_control_point(cp_split, 0);
+              if (sharp_trailing_edge())
+              {
+                cp.setZero();
+                cp(0)=1;
+                c.set_control_point(cp, c.degree());
+              }
+              er=pc.push_back(c, 1-t_split);
+              if (er!=piecewise_curve_type::NO_ERRORS)
+              {
+                pc.clear();
+                return false;
+              }
+            }
+
+            return true;
+          }
+
+        private:
+          static void build_cos_term(typename polynomial_type::coefficient_type &c, const data_type &a, const data_type &p, const data_type &xi0, index_type deg)
+          {
+            typename polynomial_type::coefficient_type cc(deg+1, 1), ctemp;
+            data_type p_rel(p-xi0), temp(a*p_rel), d(1+temp*temp), d12(std::sqrt(d)), a2(a*a);
+            index_type n, i, k;
+
+            // create Taylor series around xi0
+            n=0; cc(n)=1/d12;
+            n=1; cc(n)=a2*p_rel/(d*d12);
+            for (n=2; n<=deg; ++n)
+            {
+              cc(n)=(a2/(n*d))*((2*n-1)*p_rel*cc(n-1)-(n-1)*cc(n-2));
+            }
+
+            // convert expansion to standard form around zero
+            ctemp=cc;
+            cc.setZero();
+            for (i=0; i<=deg; ++i)
+            {
+              for (k=i; k<=deg; ++k)
+              {
+                // NOTE: could probably get rid of the std::pow call by multiplying by -xi0 in loop
+                eli::mutil::dm::n_choose_k(temp, k, i);
+                cc(i)+=temp*std::pow(-xi0, k-i)*ctemp(k);
+              }
+            }
+
+            // reparameterize on t^2
+            c.resize(2*deg+1, 1);
+            c.setZero();
+            for (i=0; i<=deg; ++i)
+            {
+              c(2*i)=cc(i);
+            }
+          }
+
+          static void build_sin_term(typename polynomial_type::coefficient_type &sterm, const data_type &a, const data_type &p, const typename polynomial_type::coefficient_type &cterm)
+          {
+            index_type n, deg((cterm.rows()-1)/2);
+            sterm.resize(2*deg+3, 1); // sin term has one extra term in taylor series expansion
+
+            sterm.setZero();
+            n=0; sterm(n)=a*p*cterm(n);
+            for (n=1; n<=deg; ++n)
+            {
+              sterm(2*n)=a*(p*cterm(2*n)-cterm(2*n-2));
+            }
+            n=deg+1; sterm(2*n)=-a*cterm(2*n-2);
           }
 
         private:

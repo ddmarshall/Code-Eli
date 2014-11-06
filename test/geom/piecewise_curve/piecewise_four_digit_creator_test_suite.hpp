@@ -26,6 +26,9 @@
 #include "eli/mutil/fd/d2o2.hpp"
 #include "eli/geom/curve/piecewise.hpp"
 #include "eli/geom/curve/piecewise_four_digit_creator.hpp"
+#include "eli/geom/curve/pseudo/four_digit.hpp"
+
+#include "octave_helpers.hpp"
 
 template<typename data__>
 class piecewise_four_digit_creator_test_suite : public Test::Suite
@@ -45,17 +48,20 @@ class piecewise_four_digit_creator_test_suite : public Test::Suite
     void AddTests(const float &)
     {
       // add the tests
-      TEST_ADD(piecewise_four_digit_creator_test_suite<float>::create_airfoil_test);
+      TEST_ADD(piecewise_four_digit_creator_test_suite<float>::create_symmetric_airfoil_test);
+      TEST_ADD(piecewise_four_digit_creator_test_suite<float>::create_general_airfoil_test);
     }
     void AddTests(const double &)
     {
       // add the tests
-      TEST_ADD(piecewise_four_digit_creator_test_suite<double>::create_airfoil_test);
+      TEST_ADD(piecewise_four_digit_creator_test_suite<double>::create_symmetric_airfoil_test);
+      TEST_ADD(piecewise_four_digit_creator_test_suite<double>::create_general_airfoil_test);
     }
     void AddTests(const long double &)
     {
       // add the tests
-      TEST_ADD(piecewise_four_digit_creator_test_suite<long double>::create_airfoil_test);
+      TEST_ADD(piecewise_four_digit_creator_test_suite<long double>::create_symmetric_airfoil_test);
+      TEST_ADD(piecewise_four_digit_creator_test_suite<long double>::create_general_airfoil_test);
     }
 
   public:
@@ -68,113 +74,132 @@ class piecewise_four_digit_creator_test_suite : public Test::Suite
     }
 
   private:
-    void octave_print(int figno, const piecewise_curve_type &pc) const
+    void create_symmetric_airfoil_test()
     {
-      index_type i, pp, ns;
-      data_type tmin, tmax;
+      four_digit_type af;
+      eli::geom::curve::pseudo::four_digit<data_type> four_series;
+      typename eli::geom::curve::pseudo::four_digit<data_type>::point_type pt_ref;
 
-      ns=pc.number_segments();
-      pc.get_parameter_min(tmin);
-      pc.get_parameter_max(tmax);
+      data_type th, cam, cam_loc, t, eps(std::numeric_limits<data_type>::epsilon());
+      point_type pt;
+      bool rtn;
 
-      std::cout << "figure(" << figno << ");" << std::endl;
+      // set airfoil thickness
+      th=24;
+      rtn=af.set_thickness(th);
+      TEST_ASSERT(rtn);
+      TEST_ASSERT(af.get_thickness()==th);
 
-      // get control points and print
-      std::cout << "cp_x=[";
-      for (pp=0; pp<ns; ++pp)
+      // set airfoil camber
+      cam=0;
+      cam_loc=0;
+      rtn=af.set_camber(cam, cam_loc);
+      TEST_ASSERT(rtn);
+      TEST_ASSERT(af.get_maximum_camber()==cam);
+      TEST_ASSERT(af.get_maximum_camber_location()==cam_loc);
+
+      // test the name
+      std::string name, name_ref;
+
+      af.set_sharp_trailing_edge(true);
+
+      name_ref="NACA "+std::to_string(static_cast<int>(std::round(cam)))
+                      +std::to_string(static_cast<int>(std::round(cam_loc)))
+                      +std::to_string(static_cast<int>(std::round(th)));
+      name=af.get_name();
+      TEST_ASSERT(name==name_ref);
+
+      piecewise_curve_type af_pc;
+      bool fit_success;
+
+      fit_success = af.create(af_pc);
+      TEST_ASSERT(fit_success);
+
+      four_series.set_sharp_trailing_edge(true);
+      four_series.set_thickness(th);
+      four_series.set_camber(cam, cam_loc);
+
+//      if (typeid(data_type)==typeid(float))
+//      {
+//        std::cout.flush();
+//        eli::test::octave_start(1);
+//        eli::test::octave_print(1, four_series, "poly");
+//        eli::test::octave_print(1, af_pc, "piecewise");
+//        eli::test::octave_finish(1);
+//      }
+
+      // test lower surface trailing edge
+      t=0;
+      pt=af_pc.f(t);
+      pt_ref=four_series.f(t-1);
+      TEST_ASSERT((pt.x()==pt_ref.x()) && (pt.y()==pt_ref.y()));
+
+      // test leading edge
+      t=1;
+      pt=af_pc.f(t);
+      pt_ref=four_series.f(t-1);
+      TEST_ASSERT((pt.x()==pt_ref.x()) && (pt.y()==pt_ref.y()));
+
+      // test upper surface trailing edge
+      t=2;
+      pt=af_pc.f(t);
+      pt_ref=four_series.f(t-1);
+      TEST_ASSERT((pt.x()==pt_ref.x()) && (pt.y()==pt_ref.y()));
+
+      // test point on aft lower surface
+      t=1-0.16;
+      pt=af_pc.f(t);
+      pt_ref=four_series.f(-(1-t)*(1-t));
+      if (typeid(data_type)==typeid(long double))
       {
-        curve_type bez;
-        pc.get(bez, pp);
-        for (i=0; i<=bez.degree(); ++i)
-        {
-          std::cout << bez.get_control_point(i).x();
-          if (i<bez.degree())
-            std::cout << ", ";
-          else if (pp<ns-1)
-            std::cout << "; ";
-        }
-        std::cout << std::endl;
+        TEST_ASSERT(std::sqrt((pt.x()-pt_ref.x())*(pt.x()-pt_ref.x())+(pt.y()-pt_ref.y())*(pt.y()-pt_ref.y()))<30*eps);
       }
-      std::cout << "];" << std::endl;
-
-      std::cout << "cp_y=[";
-      for (pp=0; pp<ns; ++pp)
+      else
       {
-        curve_type bez;
-        pc.get(bez, pp);
-        for (i=0; i<=bez.degree(); ++i)
-        {
-          std::cout << bez.get_control_point(i).y();
-          if (i<bez.degree())
-            std::cout << ", ";
-          else if (pp<ns-1)
-            std::cout << "; ";
-        }
-        std::cout << std::endl;
+        TEST_ASSERT(std::sqrt((pt.x()-pt_ref.x())*(pt.x()-pt_ref.x())+(pt.y()-pt_ref.y())*(pt.y()-pt_ref.y()))<eps);
       }
-      std::cout << "];" << std::endl;
 
-      std::cout << "cp_z=[";
-      for (pp=0; pp<ns; ++pp)
+      // test point on fore lower surface
+      t=1-0.64;
+      pt=af_pc.f(t);
+      pt_ref=four_series.f(-(1-t)*(1-t));
+      if (typeid(data_type)==typeid(long double))
       {
-        curve_type bez;
-        pc.get(bez, pp);
-        for (i=0; i<=bez.degree(); ++i)
-        {
-          std::cout << bez.get_control_point(i).z();
-          if (i<bez.degree())
-            std::cout << ", ";
-          else if (pp<ns-1)
-            std::cout << "; ";
-        }
-        std::cout << std::endl;
+        TEST_ASSERT(std::sqrt((pt.x()-pt_ref.x())*(pt.x()-pt_ref.x())+(pt.y()-pt_ref.y())*(pt.y()-pt_ref.y()))<60*eps);
       }
-      std::cout << "];" << std::endl;
-
-      // initialize the t parameters
-      std::vector<data__> t(129);
-      for (i=0; i<static_cast<index_type>(t.size()); ++i)
+      else
       {
-        t[i]=tmin+(tmax-tmin)*static_cast<data__>(i)/(t.size()-1);
+        TEST_ASSERT(std::sqrt((pt.x()-pt_ref.x())*(pt.x()-pt_ref.x())+(pt.y()-pt_ref.y())*(pt.y()-pt_ref.y()))<eps);
       }
 
-      // set the surface points
-      std::cout << "surf_x=[";
-      for (i=0; i<static_cast<index_type>(t.size()); ++i)
+      // test point on fore upper surface
+      t=1+0.16;
+      pt=af_pc.f(t);
+      pt_ref=four_series.f((t-1)*(t-1));
+      if (typeid(data_type)==typeid(long double))
       {
-        std::cout << pc.f(t[i]).x();
-        if (i<static_cast<index_type>(t.size()-1))
-          std::cout << ", ";
+        TEST_ASSERT(std::sqrt((pt.x()-pt_ref.x())*(pt.x()-pt_ref.x())+(pt.y()-pt_ref.y())*(pt.y()-pt_ref.y()))<30*eps);
       }
-      std::cout << "];" << std::endl;
-
-      std::cout << "surf_y=[";
-      for (i=0; i<static_cast<index_type>(t.size()); ++i)
+      else
       {
-        std::cout << pc.f(t[i]).y();
-        if (i<static_cast<index_type>(t.size()-1))
-          std::cout << ", ";
+        TEST_ASSERT(std::sqrt((pt.x()-pt_ref.x())*(pt.x()-pt_ref.x())+(pt.y()-pt_ref.y())*(pt.y()-pt_ref.y()))<eps);
       }
-      std::cout << "];" << std::endl;
 
-      std::cout << "surf_z=[";
-      for (i=0; i<static_cast<index_type>(t.size()); ++i)
+      // test point on aft upper surface
+      t=1+0.64;
+      pt=af_pc.f(t);
+      pt_ref=four_series.f((t-1)*(t-1));
+      if (typeid(data_type)==typeid(long double))
       {
-        std::cout << pc.f(t[i]).z();
-        if (i<static_cast<index_type>(t.size()-1))
-          std::cout << ", ";
+        TEST_ASSERT(std::sqrt((pt.x()-pt_ref.x())*(pt.x()-pt_ref.x())+(pt.y()-pt_ref.y())*(pt.y()-pt_ref.y()))<60*eps);
       }
-      std::cout << "];" << std::endl;
-
-      std::cout << "setenv('GNUTERM', 'x11');" << std::endl;
-      std::cout << "plot(surf_x, surf_y, '-k');" << std::endl;
-      std::cout << "hold on;" << std::endl;
-      std::cout << "plot(cp_x', cp_y', '-ok', 'MarkerFaceColor', [0 0 0]);" << std::endl;
-      std::cout << "hold off;" << std::endl;
-      std::cout << "axis equal;" << std::endl;
+      else
+      {
+        TEST_ASSERT(std::sqrt((pt.x()-pt_ref.x())*(pt.x()-pt_ref.x())+(pt.y()-pt_ref.y())*(pt.y()-pt_ref.y()))<eps);
+      }
     }
 
-    void create_airfoil_test()
+    void create_general_airfoil_test()
     {
       four_digit_type af;
 
