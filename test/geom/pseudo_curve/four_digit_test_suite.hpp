@@ -239,7 +239,7 @@ class four_digit_test_suite : public Test::Suite
         // leading edge
         xi=static_cast<data_type>(0);
         x_ref << xi, static_cast<data_type>(0);
-        xp_ref << static_cast<data_type>(0), static_cast<data_type>(1)/std::numeric_limits<data_type>::epsilon();
+        xp_ref << static_cast<data_type>(1), static_cast<data_type>(1)/std::numeric_limits<data_type>::epsilon();
         x=af.f(xi);
         xp=af.fp(xi);
         TEST_ASSERT(x==x_ref);
@@ -263,10 +263,22 @@ class four_digit_test_suite : public Test::Suite
         TEST_ASSERT((x-x_ref).norm()<2e-4);
         TEST_ASSERT((xp-xp_ref).norm()<2e-4);
 //        std::cout << "xi=" << xi;
-//        std::cout << "\tx=" << x << "\tx_ref=" << x_ref;
-//        std::cout << "\tdx=" << x-x_ref << "\tdx.norm()=" << (x-x_ref).norm();
-//        std::cout << "\txp=" << xp << "\txp_ref=" << xp_ref;
-//        std::cout << "\tdxp=" << xp-xp_ref << "\tdxp.norm()=" << (xp-xp_ref).norm();
+//        std::cout << std::endl << "     ";
+//        std::cout << "x=" << x;
+//        std::cout << std::endl << "     ";
+//        std::cout << "x_ref=" << x_ref;
+//        std::cout << std::endl << "        ";
+//        std::cout << "dx=" << x-x_ref;
+//        std::cout << std::endl << "        ";
+//        std::cout << "dx.norm()=" << (x-x_ref).norm();
+//        std::cout << std::endl << "     ";
+//        std::cout << "xp=" << xp;
+//        std::cout << std::endl << "     ";
+//        std::cout << "xp_ref=" << xp_ref;
+//        std::cout << std::endl << "        ";
+//        std::cout << "dxp=" << xp-xp_ref;
+//        std::cout << std::endl << "        ";
+//        std::cout << "dxp.norm()=" << (xp-xp_ref).norm();
 //        std::cout << std::endl;
       }
 
@@ -295,7 +307,7 @@ class four_digit_test_suite : public Test::Suite
         if (typeid(data_type)==typeid(float))
         {
           TEST_ASSERT((xp-xp_ref).norm()<1e-5);
-          TEST_ASSERT((xpp-xpp_ref).norm()<3e-3);
+          TEST_ASSERT((xpp-xpp_ref).norm()<2e-4);
         }
         else
         {
@@ -367,21 +379,26 @@ class four_digit_test_suite : public Test::Suite
           TEST_ASSERT((xpp-xpp_ref).norm()<8e-5);
         }
 //        std::cout << "xi=" << xi;
-//        std::cout << "\tdx=" << (x[2]-x[0])/(2*dxi) << "\tdy=" << (y[2]-y[0])/(2*dxi);
+//        std::cout << std::endl << "     ";
+//        std::cout << "dx=" << (x[2]-x[0])/(2*dxi) << "\tdy=" << (y[2]-y[0])/(2*dxi);
 //        std::cout << std::endl << "     ";
 //        std::cout << "ddx=" << (x[0]-2*x[1]+x[2])/(dxi*dxi) << "\tddy=" << (y[0]-2*y[1]+y[2])/(dxi*dxi);
 //        std::cout << std::endl << "     ";
 //        std::cout << "xp=" << xp;
 //        std::cout << std::endl << "     ";
 //        std::cout << "xp_ref=" << xp_ref;
-//        std::cout << std::endl << "     ";
-//        std::cout << "dxp=" << xp-xp_ref << "dxp.norm()=" << (xp-xp_ref).norm();
+//        std::cout << std::endl << "        ";
+//        std::cout << "dxp=" << xp-xp_ref;
+//        std::cout << std::endl << "        ";
+//        std::cout << "dxp.norm()=" << (xp-xp_ref).norm();
 //        std::cout << std::endl << "     ";
 //        std::cout << "xpp=    " << xpp;
 //        std::cout << std::endl << "     ";
 //        std::cout << "xpp_ref=" << xpp_ref;
-//        std::cout << std::endl << "     ";
-//        std::cout << "dxpp=" << xpp-xpp_ref << "\tdxpp.norm()=" << (xpp-xpp_ref).norm();
+//        std::cout << std::endl << "        ";
+//        std::cout << "dxpp=" << xpp-xpp_ref;
+//        std::cout << std::endl << "        ";
+//        std::cout << "dxpp.norm()=" << (xpp-xpp_ref).norm();
 //        std::cout << std::endl;
       }
     }
@@ -566,7 +583,7 @@ class four_digit_test_suite : public Test::Suite
 //        std::cout << std::endl << "     ";
 //        std::cout << "xp_ref=" << xp_ref;
 //        std::cout << std::endl << "     ";
-//        std::cout << "dxp=" << xp-xp_ref << "dxp.norm()=" << (xp-xp_ref).norm();
+//        std::cout << "dxp=" << xp-xp_ref << "\tdxp.norm()=" << (xp-xp_ref).norm();
 //        std::cout << std::endl << "     ";
 //        std::cout << "xpp=    " << xpp;
 //        std::cout << std::endl << "     ";
@@ -739,21 +756,26 @@ class four_digit_test_suite : public Test::Suite
         TEST_ASSERT((xpp-xpp_ref).norm()<1e-4);
       }
 //      std::cout << "xi=" << xi;
-//      std::cout << "\tdx=" << (x[2]-x[0])/(2*dxi) << "\tdy=" << (y[2]-y[0])/(2*dxi);
+//      std::cout << std::endl << "     ";
+//      std::cout << "dx=" << (x[2]-x[0])/(2*dxi) << "\tdy=" << (y[2]-y[0])/(2*dxi);
 //      std::cout << std::endl << "     ";
 //      std::cout << "ddx=" << (x[0]-2*x[1]+x[2])/(dxi*dxi) << "\tddy=" << (y[0]-2*y[1]+y[2])/(dxi*dxi);
 //      std::cout << std::endl << "     ";
 //      std::cout << "xp=" << xp;
 //      std::cout << std::endl << "     ";
 //      std::cout << "xp_ref=" << xp_ref;
-//      std::cout << std::endl << "     ";
-//      std::cout << "dxp=" << xp-xp_ref << "\tdxp.norm()=" << (xp-xp_ref).norm();
+//      std::cout << std::endl << "        ";
+//      std::cout << "dxp=" << xp-xp_ref;
+//      std::cout << std::endl << "        ";
+//      std::cout << "dxp.norm()=" << (xp-xp_ref).norm();
 //      std::cout << std::endl << "     ";
 //      std::cout << "xpp=    " << xpp;
 //      std::cout << std::endl << "     ";
 //      std::cout << "xpp_ref=" << xpp_ref;
-//      std::cout << std::endl << "     ";
-//      std::cout << "dxpp=" << xpp-xpp_ref << "\tdxpp.norm()=" << (xpp-xpp_ref).norm();
+//      std::cout << std::endl << "        ";
+//      std::cout << "dxpp=" << xpp-xpp_ref;
+//      std::cout << std::endl << "        ";
+//      std::cout << "dxpp.norm()=" << (xpp-xpp_ref).norm();
 //      std::cout << std::endl;
     }
 
