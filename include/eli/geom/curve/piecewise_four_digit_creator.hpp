@@ -187,6 +187,9 @@ namespace eli
                 build_sin_term(sterm, a, p, cterm);
                 camber_front_cos.set_coefficients(cterm);
                 camber_front_sin.set_coefficients(sterm);
+//
+//                std::cout << "camber_front_cos=" << cterm << std::endl;
+//                std::cout << "camber_front_sin=" << sterm << std::endl;
 
                 // build the back terms
                 a=2*m/(1-p)/(1-p);
@@ -194,6 +197,9 @@ namespace eli
                 build_sin_term(sterm, a, p, cterm);
                 camber_back_cos.set_coefficients(cterm);
                 camber_back_sin.set_coefficients(sterm);
+//
+//                std::cout << "camber_back_cos=" << cterm << std::endl;
+//                std::cout << "camber_back_sin=" << sterm << std::endl;
               }
             }
 
@@ -211,6 +217,18 @@ namespace eli
               front_upper_y.add(camber_front_y, delta_cos);
               front_lower_x.add(camber_x, delta_sin);
               front_lower_y.subtract(camber_front_y, delta_cos);
+//              if (!symmetric)
+//              {
+//                typename polynomial_type::coefficient_type co;
+//                camber_front_y.get_coefficients(co);
+//                std::cout << "camber_front_y=" << std::endl << co << std::endl;
+//                delta_cos.get_coefficients(co);
+//                std::cout << "delta_cos=" << std::endl << co << std::endl;
+//                front_lower_x.get_coefficients(co);
+//                std::cout << "front_lower_x=" << std::endl << co << std::endl;
+//                front_lower_y.get_coefficients(co);
+//                std::cout << "front_lower_y=" << std::endl << co << std::endl;
+//              }
 
               // build back curves
               delta_cos.multiply(thickness, camber_back_cos);
@@ -219,6 +237,14 @@ namespace eli
               back_upper_y.add(camber_back_y, delta_cos);
               back_lower_x.add(camber_x, delta_sin);
               back_lower_y.subtract(camber_back_y, delta_cos);
+//              if (!symmetric)
+//              {
+//                typename polynomial_type::coefficient_type co;
+//                back_upper_x.get_coefficients(co);
+//                std::cout << "back_lower_x=" << std::endl << co << std::endl;
+//                back_upper_y.get_coefficients(co);
+//                std::cout << "back_lower_y=" << std::endl << co << std::endl;
+//              }
 
               // set the polynomial pseudo-curve coefficients
               typename polynomial_type::coefficient_type co;
@@ -230,6 +256,28 @@ namespace eli
               front_lower_y.get_coefficients(co); cl_front.set_coefficients(co, 1);
               back_lower_x.get_coefficients(co);  cl_back.set_coefficients(co, 0);
               back_lower_y.get_coefficients(co);  cl_back.set_coefficients(co, 1);
+//              if (!symmetric && (typeid(data_type)==typeid(float)))
+//              {
+//                pseudo::polynomial<data_type, dim__> temp_front, temp_back;
+//
+//                camber_x.get_coefficients(co);
+//                temp_front.set_coefficients(co, 0);
+//                camber_front_y.get_coefficients(co);
+//                temp_front.set_coefficients(co, 1);
+//                camber_x.get_coefficients(co);
+//                temp_back.set_coefficients(co, 0);
+//                camber_back_y.get_coefficients(co);
+//                temp_back.set_coefficients(co, 1);
+//                std::cout.flush();
+//                eli::test::octave_start(1);
+//                eli::test::octave_print(1, temp_front, "c_front");
+//                eli::test::octave_print(1, temp_back, "c_back");
+//                eli::test::octave_print(1, cu_front, "u_front");
+//                eli::test::octave_print(1, cu_back, "u_back");
+//                eli::test::octave_print(1, cl_front, "l_front");
+//                eli::test::octave_print(1, cl_back, "l_back");
+//                eli::test::octave_finish(1);
+//              }
             }
 
             // create airfoil
@@ -289,6 +337,17 @@ namespace eli
               pc.clear();
               return false;
             }
+//            if (!symmetric && (typeid(data_type)==typeid(float)))
+//            {
+//              pseudo::polynomial<data_type, dim__> temp_front, temp_back;
+//
+//              std::cout.flush();
+//              eli::test::octave_start(1);
+//              eli::test::octave_print(1, c, "lower");
+//              eli::test::octave_print(1, pc, "lower");
+//              eli::test::octave_print(1, cl_back, "l_back");
+//              eli::test::octave_finish(1);
+//            }
 
             // if not symmetric airfoil then need to get the front portion of curve
             if (!symmetric)
@@ -323,6 +382,17 @@ namespace eli
                 return false;
               }
             }
+//            if (!symmetric && (typeid(data_type)==typeid(float)))
+//            {
+//              pseudo::polynomial<data_type, dim__> temp_front, temp_back;
+//
+//              std::cout.flush();
+//              eli::test::octave_start(1);
+//              eli::test::octave_print(1, pc, "lower");
+//              eli::test::octave_print(1, cl_front, "l_front");
+//              eli::test::octave_print(1, cl_back, "l_back");
+//              eli::test::octave_finish(1);
+//            }
 
             //
             // upper surface
