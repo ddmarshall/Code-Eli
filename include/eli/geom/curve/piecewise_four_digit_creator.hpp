@@ -44,9 +44,9 @@ namespace eli
           typedef eli::mutil::poly::polynomial<data_type> polynomial_type;
 
         public:
-          piecewise_four_digit_creator() : piecewise_creator_base<data_type, dim__, tolerance_type>(4, 0) {}
+          piecewise_four_digit_creator() : piecewise_creator_base<data_type, dim__, tolerance_type>(4, 0), trig_degree(6) {}
           piecewise_four_digit_creator(const piecewise_four_digit_creator<data_type, dim__, tolerance_type> &ppc)
-            : piecewise_creator_base<data_type, dim__, tolerance_type>(ppc) {}
+            : piecewise_creator_base<data_type, dim__, tolerance_type>(ppc), af(ppc.af), trig_degree(ppc.trig_degree) {}
           ~piecewise_four_digit_creator() {}
 
           void set_sharp_trailing_edge(bool fl)
@@ -91,6 +91,19 @@ namespace eli
           std::string get_name() const
           {
             return af.get_name();
+          }
+
+          void set_trig_terms(index_type nt)
+          {
+            if ( (nt>2) && (nt<11) )
+            {
+              trig_degree=nt;
+            }
+          }
+
+          index_type get_trig_terms() const
+          {
+            return trig_degree;
           }
 
           virtual bool create(piecewise<bezier, data_type, dim__, tolerance_type> &pc) const
@@ -169,21 +182,10 @@ namespace eli
               {
                 typename polynomial_type::coefficient_type cterm, sterm;
                 data_type a;
-                index_type d;
-
-                // apply heuristic for number of terms to include in trig. expansion
-                if ((p>=2) && (p<=6) && (m<=0.04))
-                {
-                  d=3;
-                }
-                else
-                {
-                  d=6;
-                }
 
                 // build the front terms
                 a=2*m/p/p;
-                build_cos_term(cterm, a, p, 0, d);
+                build_cos_term(cterm, a, p, 0, trig_degree);
                 build_sin_term(sterm, a, p, cterm);
                 camber_front_cos.set_coefficients(cterm);
                 camber_front_sin.set_coefficients(sterm);
@@ -193,7 +195,7 @@ namespace eli
 
                 // build the back terms
                 a=2*m/(1-p)/(1-p);
-                build_cos_term(cterm, a, p, 1, d);
+                build_cos_term(cterm, a, p, 1, trig_degree);
                 build_sin_term(sterm, a, p, cterm);
                 camber_back_cos.set_coefficients(cterm);
                 camber_back_sin.set_coefficients(sterm);
@@ -539,6 +541,7 @@ namespace eli
 
         private:
           airfoil_type af;
+          index_type trig_degree;
       };
     }
   }
