@@ -35,6 +35,7 @@ namespace eli
             typedef data__ data_type;
             typedef Eigen::Matrix<data_type, 1, 2> point_type;
             typedef Eigen::Matrix<data_type, 5, 1> coefficient_type;
+            typedef typename point_type::Index index_type;
 
           public:
             four_digit() : thickness(00), camber(0), camber_loc(0), sharp_te(false)
@@ -63,9 +64,10 @@ namespace eli
             }
             bool sharp_trailing_edge() const {return sharp_te;}
 
+            // Valid values of thickness are greater than 0 and less than 100
             bool set_thickness(const data_type &t)
             {
-              if (t<100)
+              if ((t>0) && (t<100))
               {
                 thickness=t;
                 recalc_params();
@@ -75,17 +77,33 @@ namespace eli
             }
             data_type get_thickness() const {return thickness;}
 
+            // valid camber values are greater than or equal to zero and less or equal to 9
+            // valid camber location values are zero or greater than or equal to 1 and less than or equal to 9
+            //
+            // note that if either is zero then they both should be zero
             bool set_camber(const data_type &cam, const data_type &cam_loc)
             {
-              if ( (cam<50) && (cam_loc<10) && (cam_loc>0))
+              if ((cam == 0) || (cam_loc == 0))
               {
-                camber=cam;
-                camber_loc=cam_loc;
+                camber = 0;
+                camber_loc = 0;
                 recalc_params();
                 return true;
               }
 
-              return false;
+              if ((cam<=0) || (cam>9))
+              {
+                return false;
+              }
+              if ((cam_loc<1) || (cam_loc>9))
+              {
+                return false;
+              }
+
+              camber=cam;
+              camber_loc=cam_loc;
+              recalc_params();
+              return true;
             }
             data_type get_maximum_camber() const {return camber;}
             data_type get_maximum_camber_location() const {return camber_loc;}
@@ -159,16 +177,16 @@ namespace eli
               // check to make sure given valid parametric value
               assert((xi>=-1) && (xi<=1));
 
-              data_type xc, xcp, yc, ycp, ycpp, ycppp, yt, ytp, ytpp;
+              data_type xc, xcp, yc, ycp, ycpp, ycppp, delta, deltap, deltapp;
               const data_type one(1), two(2), three(3);
-              bool lower;
+              index_type surf_sign;
 
               // calculate the lower surface
               if (xi<0)
               {
                 xcp=-one;
                 xc=-xi;
-                lower=true;
+                surf_sign=-1;
               }
               // calculate the upper surface
               else
@@ -183,30 +201,29 @@ namespace eli
                 }
 
                 xc=xi;
-                lower=false;
+                surf_sign=1;
               }
 
               // calculate the supporting quantities needed
-              calc_camber(yc, ycp, ycpp, ycppp, xc, lower);
-              calc_thickness(yt, ytp, ytpp, xc, lower);
+              calc_camber(yc, ycp, ycpp, ycppp, xc);
+              calc_thickness(delta, deltap, deltapp, xc);
 
-              data_type tmp1, cos_theta, cos2_theta, cos3_theta, sin_theta;
+              data_type tmp1, tmp13, cos_theta, sin_theta, curv, curvp;
 
               tmp1=std::sqrt(one+ycp*ycp);
+              tmp13=tmp1*tmp1*tmp1;
               cos_theta=one/tmp1;
               sin_theta=ycp/tmp1;
-              cos2_theta=cos_theta*cos_theta;
-              cos3_theta=cos2_theta*cos_theta;
+              curv=ycpp/tmp13;
+              curvp=ycppp/tmp13-three*ycp*tmp1*curv*curv;
 
               // calculate the info
-              x(0)=xc-yt*sin_theta;
-              x(1)=yc+yt*cos_theta;
-              xp(0)=xcp-ytp*sin_theta-yt*cos3_theta*ycpp;
-              xp(1)=ycp+ytp*cos_theta-yt*cos2_theta*sin_theta*ycpp;
-              xpp(0)=-ytpp*sin_theta-two*ytp*cos3_theta*ycpp
-                    +yt*cos2_theta*(three*cos2_theta*sin_theta*ycpp*ycpp-ycppp);
-              xpp(1)=ycpp+ytpp*cos_theta-two*ytp*sin_theta*cos2_theta*ycpp
-                    -yt*cos_theta*((two-cos2_theta)*cos2_theta*ycpp*ycpp-sin_theta*ycppp);
+              x(0)=surf_sign*(xi-delta*sin_theta);
+              x(1)=yc+surf_sign*delta*cos_theta;
+              xp(0)=surf_sign-deltap*sin_theta-delta*curv;
+              xp(1)=ycp*(surf_sign-delta*curv)+deltap*cos_theta;
+              xpp(0)=-surf_sign*(deltapp*sin_theta+two*deltap*curv+delta*curvp);
+              xpp(1)=ycpp*(one-surf_sign*delta*curv)+surf_sign*(deltapp*cos_theta-ycp*(two*deltap*curv+delta*curvp));
             }
 
             point_type tangent(const data_type &xi) const
@@ -290,7 +307,7 @@ namespace eli
               A(i,3)=static_cast<data_type>(3)*xi2;
               A(i,4)=static_cast<data_type>(4)*xi3;
             }
-            void calc_camber(data_type &y, data_type &yp, data_type &ypp, data_type &yppp, const data_type &xi, bool lower) const
+            void calc_camber(data_type &y, data_type &yp, data_type &ypp, data_type &yppp, const data_type &xi) const
             {
               // check to make sure given valid parametric value
               assert((xi>=0) && (xi<=1));
@@ -310,7 +327,7 @@ namespace eli
 
               if (xi<=m)
               {
-                data_type pm2=p/(m*m);
+                data_type pm2(p/(m*m));
 
                 y=pm2*(xi*(two*m-xi));
                 yp=two*pm2*(m-xi);
@@ -319,22 +336,16 @@ namespace eli
               }
               else
               {
-                data_type p1m2=p/(one+m*(m-two));
+                data_type p1m2(p/(one+m*(m-two)));
 
                 y=p1m2*(one-two*m+xi*(two*m-xi));
                 yp=two*p1m2*(m-xi);
                 ypp=-two*p1m2;
                 yppp=zero;
-
-                if (lower)
-                {
-                  yp*=-one;
-                  yppp*=-one;
-                }
               }
             }
 
-            void calc_thickness(data_type &y, data_type &yp, data_type &ypp, const data_type &xi, bool lower) const
+            void calc_thickness(data_type &y, data_type &yp, data_type &ypp, const data_type &xi) const
             {
               // check to make sure given valid parametric value
               assert((xi>=0) && (xi<=1));
@@ -364,22 +375,12 @@ namespace eli
                 y=zero;
                 yp=trat*(a.sum()-half*a(0));
                 ypp=trat*(-quarter*a(0)+two*a(2)+six*a(3)+twelve*a(4));
-                if (lower)
-                {
-                  ypp*=-one;
-                }
                 return;
               }
 
               y=trat*(a(0)*sqrtxi+a(1)*xi+a(2)*xi2+a(3)*xi3+a(4)*xi4);
               yp=trat*(half*a(0)/sqrtxi+a(1)+two*a(2)*xi+three*a(3)*xi2+four*a(4)*xi3);
               ypp=trat*(-quarter*a(0)/sqrtxi/xi+two*a(2)+six*a(3)*xi+twelve*a(4)*xi2);
-
-              if (lower)
-              {
-                y*=-one;
-                ypp*=-one;
-              }
             }
 
           private:

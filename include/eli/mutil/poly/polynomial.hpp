@@ -351,12 +351,11 @@ namespace eli
             deg=std::max(deg1, deg2);
             n=deg+1;
             coefficient_type a_new(n);
+            a_new.setZero();
             for (i=0; i<n; ++i)
             {
               if (i<=deg1)
                 a_new(i)=p1.a(i);
-              else
-                a_new(i)=static_cast<data_type>(0);
 
               if (i<=deg2)
                 a_new(i)+=p2.a(i);
@@ -374,12 +373,11 @@ namespace eli
             deg=std::max(deg1, deg2);
             n=deg+1;
             coefficient_type a_new(n);
+            a_new.setZero();
             for (i=0; i<n; ++i)
             {
               if (i<=deg1)
                 a_new(i)=p1.a(i);
-              else
-                a_new(i)=static_cast<data_type>(0);
 
               if (i<=deg2)
                 a_new(i)-=p2.a(i);
