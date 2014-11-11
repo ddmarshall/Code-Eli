@@ -202,8 +202,11 @@ class piecewise_four_digit_creator_test_suite : public Test::Suite
     void create_general_airfoil_test()
     {
       four_digit_type af;
+      eli::geom::curve::pseudo::four_digit<data_type> four_series;
+      typename eli::geom::curve::pseudo::four_digit<data_type>::point_type pt_ref;
 
-      data_type th, cam, cam_loc;
+      data_type th, cam, cam_loc, t;
+      point_type pt;
       bool rtn;
 
       // set airfoil thickness
@@ -213,8 +216,8 @@ class piecewise_four_digit_creator_test_suite : public Test::Suite
       TEST_ASSERT(af.get_thickness()==th);
 
       // set airfoil camber
-      cam=2;
-      cam_loc=3;
+      cam=4;
+      cam_loc=2;
       rtn=af.set_camber(cam, cam_loc);
       TEST_ASSERT(rtn);
       TEST_ASSERT(af.get_maximum_camber()==cam);
@@ -231,13 +234,102 @@ class piecewise_four_digit_creator_test_suite : public Test::Suite
       name=af.get_name();
       TEST_ASSERT(name==name_ref);
 
+      piecewise_curve_type af_pc;
+      bool fit_success;
 
-      piecewise_curve_type af_pwc;
+      fit_success = af.create(af_pc);
+      TEST_ASSERT(fit_success);
 
-      af.create(af_pwc);
+      four_series.set_sharp_trailing_edge(true);
+      four_series.set_thickness(th);
+      four_series.set_camber(cam, cam_loc);
 
-//      octave_print(1, af_pwc);
+//      if (typeid(data_type)==typeid(float))
+//      {
+//        std::cout.flush();
+//        eli::test::octave_start(1);
+//        eli::test::octave_print(1, four_series, "poly");
+//        eli::test::octave_print(1, af_pc, "piecewise");
+//        eli::test::octave_finish(1);
+//      }
 
+      // test lower surface trailing edge
+      t=0;
+      pt=af_pc.f(t);
+      pt_ref=four_series.f(t-1);
+      TEST_ASSERT((pt.x()==pt_ref.x()) && (pt.y()==pt_ref.y()));
+
+      // test leading edge
+      t=1;
+      pt=af_pc.f(t);
+      pt_ref=four_series.f(t-1);
+      TEST_ASSERT((pt.x()==pt_ref.x()) && (pt.y()==pt_ref.y()));
+
+      // test upper surface trailing edge
+      t=2;
+      pt=af_pc.f(t);
+      pt_ref=four_series.f(t-1);
+      TEST_ASSERT((pt.x()==pt_ref.x()) && (pt.y()==pt_ref.y()));
+
+      // test point on aft lower surface
+      t=1-0.16;
+      pt=af_pc.f(t);
+      pt_ref=four_series.f(-(1-t)*(1-t));
+//      std::cout << "delta=[" << pt.x()-pt_ref.x() << ", " << pt.y()-pt_ref.y() << "]\t"
+//                << "error=" << std::sqrt((pt.x()-pt_ref.x())*(pt.x()-pt_ref.x())+(pt.y()-pt_ref.y())*(pt.y()-pt_ref.y())) << std::endl;
+      if (typeid(data_type)==typeid(float))
+      {
+        TEST_ASSERT(std::sqrt((pt.x()-pt_ref.x())*(pt.x()-pt_ref.x())+(pt.y()-pt_ref.y())*(pt.y()-pt_ref.y()))<static_cast<data_type>(1e-7));
+      }
+      else
+      {
+        TEST_ASSERT(std::sqrt((pt.x()-pt_ref.x())*(pt.x()-pt_ref.x())+(pt.y()-pt_ref.y())*(pt.y()-pt_ref.y()))<static_cast<data_type>(3e-10));
+      }
+
+      // test point on fore lower surface
+      t=1-0.64;
+      pt=af_pc.f(t);
+      pt_ref=four_series.f(-(1-t)*(1-t));
+//      std::cout << "delta=[" << pt.x()-pt_ref.x() << ", " << pt.y()-pt_ref.y() << "]\t"
+//                << "error=" << std::sqrt((pt.x()-pt_ref.x())*(pt.x()-pt_ref.x())+(pt.y()-pt_ref.y())*(pt.y()-pt_ref.y())) << std::endl;
+      if (typeid(data_type)==typeid(float))
+      {
+        TEST_ASSERT(std::sqrt((pt.x()-pt_ref.x())*(pt.x()-pt_ref.x())+(pt.y()-pt_ref.y())*(pt.y()-pt_ref.y()))<static_cast<data_type>(1e-7));
+      }
+      else
+      {
+        TEST_ASSERT(std::sqrt((pt.x()-pt_ref.x())*(pt.x()-pt_ref.x())+(pt.y()-pt_ref.y())*(pt.y()-pt_ref.y()))<static_cast<data_type>(3e-10));
+      }
+
+      // test point on fore upper surface
+      t=1+0.16;
+      pt=af_pc.f(t);
+      pt_ref=four_series.f((t-1)*(t-1));
+//      std::cout << "delta=[" << pt.x()-pt_ref.x() << ", " << pt.y()-pt_ref.y() << "]\t"
+//                << "error=" << std::sqrt((pt.x()-pt_ref.x())*(pt.x()-pt_ref.x())+(pt.y()-pt_ref.y())*(pt.y()-pt_ref.y())) << std::endl;
+      if (typeid(data_type)==typeid(float))
+      {
+        TEST_ASSERT(std::sqrt((pt.x()-pt_ref.x())*(pt.x()-pt_ref.x())+(pt.y()-pt_ref.y())*(pt.y()-pt_ref.y()))<static_cast<data_type>(1e-7));
+      }
+      else
+      {
+        TEST_ASSERT(std::sqrt((pt.x()-pt_ref.x())*(pt.x()-pt_ref.x())+(pt.y()-pt_ref.y())*(pt.y()-pt_ref.y()))<static_cast<data_type>(3e-10));
+      }
+
+      // test point on aft upper surface
+      t=1+0.64;
+      pt=af_pc.f(t);
+      pt_ref=four_series.f((t-1)*(t-1));
+//      std::cout << "delta=[" << pt.x()-pt_ref.x() << ", " << pt.y()-pt_ref.y() << "]\t"
+//                << "error=" << std::sqrt((pt.x()-pt_ref.x())*(pt.x()-pt_ref.x())+(pt.y()-pt_ref.y())*(pt.y()-pt_ref.y())) << std::endl;
+      if (typeid(data_type)==typeid(float))
+      {
+        TEST_ASSERT(std::sqrt((pt.x()-pt_ref.x())*(pt.x()-pt_ref.x())+(pt.y()-pt_ref.y())*(pt.y()-pt_ref.y()))<static_cast<data_type>(5e-7));
+      }
+      else
+      {
+        TEST_ASSERT(std::sqrt((pt.x()-pt_ref.x())*(pt.x()-pt_ref.x())+(pt.y()-pt_ref.y())*(pt.y()-pt_ref.y()))<static_cast<data_type>(2e-9));
+      }
     }
 };
 
