@@ -105,11 +105,11 @@ namespace eli
             set_coefficients(a_new);
           }
 
-          void adjust_zero(const data_type &small)
+          void adjust_zero(const data_type &smval)
           {
             for (index_type i=0; i<this->size(); ++i)
             {
-              if (std::abs(a(i))<small)
+              if (std::abs(a(i))<smval)
                 a(i)=static_cast<data_type>(0);
             }
             compress();
