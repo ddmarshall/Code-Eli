@@ -335,16 +335,16 @@ namespace eli
               v=vv;
               dist=dd;
             }
-            uu+=du;
             vv+=dv;
-            if(uu>=umax)
-            {
-              uu=umax;
-            }
             if(vv>=vmax)
             {
               vv=vmax;
             }
+          }
+          uu+=du;
+          if(uu>=umax)
+          {
+            uu=umax;
           }
         }
 
