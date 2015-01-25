@@ -58,20 +58,21 @@ namespace eli
           template<typename f__, typename g__>
           int find_root(data_type &root, const f__ &fun, const g__ &fprime, const data_type &f0) const
           {
-            data_type x(x0), fx(fun(x0)), fpx(fprime(x0)), eval, eval_abs, dx(1);
+            data_type x(x0), fx(fun(x0)), fpx(fprime(x0)), eval, eval_abs, eval_abs2, dx(1);
             typename iterative_root_base<data__>::iteration_type count;
 
             // calculate the function evaluated at the initial location
             eval=fx-f0;
             eval_abs=std::abs(eval);
-            if (this->test_converged(0, eval_abs/f0, eval_abs))
+            if (this->test_converged(0, eval_abs/f0, eval_abs, 0, 0))
             {
               root=x;
               return iterative_root_base<data__>::converged;
             }
 
+            eval_abs2=0;
             count=0;
-            while (!this->test_converged(count, eval_abs/f0, eval_abs) && (std::abs(dx)>0))
+            while (!this->test_converged(count, eval_abs/f0, eval_abs, eval_abs2/x0, eval_abs2) && (std::abs(dx)>0))
             {
               if (fpx==0)
                 return iterative_root_base<data__>::no_root_found;
@@ -82,6 +83,7 @@ namespace eli
               fpx=fprime(x);
               eval=fx-f0;
               eval_abs=std::abs(eval);
+              eval_abs2=std::abs(dx);
 
               ++count;
             }

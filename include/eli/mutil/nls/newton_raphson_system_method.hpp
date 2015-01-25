@@ -58,9 +58,9 @@ namespace eli
           template<typename f__, typename g__>
           int find_root(typename iterative_system_root_base<data__, N__, NSOL__>::solution_matrix &root, const f__ &fun, const g__ &fprime, const typename iterative_system_root_base<data__, N__, NSOL__>::solution_matrix &f0) const
           {
-            typename iterative_system_root_base<data__, N__, NSOL__>::solution_matrix dx, x(x0), fx(fun(x0)), eval1, eval2;
+            typename iterative_system_root_base<data__, N__, NSOL__>::solution_matrix dx, x(x0), fx(fun(x0)), eval1, eval2, eval3;
             typename iterative_system_root_base<data__, N__, NSOL__>::jacobian_matrix fpx(fprime(x0));
-            data__ abs_tol_norm, rel_tol_norm;
+            data__ abs_tol_norm, rel_tol_norm, abs_x_norm, rel_x_norm;
             typename iterative_root_base<data__>::iteration_type count;
 
             // calculate the function evaluated at the initial location
@@ -69,15 +69,17 @@ namespace eli
             eval2=(fx-f0).array()/f0.array();
             eval2.setConstant(1);
             rel_tol_norm=this->calculate_norm(eval2);
-            if (this->test_converged(0, rel_tol_norm, abs_tol_norm))
+            if (this->test_converged(0, rel_tol_norm, abs_tol_norm, 0, 0))
             {
               root=x;
               return this->converged;
             }
 
             bool all_zero(false);
+            abs_x_norm=0;
+            rel_x_norm=0;
             count=0;
-            while (!this->test_converged(count, rel_tol_norm, abs_tol_norm) && !all_zero)
+            while (!this->test_converged(count, rel_tol_norm, abs_tol_norm, rel_x_norm, abs_x_norm) && !all_zero)
             {
   // FIX: Don't have any easy (efficient) way of determining if matrix in invertible
   //            if (fpx==0)
@@ -144,14 +146,20 @@ namespace eli
               fpx=fprime(x);
               eval1=fx-f0;
               abs_tol_norm=this->calculate_norm(eval1);
+              abs_x_norm=this->calculate_norm(dx);
               bool nonzero(false);
               all_zero=true;
               for (size_t i=0; i<N__; ++i)
               {
                 // check if stuck and cannot move x anymore
-                if (std::abs(dx(i))>std::numeric_limits<data__>::epsilon())
+                if (std::abs(dx(i))<=std::numeric_limits<data__>::epsilon())
+                {
+                  eval3(i)=std::numeric_limits<data__>::epsilon();
+                }
+                else
                 {
                   all_zero=false;
+                  eval3(i)=dx(i)/x0(i);
                 }
 
                 if (std::abs(f0(i))<=std::numeric_limits<data__>::epsilon())
@@ -166,6 +174,11 @@ namespace eli
                 rel_tol_norm=this->calculate_norm(eval2);
               else
                 rel_tol_norm=static_cast<data__>(0);
+
+              if (all_zero)
+                rel_x_norm=static_cast<data__>(0);
+              else
+                rel_x_norm=this->calculate_norm(eval3);
 
               ++count;
             }

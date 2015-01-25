@@ -165,12 +165,14 @@ namespace eli
           {
             fconv.set_absolute_tolerance_info(static_cast<tolerance_type>(1e-8), error_tolerance_type::less);
             fconv.set_relative_tolerance_info(static_cast<tolerance_type>(0),    error_tolerance_type::inactive);
+            xconv.set_absolute_tolerance_info(static_cast<tolerance_type>(1e-8), error_tolerance_type::inactive);
+            xconv.set_relative_tolerance_info(static_cast<tolerance_type>(0),    error_tolerance_type::inactive);
             itmax.set_absolute_tolerance_info(static_cast<iteration_type>(200), max_iteration_type::greater);
             itmax.set_relative_tolerance_info(static_cast<iteration_type>(0),   max_iteration_type::inactive);
           }
 
           iterative_root_base(const iterative_root_base<data__> &irb)
-          : fconv(irb.fconv), itmax(irb.itmax), itcnt(irb.itcnt)
+          : fconv(irb.fconv), xconv(irb.xconv), itmax(irb.itmax), itcnt(irb.itcnt)
           {
           }
 
@@ -202,6 +204,32 @@ namespace eli
           tolerance_type get_absolute_f_tolerance() const
           {
             return fconv.get_absolute_tolerance();
+          }
+
+          void set_relative_x_tolerance(const tolerance_type &rel_tol)
+          {
+            if (rel_tol<=0)
+              xconv.set_relative_tolerance_info(0, error_tolerance_type::inactive);
+            else
+              xconv.set_relative_tolerance_info(rel_tol, error_tolerance_type::less);
+          }
+
+          tolerance_type get_relative_x_tolerance() const
+          {
+            xconv.get_relative_tolerance();
+          }
+
+          void set_absolute_x_tolerance(const tolerance_type &abs_tol)
+          {
+            if (abs_tol<=0)
+              xconv.set_absolute_tolerance_info(0, error_tolerance_type::inactive);
+            else
+              xconv.set_absolute_tolerance_info(abs_tol, error_tolerance_type::less);
+          }
+
+          tolerance_type get_absolute_x_tolerance() const
+          {
+            return xconv.get_absolute_tolerance();
           }
 
           void set_max_iteration(const iteration_type &mi)
@@ -242,6 +270,31 @@ namespace eli
             return fconv;
           }
 
+          void enforce_both_x_tolerance(bool ebt)
+          {
+            xconv.satisfy_both(ebt);
+          }
+
+          bool enforce_both_x_tolerance() const
+          {
+            return xconv.satisfy_both();
+          }
+
+          void disable_relative_x_tolerance()
+          {
+            set_relative_x_tolerance(-1);
+          }
+
+          void disable_absolute_x_tolerance()
+          {
+            set_absolute_x_tolerance(-1);
+          }
+
+          const error_tolerance_type & get_x_tolerance_tester() const
+          {
+            return xconv;
+          }
+
           const max_iteration_type & get_iteration_count_tester() const
           {
             return itmax;
@@ -253,9 +306,9 @@ namespace eli
           }
 
         protected:
-          bool test_converged(const iteration_type &it, const tolerance_type &relv, const tolerance_type &absv) const
+          bool test_converged(const iteration_type &it, const tolerance_type &relf, const tolerance_type &absf, const tolerance_type &relx, const tolerance_type &absx) const
           {
-            return fconv.converged(relv, absv) || max_iteration_reached(it);
+            return fconv.converged(relf, absf) || xconv.converged(relx, absx) || max_iteration_reached(it);
           }
 
           bool max_iteration_reached(const iteration_type &it) const
@@ -266,6 +319,7 @@ namespace eli
 
         private:
           error_tolerance_type fconv;
+          error_tolerance_type xconv;
           max_iteration_type itmax;
           mutable iteration_type itcnt;
       };

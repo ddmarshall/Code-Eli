@@ -84,10 +84,13 @@ namespace eli
             data__ fmin, fmid, fmax, xmid, data_abs, data_abs2;
             typename iterative_root_base<data__>::iteration_type count;
 
+            xmid=(xmx+xmn)/two;
+            data_abs=std::abs(xmx-xmn);
+
             // calculate the function evaluated at the minimum location
             fmin=fun(xmn)-f0;
-            data_abs=std::abs(fmin);
-            if (this->test_converged(0, data_abs/f0, data_abs))
+            data_abs2=std::abs(fmin);
+            if (this->test_converged(0, data_abs2/f0, data_abs2, data_abs/xmid, data_abs))
             {
               root=xmn;
               return this->converged;
@@ -95,20 +98,18 @@ namespace eli
 
             // calculate the function evaluated at the maximum location
             fmax=fun(xmx)-f0;
-            data_abs=std::abs(fmax);
-            if (this->test_converged(0, data_abs/f0, data_abs))
+            data_abs2=std::abs(fmax);
+            if (this->test_converged(0, data_abs2/f0, data_abs2, data_abs/xmid, data_abs))
             {
               root=xmx;
               return this->converged;
             }
 
             count=0;
-            xmid=(xmx+xmn)/two;
             fmid=fun(xmid)-f0;
-            data_abs=std::abs(xmx-xmn);
             data_abs2=std::abs(fmid);
             // this tests how close the min and max roots are to each other and tests how close the function evaluations are to zero
-            while  (!this->test_converged(count, data_abs/xmid, data_abs) && !this->test_converged(count, data_abs2/f0, data_abs2))
+            while  (!this->test_converged(count, data_abs2/f0, data_abs2, data_abs/xmid, data_abs) )
             {
               // if middle point is opposite side of root as maximum point
               if (fmid*fmax<0)
