@@ -163,14 +163,14 @@ namespace eli
         public:
           iterative_root_base() : itcnt(0)
           {
-            conv.set_absolute_tolerance_info(static_cast<tolerance_type>(1e-8), error_tolerance_type::less);
-            conv.set_relative_tolerance_info(static_cast<tolerance_type>(0),    error_tolerance_type::inactive);
+            fconv.set_absolute_tolerance_info(static_cast<tolerance_type>(1e-8), error_tolerance_type::less);
+            fconv.set_relative_tolerance_info(static_cast<tolerance_type>(0),    error_tolerance_type::inactive);
             itmax.set_absolute_tolerance_info(static_cast<iteration_type>(200), max_iteration_type::greater);
             itmax.set_relative_tolerance_info(static_cast<iteration_type>(0),   max_iteration_type::inactive);
           }
 
           iterative_root_base(const iterative_root_base<data__> &irb)
-          : conv(irb.conv), itmax(irb.itmax), itcnt(irb.itcnt)
+          : fconv(irb.fconv), itmax(irb.itmax), itcnt(irb.itcnt)
           {
           }
 
@@ -178,30 +178,30 @@ namespace eli
           {
           }
 
-          void set_relative_tolerance(const tolerance_type &rel_tol)
+          void set_relative_f_tolerance(const tolerance_type &rel_tol)
           {
             if (rel_tol<=0)
-              conv.set_relative_tolerance_info(0, error_tolerance_type::inactive);
+              fconv.set_relative_tolerance_info(0, error_tolerance_type::inactive);
             else
-              conv.set_relative_tolerance_info(rel_tol, error_tolerance_type::less);
+              fconv.set_relative_tolerance_info(rel_tol, error_tolerance_type::less);
           }
 
-          tolerance_type get_relative_tolerance() const
+          tolerance_type get_relative_f_tolerance() const
           {
-            conv.get_relative_tolerance();
+            fconv.get_relative_tolerance();
           }
 
-          void set_absolute_tolerance(const tolerance_type &abs_tol)
+          void set_absolute_f_tolerance(const tolerance_type &abs_tol)
           {
             if (abs_tol<=0)
-              conv.set_absolute_tolerance_info(0, error_tolerance_type::inactive);
+              fconv.set_absolute_tolerance_info(0, error_tolerance_type::inactive);
             else
-              conv.set_absolute_tolerance_info(abs_tol, error_tolerance_type::less);
+              fconv.set_absolute_tolerance_info(abs_tol, error_tolerance_type::less);
           }
 
-          tolerance_type get_absolute_tolerance() const
+          tolerance_type get_absolute_f_tolerance() const
           {
-            return conv.get_absolute_tolerance();
+            return fconv.get_absolute_tolerance();
           }
 
           void set_max_iteration(const iteration_type &mi)
@@ -217,29 +217,29 @@ namespace eli
             return itmax.get_absolute_tolerance();
           }
 
-          void enforce_both_tolerance(bool ebt)
+          void enforce_both_f_tolerance(bool ebt)
           {
-            conv.satisfy_both(ebt);
+            fconv.satisfy_both(ebt);
           }
 
-          bool enforce_both_tolerance() const
+          bool enforce_both_f_tolerance() const
           {
-            return conv.satisfy_both();
+            return fconv.satisfy_both();
           }
 
-          void disable_relative_tolerance()
+          void disable_relative_f_tolerance()
           {
-            set_relative_tolerance(-1);
+            set_relative_f_tolerance(-1);
           }
 
-          void disable_absolute_tolerance()
+          void disable_absolute_f_tolerance()
           {
-            set_absolute_tolerance(-1);
+            set_absolute_f_tolerance(-1);
           }
 
-          const error_tolerance_type & get_tolerance_tester() const
+          const error_tolerance_type & get_f_tolerance_tester() const
           {
-            return conv;
+            return fconv;
           }
 
           const max_iteration_type & get_iteration_count_tester() const
@@ -255,7 +255,7 @@ namespace eli
         protected:
           bool test_converged(const iteration_type &it, const tolerance_type &relv, const tolerance_type &absv) const
           {
-            return conv.converged(relv, absv) || max_iteration_reached(it);
+            return fconv.converged(relv, absv) || max_iteration_reached(it);
           }
 
           bool max_iteration_reached(const iteration_type &it) const
@@ -265,7 +265,7 @@ namespace eli
           }
 
         private:
-          error_tolerance_type conv;
+          error_tolerance_type fconv;
           max_iteration_type itmax;
           mutable iteration_type itcnt;
       };

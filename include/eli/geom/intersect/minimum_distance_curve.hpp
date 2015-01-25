@@ -135,7 +135,7 @@ namespace eli
         gp.pt=pt;
 
         // setup the solver
-        nrm.set_absolute_tolerance(tol.get_absolute_tolerance());
+        nrm.set_absolute_f_tolerance(tol.get_absolute_tolerance());
         nrm.set_max_iteration(10);
         if (c.open())
         {
