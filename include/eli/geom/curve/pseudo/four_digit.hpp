@@ -67,7 +67,7 @@ namespace eli
             // Valid values of thickness are greater than 0 and less than 100
             bool set_thickness(const data_type &t)
             {
-              if ((t>0) && (t<100))
+              if ((t>=0) && (t<=100))
               {
                 thickness=t;
                 recalc_params();
@@ -91,7 +91,7 @@ namespace eli
                 return true;
               }
 
-              if ((cam<=0) || (cam>9))
+              if ((cam<=0) || (cam>=9))
               {
                 return false;
               }
