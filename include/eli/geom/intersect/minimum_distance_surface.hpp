@@ -178,7 +178,7 @@ namespace eli
         gp.pt=pt;
 
         // setup the solver
-        nrm.set_absolute_tolerance(tol.get_absolute_tolerance());
+        nrm.set_absolute_f_tolerance(tol.get_absolute_tolerance());
         nrm.set_max_iteration(20);
         nrm.set_norm_type(nonlinear_solver_type::max_norm);
 
@@ -335,16 +335,16 @@ namespace eli
               v=vv;
               dist=dd;
             }
-            uu+=du;
             vv+=dv;
-            if(uu>=umax)
-            {
-              uu=umax;
-            }
             if(vv>=vmax)
             {
               vv=vmax;
             }
+          }
+          uu+=du;
+          if(uu>=umax)
+          {
+            uu=umax;
           }
         }
 

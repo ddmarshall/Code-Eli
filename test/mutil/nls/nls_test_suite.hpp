@@ -245,12 +245,12 @@ class nls_test_suite : public Test::Suite
       eli::mutil::nls::bisection_method<data__> bm;
       int stat;
 
-      bm.set_absolute_tolerance(delta);
+      bm.set_absolute_f_tolerance(delta);
       bm.set_max_iteration(200);
       bm.set_bounds(0, eli::constants::math<data__>::pi());
 
       // test using user defined function
-      bm.set_absolute_tolerance(delta);
+      bm.set_absolute_f_tolerance(delta);
       bm.set_max_iteration(200);
       bm.set_bounds(0, eli::constants::math<data__>::pi());
 
@@ -259,7 +259,7 @@ class nls_test_suite : public Test::Suite
       TEST_ASSERT_DELTA(root, std::acos(rhs), 2*delta);
 
       // test using functor
-      bm.set_absolute_tolerance(delta);
+      bm.set_absolute_f_tolerance(delta);
       bm.set_max_iteration(200);
       bm.set_bounds(0, eli::constants::math<data__>::pi());
 
@@ -274,7 +274,7 @@ class nls_test_suite : public Test::Suite
       eli::mutil::nls::newton_raphson_method<data__> nrm;
       int stat;
 
-      nrm.set_absolute_tolerance(delta);
+      nrm.set_absolute_f_tolerance(delta);
       nrm.set_max_iteration(200);
       nrm.set_initial_guess(static_cast<data__>(0.3)*eli::constants::math<data__>::pi_by_four());
 
@@ -293,7 +293,7 @@ class nls_test_suite : public Test::Suite
       TEST_ASSERT(stat==eli::mutil::nls::newton_raphson_method<data__>::no_root_found);
 
       // test using functor
-      nrm.set_absolute_tolerance(delta);
+      nrm.set_absolute_f_tolerance(delta);
       nrm.set_max_iteration(200);
       nrm.set_initial_guess(eli::constants::math<data__>::pi_by_four());
 
@@ -308,12 +308,12 @@ class nls_test_suite : public Test::Suite
       eli::mutil::nls::secant_method<data__> sm;
       int stat;
 
-      sm.set_absolute_tolerance(delta);
+      sm.set_absolute_f_tolerance(delta);
       sm.set_max_iteration(200);
       sm.set_initial_guesses(eli::constants::math<data__>::pi_by_four(), eli::constants::math<data__>::pi_by_two());
 
       // test using user defined function
-      sm.set_absolute_tolerance(delta);
+      sm.set_absolute_f_tolerance(delta);
       sm.set_max_iteration(200);
       sm.set_initial_guesses(eli::constants::math<data__>::pi_by_four(), eli::constants::math<data__>::pi_by_two());
 
@@ -322,7 +322,7 @@ class nls_test_suite : public Test::Suite
       TEST_ASSERT_DELTA(root, std::acos(rhs), 2*delta);
 
       // test using functor
-      sm.set_absolute_tolerance(delta);
+      sm.set_absolute_f_tolerance(delta);
       sm.set_max_iteration(200);
       sm.set_initial_guesses(eli::constants::math<data__>::pi_by_four(), eli::constants::math<data__>::pi_by_two());
 
@@ -338,7 +338,7 @@ class nls_test_suite : public Test::Suite
       nrcm_type nrcm;
       int stat;
 
-      nrcm.set_absolute_tolerance(delta);
+      nrcm.set_absolute_f_tolerance(delta);
       nrcm.set_max_iteration(200);
       nrcm.set_initial_guess(eli::constants::math<data__>::two_pi()+static_cast<data__>(0.3)*eli::constants::math<data__>::pi_by_four());
       nrcm.set_lower_condition(eli::constants::math<data__>::two_pi(), nrcm_type::NRC_EXCLUSIVE);
@@ -366,7 +366,7 @@ class nls_test_suite : public Test::Suite
       TEST_ASSERT(stat==nrcm_type::converged);
 
       // test using functor
-      nrcm.set_absolute_tolerance(delta);
+      nrcm.set_absolute_f_tolerance(delta);
       nrcm.set_max_iteration(200);
       nrcm.set_lower_condition(eli::constants::math<data__>::two_pi(), nrcm_type::NRC_EXCLUSIVE);
       nrcm.set_upper_condition(eli::constants::math<data__>::pi()*3, nrcm_type::NRC_EXCLUSIVE);
@@ -386,7 +386,7 @@ class nls_test_suite : public Test::Suite
       typename nr_system::solution_matrix rhs, root, x0, x_exact;
       int stat;
 
-      nrm.set_absolute_tolerance(delta);
+      nrm.set_absolute_f_tolerance(delta);
       nrm.set_max_iteration(200);
       nrm.set_norm_type(nr_system::max_norm);
 
@@ -408,7 +408,7 @@ class nls_test_suite : public Test::Suite
       TEST_ASSERT(stat==nr_system::max_iteration);
 
       // test using functor
-      nrm.set_absolute_tolerance(delta);
+      nrm.set_absolute_f_tolerance(delta);
       nrm.set_max_iteration(200);
       nrm.set_initial_guess(x0);
 
@@ -431,7 +431,7 @@ class nls_test_suite : public Test::Suite
       TEST_ASSERT((x_exact-root).norm()<delta);
 
       // test using functor
-      nrm.set_absolute_tolerance(delta);
+      nrm.set_absolute_f_tolerance(delta);
       nrm.set_max_iteration(200);
       nrm.set_initial_guess(x0);
 
@@ -454,7 +454,7 @@ class nls_test_suite : public Test::Suite
       TEST_ASSERT((x_exact-root).norm()<delta);
 
       // test using functor
-      nrm.set_absolute_tolerance(delta);
+      nrm.set_absolute_f_tolerance(delta);
       nrm.set_max_iteration(200);
       nrm.set_initial_guess(x0);
 
@@ -473,7 +473,7 @@ class nls_test_suite : public Test::Suite
       typename nrcs_type::solution_matrix rhs, root, x0, x_exact;
       int stat;
 
-      nrcm.set_absolute_tolerance(delta);
+      nrcm.set_absolute_f_tolerance(delta);
       nrcm.set_max_iteration(200);
       nrcm.set_norm_type(nrcs_type::max_norm);
       nrcm.set_lower_condition(0, 0, nrcs_type::NRC_EXCLUSIVE);
@@ -497,7 +497,7 @@ class nls_test_suite : public Test::Suite
       TEST_ASSERT(stat==nrcs_type::max_iteration);
 
       // test using functor
-      nrcm.set_absolute_tolerance(delta);
+      nrcm.set_absolute_f_tolerance(delta);
       nrcm.set_max_iteration(200);
       nrcm.set_initial_guess(x0);
 
@@ -520,7 +520,7 @@ class nls_test_suite : public Test::Suite
       TEST_ASSERT((x_exact-root).norm()<delta);
 
       // test using functor
-      nrcm.set_absolute_tolerance(delta);
+      nrcm.set_absolute_f_tolerance(delta);
       nrcm.set_max_iteration(200);
       nrcm.set_initial_guess(x0);
 
@@ -543,7 +543,7 @@ class nls_test_suite : public Test::Suite
       TEST_ASSERT((x_exact-root).norm()<delta);
 
       // test using functor
-      nrcm.set_absolute_tolerance(delta);
+      nrcm.set_absolute_f_tolerance(delta);
       nrcm.set_max_iteration(200);
       nrcm.set_initial_guess(x0);
 

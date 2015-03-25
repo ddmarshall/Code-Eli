@@ -210,7 +210,7 @@ namespace eli
             vmax=vkey.get_pmax();
           }
 
-          void parameter_report()
+          void parameter_report() const
           {
             printf("U parameter:\n");
             ukey.parameter_report();
