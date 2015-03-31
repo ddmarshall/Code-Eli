@@ -62,6 +62,75 @@ namespace eli
       std::cout << "zlabel('z');" << std::endl;
     }
 
+    template<typename point__>
+    void octave_print(int figno, const point__ &pt, const std::string &name="")
+    {
+      std::string nm, ptxbuf, ptybuf, ptzbuf;
+      bool d3(pt.cols()==3);
+
+      // hack to ensure that we have either 2d or 3d points
+      if ((!d3) && (pt.cols()!=2))
+      {
+        assert(false);
+        return;
+      }
+
+      // build name
+      if (name=="")
+      {
+        nm=random_string(5);
+      }
+      else
+      {
+        nm=name;
+      }
+
+      // build point coordinates
+      ptxbuf=nm+"_pt_x=[";
+      ptybuf=nm+"_pt_y=[";
+      if (d3)
+      {
+        ptzbuf=nm+"_pt_z=[";
+      }
+
+      ptxbuf+=std::to_string(pt.x());
+      ptybuf+=std::to_string(pt.y());
+      if (d3)
+      {
+        ptzbuf+=std::to_string(pt.z());
+      }
+
+      ptxbuf+="];";
+      ptybuf+="];";
+      if (d3)
+      {
+        ptzbuf+="];";
+      }
+
+      std::cout << "% point: " << nm << std::endl;
+      std::cout << "figure(" << figno << ");" << std::endl;
+      std::cout << ptxbuf << std::endl;
+      std::cout << ptybuf << std::endl;
+      if (d3)
+      {
+        std::cout << ptzbuf << std::endl;
+      }
+      std::cout << "setenv('GNUTERM', 'x11');" << std::endl;
+      if (d3)
+      {
+        std::cout << "plot3(" << nm << "_pt_x, "
+                              << nm << "_pt_y, "
+                              << nm << "_pt_z, "
+                              << "'ob');" << std::endl;
+      }
+      else
+      {
+        std::cout << "plot(" << nm << "_pt_x, "
+                             << nm << "_pt_y, "
+                             << "'ob');" << std::endl;
+      }
+    }
+
     template<typename data__>
     void octave_print(int figno, const eli::geom::curve::bezier<data__, 2> &bc,
                       const std::string &name="", bool show_control_points=true)
