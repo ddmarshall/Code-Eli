@@ -24,6 +24,9 @@
 #include "eli/constants/math.hpp"
 #include "eli/geom/curve/piecewise.hpp"
 #include "eli/geom/curve/piecewise_general_creator.hpp"
+#include "eli/geom/intersect/minimum_distance_curve.hpp"
+
+#include "octave_helpers.hpp"
 
 template<typename data__>
 class piecewise_general_creator_test_suite : public Test::Suite
@@ -49,6 +52,7 @@ class piecewise_general_creator_test_suite : public Test::Suite
       TEST_ADD(piecewise_general_creator_test_suite<float>::create_multi_curve_no_dep_test);
       TEST_ADD(piecewise_general_creator_test_suite<float>::create_multi_curve_1st_deriv_dep_test);
       TEST_ADD(piecewise_general_creator_test_suite<float>::create_multi_curve_2nd_deriv_dep_test);
+      TEST_ADD(piecewise_general_creator_test_suite<float>::create_single_curve_least_sq_test);
     }
     void AddTests(const double &)
     {
@@ -58,6 +62,7 @@ class piecewise_general_creator_test_suite : public Test::Suite
       TEST_ADD(piecewise_general_creator_test_suite<double>::create_multi_curve_no_dep_test);
       TEST_ADD(piecewise_general_creator_test_suite<double>::create_multi_curve_1st_deriv_dep_test);
       TEST_ADD(piecewise_general_creator_test_suite<double>::create_multi_curve_2nd_deriv_dep_test);
+      TEST_ADD(piecewise_general_creator_test_suite<double>::create_single_curve_least_sq_test);
     }
     void AddTests(const long double &)
     {
@@ -67,6 +72,7 @@ class piecewise_general_creator_test_suite : public Test::Suite
       TEST_ADD(piecewise_general_creator_test_suite<long double>::create_multi_curve_no_dep_test);
       TEST_ADD(piecewise_general_creator_test_suite<long double>::create_multi_curve_1st_deriv_dep_test);
       TEST_ADD(piecewise_general_creator_test_suite<long double>::create_multi_curve_2nd_deriv_dep_test);
+      TEST_ADD(piecewise_general_creator_test_suite<long double>::create_single_curve_least_sq_test);
     }
 
   public:
@@ -79,111 +85,6 @@ class piecewise_general_creator_test_suite : public Test::Suite
     }
 
   private:
-    void octave_print(int figno, const piecewise_curve_type &pc) const
-    {
-      index_type i, pp, ns;
-      data_type tmin, tmax;
-
-      ns=pc.number_segments();
-      pc.get_parameter_min(tmin);
-      pc.get_parameter_max(tmax);
-
-      std::cout << "figure(" << figno << ");" << std::endl;
-
-      // get control points and print
-      std::cout << "cp_x=[";
-      for (pp=0; pp<ns; ++pp)
-      {
-        curve_type bez;
-        pc.get(bez, pp);
-        for (i=0; i<=bez.degree(); ++i)
-        {
-          std::cout << bez.get_control_point(i).x();
-          if (i<bez.degree())
-            std::cout << ", ";
-          else if (pp<ns-1)
-            std::cout << ", ";
-        }
-//        std::cout << std::endl;
-      }
-      std::cout << "];" << std::endl;
-
-      std::cout << "cp_y=[";
-      for (pp=0; pp<ns; ++pp)
-      {
-        curve_type bez;
-        pc.get(bez, pp);
-        for (i=0; i<=bez.degree(); ++i)
-        {
-          std::cout << bez.get_control_point(i).y();
-          if (i<bez.degree())
-            std::cout << ", ";
-          else if (pp<ns-1)
-            std::cout << ", ";
-        }
-//        std::cout << std::endl;
-      }
-      std::cout << "];" << std::endl;
-
-      std::cout << "cp_z=[";
-      for (pp=0; pp<ns; ++pp)
-      {
-        curve_type bez;
-        pc.get(bez, pp);
-        for (i=0; i<=bez.degree(); ++i)
-        {
-          std::cout << bez.get_control_point(i).z();
-          if (i<bez.degree())
-            std::cout << ", ";
-          else if (pp<ns-1)
-            std::cout << ", ";
-        }
-//        std::cout << std::endl;
-      }
-      std::cout << "];" << std::endl;
-
-      // initialize the t parameters
-      std::vector<data__> t(129);
-      for (i=0; i<static_cast<index_type>(t.size()); ++i)
-      {
-        t[i]=tmin+(tmax-tmin)*static_cast<data__>(i)/(t.size()-1);
-      }
-
-      // set the surface points
-      std::cout << "surf_x=[";
-      for (i=0; i<static_cast<index_type>(t.size()); ++i)
-      {
-        std::cout << pc.f(t[i]).x();
-        if (i<static_cast<index_type>(t.size()-1))
-          std::cout << ", ";
-      }
-      std::cout << "];" << std::endl;
-
-      std::cout << "surf_y=[";
-      for (i=0; i<static_cast<index_type>(t.size()); ++i)
-      {
-        std::cout << pc.f(t[i]).y();
-        if (i<static_cast<index_type>(t.size()-1))
-          std::cout << ", ";
-      }
-      std::cout << "];" << std::endl;
-
-      std::cout << "surf_z=[";
-      for (i=0; i<static_cast<index_type>(t.size()); ++i)
-      {
-        std::cout << pc.f(t[i]).z();
-        if (i<static_cast<index_type>(t.size()-1))
-          std::cout << ", ";
-      }
-      std::cout << "];" << std::endl;
-
-      std::cout << "setenv('GNUTERM', 'x11');" << std::endl;
-      std::cout << "plot3(surf_x, surf_y, surf_z, '-k');" << std::endl;
-      std::cout << "hold on;" << std::endl;
-      std::cout << "plot3(cp_x', cp_y', cp_z', '-ok', 'MarkerFaceColor', [0 0 0]);" << std::endl;
-      std::cout << "hold off;" << std::endl;
-    }
-
     void create_joint_test()
     {
       point_type p1, p2;
@@ -2318,6 +2219,735 @@ class piecewise_general_creator_test_suite : public Test::Suite
 
 //        if (rtn_flag && (typeid(data_type)==typeid(float)))
 //          octave_print(1, c);
+      }
+    }
+
+    void create_single_curve_least_sq_test()
+    {
+      // simple min 2nd degree curve connecting 2 points and fitting 3 points with no free degrees to fit
+      {
+        index_type nsegs(1);
+        std::vector<typename general_creator_type::joint_data> joints(nsegs+1);
+        std::vector<typename general_creator_type::index_type> max_degree(nsegs);
+        std::vector<typename general_creator_type::fit_data> fit_points(nsegs);
+        point_type p;
+        general_creator_type gc;
+        piecewise_curve_type c;
+        data_type t0(2), t1(4);
+        bool rtn_flag;
+
+        // set the joints
+        p << 1, 1, 0;
+        joints[0].set_f(p);
+        p << 0, 0, -1;
+        joints[1].set_f(p);
+
+        // set the fit points
+        p << 0.5, 0.5, 0.5;
+        fit_points[0].add_point(p);
+        p << 0.25, 0.25, 0.25;
+        fit_points[0].add_point(p);
+        p << -0.25, -0.5, 0;
+        fit_points[0].add_point(p);
+
+        // set the maximum degrees of each segment to be the degree needed to satisfy the joints (1)
+        max_degree[0]=1;
+
+        // create curve
+        rtn_flag=gc.set_conditions(joints, fit_points, max_degree, false);
+        TEST_ASSERT(rtn_flag);
+        gc.set_t0(t0);
+        gc.set_segment_dt(t1-t0, 0);
+        rtn_flag=gc.create(c);
+        TEST_ASSERT(rtn_flag);
+
+        // test the resulting curve
+        point_type p_test;
+        std::vector<index_type> c_degree(nsegs);
+
+        c.degrees(c_degree.begin());
+        TEST_ASSERT(c_degree[0]==max_degree[0]);
+
+//        if (typeid(data_type)==typeid(float))
+//        {
+//          std::cout.flush();
+//          eli::test::octave_start(1);
+//          eli::test::octave_print(1, fit_points[0].get_point(0), "fp0");
+//          eli::test::octave_print(1, fit_points[0].get_point(1), "fp1");
+//          eli::test::octave_print(1, fit_points[0].get_point(2), "fp2");
+//          eli::test::octave_print(1, c, "piecewise");
+//          eli::test::octave_finish(1);
+//        }
+
+        p_test=c.f(t0);
+        TEST_ASSERT(tol.approximately_equal(joints[0].get_f(), p_test));
+//        std::cout << "p=" << joints[0].get_f()
+//                  << "\tp_test=" << p_test << "\tdiff="
+//                  << (joints[0].get_f()-p_test).norm() << std::endl;
+        p_test=c.f(t1);
+        TEST_ASSERT(tol.approximately_equal(joints[1].get_f(), p_test));
+//        std::cout << "p=" << joints[1].get_f()
+//                  << "\tp_test=" << p_test << "\tdiff="
+//                  << (joints[1].get_f()-p_test).norm() << std::endl;
+      }
+
+      // simple min 2nd degree curve connecting 2 points and fitting 3 points with max_degree too low
+      {
+        index_type nsegs(1);
+        std::vector<typename general_creator_type::joint_data> joints(nsegs+1);
+        std::vector<typename general_creator_type::index_type> max_degree(nsegs);
+        std::vector<typename general_creator_type::fit_data> fit_points(nsegs);
+        point_type p;
+        general_creator_type gc;
+        piecewise_curve_type c;
+        data_type t0(2), t1(4);
+        bool rtn_flag;
+
+        // set the joints
+        p << 1, 1, 0;
+        joints[0].set_f(p);
+        p << 0, 0, -1;
+        joints[1].set_f(p);
+
+        // set the fit points
+        p << 0.5, 0.5, 0.5;
+        fit_points[0].add_point(p);
+        p << 0.25, 0.25, 0.25;
+        fit_points[0].add_point(p);
+        p << -0.25, -0.5, 0;
+        fit_points[0].add_point(p);
+
+        // set the maximum degrees of each segment to be higher than degree needed to
+        // go through all fit points (4)
+        max_degree[0]=3;
+
+        // create curve
+        rtn_flag=gc.set_conditions(joints, fit_points, max_degree, false);
+        TEST_ASSERT(rtn_flag);
+        gc.set_t0(t0);
+        gc.set_segment_dt(t1-t0, 0);
+        rtn_flag=gc.create(c);
+        TEST_ASSERT(rtn_flag);
+
+        // test the resulting curve
+        point_type p_test;
+        std::vector<index_type> c_degree(nsegs);
+
+        c.degrees(c_degree.begin());
+        TEST_ASSERT(c_degree[0]==max_degree[0]);
+
+//        if (typeid(data_type)==typeid(float))
+//        {
+//          std::cout.flush();
+//          eli::test::octave_start(1);
+//          eli::test::octave_print(1, fit_points[0].get_point(0), "fp0");
+//          eli::test::octave_print(1, fit_points[0].get_point(1), "fp1");
+//          eli::test::octave_print(1, fit_points[0].get_point(2), "fp2");
+//          eli::test::octave_print(1, c, "piecewise");
+//          eli::test::octave_finish(1);
+//        }
+
+        p_test=c.f(t0);
+        TEST_ASSERT(tol.approximately_equal(joints[0].get_f(), p_test));
+//        std::cout << "p=" << joints[0].get_f()
+//                  << "\tp_test=" << p_test << "\tdiff="
+//                  << (joints[0].get_f()-p_test).norm() << std::endl;
+        p_test=c.f(t1);
+        TEST_ASSERT(tol.approximately_equal(joints[1].get_f(), p_test));
+//        std::cout << "p=" << joints[1].get_f()
+//                  << "\tp_test=" << p_test << "\tdiff="
+//                  << (joints[1].get_f()-p_test).norm() << std::endl;
+      }
+
+      // simple min 2nd degree curve connecting 2 points and fitting 3 points with max_degree just right
+      {
+        index_type i, nsegs(1);
+        std::vector<typename general_creator_type::joint_data> joints(nsegs+1);
+        std::vector<typename general_creator_type::index_type> max_degree(nsegs);
+        std::vector<typename general_creator_type::fit_data> fit_points(nsegs);
+        point_type p;
+        general_creator_type gc;
+        piecewise_curve_type c;
+        data_type t0(2), t1(4);
+        bool rtn_flag;
+
+        // set the joints
+        p << 1, 1, 0;
+        joints[0].set_f(p);
+        p << 0, 0, -1;
+        joints[1].set_f(p);
+
+        // set the fit points
+        p << 0.5, 0.5, 0.5;
+        fit_points[0].add_point(p);
+        p << 0.25, 0.25, 0.25;
+        fit_points[0].add_point(p);
+        p << -0.25, -0.5, 0;
+        fit_points[0].add_point(p);
+
+        // set the maximum degrees of each segment to be the same degree needed to
+        // go through all fit points (4)
+        max_degree[0]=4;
+
+        // create curve
+        rtn_flag=gc.set_conditions(joints, fit_points, max_degree, false);
+        TEST_ASSERT(rtn_flag);
+        gc.set_t0(t0);
+        gc.set_segment_dt(t1-t0, 0);
+        rtn_flag=gc.create(c);
+        TEST_ASSERT(rtn_flag);
+
+        // test the resulting curve
+        point_type p_test;
+        data_type dist, dist_t;
+        std::vector<index_type> c_degree(nsegs);
+
+        c.degrees(c_degree.begin());
+        TEST_ASSERT(c_degree[0]==max_degree[0]);
+
+//        if (typeid(data_type)==typeid(float))
+//        {
+//          std::cout.flush();
+//          eli::test::octave_start(1);
+//          eli::test::octave_print(1, fit_points[0].get_point(0), "fp0");
+//          eli::test::octave_print(1, fit_points[0].get_point(1), "fp1");
+//          eli::test::octave_print(1, fit_points[0].get_point(2), "fp2");
+//          eli::test::octave_print(1, c, "piecewise");
+//          eli::test::octave_finish(1);
+//        }
+
+        p_test=c.f(t0);
+        TEST_ASSERT(tol.approximately_equal(joints[0].get_f(), p_test));
+//        std::cout << "p=" << joints[0].get_f()
+//                  << "\tp_test=" << p_test << "\tdiff="
+//                  << (joints[0].get_f()-p_test).norm() << std::endl;
+        p_test=c.f(t1);
+        TEST_ASSERT(tol.approximately_equal(joints[1].get_f(), p_test));
+//        std::cout << "p=" << joints[1].get_f()
+//                  << "\tp_test=" << p_test << "\tdiff="
+//                  << (joints[1].get_f()-p_test).norm() << std::endl;
+
+        i=0;
+        dist=eli::geom::intersect::minimum_distance(dist_t, c, fit_points[0].get_point(i));
+        TEST_ASSERT(tol.approximately_equal(dist, 0));
+//        std::cout << "dist=" << dist << std::endl;
+        i=1;
+        dist=eli::geom::intersect::minimum_distance(dist_t, c, fit_points[0].get_point(i));
+        TEST_ASSERT(tol.approximately_equal(dist, 0));
+//        std::cout << "dist=" << dist << std::endl;
+        i=2;
+        dist=eli::geom::intersect::minimum_distance(dist_t, c, fit_points[0].get_point(i));
+        TEST_ASSERT(tol.approximately_equal(dist, 0));
+//        std::cout << "dist=" << dist << std::endl;
+      }
+
+      // simple min 2nd degree curve connecting 2 points and fitting 3 points with max_degree too high
+      {
+        index_type i, nsegs(1);
+        std::vector<typename general_creator_type::joint_data> joints(nsegs+1);
+        std::vector<typename general_creator_type::index_type> max_degree(nsegs);
+        std::vector<typename general_creator_type::fit_data> fit_points(nsegs);
+        point_type p;
+        general_creator_type gc;
+        piecewise_curve_type c;
+        data_type t0(2), t1(4);
+        bool rtn_flag;
+
+        // set the joints
+        p << 1, 1, 0;
+        joints[0].set_f(p);
+        p << 0, 0, -1;
+        joints[1].set_f(p);
+
+        // set the fit points
+        p << 0.5, 0.5, 0.5;
+        fit_points[0].add_point(p);
+        p << 0.25, 0.25, 0.25;
+        fit_points[0].add_point(p);
+        p << -0.25, -0.5, 0;
+        fit_points[0].add_point(p);
+
+        // set the maximum degrees of each segment to be higher than degree needed to
+        // go through all fit points (4)
+        max_degree[0]=5;
+
+        // create curve
+        rtn_flag=gc.set_conditions(joints, fit_points, max_degree, false);
+        TEST_ASSERT(rtn_flag);
+        gc.set_t0(t0);
+        gc.set_segment_dt(t1-t0, 0);
+        rtn_flag=gc.create(c);
+        TEST_ASSERT(rtn_flag);
+
+        // test the resulting curve
+        point_type p_test;
+        data_type dist, dist_t;
+        std::vector<index_type> c_degree(nsegs);
+
+        c.degrees(c_degree.begin());
+        TEST_ASSERT(c_degree[0]<max_degree[0]);
+
+//        if (typeid(data_type)==typeid(float))
+//        {
+//          std::cout.flush();
+//          eli::test::octave_start(1);
+//          eli::test::octave_print(1, fit_points[0].get_point(0), "fp0");
+//          eli::test::octave_print(1, fit_points[0].get_point(1), "fp1");
+//          eli::test::octave_print(1, fit_points[0].get_point(2), "fp2");
+//          eli::test::octave_print(1, c, "piecewise");
+//          eli::test::octave_finish(1);
+//        }
+
+        p_test=c.f(t0);
+        TEST_ASSERT(tol.approximately_equal(joints[0].get_f(), p_test));
+//        std::cout << "p=" << joints[0].get_f()
+//                  << "\tp_test=" << p_test << "\tdiff="
+//                  << (joints[0].get_f()-p_test).norm() << std::endl;
+        p_test=c.f(t1);
+        TEST_ASSERT(tol.approximately_equal(joints[1].get_f(), p_test));
+//        std::cout << "p=" << joints[1].get_f()
+//                  << "\tp_test=" << p_test << "\tdiff="
+//                  << (joints[1].get_f()-p_test).norm() << std::endl;
+
+        i=0;
+        dist=eli::geom::intersect::minimum_distance(dist_t, c, fit_points[0].get_point(i));
+        TEST_ASSERT(tol.approximately_equal(dist, 0));
+//        std::cout << "dist=" << dist << std::endl;
+        i=1;
+        dist=eli::geom::intersect::minimum_distance(dist_t, c, fit_points[0].get_point(i));
+        TEST_ASSERT(tol.approximately_equal(dist, 0));
+//        std::cout << "dist=" << dist << std::endl;
+        i=2;
+        dist=eli::geom::intersect::minimum_distance(dist_t, c, fit_points[0].get_point(i));
+        TEST_ASSERT(tol.approximately_equal(dist, 0));
+//        std::cout << "dist=" << dist << std::endl;
+      }
+
+      // simple min 5th degree curve with both 1st and 2nd derivatives specified with no free degrees to fit
+      {
+        index_type nsegs(1);
+        std::vector<typename general_creator_type::joint_data> joints(nsegs+1);
+        std::vector<typename general_creator_type::index_type> max_degree(nsegs);
+        std::vector<typename general_creator_type::fit_data> fit_points(nsegs);
+        point_type p;
+        general_creator_type gc;
+        piecewise_curve_type c;
+        data_type t0(2), t1(4);
+        bool rtn_flag;
+
+        // set the joints
+        p << 1, 1, 0;
+        joints[0].set_f(p);
+        p << 0, 0, -1;
+        joints[1].set_f(p);
+
+        // set joint 1st derivatives
+        p << 1, -1, 1;
+        joints[0].set_right_fp(p);
+        p << 1, 0, 0;
+        joints[1].set_left_fp(p);
+
+        // set joint 2nd derivatives
+        p << 0, -1, 0;
+        joints[0].set_right_fpp(p);
+        p << 0, 1, 0;
+        joints[1].set_left_fpp(p);
+
+        // set the fit points
+        p << 0.5, 0.5, 0.5;
+        fit_points[0].add_point(p);
+        p << 0.25, 0.25, 0.25;
+        fit_points[0].add_point(p);
+        p << -0.25, -0.5, 0;
+        fit_points[0].add_point(p);
+
+        // set the maximum degrees of each segment to be the degree needed to satisfy the joints (5)
+        max_degree[0]=5;
+
+        // create curve
+        rtn_flag=gc.set_conditions(joints, fit_points, max_degree, false);
+        TEST_ASSERT(rtn_flag);
+        gc.set_t0(t0);
+        gc.set_segment_dt(t1-t0, 0);
+        rtn_flag=gc.create(c);
+        TEST_ASSERT(rtn_flag);
+
+        // test the resulting curve
+        point_type p_test;
+        std::vector<index_type> c_degree(nsegs);
+
+        c.degrees(c_degree.begin());
+        TEST_ASSERT(c_degree[0]==max_degree[0]);
+
+//        if (typeid(data_type)==typeid(float))
+//        {
+//          std::cout.flush();
+//          eli::test::octave_start(1);
+//          eli::test::octave_print(1, fit_points[0].get_point(0), "fp0");
+//          eli::test::octave_print(1, fit_points[0].get_point(1), "fp1");
+//          eli::test::octave_print(1, fit_points[0].get_point(2), "fp2");
+//          eli::test::octave_print(1, c, "piecewise");
+//          eli::test::octave_finish(1);
+//        }
+
+        p_test=c.f(t0);
+        TEST_ASSERT(tol.approximately_equal(joints[0].get_f(), p_test));
+//        std::cout << "p=" << joints[0].get_f()
+//                  << "\tp_test=" << p_test << "\tdiff="
+//                  << (joints[0].get_f()-p_test).norm() << std::endl;
+        p_test=c.f(t1);
+        TEST_ASSERT(tol.approximately_equal(joints[1].get_f(), p_test));
+//        std::cout << "p=" << joints[1].get_f()
+//                  << "\tp_test=" << p_test << "\tdiff="
+//                  << (joints[1].get_f()-p_test).norm() << std::endl;
+        p_test=c.fp(t0);
+        TEST_ASSERT(tol.approximately_equal(joints[0].get_right_fp(), p_test));
+//        std::cout << "p=" << joints[0].get_right_fp()
+//                  << "\tp_test=" << p_test << "\tdiff="
+//                  << (joints[0].get_right_fp()-p_test).norm() << std::endl;
+        p_test=c.fp(t1);
+        TEST_ASSERT(tol.approximately_equal(joints[1].get_left_fp(), p_test));
+//        std::cout << "p=" << joints[1].get_left_fp()
+//                  << "\tp_test=" << p_test << "\tdiff="
+//                  << (joints[1].get_left_fp()-p_test).norm() << std::endl;
+        p_test=c.fpp(t0);
+        TEST_ASSERT(tol.approximately_equal(joints[0].get_right_fpp(), p_test));
+//        std::cout << "p=" << joints[0].get_right_fpp()
+//                  << "\tp_test=" << p_test << "\tdiff="
+//                  << (joints[0].get_right_fpp()-p_test).norm() << std::endl;
+        p_test=c.fpp(t1);
+        TEST_ASSERT(tol.approximately_equal(joints[1].get_left_fpp(), p_test));
+//        std::cout << "p=" << joints[1].get_left_fpp()
+//                  << "\tp_test=" << p_test << "\tdiff="
+//                  << (joints[1].get_left_fpp()-p_test).norm() << std::endl;
+      }
+
+      // simple min 5th degree curve with both 1st and 2nd derivatives specified with max_degree too low
+      {
+        index_type nsegs(1);
+        std::vector<typename general_creator_type::joint_data> joints(nsegs+1);
+        std::vector<typename general_creator_type::index_type> max_degree(nsegs);
+        std::vector<typename general_creator_type::fit_data> fit_points(nsegs);
+        point_type p;
+        general_creator_type gc;
+        piecewise_curve_type c;
+        data_type t0(2), t1(4);
+        bool rtn_flag;
+
+        // set the joints
+        p << 1, 1, 0;
+        joints[0].set_f(p);
+        p << 0, 0, -1;
+        joints[1].set_f(p);
+
+        // set joint 1st derivatives
+        p << 1, -1, 1;
+        joints[0].set_right_fp(p);
+        p << 1, 0, 0;
+        joints[1].set_left_fp(p);
+
+        // set joint 2nd derivatives
+        p << 0, -1, 0;
+        joints[0].set_right_fpp(p);
+        p << 0, 1, 0;
+        joints[1].set_left_fpp(p);
+
+        // set the fit points
+        p << 0.5, 0.5, 0.5;
+        fit_points[0].add_point(p);
+        p << 0.25, 0.25, 0.25;
+        fit_points[0].add_point(p);
+        p << -0.25, -0.5, 0;
+        fit_points[0].add_point(p);
+
+        // set the maximum degrees of each segment to be lower than degree needed to
+        // go through all fit points (8)
+        max_degree[0]=7;
+
+        // create curve
+        rtn_flag=gc.set_conditions(joints, fit_points, max_degree, false);
+        TEST_ASSERT(rtn_flag);
+        gc.set_t0(t0);
+        gc.set_segment_dt(t1-t0, 0);
+        rtn_flag=gc.create(c);
+        TEST_ASSERT(rtn_flag);
+
+//        if (typeid(data_type)==typeid(float))
+//        {
+//          std::cout.flush();
+//          eli::test::octave_start(1);
+//          eli::test::octave_print(1, fit_points[0].get_point(0), "fp0");
+//          eli::test::octave_print(1, fit_points[0].get_point(1), "fp1");
+//          eli::test::octave_print(1, fit_points[0].get_point(2), "fp2");
+//          eli::test::octave_print(1, c, "piecewise");
+//          eli::test::octave_finish(1);
+//        }
+
+        // test the resulting curve
+        point_type p_test;
+        std::vector<index_type> c_degree(nsegs);
+
+        c.degrees(c_degree.begin());
+        TEST_ASSERT(c_degree[0]==max_degree[0]);
+
+        p_test=c.f(t0);
+        TEST_ASSERT(tol.approximately_equal(joints[0].get_f(), p_test));
+//        std::cout << "p=" << joints[0].get_f()
+//                  << "\tp_test=" << p_test << "\tdiff="
+//                  << (joints[0].get_f()-p_test).norm() << std::endl;
+        p_test=c.f(t1);
+        TEST_ASSERT(tol.approximately_equal(joints[1].get_f(), p_test));
+//        std::cout << "p=" << joints[1].get_f()
+//                  << "\tp_test=" << p_test << "\tdiff="
+//                  << (joints[1].get_f()-p_test).norm() << std::endl;
+        p_test=c.fp(t0);
+        TEST_ASSERT(tol.approximately_equal(joints[0].get_right_fp(), p_test));
+//        std::cout << "p=" << joints[0].get_right_fp()
+//                  << "\tp_test=" << p_test << "\tdiff="
+//                  << (joints[0].get_right_fp()-p_test).norm() << std::endl;
+        p_test=c.fp(t1);
+        TEST_ASSERT(tol.approximately_equal(joints[1].get_left_fp(), p_test));
+//        std::cout << "p=" << joints[1].get_left_fp()
+//                  << "\tp_test=" << p_test << "\tdiff="
+//                  << (joints[1].get_left_fp()-p_test).norm() << std::endl;
+        p_test=c.fpp(t0);
+        TEST_ASSERT(tol.approximately_equal(joints[0].get_right_fpp(), p_test));
+//        std::cout << "p=" << joints[0].get_right_fpp()
+//                  << "\tp_test=" << p_test << "\tdiff="
+//                  << (joints[0].get_right_fpp()-p_test).norm() << std::endl;
+        p_test=c.fpp(t1);
+        TEST_ASSERT(tol.approximately_equal(joints[1].get_left_fpp(), p_test));
+//        std::cout << "p=" << joints[1].get_left_fpp()
+//                  << "\tp_test=" << p_test << "\tdiff="
+//                  << (joints[1].get_left_fpp()-p_test).norm() << std::endl;
+      }
+
+      // simple min 5th degree curve with both 1st and 2nd derivatives specified with max_degree just right
+      {
+        index_type i, nsegs(1);
+        std::vector<typename general_creator_type::joint_data> joints(nsegs+1);
+        std::vector<typename general_creator_type::index_type> max_degree(nsegs);
+        std::vector<typename general_creator_type::fit_data> fit_points(nsegs);
+        point_type p;
+        general_creator_type gc;
+        piecewise_curve_type c;
+        data_type t0(2), t1(4);
+        bool rtn_flag;
+
+        // set the joints
+        p << 1, 1, 0;
+        joints[0].set_f(p);
+        p << 0, 0, -1;
+        joints[1].set_f(p);
+
+        // set joint 1st derivatives
+        p << 1, -1, 1;
+        joints[0].set_right_fp(p);
+        p << 1, 0, 0;
+        joints[1].set_left_fp(p);
+
+        // set joint 2nd derivatives
+        p << 0, -1, 0;
+        joints[0].set_right_fpp(p);
+        p << 0, 1, 0;
+        joints[1].set_left_fpp(p);
+
+        // set the fit points
+        p << 0.5, 0.5, 0.5;
+        fit_points[0].add_point(p);
+        p << 0.25, 0.25, 0.25;
+        fit_points[0].add_point(p);
+        p << -0.25, -0.5, 0;
+        fit_points[0].add_point(p);
+
+        // set the maximum degrees of each segment to be the same degree needed to
+        // go through all fit points (8)
+        max_degree[0]=8;
+
+        // create curve
+        rtn_flag=gc.set_conditions(joints, fit_points, max_degree, false);
+        TEST_ASSERT(rtn_flag);
+        gc.set_t0(t0);
+        gc.set_segment_dt(t1-t0, 0);
+        rtn_flag=gc.create(c);
+        TEST_ASSERT(rtn_flag);
+
+        // test the resulting curve
+        point_type p_test;
+        data_type dist, dist_t;
+        std::vector<index_type> c_degree(nsegs);
+
+        c.degrees(c_degree.begin());
+        TEST_ASSERT(c_degree[0]==max_degree[0]);
+
+//        if (typeid(data_type)==typeid(float))
+//        {
+//          std::cout.flush();
+//          eli::test::octave_start(1);
+//          eli::test::octave_print(1, fit_points[0].get_point(0), "fp0");
+//          eli::test::octave_print(1, fit_points[0].get_point(1), "fp1");
+//          eli::test::octave_print(1, fit_points[0].get_point(2), "fp2");
+//          eli::test::octave_print(1, c, "piecewise");
+//          eli::test::octave_finish(1);
+//        }
+
+        p_test=c.f(t0);
+        TEST_ASSERT(tol.approximately_equal(joints[0].get_f(), p_test));
+//        std::cout << "p=" << joints[0].get_f()
+//                  << "\tp_test=" << p_test << "\tdiff="
+//                  << (joints[0].get_f()-p_test).norm() << std::endl;
+        p_test=c.f(t1);
+        TEST_ASSERT(tol.approximately_equal(joints[1].get_f(), p_test));
+//        std::cout << "p=" << joints[1].get_f()
+//                  << "\tp_test=" << p_test << "\tdiff="
+//                  << (joints[1].get_f()-p_test).norm() << std::endl;
+        p_test=c.fp(t0);
+        TEST_ASSERT(tol.approximately_equal(joints[0].get_right_fp(), p_test));
+//        std::cout << "p=" << joints[0].get_right_fp()
+//                  << "\tp_test=" << p_test << "\tdiff="
+//                  << (joints[0].get_right_fp()-p_test).norm() << std::endl;
+        p_test=c.fp(t1);
+        TEST_ASSERT(tol.approximately_equal(joints[1].get_left_fp(), p_test));
+//        std::cout << "p=" << joints[1].get_left_fp()
+//                  << "\tp_test=" << p_test << "\tdiff="
+//                  << (joints[1].get_left_fp()-p_test).norm() << std::endl;
+        p_test=c.fpp(t0);
+        TEST_ASSERT(tol.approximately_equal(joints[0].get_right_fpp(), p_test));
+//        std::cout << "p=" << joints[0].get_right_fpp()
+//                  << "\tp_test=" << p_test << "\tdiff="
+//                  << (joints[0].get_right_fpp()-p_test).norm() << std::endl;
+        p_test=c.fpp(t1);
+        TEST_ASSERT(tol.approximately_equal(joints[1].get_left_fpp(), p_test));
+//        std::cout << "p=" << joints[1].get_left_fpp()
+//                  << "\tp_test=" << p_test << "\tdiff="
+//                  << (joints[1].get_left_fpp()-p_test).norm() << std::endl;
+
+        i=0;
+        dist=eli::geom::intersect::minimum_distance(dist_t, c, fit_points[0].get_point(i));
+        TEST_ASSERT(tol.approximately_equal(dist, 0));
+//        std::cout << "dist=" << dist << std::endl;
+        i=1;
+        dist=eli::geom::intersect::minimum_distance(dist_t, c, fit_points[0].get_point(i));
+        TEST_ASSERT(tol.approximately_equal(dist, 0));
+//        std::cout << "dist=" << dist << std::endl;
+        i=2;
+        dist=eli::geom::intersect::minimum_distance(dist_t, c, fit_points[0].get_point(i));
+        TEST_ASSERT(tol.approximately_equal(dist, 0));
+//        std::cout << "dist=" << dist << std::endl;
+      }
+
+      // simple min 5th degree curve with both 1st and 2nd derivatives specified with max_degree too high
+      {
+        index_type i, nsegs(1);
+        std::vector<typename general_creator_type::joint_data> joints(nsegs+1);
+        std::vector<typename general_creator_type::index_type> max_degree(nsegs);
+        std::vector<typename general_creator_type::fit_data> fit_points(nsegs);
+        point_type p;
+        general_creator_type gc;
+        piecewise_curve_type c;
+        data_type t0(2), t1(4);
+        bool rtn_flag;
+
+        // set the joints
+        p << 1, 1, 0;
+        joints[0].set_f(p);
+        p << 0, 0, -1;
+        joints[1].set_f(p);
+
+        // set joint 1st derivatives
+        p << 1, -1, 1;
+        joints[0].set_right_fp(p);
+        p << 1, 0, 0;
+        joints[1].set_left_fp(p);
+
+        // set joint 2nd derivatives
+        p << 0, -1, 0;
+        joints[0].set_right_fpp(p);
+        p << 0, 1, 0;
+        joints[1].set_left_fpp(p);
+
+        // set the fit points
+        p << 0.5, 0.5, 0.5;
+        fit_points[0].add_point(p);
+        p << 0.25, 0.25, 0.25;
+        fit_points[0].add_point(p);
+        p << -0.25, -0.5, 0;
+        fit_points[0].add_point(p);
+
+        // set the maximum degrees of each segment to be higher than degree needed to
+        // go through all fit points (8)
+        max_degree[0]=10;
+
+        // create curve
+        rtn_flag=gc.set_conditions(joints, fit_points, max_degree, false);
+        TEST_ASSERT(rtn_flag);
+        gc.set_t0(t0);
+        gc.set_segment_dt(t1-t0, 0);
+        rtn_flag=gc.create(c);
+        TEST_ASSERT(rtn_flag);
+
+        // test the resulting curve
+        point_type p_test;
+        data_type dist, dist_t;
+        std::vector<index_type> c_degree(nsegs);
+
+        c.degrees(c_degree.begin());
+        TEST_ASSERT(c_degree[0]<max_degree[0]);
+
+//        if (typeid(data_type)==typeid(float))
+//        {
+//          std::cout.flush();
+//          eli::test::octave_start(1);
+//          eli::test::octave_print(1, fit_points[0].get_point(0), "fp0");
+//          eli::test::octave_print(1, fit_points[0].get_point(1), "fp1");
+//          eli::test::octave_print(1, fit_points[0].get_point(2), "fp2");
+//          eli::test::octave_print(1, c, "piecewise");
+//          eli::test::octave_finish(1);
+//        }
+
+        p_test=c.f(t0);
+        TEST_ASSERT(tol.approximately_equal(joints[0].get_f(), p_test));
+//        std::cout << "p=" << joints[0].get_f()
+//                  << "\tp_test=" << p_test << "\tdiff="
+//                  << (joints[0].get_f()-p_test).norm() << std::endl;
+        p_test=c.f(t1);
+        TEST_ASSERT(tol.approximately_equal(joints[1].get_f(), p_test));
+//        std::cout << "p=" << joints[1].get_f()
+//                  << "\tp_test=" << p_test << "\tdiff="
+//                  << (joints[1].get_f()-p_test).norm() << std::endl;
+        p_test=c.fp(t0);
+        TEST_ASSERT(tol.approximately_equal(joints[0].get_right_fp(), p_test));
+//        std::cout << "p=" << joints[0].get_right_fp()
+//                  << "\tp_test=" << p_test << "\tdiff="
+//                  << (joints[0].get_right_fp()-p_test).norm() << std::endl;
+        p_test=c.fp(t1);
+        TEST_ASSERT(tol.approximately_equal(joints[1].get_left_fp(), p_test));
+//        std::cout << "p=" << joints[1].get_left_fp()
+//                  << "\tp_test=" << p_test << "\tdiff="
+//                  << (joints[1].get_left_fp()-p_test).norm() << std::endl;
+        p_test=c.fpp(t0);
+        TEST_ASSERT(tol.approximately_equal(joints[0].get_right_fpp(), p_test));
+//        std::cout << "p=" << joints[0].get_right_fpp()
+//                  << "\tp_test=" << p_test << "\tdiff="
+//                  << (joints[0].get_right_fpp()-p_test).norm() << std::endl;
+        p_test=c.fpp(t1);
+        TEST_ASSERT(tol.approximately_equal(joints[1].get_left_fpp(), p_test));
+//        std::cout << "p=" << joints[1].get_left_fpp()
+//                  << "\tp_test=" << p_test << "\tdiff="
+//                  << (joints[1].get_left_fpp()-p_test).norm() << std::endl;
+
+        i=0;
+        dist=eli::geom::intersect::minimum_distance(dist_t, c, fit_points[0].get_point(i));
+        TEST_ASSERT(tol.approximately_equal(dist, 0));
+//        std::cout << "dist=" << dist << std::endl;
+        i=1;
+        dist=eli::geom::intersect::minimum_distance(dist_t, c, fit_points[0].get_point(i));
+        TEST_ASSERT(tol.approximately_equal(dist, 0));
+//        std::cout << "dist=" << dist << std::endl;
+        i=2;
+        dist=eli::geom::intersect::minimum_distance(dist_t, c, fit_points[0].get_point(i));
+        TEST_ASSERT(tol.approximately_equal(dist, 0));
+//        std::cout << "dist=" << dist << std::endl;
       }
     }
 };
