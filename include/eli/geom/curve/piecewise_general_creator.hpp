@@ -695,6 +695,12 @@ namespace eli
             seg_fit_ind[0]=0;
             for (i=0; i<nsegs; ++i)
             {
+              // stop if already don't have a valid degree
+              if (!valid_degree(seg_degree[i], max_degree[i]))
+              {
+                return false;
+              }
+
               // account for degrees associated with fits points
               if (max_degree[i]<=0)
               {
@@ -703,11 +709,6 @@ namespace eli
               else
               {
                 seg_degree[i]+=std::min(max_degree[i]-seg_degree[i], fits[i].npoints());
-              }
-
-              if (!valid_degree(seg_degree[i], max_degree[i]))
-              {
-                return false;
               }
 
               seg_ind[i+1]=seg_ind[i]+seg_degree[i]+1;
