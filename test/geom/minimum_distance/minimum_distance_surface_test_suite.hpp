@@ -4154,6 +4154,8 @@ class minimum_distance_surface_test_suite : public Test::Suite
       {
         pt = tst_pts[i];
         dist=eli::geom::intersect::minimum_distance(u, v, pws, pt, u_guess, v_guess);
+        // FIX: What should this test be?
+        TEST_ASSERT(dist>=0);
       }
 
 //      octave_print( 1, pws );
