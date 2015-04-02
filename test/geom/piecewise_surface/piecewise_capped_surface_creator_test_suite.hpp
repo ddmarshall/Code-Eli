@@ -213,13 +213,13 @@ class piecewise_capped_surface_creator_test_suite : public Test::Suite
         rtn_flag = cc.create(s_uminmax_cap);
         TEST_ASSERT(rtn_flag);
 
-        if (rtn_flag && (typeid(data_type)==typeid(float)))
-        {
-          std::cout.flush();
-          eli::test::octave_start(1);
-          eli::test::octave_print(1, s_uminmax_cap, "surf", true);
-          eli::test::octave_finish(1);
-        }
+//        if (rtn_flag && (typeid(data_type)==typeid(float)))
+//        {
+//          std::cout.flush();
+//          eli::test::octave_start(1);
+//          eli::test::octave_print(1, s_uminmax_cap, "surf", true);
+//          eli::test::octave_finish(1);
+//        }
       }
     }
 };

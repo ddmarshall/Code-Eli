@@ -61,7 +61,7 @@ namespace eli
           }
 
 #if (defined(NDEBUG) && defined(__GNUC__))
-#  if ((__GNUC__==4) && (__GNUC_MINOR__==6))
+#  if ((__GNUC__==4) && ( (__GNUC_MINOR__==6) || (__GNUC_MINOR__==5) ))
 #    pragma GCC diagnostic push
 #    pragma GCC diagnostic ignored "-Wstrict-overflow"
 #  endif

@@ -34,6 +34,9 @@ namespace eli
         x=svd.solve(r);
       }
 
+      /**
+        This solves a linear least squares problem of the form \f$ \min_{B\vec{x}=\vec{d}}\left|\left| A\vec{x}-\vec{b} \right|\right|^2 \f$ 
+       */
       template<typename data1__, typename data2__, typename data3__, typename data4__, typename data5__>
       void least_squares_eqcon(Eigen::MatrixBase<data1__>  &x, const Eigen::MatrixBase<data2__> &A, const Eigen::MatrixBase<data3__> &b, const Eigen::MatrixBase<data4__> &B, const Eigen::MatrixBase<data5__> &d)
       {

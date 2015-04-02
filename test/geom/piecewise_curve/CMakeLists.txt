@@ -43,7 +43,9 @@ set (PIECEWISE_CURVE_CREATOR_TEST_HEADER ${_ELI_TEST_INCLUDE_DIR}/octave_helpers
                                          ${ELI_SOURCE_DIR}/include/eli/constants/math.hpp
                                          ${ELI_SOURCE_DIR}/include/eli/util/tolerance.hpp
                                          ${ELI_SOURCE_DIR}/include/eli/mutil/fd/d1o2.hpp
+                                         ${ELI_SOURCE_DIR}/include/eli/mutil/opt/least_squares.hpp
                                          ${ELI_SOURCE_DIR}/include/eli/geom/general/continuity.hpp
+                                         ${ELI_SOURCE_DIR}/include/eli/geom/intersect/minimum_distance_curve.hpp
                                          ${ELI_SOURCE_DIR}/include/eli/geom/curve/bezier.hpp
                                          ${ELI_SOURCE_DIR}/include/eli/geom/curve/length.hpp
                                          ${ELI_SOURCE_DIR}/include/eli/geom/curve/curvature.hpp

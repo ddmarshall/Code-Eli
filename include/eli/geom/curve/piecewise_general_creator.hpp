@@ -17,6 +17,7 @@
 
 #include "eli/code_eli.hpp"
 
+#include "eli/mutil/opt/least_squares.hpp"
 #include "eli/geom/general/continuity.hpp"
 
 #include "eli/geom/utility/bezier.hpp"
@@ -364,6 +365,97 @@ namespace eli
               joint_continuity continuity;
           };
 
+          class fit_data
+          {
+            public:
+              fit_data() : point(0) {}
+              fit_data(index_type npts) : point(npts) {}
+              fit_data(const fit_data &fd) : point(fd.point) {}
+
+              ~fit_data() {}
+
+              fit_data operator=(const fit_data &fd)
+              {
+                if (this!=&fd)
+                {
+                  point=fd.point;
+                }
+
+                return *this;
+              }
+
+              bool operator==(const fit_data &fd) const
+              {
+                return point==fd.point;
+              }
+
+              bool operator!=(const fit_data &fd) const
+              {
+                return !operator==(fd);
+              }
+
+              index_type npoints() const
+              {
+                return point.size();
+              }
+
+              index_type add_point(const point_type &pt)
+              {
+                index_type indx(find_point(pt));
+
+                if (indx==npoints())
+                {
+                  point.push_back(pt);
+                }
+
+                return indx;
+              }
+
+              point_type get_point(index_type i) const
+              {
+                if (i>=npoints())
+                {
+                  assert(false);
+                  return point_type();
+                }
+
+                return point[i];
+              }
+
+              void remove_point(index_type i)
+              {
+                if (i>npoints())
+                {
+                  assert(false);
+                  return;
+                }
+
+                point.erase(i);
+              }
+
+              void remove_point(const point_type &pt)
+              {
+                remove_point(find_point(pt));
+              }
+
+            protected:
+              index_type find_point(const point_type &pt) const
+              {
+                tolerance_type tol;
+
+                for (index_type i=0;i<npoints(); ++i)
+                {
+                  if (tol.approximately_equal(point[i], pt))
+                    return i;
+                }
+
+                return npoints();
+              }
+
+            private:
+              std::vector<point_type> point;
+          };
+
         public:
           piecewise_general_creator()
             : piecewise_creator_base<data_type, dim__, tolerance_type>(1, 0), joints(2),
@@ -423,16 +515,31 @@ namespace eli
             this->set_num_segs(nsegs);
 
             joints=jnts;
+            fits.clear();
+            fits.resize(nsegs);
             max_degree=maxd;
             closed=cl;
 
             return true;
           }
 
+          bool set_conditions(const std::vector<joint_data> &jnts, const std::vector<fit_data> &fts, const std::vector<index_type> &maxd, bool cl=false)
+          {
+            if (fts.size()!=maxd.size())
+              return false;
+
+            if (!set_conditions(jnts, maxd, cl))
+              return false;
+
+            fits=fts;
+
+            return true;
+          }
+
           virtual bool create(piecewise<bezier, data_type, dim__, tolerance_type> &pc) const
           {
-            index_type nsegs(this->get_number_segments()), i;
-            std::vector<index_type> seg_degree(nsegs);
+            index_type nsegs(this->get_number_segments()), i, j;
+            std::vector<index_type> seg_degree(nsegs), seg_fit(nsegs);
             std::vector<joint_data> joint_states(joints);
 
             pc.clear();
@@ -582,17 +689,31 @@ namespace eli
             }
 
             // final check of maximum degree and determine number of unknowns
-            std::vector<index_type> seg_ind(nsegs+1);
+            std::vector<index_type> seg_ind(nsegs+1), seg_fit_ind(nsegs+1);
 
             seg_ind[0]=0;
+            seg_fit_ind[0]=0;
             for (i=0; i<nsegs; ++i)
             {
+              // stop if already don't have a valid degree
               if (!valid_degree(seg_degree[i], max_degree[i]))
               {
                 return false;
               }
 
+              // account for degrees associated with fits points
+              if (max_degree[i]<=0)
+              {
+                seg_degree[i]+=fits[i].npoints();
+              }
+              else
+              {
+                seg_degree[i]+=std::min(max_degree[i]-seg_degree[i], fits[i].npoints());
+              }
+
               seg_ind[i+1]=seg_ind[i]+seg_degree[i]+1;
+              seg_fit[i]=fits[i].npoints();
+              seg_fit_ind[i+1]=seg_fit_ind[i]+seg_fit[i];
             }
 
             // build segments based on joint information
@@ -679,10 +800,81 @@ namespace eli
               }
             }
 
-            assert(cond_no*dim__==coef.rows());
-
             // solve for the control points
-            x=coef.lu().solve(rhs);
+            if ((seg_fit_ind[nsegs]==0) || (cond_no*dim__==coef.rows()))
+            {
+              assert(cond_no*dim__==coef.rows());
+
+              // do direct solve because have no fit constraints
+              x=coef.lu().solve(rhs);
+            }
+            else
+            {
+              // make sure coefficient matrix is sized correctly
+              assert(cond_no*dim__<coef.rows());
+              assert(seg_ind[nsegs]*dim__==coef.cols());
+
+              // make sure there are enough constraints
+              index_type nx(seg_ind[nsegs]*dim__), rB(cond_no*dim__), rA(seg_fit_ind[nsegs]*dim__);
+              if ((rA+rB)<nx)
+              {
+                assert(false);
+                return false;
+              }
+
+              // create new coefficient matrices and rhs vectors
+              Eigen::Matrix<data_type, Eigen::Dynamic, Eigen::Dynamic> A(rA, nx), B(rB, nx);
+              Eigen::Matrix<data_type, Eigen::Dynamic, 1> b_rhs(rA, 1), d_rhs(rB, 1);
+
+              // fill the constraints B matrix & d vector with the coefficient matrix from above
+              for (i=0; i<rB; ++i)
+              {
+                B.row(i)=coef.row(i);
+                d_rhs.row(i)=rhs.row(i);
+              }
+
+              // for each non-empty fit segment build the rows of the A matrix and b vector
+              cond_no=0;
+              for (i=0; i<nsegs; ++i)
+              {
+                if (fits[i].npoints()>0)
+                {
+                  data_type len;
+                  std::vector<data_type> param(fits[i].npoints());
+
+                  // need to determine the parameteric coordinate for each fit point
+                  param[0]=geom::point::distance(fits[i].get_point(0), joint_states[i].get_f());
+                  for (j=1; j<fits[i].npoints(); ++j)
+                  {
+                    param[j]=param[j-1]+geom::point::distance(fits[i].get_point(j-1), fits[i].get_point(j));
+                  }
+                  len=param.back()+geom::point::distance(fits[i].get_point(fits[i].npoints()-1), joint_states[i+1].get_f());
+
+                  // set the point fit condition
+                  for (j=0; j<fits[i].npoints(); ++j)
+                  {
+                    assert(cond_no*dim__<rA);
+
+                    param[j]/=len;
+                    set_fit_point_condition(rows, rhs_seg, seg_ind[i], seg_degree[i], fits[i].get_point(j), param[j]);
+                    A.block(cond_no*dim__, 0, dim__, nx)=rows;
+                    b_rhs.block(cond_no*dim__, 0, dim__, 1)=rhs_seg;
+                    ++cond_no;
+                  }
+                }
+              }
+              assert(cond_no*dim__==rA);
+
+              // determine the coefficients
+              eli::mutil::opt::least_squares_eqcon(x, A, b_rhs, B, d_rhs);
+
+
+//              std::cout << "A=" << std::endl << A << std::endl;
+//              std::cout << "b=" << std::endl << b_rhs << std::endl;
+//              std::cout << "B=" << std::endl << B << std::endl;
+//              std::cout << "d=" << std::endl << d_rhs << std::endl;
+//              std::cout << "x=" << std::endl << x << std::endl;
+            }
 
             // extract them into control points for each segment
             typedef piecewise<bezier, data_type, dim__, tolerance_type> piecewise_curve_type;
@@ -702,6 +894,7 @@ namespace eli
               for (index_type j=0; j<=seg_degree[i]; ++j)
               {
                 cp=x.block((seg_ind[i]+j)*dim__, 0, dim__, 1).transpose();
+//                std::cout << "cp[i,j]=" << cp << std::endl;
                 c.set_control_point(cp, j);
               }
 
@@ -885,8 +1078,37 @@ namespace eli
             }
           }
 
+          template<typename Derived1, typename Derived2>
+          void set_fit_point_condition(Eigen::MatrixBase<Derived1> &rows, Eigen::MatrixBase<Derived2> &rhs,
+                                       const index_type start_index, const index_type &seg_degree,
+                                       const point_type &p, const data_type &t) const
+          {
+            // set terms
+            index_type ind(start_index*dim__), i;
+            const index_type n(seg_degree);
+            Eigen::Matrix<data_type, dim__, dim__> coef;
+            data_type k, tau;
+
+            // set matrix rows
+            rows.setConstant(0);
+            coef.setIdentity();
+            k=1;
+            tau=std::pow(1-t, seg_degree);
+            rows.block(0, ind, dim__, dim__)=coef*k*tau;
+            for (i=1; i<=n; ++i)
+            {
+              k*=static_cast<data_type>(n-i+1)/i;
+              tau*=t/(1-t);
+              rows.block(0, ind+i*dim__, dim__, dim__)=coef*k*tau;
+            }
+
+            // set right hand side
+            rhs=p.transpose();
+          }
+
         private:
           std::vector<joint_data> joints;
+          std::vector<fit_data> fits;
           std::vector<index_type> max_degree;
           bool closed;
       };

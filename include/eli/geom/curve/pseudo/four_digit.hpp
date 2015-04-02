@@ -177,29 +177,19 @@ namespace eli
               // check to make sure given valid parametric value
               assert((xi>=-1) && (xi<=1));
 
-              data_type xc, xcp, yc, ycp, ycpp, ycppp, delta, deltap, deltapp;
+              data_type xc, yc, ycp, ycpp, ycppp, delta, deltap, deltapp;
               const data_type one(1), two(2), three(3);
               index_type surf_sign;
 
               // calculate the lower surface
               if (xi<0)
               {
-                xcp=-one;
                 xc=-xi;
                 surf_sign=-1;
               }
               // calculate the upper surface
               else
               {
-                if (xi==0)
-                {
-                  xcp=0;
-                }
-                else
-                {
-                  xcp=one;
-                }
-
                 xc=xi;
                 surf_sign=1;
               }
