@@ -10,713 +10,612 @@
 *    David D. Marshall - initial code and implementation
 ********************************************************************************/
 
-#include <cstdlib>  // EXIT_SUCCESS
-#include <cmath>    // std::sin, std::cos
-#include <iostream> // std::iostream
+#include <cstdlib>   // EXIT_SUCCESS
+#include <iostream>  // std::iostream
+#include <algorithm> // std::sort, std::find, std::find_if
+#include <utility>   // std::pair
 #include <iomanip>
 #include <string>
 #include <vector>
+#include <list>
 
 #include "eli/constants/math.hpp"
+#include "eli/geom/point/distance.hpp"
+#include "eli/geom/general/continuity.hpp"
+
 #include "eli/geom/curve/bezier.hpp"
+#include "eli/geom/curve/piecewise.hpp"
+#include "eli/geom/curve/piecewise_general_creator.hpp"
 
-typedef eli::geom::curve::bezier2d bezier_type;
-typedef bezier_type::data_type data_type;
-typedef bezier_type::point_type point_type;
-typedef bezier_type::fit_container_type fit_container_type;
-typedef fit_container_type::constraint_info constraint_info_type;
+// FIX: Need to make this accessible to test and example or come up with another way of presenting
+//      curve results.
+#include "../test/include/octave_helpers.hpp"
 
-void create_airfoil(std::vector<point_type, Eigen::aligned_allocator<point_type> > &pts, int &le)
+namespace eli
+{
+  namespace test
+  {
+    template<typename data__>
+    void octave_param_print(int figno, const eli::geom::curve::piecewise<eli::geom::curve::bezier, data__, 3> &pc,
+                            const std::string &name="", bool show_joints=false)
+    {
+      typedef eli::geom::curve::piecewise<eli::geom::curve::bezier, data__, 3> piecewise_curve_type;
+      typedef typename piecewise_curve_type::curve_type curve_type;
+      typedef typename piecewise_curve_type::data_type data_type;
+      typedef typename piecewise_curve_type::point_type point_type;
+      typedef typename piecewise_curve_type::index_type index_type;
+
+      std::string nm, tbuf, xbuf, ybuf, zbuf, xpbuf, ypbuf, zpbuf, xppbuf, yppbuf, zppbuf;
+
+      index_type i, j;
+
+      // FIX: Need to update to show the joints
+      assert(!show_joints);
+
+      // build name
+      if (name=="")
+      {
+        nm=random_string(5);
+      }
+      else
+      {
+        nm=name;
+      }
+
+      // get the parameters for the segments
+      const index_type npts(130);
+      index_type nsegs(pc.number_segments()), nt;
+      data_type dt;
+      std::vector<data_type> tseg(nsegs+1);
+      std::vector<index_type> npseg(nsegs);
+      std::vector<data_type> t;
+
+      pc.get_parameters(tseg.begin());
+      dt=(tseg[nsegs]-tseg[0])/npts;
+
+      calculate_t(t, npseg, tseg, dt);
+      nt=t.size();
+
+      // set the curve points
+      tbuf=nm+"_t=[";
+      xbuf=nm+"_curv_x=[";
+      ybuf=nm+"_curv_y=[";
+      zbuf=nm+"_curv_z=[";
+      xpbuf=nm+"_curv_xp=[";
+      ypbuf=nm+"_curv_yp=[";
+      zpbuf=nm+"_curv_zp=[";
+      xppbuf=nm+"_curv_xpp=[";
+      yppbuf=nm+"_curv_ypp=[";
+      zppbuf=nm+"_curv_zpp=[";
+      for (i=0; i<nt; ++i)
+      {
+        point_type pt;
+
+        tbuf+=std::to_string(t[i]);
+        pt=pc.f(t[i]);
+        xbuf+=std::to_string(pt.x());
+        ybuf+=std::to_string(pt.y());
+        zbuf+=std::to_string(pt.z());
+        pt=pc.fp(t[i]);
+        xpbuf+=std::to_string(pt.x());
+        ypbuf+=std::to_string(pt.y());
+        zpbuf+=std::to_string(pt.z());
+        pt=pc.fpp(t[i]);
+        xppbuf+=std::to_string(pt.x());
+        yppbuf+=std::to_string(pt.y());
+        zppbuf+=std::to_string(pt.z());
+        if (i<(nt-1))
+        {
+          tbuf+=", ";
+          xbuf+=", ";
+          ybuf+=", ";
+          zbuf+=", ";
+          xpbuf+=", ";
+          ypbuf+=", ";
+          zpbuf+=", ";
+          xppbuf+=", ";
+          yppbuf+=", ";
+          zppbuf+=", ";
+        }
+      }
+      tbuf+="];";
+      xbuf+="];";
+      ybuf+="];";
+      zbuf+="];";
+      xpbuf+="];";
+      ypbuf+="];";
+      zpbuf+="];";
+      xppbuf+="];";
+      yppbuf+="];";
+      zppbuf+="];";
+
+      std::cout << "% parameter curve: " << nm << std::endl;
+      std::cout << "figure(" << figno << ");" << std::endl;
+      std::cout << tbuf << std::endl;
+      std::cout << xbuf << std::endl;
+      std::cout << ybuf << std::endl;
+      std::cout << zbuf << std::endl;
+      std::cout << xpbuf << std::endl;
+      std::cout << ypbuf << std::endl;
+      std::cout << zpbuf << std::endl;
+      std::cout << xppbuf << std::endl;
+      std::cout << yppbuf << std::endl;
+      std::cout << zppbuf << std::endl;
+
+      std::cout << "setenv('GNUTERM', 'x11');" << std::endl;
+      std::cout << "subplot(3, 1, 1);" << std::endl;
+      std::cout << "plot(" << nm << "_t, " << nm << "_curv_x, " << "'-g', "
+                           << nm << "_t, " << nm << "_curv_y, " << "'-b', "
+                           << nm << "_t, " << nm << "_curv_z, " << "'-r');" << std::endl;
+      std::cout << "xlabel('t');" << std::endl;
+      std::cout << "ylabel('x, y, z');" << std::endl;
+      std::cout << "subplot(3, 1, 2);" << std::endl;
+      std::cout << "plot(" << nm << "_t, " << nm << "_curv_xp, " << "'-g', "
+                           << nm << "_t, " << nm << "_curv_yp, " << "'-b', "
+                           << nm << "_t, " << nm << "_curv_zp, " << "'-r');" << std::endl;
+      std::cout << "xlabel('t');" << std::endl;
+      std::cout << "ylabel('x^{\\prime}, y^{\\prime}, z^{\\prime}');" << std::endl;
+      std::cout << "subplot(3, 1, 3);" << std::endl;
+      std::cout << "plot(" << nm << "_t, " << nm << "_curv_xpp, " << "'-g', "
+                           << nm << "_t, " << nm << "_curv_ypp, " << "'-b', "
+                           << nm << "_t, " << nm << "_curv_zpp, " << "'-r');" << std::endl;
+      std::cout << "xlabel('t');" << std::endl;
+      std::cout << "ylabel('x^{\\prime\\prime}, y^{\\prime\\prime}, z^{\\prime\\prime}');" << std::endl;
+    }
+  }
+}
+
+typedef double data__;
+typedef eli::geom::curve::piecewise<eli::geom::curve::bezier, data__, 3> piecewise_curve_type;
+typedef piecewise_curve_type::curve_type curve_type;
+typedef piecewise_curve_type::point_type point_type;
+typedef piecewise_curve_type::data_type data_type;
+typedef piecewise_curve_type::index_type index_type;
+typedef piecewise_curve_type::tolerance_type tolerance_type;
+typedef eli::geom::curve::piecewise_general_creator<data_type, 3, tolerance_type> general_creator_type;
+typedef general_creator_type::joint_data joint_data_type;
+typedef general_creator_type::joint_continuity continuity_type;
+
+void create_airfoil(std::vector<point_type, Eigen::aligned_allocator<point_type>> &pts)
 {
   pts.resize(40);
   // lower surface
-  pts[ 0] << 1.0000,-0.0020;
-  pts[ 1] << 0.9012,-0.0087;
-  pts[ 2] << 0.8078,-0.0247;
-  pts[ 3] << 0.7017,-0.0453;
-  pts[ 4] << 0.6178,-0.0572;
-  pts[ 5] << 0.4123,-0.0684;
-  pts[ 6] << 0.3545,-0.0678;
-  pts[ 7] << 0.2986,-0.0657;
-  pts[ 8] << 0.2453,-0.0621;
-  pts[ 9] << 0.1499,-0.0511;
-  pts[10] << 0.1029,-0.0441;
-  pts[11] << 0.0741,-0.0365;
-  pts[12] << 0.0451,-0.0284;
-  pts[13] << 0.0143,-0.0112;
-  pts[14] << 0.0076,-0.0116;
-  pts[15] << 0.0029,-0.0077;
-  pts[16] << 0.0000, 0.0000;
-  le=16;
+  pts[ 0] << 1.0000,-0.0020, 0;
+  pts[ 1] << 0.9012,-0.0087, 0;
+  pts[ 2] << 0.8078,-0.0247, 0;
+  pts[ 3] << 0.7017,-0.0453, 0;
+  pts[ 4] << 0.6178,-0.0572, 0;
+  pts[ 5] << 0.4123,-0.0684, 0;
+  pts[ 6] << 0.3545,-0.0678, 0;
+  pts[ 7] << 0.2986,-0.0657, 0;
+  pts[ 8] << 0.2453,-0.0621, 0;
+  pts[ 9] << 0.1499,-0.0511, 0;
+  pts[10] << 0.1029,-0.0441, 0;
+  pts[11] << 0.0741,-0.0365, 0;
+  pts[12] << 0.0451,-0.0284, 0;
+  pts[13] << 0.0143,-0.0112, 0;
+  pts[14] << 0.0076,-0.0116, 0;
+  pts[15] << 0.0029,-0.0077, 0;
+  pts[16] << 0.0000, 0.0000, 0;
   // upper surface
-  pts[17] << 0.0013, 0.0030;
-  pts[18] << 0.0045, 0.0094;
-  pts[19] << 0.0096, 0.0138;
-  pts[20] << 0.0165, 0.0183;
-  pts[21] << 0.0252, 0.0228;
-  pts[22] << 0.0477, 0.0315;
-  pts[23] << 0.0767, 0.0397;
-  pts[24] << 0.1118, 0.0473;
-  pts[25] << 0.1524, 0.0539;
-  pts[26] << 0.1980, 0.0593;
-  pts[27] << 0.2979, 0.0636;
-  pts[28] << 0.3015, 0.0665;
-  pts[29] << 0.3578, 0.0680;
-  pts[30] << 0.4160, 0.0680;
-  pts[31] << 0.4455, 0.0675;
-  pts[32] << 0.5049, 0.0652;
-  pts[33] << 0.5930, 0.0585;
-  pts[34] << 0.6501, 0.0514;
-  pts[35] << 0.7050, 0.0416;
-  pts[36] << 0.7623, 0.0297;
-  pts[37] << 0.8168, 0.0221;
-  pts[38] << 0.9074, 0.0108;
-  pts[39] << 1.0000, 0.0050;
-}
-
-void create_circle(std::vector<point_type, Eigen::aligned_allocator<point_type> > &pts)
-{
-  // NOTE: This will not create a closed circle, the last point will be
-  //       the point just prior to the 2*pi point
-  pts.resize(20);
-
-  for (size_t i=0; i<pts.size(); ++i)
-  {
-    data_type theta(eli::constants::math<data_type>::two_pi()*static_cast<data_type>(i)/pts.size());
-    pts[i](0)=std::cos(theta);
-    pts[i](1)=std::sin(theta);
-  }
-}
-
-void octave_print(std::ostream &ostr, const std::string &varname, const std::vector<point_type, Eigen::aligned_allocator<point_type> > &pts)
-{
-  size_t i;
-
-  ostr << varname << "_x=[" << pts[0](0);
-  for (i=1; i<pts.size(); ++i)
-    ostr << ", " << pts[i](0);
-  ostr << "];" << std::endl;
-  ostr << varname << "_y=[" << pts[0](1);
-  for (i=1; i<pts.size(); ++i)
-    ostr << ", " << pts[i](1);
-  ostr << "];" << std::endl;
-}
-
-void octave_print(std::ostream &ostr, const std::string &varname, const bezier_type &bez)
-{
-  size_t i;
-
-  std::vector<point_type, Eigen::aligned_allocator<point_type> > pts(101);
-  for (i=0; i<pts.size(); ++i)
-    pts[i]=bez.f(static_cast<double>(i)/(pts.size()-1));
-
-  octave_print(ostr, varname, pts);
-}
-
-data_type example_fit_1(bezier_type &bez, const std::vector<point_type, Eigen::aligned_allocator<point_type> > &pts, const size_t dim)
-{
-  // set up fit container
-  fit_container_type fcon;
-  fcon.set_points(pts.begin(), pts.end());
-
-  // do fit
-  return bez.fit_with_error(fcon, dim);
-}
-
-data_type example_fit_2(bezier_type &bez, const std::vector<point_type, Eigen::aligned_allocator<point_type> > &pts, const size_t dim)
-{
-  // set up fit container
-  fit_container_type fcon;
-  fcon.set_points(pts.begin(), pts.end());
-  fcon.add_start_C0_constraint();
-  fcon.add_end_C0_constraint();
-
-  // do fit
-  return bez.fit_with_error(fcon, dim);
-}
-
-data_type example_fit_3(bezier_type &bez, constraint_info_type ci[2], const std::vector<point_type, Eigen::aligned_allocator<point_type> > &pts, const size_t dim)
-{
-  // set up fit container
-  fit_container_type fcon;
-  fcon.set_points(pts.begin(), pts.end());
-  fcon.add_start_C1_constraint();
-  fcon.add_end_C1_constraint();
-  fcon.get_start_constraint(ci[0]);
-  fcon.get_end_constraint(ci[1]);
-
-  // do fit
-  return bez.fit_with_error(fcon, dim);
-}
-
-data_type example_fit_4(bezier_type &bez, constraint_info_type ci[2], const std::vector<point_type, Eigen::aligned_allocator<point_type> > &pts, const size_t dim, const int &index)
-{
-  // set up fit container
-  fit_container_type fcon;
-  fcon.set_points(pts.begin(), pts.end());
-  fcon.add_start_C1_constraint();
-  fcon.add_end_C1_constraint();
-  fcon.add_C0_constraint(index);
-  fcon.get_start_constraint(ci[0]);
-  fcon.get_end_constraint(ci[1]);
-
-  // do fit
-  return bez.fit_with_error(fcon, dim);
-}
-
-data_type example_fit_5(bezier_type &bez, constraint_info_type ci[2], const std::vector<point_type, Eigen::aligned_allocator<point_type> > &pts, const size_t dim, const int index[3])
-{
-  // set up fit container
-  fit_container_type fcon;
-  fcon.set_points(pts.begin(), pts.end());
-  fcon.add_start_C1_constraint();
-  fcon.add_end_C1_constraint();
-  fcon.add_C0_constraint(index[0]);
-  fcon.add_C0_constraint(index[1]);
-  fcon.add_C0_constraint(index[2]);
-  fcon.get_start_constraint(ci[0]);
-  fcon.get_end_constraint(ci[1]);
-
-  // do fit
-  return bez.fit_with_error(fcon, dim);
-}
-
-void example_fit_6(bezier_type bez[4], data_type err[4], bezier_type::fit_container_type::constraint_info ci[6], const std::vector<point_type, Eigen::aligned_allocator<point_type> > &pts, const bezier_type::dimension_type dim[4])
-{
-  size_t i;
-
-  // default fit
-  i=0;
-  {
-    // set up fit container
-    fit_container_type fcon;
-    fcon.set_points(pts.begin(), pts.end());
-
-    // do fit
-    err[i]=bez[i].fit_with_error(fcon, dim[i]);
-  }
-
-  // default fit
-  i=1;
-  {
-    // set up fit container
-    fit_container_type fcon;
-    fcon.set_points(pts.begin(), pts.end());
-    fcon.set_end_flag(eli::geom::general::C2);
-
-    // do fit
-    err[i]=bez[i].fit_with_error(fcon, dim[i]);
-  }
-
-  // C2-closed fit
-  i=2;
-  {
-    // set up fit container
-    fit_container_type fcon;
-    fcon.set_points(pts.begin(), pts.end());
-    fcon.set_end_flag(eli::geom::general::C2);
-
-    // do fit
-    err[i]=bez[i].fit_with_error(fcon, dim[i]);
-  }
-
-  // C2-closed fit with C1 at start specified
-  i=3;
-  {
-    // set the first and second derivative values
-    point_type fp0;
-    fp0(0)=-eli::constants::math<data_type>::two_pi()*pts[0](1);
-    fp0(1)=eli::constants::math<data_type>::two_pi()*pts[0](0);
-
-    // set up fit container
-    fit_container_type fcon;
-    fcon.set_points(pts.begin(), pts.end());
-    fcon.set_end_flag(eli::geom::general::C2);
-    fcon.add_start_C1_constraint(fp0);
-    fcon.get_constraint(0, ci[i]); // constraint on point 0
-
-    // do fit
-    err[i]=bez[i].fit_with_error(fcon, dim[i]);
-  }
-
-  // C2-closed fit with C2 at start specified
-  i=4;
-  {
-    // set the first and second derivative values
-    point_type fp0, fpp0;
-    fp0(0)=-eli::constants::math<data_type>::two_pi()*pts[0](1);
-    fp0(1)=eli::constants::math<data_type>::two_pi()*pts[0](0);
-    fpp0(0)=-4*eli::constants::math<data_type>::pi_squared()*pts[0](0);
-    fpp0(1)=-4*eli::constants::math<data_type>::pi_squared()*pts[0](1);
-
-    // set up fit container
-    fit_container_type fcon;
-    fcon.set_points(pts.begin(), pts.end());
-    fcon.set_end_flag(eli::geom::general::C2);
-    fcon.add_start_C2_constraint(fp0, fpp0);
-    fcon.get_constraint(0, ci[i]); // constraint on point 0
-
-    // do fit
-    err[i]=bez[i].fit_with_error(fcon, dim[i]);
-  }
-
-  // C2-closed fit with C2 at start specified
-  i=5;
-  {
-    // set the first and second derivative values
-    point_type fp0, fpp0;
-    fp0(0)=-eli::constants::math<data_type>::two_pi()*pts[0](1);
-    fp0(1)=eli::constants::math<data_type>::two_pi()*pts[0](0);
-    fpp0(0)=-4*eli::constants::math<data_type>::pi_squared()*pts[0](0);
-    fpp0(1)=-4*eli::constants::math<data_type>::pi_squared()*pts[0](1);
-
-    // set up fit container
-    fit_container_type fcon;
-    fcon.set_points(pts.begin(), pts.end());
-    fcon.set_end_flag(eli::geom::general::C2);
-    fcon.add_start_C2_constraint(fp0, fpp0);
-    fcon.get_constraint(0, ci[i]); // constraint on point 0
-
-    // do fit
-    err[i]=bez[i].fit_with_error(fcon, dim[i]);
-  }
-
+  pts[17] << 0.0013, 0.0030, 0;
+  pts[18] << 0.0045, 0.0094, 0;
+  pts[19] << 0.0096, 0.0138, 0;
+  pts[20] << 0.0165, 0.0183, 0;
+  pts[21] << 0.0252, 0.0228, 0;
+  pts[22] << 0.0477, 0.0315, 0;
+  pts[23] << 0.0767, 0.0397, 0;
+  pts[24] << 0.1118, 0.0473, 0;
+  pts[25] << 0.1524, 0.0539, 0;
+  pts[26] << 0.1980, 0.0593, 0;
+  pts[27] << 0.2979, 0.0636, 0;
+  pts[28] << 0.3015, 0.0665, 0;
+  pts[29] << 0.3578, 0.0680, 0;
+  pts[30] << 0.4160, 0.0680, 0;
+  pts[31] << 0.4455, 0.0675, 0;
+  pts[32] << 0.5049, 0.0652, 0;
+  pts[33] << 0.5930, 0.0585, 0;
+  pts[34] << 0.6501, 0.0514, 0;
+  pts[35] << 0.7050, 0.0416, 0;
+  pts[36] << 0.7623, 0.0297, 0;
+  pts[37] << 0.8168, 0.0221, 0;
+  pts[38] << 0.9074, 0.0108, 0;
+  pts[39] << 1.0000, 0.0050, 0;
 }
 
 int main(int /*argc*/, char * /*argv*/[])
 {
-  std::cout << "figure(1);" << std::endl;
-  // Use Case 1: Simple fit with no constraints
+  typedef std::pair<index_type, continuity_type> joint_type;
+
+  enum airfoil_trailing_edge_cap
+  {
+    no_te_cap = 0,
+    blunt_te_cap = 1,
+    force_chord_blunt_te_cap = 2,
+    force_thick_blunt_te_cap = 3,
+    round_te_cap = 11,
+    force_chord_round_te_cap = 12,
+    force_thick_round_te_cap = 13,
+    sharp_te_cap = 21,
+    force_chord_sharp_te_cap = 22,
+    force_thick_sharp_te_cap = 23
+  };
+
+  index_type i, j;
+  tolerance_type tol;
+
   //
-  //             This would correspond to the most basic fitting that a user would perform.
-  //             They would input a set of points and then fit a bezier curve to the points.
-  //             The use would have to specify the degree for the bezier curve.
-  {
-    int le;
-    bezier_type::dimension_type d(8);
-    bezier_type bez;
-    std::vector<point_type, Eigen::aligned_allocator<point_type> > pts;
-    data_type err;
-
-    // get points to print out
-    create_airfoil(pts, le);
-
-    // get the bezier curve from the fit
-    err=example_fit_1(bez, pts, d);
-
-    std::cout << "subplot(5, 1, 1);" << std::endl;
-    octave_print(std::cout, "af", pts);
-    octave_print(std::cout, "free", bez);
-    std::cout << "plot(af_x, af_y, 'ok', free_x, free_y, '-k');" << std::endl;
-    std::cout << "axis([0,1.1,-0.1,0.1]);" << std::endl;
-    std::cout << "title('" << d << "th Order Bezier - Free Fit');" << std::endl;
-    std::cout << "text(0.3, 0, '\\Sigma d^2=" << err << "');" << std::endl;
-  }
-
-  // Use Case 2: Fit with fixed end points
+  // User supplied inputs
   //
-  //             This corresponds to a case were the user wants to fit the points and ensure
-  //             that the curve goes through the first and last points.
-  {
-    int le;
-    bezier_type::dimension_type d(8);
-    bezier_type bez;
-    std::vector<point_type, Eigen::aligned_allocator<point_type> > pts;
-    data_type err;
+  std::vector<point_type, Eigen::aligned_allocator<point_type>> pt;
+  index_type npts;
 
-    // get points to print out
-    create_airfoil(pts, le);
+  // user supplied airfoil points
+  create_airfoil(pt);
+  npts=static_cast<index_type>(pt.size());
 
-    // get the bezier curve from the fit
-    err=example_fit_2(bez, pts, d);
+  // user supplied force joint and force not joint
+  std::vector<index_type> not_joint(0);
+  std::vector<joint_type> is_joint(0);
+  not_joint.push_back(28);
+  not_joint.push_back(29);
+//  is_joint[0]=std::make_pair(32, continuity_type::C2);
 
-    std::cout << "subplot(5, 1, 2);" << std::endl;
-    octave_print(std::cout, "af", pts);
-    octave_print(std::cout, "free", bez);
-    std::cout << "plot(af_x, af_y, 'ok', free_x, free_y, '-k',";
-    std::cout << " [" << pts[0](0) << "," << pts[pts.size()-1](0) << "],";
-    std::cout << " [" << pts[0](1) << "," << pts[pts.size()-1](1) << "], 'or');" << std::endl;
-    std::cout << "axis([0,1.1,-0.1,0.1]);" << std::endl;
-    std::cout << "title('" << d << "th Order Bezier - Fit C0 Ends');" << std::endl;
-    std::cout << "text(0.3, 0, '\\Sigma d^2=" << err << "');" << std::endl;
-  }
+  // user supplied trailing edge treatment
+  airfoil_trailing_edge_cap te_cap(blunt_te_cap);
+  assert( (te_cap==no_te_cap) || (te_cap==blunt_te_cap) );
 
-  // Use Case 3: Fixed end points and slope
   //
-  //             This corresponds to the use case where the user wants to ensure that the
-  //             curve goes through the first and last points and that the slope of the curve
-  //             at those two points without knowing the slope. A 2nd order finite difference
-  //             is used of the 1st derivative vector is not specified.
-  {
-    int le;
-    bezier_type::dimension_type d(8);
-    bezier_type::fit_container_type::constraint_info ci[2];
-    bezier_type bez;
-    std::vector<point_type, Eigen::aligned_allocator<point_type> > pts;
-    data_type err;
-
-    // get points to print out
-    create_airfoil(pts, le);
-
-    // get the bezier curve from the fit
-    err=example_fit_3(bez, ci, pts, d);
-
-    std::cout << "subplot(5, 1, 3);" << std::endl;
-    octave_print(std::cout, "af", pts);
-    octave_print(std::cout, "free", bez);
-    std::cout << "plot(af_x, af_y, 'ok', free_x, free_y, '-k',";
-    std::cout << " [" << pts[0](0) << "," << pts[pts.size()-1](0) << "],";
-    std::cout << " [" << pts[0](1) << "," << pts[pts.size()-1](1) << "], 'or');" << std::endl;
-    std::cout << "hold on;" << std::endl;
-    std::cout << "quiver([" << pts[0](0) << ", " << pts[pts.size()-1](0) << "], [" << pts[0](1) << ", " << pts[pts.size()-1](1) << "], 0.05*["
-                            << ci[0].get_fp()(0) << ", " << ci[1].get_fp()(0) << "], 0.05*["<< ci[0].get_fp()(1) << ", " << ci[1].get_fp()(1) << "], 0, 'r');" << std::endl;
-    std::cout << "hold off;" << std::endl;
-    std::cout << "axis([0,1.1,-0.1,0.1]);" << std::endl;
-    std::cout << "title('" << d << "th Order Bezier - Fit C1 Ends');" << std::endl;
-    std::cout << "text(0.3, 0, '\\Sigma d^2=" << err << "');" << std::endl;
-    std::cout << "text(1.03, 0.015, '\\color{red}dr/dt');" << std::endl;
-    std::cout << "text(0.95, -0.015, '\\color{red}dr/dt');" << std::endl;
-  }
-
-  // Use Case 4: Fixed end points and fixed leading edge
+  // Closed trailing edge processing
   //
-  //             This corresponds to the use case where the user picks a point and wants to
-  //             improve the quality of the fit by ensuring that the curve goes through that
-  //             point. For this airfoil the leading edge goes through point 16.
+  point_type pt0(pt[0]), ptN(pt[npts-1]), pt_te;
+  bool te_points_open;
+
+  // determine if the trailing edge points are open
+  te_points_open=!tol.approximately_equal(pt0, ptN);
+
+  // create closed trailing point
+  // if non-blunt is desired, then after creating airfoil replace the first and last segments (the
+  //   two trailing edge segments) with the desired shape)
+  // TODO: This does not account for forced at particular chord location or particular thickness
+  if (te_points_open && te_cap!=no_te_cap)
   {
-    bezier_type::dimension_type d(8);
-    bezier_type::fit_container_type::constraint_info ci[2];
-    int le;
-    bezier_type bez;
-    std::vector<point_type, Eigen::aligned_allocator<point_type> > pts;
-    data_type err;
-
-    // get points to print out
-    create_airfoil(pts, le);
-
-    // get the bezier curve from the fit
-    err=example_fit_4(bez, ci, pts, d, le);
-
-    std::cout << "subplot(5, 1, 4);" << std::endl;
-    octave_print(std::cout, "af", pts);
-    octave_print(std::cout, "free", bez);
-    std::cout << "plot(af_x, af_y, 'ok', free_x, free_y, '-k',";
-    std::cout << " [" << pts[0](0) << "," << pts[pts.size()-1](0) << "," << pts[le](0) << "],";
-    std::cout << " [" << pts[0](1) << "," << pts[pts.size()-1](1) << "," << pts[le](1)  << "], 'or');" << std::endl;
-    std::cout << "hold on;" << std::endl;
-    std::cout << "quiver([" << pts[0](0) << ", " << pts[pts.size()-1](0) << "], [" << pts[0](1) << ", " << pts[pts.size()-1](1) << "], 0.05*["
-                            << ci[0].get_fp()(0) << ", " << ci[1].get_fp()(0) << "], 0.05*["<< ci[0].get_fp()(1) << ", " << ci[1].get_fp()(1) << "], 0, 'r');" << std::endl;
-    std::cout << "hold off;" << std::endl;
-    std::cout << "axis([0,1.1,-0.1,0.1]);" << std::endl;
-    std::cout << "title('" << d << "th Order Bezier - Fit C1 Ends, C0 L.E.');" << std::endl;
-    std::cout << "text(0.3, 0, '\\Sigma d^2=" << err << "');" << std::endl;
-    std::cout << "text(1.03, 0.015, '\\color{red}dr/dt');" << std::endl;
-    std::cout << "text(0.95, -0.015, '\\color{red}dr/dt');" << std::endl;
-  }
-
-  // Use Case 5: Fixed end points, fixed leading edge and two other points on airfoil
-  //
-  //             This corresponds to the use case where the user picks a point and wants to
-  //             further improve the quality of the fit by ensuring that the curve goes through
-  //             several points. For this airfoil the leading edge goes through point 16.
-  //             The location of maximum thickness is 5 on lower surface and 30 on upper
-  //             surface.
-  {
-    bezier_type::dimension_type d(8);
-    constraint_info_type ci[3];
-    int le, index[3];
-    bezier_type bez;
-    std::vector<point_type, Eigen::aligned_allocator<point_type> > pts;
-    data_type err;
-
-    // get points to print out
-    create_airfoil(pts, le);
-
-    // get the bezier curve from the fit
-    index[0]=le;
-    index[1]=5;
-    index[2]=30;
-    err=example_fit_5(bez, ci, pts, d, index);
-
-    std::cout << "subplot(5, 1, 5);" << std::endl;
-    octave_print(std::cout, "af", pts);
-    octave_print(std::cout, "free", bez);
-    std::cout << "plot(af_x, af_y, 'ok', free_x, free_y, '-k',";
-    std::cout << " [" << pts[0](0) << "," << pts[pts.size()-1](0) << "," << pts[index[0]](0) << "," << pts[index[1]](0) << "," << pts[index[2]](0) << "],";
-    std::cout << " [" << pts[0](1) << "," << pts[pts.size()-1](1) << "," << pts[index[0]](1) << "," << pts[index[1]](1) << "," << pts[index[2]](1) << "], 'or');" << std::endl;
-    std::cout << "hold on;" << std::endl;
-    std::cout << "quiver([" << pts[0](0) << ", " << pts[pts.size()-1](0) << "], [" << pts[0](1) << ", " << pts[pts.size()-1](1) << "], 0.05*["
-                            << ci[0].get_fp()(0) << ", " << ci[1].get_fp()(0) << "], 0.05*["<< ci[0].get_fp()(1) << ", " << ci[1].get_fp()(1) << "], 0, 'r');" << std::endl;
-    std::cout << "hold off;" << std::endl;
-    std::cout << "axis([0,1.1,-0.1,0.1]);" << std::endl;
-    std::cout << "title('" << d << "th Order Bezier - Fit C1 Ends, C0 L.E. & 2 Other Points');" << std::endl;
-    std::cout << "text(0.3, 0, '\\Sigma d^2=" << err << "');" << std::endl;
-    std::cout << "text(1.03, 0.015, '\\color{red}dr/dt');" << std::endl;
-    std::cout << "text(0.95, -0.015, '\\color{red}dr/dt');" << std::endl;
-  }
-
-  std::cout << "figure(2);" << std::endl;
-  // Use Case 6: Fit curve using known derivative information and a closed curve
-  //
-  //             This case creates several fits to a circle which cannot be exactly represented
-  //             by a bezier curve. Several different constraints are used to improve the
-  //             quality of the fit.
-  {
-    bezier_type::dimension_type d[6]={5, 5, 7, 7, 9, 12};
-    bezier_type::fit_container_type::constraint_info ci[6];
-    bezier_type bez[6];
-    std::vector<point_type, Eigen::aligned_allocator<point_type> > pts;
-    data_type err[6];
-
-    // get points to print out
-    create_circle(pts);
-
-    // get the bezier curve from the fit
-    example_fit_6(bez, err, ci, pts, d);
-
-    std::cout << "subplot(3, 2, 1);" << std::endl;
-    octave_print(std::cout, "cir", pts);
-    octave_print(std::cout, "bez", bez[0]);
-    std::cout << "plot(cir_x, cir_y, 'ok', bez_x, bez_y, '-k');" << std::endl;
-    std::cout << "axis([-1.2,1.2,-1.2,1.2]);" << std::endl;
-    std::cout << "title('" << d[0] << "th Order Bezier - Free Fit');" << std::endl;
-    std::cout << "text(-0.3, 0.2, '\\Sigma d^2=" << err[0] << "');" << std::endl;
-
-    std::cout << "subplot(3, 2, 2);" << std::endl;
-    octave_print(std::cout, "cir", pts);
-    octave_print(std::cout, "bez", bez[1]);
-    std::cout << "plot(cir_x, cir_y, 'ok', bez_x, bez_y, '-k');" << std::endl;
-    std::cout << "axis([-1.2,1.2,-1.2,1.2]);" << std::endl;
-    std::cout << "title('" << d[1] << "th Order Bezier - C2 Closed Fit');" << std::endl;
-    std::cout << "text(-0.3, 0.2, '\\Sigma d^2=" << err[1] << "');" << std::endl;
-
-    std::cout << "subplot(3, 2, 3);" << std::endl;
-    octave_print(std::cout, "cir", pts);
-    octave_print(std::cout, "bez", bez[2]);
-    std::cout << "plot(cir_x, cir_y, 'ok', bez_x, bez_y, '-k');" << std::endl;
-    std::cout << "axis([-1.2,1.2,-1.2,1.2]);" << std::endl;
-    std::cout << "title('" << d[2] << "th Order Bezier - C2 Closed Fit');" << std::endl;
-    std::cout << "text(-0.3, 0.2, '\\Sigma d^2=" << err[2] << "');" << std::endl;
-
-    std::cout << "subplot(3, 2, 4);" << std::endl;
-    octave_print(std::cout, "cir", pts);
-    octave_print(std::cout, "bez", bez[3]);
-    std::cout << "plot(cir_x, cir_y, 'ok', bez_x, bez_y, '-k',";
-    std::cout << " [" << pts[0](0) << "],";
-    std::cout << " [" << pts[0](1) << "], 'or');" << std::endl;
-    std::cout << "hold on;" << std::endl;
-    std::cout << "quiver([" << pts[0](0) << "], ["<< pts[0](1) << "], [" << ci[3].get_fp()(0)/10 << "], ["<< ci[3].get_fp()(1)/10 << "], 'r');" << std::endl;
-    std::cout << "hold off;" << std::endl;
-    std::cout << "axis([-1.2,1.2,-1.2,1.2]);" << std::endl;
-    std::cout << "title('" << d[3] << "th Order Bezier - C2 Closed Fit with C1 Set at (1,0)');" << std::endl;
-    std::cout << "text(-0.3, 0.2, '\\Sigma d^2=" << err[3] << "');" << std::endl;
-    std::cout << "text(0.9, 0.7, '\\color{red}dr/dt');" << std::endl;
-
-    std::cout << "subplot(3, 2, 5);" << std::endl;
-    octave_print(std::cout, "cir", pts);
-    octave_print(std::cout, "bez", bez[4]);
-    std::cout << "plot(cir_x, cir_y, 'ok', bez_x, bez_y, '-k',";
-    std::cout << " [" << pts[0](0) << "],";
-    std::cout << " [" << pts[0](1) << "], 'or');" << std::endl;
-    std::cout << "hold on;" << std::endl;
-    std::cout << "quiver([" << pts[0](0) << ", " << pts[0](0) << "], [" << pts[0](1) << ", " << pts[0](1) << "], ["
-                            << ci[4].get_fp()(0)/10 << ", " << ci[4].get_fpp()(0)/80 << "], ["<< ci[4].get_fp()(1)/10 << ", " << ci[4].get_fpp()(1)/80 << "], 'r');" << std::endl;
-    std::cout << "hold off;" << std::endl;
-    std::cout << "axis([-1.2,1.2,-1.2,1.2]);" << std::endl;
-    std::cout << "title('" << d[4] << "th Order Bezier - C2 Closed Fit with C2 Set at (1,0)');" << std::endl;
-    std::cout << "text(-0.3, 0.2, '\\Sigma d^2=" << err[4] << "');" << std::endl;
-    std::cout << "text(0.9, 0.7, '\\color{red}dr/dt');" << std::endl;
-    std::cout << "text(0.4, -0.1, '\\color{red}d^2r/dt^2');" << std::endl;
-
-    std::cout << "subplot(3, 2, 6);" << std::endl;
-    octave_print(std::cout, "cir", pts);
-    octave_print(std::cout, "bez", bez[5]);
-    std::cout << "plot(cir_x, cir_y, 'ok', bez_x, bez_y, '-k',";
-    std::cout << " [" << pts[0](0) << "],";
-    std::cout << " [" << pts[0](1) << "], 'or');" << std::endl;
-    std::cout << "hold on;" << std::endl;
-    std::cout << "quiver([" << pts[0](0) << ", " << pts[0](0) << "], [" << pts[0](1) << ", " << pts[0](1) << "], ["
-                            << ci[5].get_fp()(0)/10 << ", " << ci[5].get_fpp()(0)/80 << "], ["<< ci[5].get_fp()(1)/10 << ", " << ci[5].get_fpp()(1)/80 << "], 'r');" << std::endl;
-    std::cout << "hold off;" << std::endl;
-    std::cout << "axis([-1.2,1.2,-1.2,1.2]);" << std::endl;
-    std::cout << "title('" << d[5] << "th Order Bezier - C2 Closed Fit with C2 Set at (1,0)');" << std::endl;
-    std::cout << "text(-0.3, 0.2, '\\Sigma d^2=" << err[5] << "');" << std::endl;
-    std::cout << "text(0.9, 0.7, '\\color{red}dr/dt');" << std::endl;
-    std::cout << "text(0.4, -0.1, '\\color{red}d^2r/dt^2');" << std::endl;
-  }
-
-  std::cout << "figure(3);" << std::endl;
-  {
-    int le;
-    bezier_type::dimension_type d(8);
-    bezier_type bez;
-    std::vector<point_type, Eigen::aligned_allocator<point_type> > pts;
-    std::vector<data_type> t;
-    data_type err;
-    std::vector<point_type, Eigen::aligned_allocator<point_type> > af_pts;
-    bezier_type::fit_container_type::constraint_info ci[2];
-    // get points to print out
-    create_airfoil(pts, le);
-
-    // set up fit container
+    if (tol.approximately_equal(pt0.y(), 0))
     {
-      fit_container_type fcon;
-      fcon.set_points(pts.begin(), pts.end());
+      pt.push_back(pt0);
+    }
+    else if (tol.approximately_equal(ptN.y(), 0))
+    {
+      pt.insert(pt.begin(), ptN);
+    }
+    else if (pt0.y()*ptN.y()<0)
+    {
+      data_type xval;
 
-      // do fit
-      err=bez.fit_with_error(t, fcon, d);
+      xval=pt0.x()-pt0.y()*((ptN.x()-pt0.x())/(ptN.y()-pt0.y()));
+      pt_te << xval, static_cast<data_type>(0), static_cast<data_type>(0);
+      pt.insert(pt.begin(), pt_te);
+      pt.push_back(pt_te);
+    }
+    else
+    {
+      pt_te=0.5*(pt0+ptN);
+      pt.insert(pt.begin(), pt_te);
+      pt.push_back(pt_te);
+    }
+  }
+  npts=pt.size();
+
+  //
+  // Process points for joints
+  //
+
+  // build running length for points
+  // find leading edge
+  // find any breaks in airfoil and mark them as joints
+  std::vector<data_type> length_point(npts);
+  std::vector<data_type> angle_point(npts);
+  std::vector<data_type> radius_point(npts);
+  std::vector<data_type> radius_rate_point(npts);
+
+  // calculate the running length of each point
+  length_point[0]=static_cast<data_type>(0);
+  angle_point[0]=static_cast<data_type>(1);
+  radius_point[0]=static_cast<data_type>(1);
+  radius_rate_point[0]=static_cast<data_type>(0);
+  for (i=1; i<npts-1; ++i)
+  {
+    // calculate the length
+    length_point[i]=length_point[i-1]+eli::geom::point::distance(pt[i-1], pt[i]);
+
+    // calculate the panel angle
+    {
+      point_type p_i, p_im1;
+
+      p_i=pt[i+1]-pt[i];
+      p_im1=pt[i]-pt[i-1];
+      p_i.normalize();
+      p_im1.normalize();
+
+      angle_point[i]=p_i.dot(p_im1);
     }
 
-    af_pts.resize(t.size());
-
-    for (size_t i=0; i<t.size(); ++i)
-      af_pts[i]=bez.f(t[i]);
-
-    std::cout << "subplot(5, 1, 1);" << std::endl;
-    octave_print(std::cout, "af", pts);
-    octave_print(std::cout, "free", bez);
-    octave_print(std::cout, "af_pts", af_pts);
-    std::cout << "plot(af_x, af_y, 'ob', free_x, free_y, '-k', af_pts_x, af_pts_y, 'ok');" << std::endl;
-    std::cout << "axis([0,1.1,-0.1,0.1]);" << std::endl;
-    std::cout << "title('" << d << "th Order Bezier - Free Fit');" << std::endl;
-    std::cout << "text(0.3, 0, '\\Sigma d^2=" << err << "');" << std::endl;
-
-    // set up fit container
+    // calculate the point radius and radius rate of change
     {
-      fit_container_type fcon;
-      fcon.set_points(pts.begin(), pts.end());
-      fcon.add_start_C0_constraint();
-      fcon.add_end_C0_constraint();
+      data_type xa, xb, xc, xab, xac, xbc, ya, yb, yc, yab, yac, ybc;
 
-      // do fit
-      err=bez.fit_with_error(t, fcon, d);
+      xa=pt[i-1].x();
+      xb=pt[i  ].x();
+      xc=pt[i+1].x();
+      ya=pt[i-1].y();
+      yb=pt[i  ].y();
+      yc=pt[i+1].y();
+      xab=xa-xb;
+      xac=xa-xc;
+      xbc=xb-xc;
+      yab=ya-yb;
+      yac=ya-yc;
+      ybc=yb-yc;
+
+      radius_point[i]=0.5*std::sqrt((xab*xab+yab*yab)*(xac*xac+yac*yac)*(xbc*xbc+ybc*ybc))/(xc*yab-xb*yac+xa*ybc);
+
+      if (i>1)
+      {
+        data_type drds_f((radius_point[i]-radius_point[i-1])/(length_point[i]-length_point[i-1])), drds_b((radius_point[i-1]-radius_point[i-2])/(length_point[i-1]-length_point[i-2]));
+        radius_rate_point[i-1]=(length_point[i-1]-length_point[i-2])*drds_f+(length_point[i]-length_point[i-1])*drds_b;
+      }
     }
-
-    af_pts.resize(t.size());
-
-    for (size_t i=0; i<t.size(); ++i)
-      af_pts[i]=bez.f(t[i]);
-
-    std::cout << "subplot(5, 1, 2);" << std::endl;
-    octave_print(std::cout, "af", pts);
-    octave_print(std::cout, "free", bez);
-    octave_print(std::cout, "af_pts", af_pts);
-    std::cout << "plot(af_x, af_y, 'ob', free_x, free_y, '-k', af_pts_x, af_pts_y, 'ok',";
-    std::cout << " [" << pts[0](0) << "," << pts[pts.size()-1](0) << "],";
-    std::cout << " [" << pts[0](1) << "," << pts[pts.size()-1](1) << "], 'or');" << std::endl;
-    std::cout << "axis([0,1.1,-0.1,0.1]);" << std::endl;
-    std::cout << "title('" << d << "th Order Bezier - Fit C0 Ends');" << std::endl;
-    std::cout << "text(0.3, 0, '\\Sigma d^2=" << err << "');" << std::endl;
-
-    // set up fit container
-    {
-      fit_container_type fcon;
-      fcon.set_points(pts.begin(), pts.end());
-      fcon.add_start_C1_constraint();
-      fcon.add_end_C1_constraint();
-      fcon.get_start_constraint(ci[0]);
-      fcon.get_end_constraint(ci[1]);
-
-      // do fit
-      err=bez.fit_with_error(t, fcon, d);
-    }
-
-    af_pts.resize(t.size());
-
-    for (size_t i=0; i<t.size(); ++i)
-      af_pts[i]=bez.f(t[i]);
-
-    std::cout << "subplot(5, 1, 3);" << std::endl;
-    octave_print(std::cout, "af", pts);
-    octave_print(std::cout, "free", bez);
-    octave_print(std::cout, "af_pts", af_pts);
-    std::cout << "plot(af_x, af_y, 'ob', free_x, free_y, '-k', af_pts_x, af_pts_y, 'ok',";
-    std::cout << " [" << pts[0](0) << "," << pts[pts.size()-1](0) << "],";
-    std::cout << " [" << pts[0](1) << "," << pts[pts.size()-1](1) << "], 'or');" << std::endl;
-    std::cout << "hold on;" << std::endl;
-    std::cout << "quiver([" << pts[0](0) << ", " << pts[pts.size()-1](0) << "], [" << pts[0](1) << ", " << pts[pts.size()-1](1) << "], 0.05*["
-                            << ci[0].get_fp()(0) << ", " << ci[1].get_fp()(0) << "], 0.05*["<< ci[0].get_fp()(1) << ", " << ci[1].get_fp()(1) << "], 0, 'r');" << std::endl;
-    std::cout << "hold off;" << std::endl;
-    std::cout << "axis([0,1.1,-0.1,0.1]);" << std::endl;
-    std::cout << "title('" << d << "th Order Bezier - Fit C1 Ends');" << std::endl;
-    std::cout << "text(0.3, 0, '\\Sigma d^2=" << err << "');" << std::endl;
-    std::cout << "text(1.03, 0.015, '\\color{red}dr/dt');" << std::endl;
-    std::cout << "text(0.95, -0.015, '\\color{red}dr/dt');" << std::endl;
-
-    // set up fit container
-    {
-      fit_container_type fcon;
-      fcon.set_points(pts.begin(), pts.end());
-      fcon.add_start_C1_constraint();
-      fcon.add_end_C1_constraint();
-      fcon.add_C0_constraint(le);
-      fcon.get_start_constraint(ci[0]);
-      fcon.get_end_constraint(ci[1]);
-
-      // do fit
-      err=bez.fit_with_error(t, fcon, d);
-    }
-
-    af_pts.resize(t.size());
-
-    for (size_t i=0; i<t.size(); ++i)
-      af_pts[i]=bez.f(t[i]);
-
-    std::cout << "subplot(5, 1, 4);" << std::endl;
-    octave_print(std::cout, "af", pts);
-    octave_print(std::cout, "free", bez);
-    octave_print(std::cout, "af_pts", af_pts);
-    std::cout << "plot(af_x, af_y, 'ob', free_x, free_y, '-k', af_pts_x, af_pts_y, 'ok',";
-    std::cout << " [" << pts[0](0) << "," << pts[pts.size()-1](0) << "," << pts[le](0) << "],";
-    std::cout << " [" << pts[0](1) << "," << pts[pts.size()-1](1) << "," << pts[le](1)  << "], 'or');" << std::endl;
-    std::cout << "hold on;" << std::endl;
-    std::cout << "quiver([" << pts[0](0) << ", " << pts[pts.size()-1](0) << "], [" << pts[0](1) << ", " << pts[pts.size()-1](1) << "], 0.05*["
-                            << ci[0].get_fp()(0) << ", " << ci[1].get_fp()(0) << "], 0.05*["<< ci[0].get_fp()(1) << ", " << ci[1].get_fp()(1) << "], 0, 'r');" << std::endl;
-    std::cout << "hold off;" << std::endl;
-    std::cout << "axis([0,1.1,-0.1,0.1]);" << std::endl;
-    std::cout << "title('" << d << "th Order Bezier - Fit C1 Ends, C0 L.E.');" << std::endl;
-    std::cout << "text(0.3, 0, '\\Sigma d^2=" << err << "');" << std::endl;
-    std::cout << "text(1.03, 0.015, '\\color{red}dr/dt');" << std::endl;
-    std::cout << "text(0.95, -0.015, '\\color{red}dr/dt');" << std::endl;
-
-    // set up fit container
-    {
-      fit_container_type fcon;
-      fcon.set_points(pts.begin(), pts.end());
-      fcon.add_start_C1_constraint();
-      fcon.add_end_C1_constraint();
-      fcon.add_C0_constraint(le);
-      fcon.add_C0_constraint(5);
-      fcon.add_C0_constraint(30);
-      fcon.get_start_constraint(ci[0]);
-      fcon.get_end_constraint(ci[1]);
-
-      // do fit
-      err=bez.fit_with_error(t, fcon, d);
-    }
-
-    af_pts.resize(t.size());
-
-    for (size_t i=0; i<t.size(); ++i)
-      af_pts[i]=bez.f(t[i]);
-
-    std::cout << "subplot(5, 1, 5);" << std::endl;
-    octave_print(std::cout, "af", pts);
-    octave_print(std::cout, "free", bez);
-    octave_print(std::cout, "af_pts", af_pts);
-    std::cout << "plot(af_x, af_y, 'ob', free_x, free_y, '-k', af_pts_x, af_pts_y, 'ok',";
-    std::cout << " [" << pts[0](0) << "," << pts[pts.size()-1](0) << "," << pts[le](0) << "," << pts[5](0) << "," << pts[30](0) << "],";
-    std::cout << " [" << pts[0](1) << "," << pts[pts.size()-1](1) << "," << pts[le](1) << "," << pts[5](1) << "," << pts[30](1) << "], 'or');" << std::endl;
-    std::cout << "hold on;" << std::endl;
-    std::cout << "quiver([" << pts[0](0) << ", " << pts[pts.size()-1](0) << "], [" << pts[0](1) << ", " << pts[pts.size()-1](1) << "], 0.05*["
-                            << ci[0].get_fp()(0) << ", " << ci[1].get_fp()(0) << "], 0.05*["<< ci[0].get_fp()(1) << ", " << ci[1].get_fp()(1) << "], 0, 'r');" << std::endl;
-    std::cout << "hold off;" << std::endl;
-    std::cout << "axis([0,1.1,-0.1,0.1]);" << std::endl;
-    std::cout << "title('" << d << "th Order Bezier - Fit C1 Ends, C0 L.E. & 2 Other Points');" << std::endl;
-    std::cout << "text(0.3, 0, '\\Sigma d^2=" << err << "');" << std::endl;
-    std::cout << "text(1.03, 0.015, '\\color{red}dr/dt');" << std::endl;
-    std::cout << "text(0.95, -0.015, '\\color{red}dr/dt');" << std::endl;
   }
+  length_point[i]=length_point[i-1]+eli::geom::point::distance(pt[i-1], pt[i]);
+  angle_point[i]=1;
+  radius_point[0]=radius_point[1];
+  radius_point[i]=radius_point[i-1];
+  radius_rate_point[i]=static_cast<data_type>(0);
+  {
+    data_type drds_f((radius_point[i]-radius_point[i-1])/(length_point[i]-length_point[i-1])), drds_b((radius_point[i-1]-radius_point[i-2])/(length_point[i-1]-length_point[i-2]));
+    radius_rate_point[i-1]=(length_point[i-1]-length_point[i-2])*drds_f+(length_point[i]-length_point[i-1])*drds_b;
+  }
+
+  // set the first and last point as a C0 joint
+  typedef std::list<joint_type> joint_collection_type;
+  joint_collection_type joint_point;
+  joint_collection_type::iterator jit;
+  index_type ile(-1);
+  data_type dist_to_origin(static_cast<data_type>(1000));
+  const data_type le_close(static_cast<data_type>(1e-4)), le_near(static_cast<data_type>(0.01));
+  const data_type angle_point_max(static_cast<data_type>(0.8192)), angle_point_abs_max(0.2);
+  const data_type radius_rate_max(static_cast<data_type>(1));
+
+  joint_point.push_back(std::make_pair(0, continuity_type::C0));
+  joint_point.push_back(std::make_pair(npts-1, continuity_type::C0));
+  for (i=1; i<npts-1; ++i)
+  {
+    // look for leading edge
+    if (pt[i].x()<le_close)
+    {
+      point_type orig; orig << 0, 0, 0;
+      data_type temp_dist(eli::geom::point::distance(orig, pt[i]));
+
+      // if distance from current point to leading edge location is less than tolerance
+      // then have candidate for leading edge
+      if ( (temp_dist<le_close) && (temp_dist<dist_to_origin) )
+      {
+        dist_to_origin=temp_dist;
+        ile=i;
+      }
+    }
+
+    // joint if angle turn is larger than 35 deg -> cos(35 deg)=0.8192 && not close to leading edge
+    if ( (angle_point[i]<angle_point_abs_max)
+      || ((angle_point[i]<angle_point_max) && (std::abs(radius_rate_point[i])>radius_rate_max) && (pt[i].x()>le_near)) )
+    {
+      joint_point.push_back(std::make_pair(i, continuity_type::C0));
+    }
+  }
+
+  // if have a leading edge identified
+  if (ile>0)
+  {
+    joint_collection_type::iterator it=std::find(joint_point.begin(), joint_point.end(), std::make_pair(ile, continuity_type::C0));
+
+    if (it==joint_point.end())
+      joint_point.push_back(std::make_pair(ile, continuity_type::C2));
+    else
+      it->second=continuity_type::C2;
+  }
+
+  // go through user input vectors to unset and then set joints
+  for (i=0; i<not_joint.size(); ++i)
+  {
+    auto comp_if = [idx=not_joint[i]](const std::pair<index_type, continuity_type> &a) -> bool
+    {
+      return (a.first == idx);
+    };
+
+    if ( (not_joint[i]>0) && (not_joint[i]<(npts-1)) )
+    {
+      joint_point.erase(std::remove_if(joint_point.begin(), joint_point.end(), comp_if));
+    }
+  }
+  for (i=0; i<is_joint.size(); ++i)
+  {
+    auto comp_if = [idx=is_joint[i].first](const joint_type &a) -> bool
+    {
+      return (a.first == idx);
+    };
+
+    if ( (is_joint[i].first>0) && (is_joint[i].first<(npts-1)) )
+    {
+      joint_collection_type::iterator it=std::find_if(joint_point.begin(), joint_point.end(), comp_if);
+
+      if (it==joint_point.end())
+        joint_point.push_back(is_joint[i]);
+      else
+        it->second=is_joint[i].second;
+    }
+  }
+
+  // sort final joint list
+  auto comp_lt = [](const joint_type &a, const joint_type &b) -> bool
+  {
+    return (a.first < b.first);
+  };
+  joint_point.sort(comp_lt);
+
+  // write out info for debugging
+//  jit=joint_point.begin();
+//  for (i=0; i<npts; ++i)
+//  {
+//    std::cout << "pt[" << std::setw(2) << i << "] @ " << std::setw(9) << length_point[i];
+//    std::cout << "  angle=" << std::setw(9) << (static_cast<data_type>(180)/eli::constants::math<data_type>::pi())*std::acos(angle_point[i]);
+//    std::cout << "  radius=" << std::setw(11) << radius_point[i];
+//    std::cout << "  d(radius)/ds=" << std::setw(11) << radius_rate_point[i];
+//    if (i==jit->first)
+//    {
+//      std::cout << " and is joint " << std::setw(2) << j;
+//      switch (jit->second)
+//      {
+//        case (continuity_type::C0):
+//          std::cout << " type C0";
+//          break;
+//        case (continuity_type::C1):
+//          std::cout << " type C1";
+//          break;
+//        case (continuity_type::C2):
+//          std::cout << " type C2";
+//          break;
+//        default:
+//          std::cout << "How did I get here?";
+//          break;
+//      }
+//      ++jit;
+//    }
+//    std::cout << std::endl;
+//  }
+//
+//  std::cout << "We are done here" << std::endl;
+
+  // if capping trailing edge, need account for that in the parameterization
+  // Capping options:
+  //    * None - do nothing
+  //    * Blunt - vertical curve if points specify an open trailing edge
+  //    * Round - rounded curve if points specify an open trailing edge
+  //    * Sharp - extend trailing edge panel until intersect if points specify an open trailing edge
+  //    * Force @ chord - Blunt, Round, or Sharp at specified chord location (extend trailing edge panels if needed)
+  //    * Force thickness - Blunt, Round, or Sharp at chord location that yields desired thickness
+  // These options will determine where the first and last airfoil point needs to be located
+
+  // should have:
+  //   * list of joints (at least lower trailing edge [& mid-chord???], leading edge, and [upper mid-chord??? &] trailing edge)
+  //   * list of points to fit
+  //   * trailing edge points in correct position for capping
+  // build airfoil piecewise curve
+
+  // build and replace trailing edge cap as needed
+
+  // construct the piecewise curve
+  index_type nsegs(static_cast<index_type>(joint_point.size()-1));
+  std::vector<typename general_creator_type::joint_data> joint(nsegs+1);
+  std::vector<typename general_creator_type::index_type> max_degree(nsegs);
+  std::vector<typename general_creator_type::fit_data> fit_point(nsegs);
+  std::vector<data_type> t(nsegs+1);
+  const index_type max_degree_param(4);
+
+  // fill each joint and time
+  const data_type t_scale(4/length_point.back());
+
+  jit=joint_point.begin();
+  for (i=0; i<=nsegs; ++i, ++jit)
+  {
+    t[i]=t_scale*length_point[jit->first];
+    joint[i].set_f(pt[jit->first]);
+    if (jit->second > eli::geom::general::continuity::C0)
+    {
+      joint[i].set_continuity(jit->second);
+    }
+    if (i==1)
+    {
+      j=jit->first;
+      joint[i].set_right_fp(0.5*(pt[j+1]-pt[j])/(length_point[j+1]-length_point[j])/t_scale);
+    }
+    else if (i==nsegs-1)
+    {
+      j=jit->first;
+      joint[i].set_left_fp(0.5*(pt[j]-pt[j-1])/(length_point[j]-length_point[j-1])/t_scale);
+    }
+  }
+
+  // fill the fit points and max degree
+  jit=joint_point.begin();
+  for (j=0; j<nsegs; ++j, ++jit)
+  {
+    joint_collection_type::iterator jitn(jit); ++jitn;
+    max_degree[j]=max_degree_param;
+    for (i=jit->first+1; i<jitn->first; ++i)
+    {
+      fit_point[j].add_point(pt[i]);
+    }
+  }
+
+  // debug printing of fit points
+//  for (j=0; j<nsegs; ++j)
+//  {
+//    for (i=0; i<fit_point[j].npoints(); ++i)
+//    {
+//      std::cout << "segment " << std::setw(2) << j << " point(" << std::setw(2) << i << ")=" << fit_point[j].get_point(i) << std::endl;
+//    }
+//  }
+
+  general_creator_type gc;
+  piecewise_curve_type c;
+  bool rtn_flag;
+
+
+  // create curve
+  rtn_flag=gc.set_conditions(joint, fit_point, max_degree, false);
+  if (!rtn_flag)
+  {
+    std::cerr << "Could not set the airfoil curve conditions!" << std::endl;
+    return EXIT_FAILURE;
+  }
+  gc.set_t0(t[0]);
+  for (i=0; i<nsegs; ++i)
+  {
+    gc.set_segment_dt(t[i+1]-t[i], i);
+  }
+  rtn_flag=gc.create(c);
+  if (!rtn_flag)
+  {
+    std::cerr << "Could not create the airfoil curve!" << std::endl;
+    return EXIT_FAILURE;
+  }
+
+//    std::cout << "subplot(5, 1, 1);" << std::endl;
+//    octave_print(std::cout, "af", pts);
+//    octave_print(std::cout, "free", bez);
+//    std::cout << "plot(af_x, af_y, 'ok', free_x, free_y, '-k');" << std::endl;
+//    std::cout << "axis([0,1.1,-0.1,0.1]);" << std::endl;
+//    std::cout << "title('" << d << "th Order Bezier - Free Fit');" << std::endl;
+//    std::cout << "text(0.3, 0, '\\Sigma d^2=" << err << "');" << std::endl;
+  std::cout.flush();
+  eli::test::octave_start(1);
+  for (i=0; i<npts; ++i)
+  {
+    char buf[3];
+    std::string nm="fp";
+
+    std::sprintf(buf, "%02d", i);
+    nm=nm+buf;
+    eli::test::octave_print(1, pt[i], nm);
+  }
+  eli::test::octave_print(1, c, "piecewise");
+  eli::test::octave_finish(1);
+  std::cout << "axis equal" << std::endl;
+
+  std::cout.flush();
+  eli::test::octave_start(2);
+  eli::test::octave_param_print(2, c, "piecewise1");
+  eli::test::octave_finish(2);
 
   return EXIT_SUCCESS;
 }
