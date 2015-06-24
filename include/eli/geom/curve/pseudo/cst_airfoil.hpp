@@ -223,6 +223,14 @@ namespace eli
               get_trailing_edge_thickness(u, l);
               return u+l;
             }
+            data_type get_upper_trailing_edge_thickness() const
+            {
+              return upper.get_trailing_edge_thickness();
+            }
+            data_type get_lower_trailing_edge_thickness() const
+            {
+              return lower.get_trailing_edge_thickness();
+            }
 
             void set_trailing_edge_thickness(const data_type &dte)
             {

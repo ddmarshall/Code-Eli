@@ -84,7 +84,7 @@ namespace eli
 
             // convert the original coefficients to new monomial coefficients
             index_type i, nu(cstu_mono_coef.rows()-1), nl(cstl_mono_coef.rows()-1);
-            data_type dte(cst.get_trailing_edge_thickness()/2);
+            data_type dte_upper(cst.get_upper_trailing_edge_thickness()), dte_lower(cst.get_lower_trailing_edge_thickness());
             bezu_mono_coef.resize(2*nu+3+1, dim__);
             bezl_mono_coef.resize(2*nl+3+1, dim__);
             bezu_mono_coef.setZero();
@@ -94,7 +94,7 @@ namespace eli
             i=0;
             bezu_mono_coef(2*i+1, 1)=cstu_mono_coef(i, 0);
             bezu_mono_coef(2*i+2, 0)=1;
-            bezu_mono_coef(2*i+2, 1)=dte;
+            bezu_mono_coef(2*i+2, 1)=dte_upper;
             for (i=1; i<=nu; ++i)
             {
               bezu_mono_coef(2*i+1, 1)=cstu_mono_coef(i, 0)-cstu_mono_coef(i-1, 0);
@@ -106,7 +106,7 @@ namespace eli
             i=0;
             bezl_mono_coef(2*i+1, 1)=cstl_mono_coef(i, 0);
             bezl_mono_coef(2*i+2, 0)=1;
-            bezl_mono_coef(2*i+2, 1)=-dte;
+            bezl_mono_coef(2*i+2, 1)=-dte_lower;
             for (i=1; i<=nu; ++i)
             {
               bezl_mono_coef(2*i+1, 1)=cstl_mono_coef(i, 0)-cstl_mono_coef(i-1, 0);
