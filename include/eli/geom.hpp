@@ -16,5 +16,7 @@
 #include "eli/geom/general.hpp"
 #include "eli/geom/point.hpp"
 #include "eli/geom/curve.hpp"
+#include "eli/geom/surface.hpp"
+#include "eli/geom/intersect.hpp"
 
 #endif
