@@ -181,7 +181,7 @@ namespace eli
       }
 
       // initialize the t parameters
-      index_type nt(33);
+      index_type nt(201);
       std::vector<data__> t(nt);
       for (i=0; i<nt; ++i)
       {
@@ -281,7 +281,7 @@ namespace eli
       }
 
       // initialize the t parameters
-      index_type nt(33);
+      index_type nt(201);
       std::vector<data__> t(nt);
       for (i=0; i<nt; ++i)
       {
@@ -360,7 +360,7 @@ namespace eli
       }
 
       // initialize the t parameters
-      index_type nt(33);
+      index_type nt(201);
       std::vector<data__> t(nt);
       for (i=0; i<nt; ++i)
       {
@@ -419,7 +419,7 @@ namespace eli
       }
 
       // initialize the t parameters
-      index_type nt(33);
+      index_type nt(201);
       std::vector<data__> t(nt);
       for (i=0; i<nt; ++i)
       {
@@ -478,7 +478,7 @@ namespace eli
       }
 
       // initialize the t parameters
-      index_type nt(33);
+      index_type nt(201);
       std::vector<data__> t(nt);
       for (i=0; i<nt; ++i)
       {
@@ -543,7 +543,7 @@ namespace eli
       }
 
       // initialize the t parameters
-      index_type nt(33);
+      index_type nt(201);
       std::vector<data__> t(nt);
       for (i=0; i<nt; ++i)
       {
@@ -602,7 +602,7 @@ namespace eli
       }
 
       // initialize the t parameters
-      index_type nt(33);
+      index_type nt(201);
       std::vector<data__> t(nt);
       for (i=0; i<nt; ++i)
       {
