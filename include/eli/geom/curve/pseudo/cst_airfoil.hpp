@@ -89,7 +89,7 @@ namespace eli
           public:
             cst_airfoil() {}
             cst_airfoil(index_type deg) : upper(deg, true), lower(deg, false) {}
-            cst_airfoil(index_type degu, index_type degl) : upper(degu), lower(degl) {}
+            cst_airfoil(index_type degu, index_type degl) : upper(degu, true), lower(degl, false) {}
             cst_airfoil(const cst_airfoil<data_type, tolerance_type> &a) : upper(a.upper), lower(a.lower) {}
             ~cst_airfoil(){}
 
