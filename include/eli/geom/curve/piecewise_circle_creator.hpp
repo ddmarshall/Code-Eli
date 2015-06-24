@@ -24,6 +24,7 @@
 #include "eli/geom/curve/piecewise_creator_base.hpp"
 #include "eli/geom/curve/piecewise.hpp"
 #include "eli/geom/curve/bezier.hpp"
+#include "eli/geom/curve/utility.hpp"
 
 namespace eli
 {
@@ -31,31 +32,6 @@ namespace eli
   {
     namespace curve
     {
-      namespace utility
-      {
-        template<typename data__>
-        void calculate_circle(data__ &rad, data__ &x0, data__ &y0, const data__ &xa, const data__ &ya,
-                              const data__ &xb, const data__ &yb, const data__ &xc, const data__ &yc)
-        {
-          data__ denom, xamb, yamb, xcma, ycma, xbmc, ybmc, alen2, blen2, clen2;
-
-          xamb=(xa-xb);
-          yamb=(ya-yb);
-          xcma=(xc-xa);
-          ycma=(yc-ya);
-          xbmc=(xb-xc);
-          ybmc=(yb-yc);
-          alen2=xa*xa+ya*ya;
-          blen2=xb*xb+yb*yb;
-          clen2=xc*xc+yc*yc;
-
-          denom=2*(xc*yamb+xb*ycma+xa*ybmc);
-          rad=std::sqrt((xamb*xamb+yamb*yamb)*(xcma*xcma+ycma*ycma)*(xbmc*xbmc+ybmc*ybmc))/denom;
-          x0= (clen2*yamb+blen2*ycma+alen2*ybmc)/denom;
-          y0=-(clen2*xamb+blen2*xcma+alen2*xbmc)/denom;
-        }
-      }
-
       template<typename data__, unsigned short dim__, typename tol__>
       class piecewise_ellipse_creator_base : public piecewise_creator_base<data__, dim__, tol__>
       {
