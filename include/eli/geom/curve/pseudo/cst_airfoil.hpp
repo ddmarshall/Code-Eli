@@ -219,12 +219,24 @@ namespace eli
 
             data_type get_trailing_edge_thickness() const
             {
-              return upper.get_trailing_edge_thickness()+lower.get_trailing_edge_thickness();
+              data_type u, l;
+              get_trailing_edge_thickness(u, l);
+              return u+l;
             }
+
             void set_trailing_edge_thickness(const data_type &dte)
             {
-              upper.set_trailing_edge_thickness(0.5*dte);
-              lower.set_trailing_edge_thickness(0.5*dte);
+              set_trailing_edge_thickness(0.5*dte, 0.5*dte);
+            }
+            void get_trailing_edge_thickness(data_type &dteu, data_type &dtel) const
+            {
+              dteu=upper.get_trailing_edge_thickness();
+              dtel=lower.get_trailing_edge_thickness();
+            }
+            void set_trailing_edge_thickness(const data_type &dteu, const data_type &dtel)
+            {
+              upper.set_trailing_edge_thickness(dteu);
+              lower.set_trailing_edge_thickness(dtel);
             }
 
             void set_upper_control_point(const control_point_type &cp_in, const index_type &i)
