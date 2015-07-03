@@ -391,6 +391,29 @@ namespace eli
             }
           }
 
+          void scale_t( const data_type &t_min_new, const data_type &t_max_new )
+          {
+            if(segments.empty())
+            {
+              tmax = t_min_new;
+            }
+            else
+            {
+              data_type t_min = segments.begin()->first;
+              data_type t_max = tmax;
+              data_type t_scale = (t_max_new - t_min_new) / (t_max - t_min);
+
+              segment_collection_type scaleseg;
+              for (typename segment_collection_type::iterator it=segments.begin(); it!=segments.end(); ++it)
+              {
+                data_type t = t_min_new + t_scale * (it->first - t_min);
+                scaleseg.insert( scaleseg.end(), std::make_pair( t, it->second) );
+              }
+              segments.swap(scaleseg);
+              tmax = t_max_new;
+            }
+          }
+
           data_type get_parameter_min() const
           {
             if(!segments.empty())
