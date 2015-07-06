@@ -575,6 +575,7 @@ namespace eli
       std::cout << "setenv('GNUTERM', 'x11');" << std::endl;
       std::cout << "plot(" << nm << "_curv_x, "
                            << nm << "_curv_y, '-c');" << std::endl;
+      std::cout << "axis equal" << std::endl;
     }
 
     template<typename data__>
@@ -634,6 +635,7 @@ namespace eli
       std::cout << "setenv('GNUTERM', 'x11');" << std::endl;
       std::cout << "plot(" << nm << "_curv_x, "
                            << nm << "_curv_y, '-c');" << std::endl;
+      std::cout << "axis equal" << std::endl;
     }
 
     template<typename data__>
