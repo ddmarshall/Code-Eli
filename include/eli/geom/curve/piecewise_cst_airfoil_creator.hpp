@@ -107,11 +107,11 @@ namespace eli
             bezl_mono_coef(2*i+1, 1)=cstl_mono_coef(i, 0);
             bezl_mono_coef(2*i+2, 0)=1;
             bezl_mono_coef(2*i+2, 1)=-dte_lower;
-            for (i=1; i<=nu; ++i)
+            for (i=1; i<=nl; ++i)
             {
               bezl_mono_coef(2*i+1, 1)=cstl_mono_coef(i, 0)-cstl_mono_coef(i-1, 0);
             }
-            i=nu+1;
+            i=nl+1;
             bezl_mono_coef(2*i+1, 1)=-cstl_mono_coef(i-1);
 
             // create the lower and upper curve
