@@ -2293,7 +2293,7 @@ class piecewise_general_creator_test_suite : public Test::Suite
 //          eli::test::octave_print(1, fit_points[0].get_point(1), "fp1");
 //          eli::test::octave_print(1, fit_points[0].get_point(2), "fp2");
 //          eli::test::octave_print(1, c, "piecewise");
-//          eli::test::octave_finish(1);
+//          eli::test::octave_finish(1, false);
 //        }
 
         p_test=c.f(t0);
@@ -2361,7 +2361,7 @@ class piecewise_general_creator_test_suite : public Test::Suite
 //          eli::test::octave_print(1, fit_points[0].get_point(1), "fp1");
 //          eli::test::octave_print(1, fit_points[0].get_point(2), "fp2");
 //          eli::test::octave_print(1, c, "piecewise");
-//          eli::test::octave_finish(1);
+//          eli::test::octave_finish(1, false);
 //        }
 
         p_test=c.f(t0);
@@ -2430,7 +2430,7 @@ class piecewise_general_creator_test_suite : public Test::Suite
 //          eli::test::octave_print(1, fit_points[0].get_point(1), "fp1");
 //          eli::test::octave_print(1, fit_points[0].get_point(2), "fp2");
 //          eli::test::octave_print(1, c, "piecewise");
-//          eli::test::octave_finish(1);
+//          eli::test::octave_finish(1, false);
 //        }
 
         p_test=c.f(t0);
@@ -2512,7 +2512,7 @@ class piecewise_general_creator_test_suite : public Test::Suite
 //          eli::test::octave_print(1, fit_points[0].get_point(1), "fp1");
 //          eli::test::octave_print(1, fit_points[0].get_point(2), "fp2");
 //          eli::test::octave_print(1, c, "piecewise");
-//          eli::test::octave_finish(1);
+//          eli::test::octave_finish(1, false);
 //        }
 
         p_test=c.f(t0);
@@ -2604,7 +2604,7 @@ class piecewise_general_creator_test_suite : public Test::Suite
 //          eli::test::octave_print(1, fit_points[0].get_point(1), "fp1");
 //          eli::test::octave_print(1, fit_points[0].get_point(2), "fp2");
 //          eli::test::octave_print(1, c, "piecewise");
-//          eli::test::octave_finish(1);
+//          eli::test::octave_finish(1, false);
 //        }
 
         p_test=c.f(t0);
@@ -2697,7 +2697,7 @@ class piecewise_general_creator_test_suite : public Test::Suite
 //          eli::test::octave_print(1, fit_points[0].get_point(1), "fp1");
 //          eli::test::octave_print(1, fit_points[0].get_point(2), "fp2");
 //          eli::test::octave_print(1, c, "piecewise");
-//          eli::test::octave_finish(1);
+//          eli::test::octave_finish(1, false);
 //        }
 
         // test the resulting curve
@@ -2805,7 +2805,7 @@ class piecewise_general_creator_test_suite : public Test::Suite
 //          eli::test::octave_print(1, fit_points[0].get_point(1), "fp1");
 //          eli::test::octave_print(1, fit_points[0].get_point(2), "fp2");
 //          eli::test::octave_print(1, c, "piecewise");
-//          eli::test::octave_finish(1);
+//          eli::test::octave_finish(1, false);
 //        }
 
         p_test=c.f(t0);
@@ -2919,7 +2919,7 @@ class piecewise_general_creator_test_suite : public Test::Suite
 //          eli::test::octave_print(1, fit_points[0].get_point(1), "fp1");
 //          eli::test::octave_print(1, fit_points[0].get_point(2), "fp2");
 //          eli::test::octave_print(1, c, "piecewise");
-//          eli::test::octave_finish(1);
+//          eli::test::octave_finish(1, false);
 //        }
 
         p_test=c.f(t0);
@@ -3036,7 +3036,7 @@ class piecewise_general_creator_test_suite : public Test::Suite
 //          eli::test::octave_print(1, fit_points[0].get_point(1), "fp1");
 //          eli::test::octave_print(1, fit_points[0].get_point(2), "fp2");
 //          eli::test::octave_print(1, c, "piecewise");
-//          eli::test::octave_finish(1);
+//          eli::test::octave_finish(1, false);
 //        }
 
         p_test=c.f(t[0]);
@@ -3134,7 +3134,7 @@ class piecewise_general_creator_test_suite : public Test::Suite
 //          eli::test::octave_print(1, fit_points[1].get_point(1), "fp1");
 //          eli::test::octave_print(1, fit_points[1].get_point(2), "fp2");
 //          eli::test::octave_print(1, c, "piecewise");
-//          eli::test::octave_finish(1);
+//          eli::test::octave_finish(1, false);
 //        }
 
         p_test=c.f(t[0]);
@@ -3241,7 +3241,7 @@ class piecewise_general_creator_test_suite : public Test::Suite
 //          eli::test::octave_print(1, fit_points[1].get_point(1), "fp4");
 //          eli::test::octave_print(1, fit_points[1].get_point(2), "fp5");
 //          eli::test::octave_print(1, c, "piecewise");
-//          eli::test::octave_finish(1);
+//          eli::test::octave_finish(1, false);
 //        }
 
         p_test=c.f(t[0]);
@@ -3386,7 +3386,7 @@ class piecewise_general_creator_test_suite : public Test::Suite
 //          eli::test::octave_print(1, fit_points[4].get_point(1), "fp4");
 //          eli::test::octave_print(1, fit_points[4].get_point(2), "fp5");
 //          eli::test::octave_print(1, c, "piecewise");
-//          eli::test::octave_finish(1);
+//          eli::test::octave_finish(1, false);
 //        }
 
         p_test=c.f(t[0]);

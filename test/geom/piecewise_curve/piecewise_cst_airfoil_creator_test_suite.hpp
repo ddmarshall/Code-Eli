@@ -175,7 +175,7 @@ class piecewise_cst_airfoil_creator_test_suite : public Test::Suite
 //        eli::test::octave_start(1);
 //        eli::test::octave_print(1, cst, "cst");
 //        eli::test::octave_print(1, pc, "piecewise");
-//        eli::test::octave_finish(1);
+//        eli::test::octave_finish(1, false);
 //      }
     }
 };

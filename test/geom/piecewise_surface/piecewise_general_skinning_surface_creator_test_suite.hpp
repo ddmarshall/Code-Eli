@@ -826,7 +826,7 @@ class piecewise_general_skinning_surface_creator_test_suite : public Test::Suite
 //          eli::test::octave_print(1, s, "surf", true);
 //          eli::test::octave_print(1, ribs[0].get_f(), "rib0", true);
 //          eli::test::octave_print(1, ribs[1].get_f(), "rib1", true);
-//          eli::test::octave_finish(1);
+//          eli::test::octave_finish(1, false);
 //        }
       }
 
@@ -959,7 +959,7 @@ class piecewise_general_skinning_surface_creator_test_suite : public Test::Suite
 //          eli::test::octave_print(1, ribs[1].get_f(), "rib1", true);
 //          eli::test::octave_print(1, ribs[0].get_f(), ribs[0].get_right_fp(), "rve0");
 //          eli::test::octave_print(1, ribs[1].get_f(), ribs[1].get_left_fp(), "lve1");
-//          eli::test::octave_finish(1);
+//          eli::test::octave_finish(1, false);
 //        }
       }
 
@@ -1122,7 +1122,7 @@ class piecewise_general_skinning_surface_creator_test_suite : public Test::Suite
 //          eli::test::octave_print(1, ribs[1].get_f(), "rib1", true);
 //          eli::test::octave_print(1, ribs[0].get_f(), ribs[0].get_right_fp(), "rve0");
 //          eli::test::octave_print(1, ribs[1].get_f(), ribs[1].get_left_fp(), "lve1");
-//          eli::test::octave_finish(1);
+//          eli::test::octave_finish(1, false);
 //        }
       }
 
@@ -1300,7 +1300,7 @@ class piecewise_general_skinning_surface_creator_test_suite : public Test::Suite
 //          eli::test::octave_print(1, ribs[1].get_f(), "rib1", true);
 //          eli::test::octave_print(1, ribs[0].get_f(), ribs[0].get_right_fp(), "rve0");
 //          eli::test::octave_print(1, ribs[1].get_f(), ribs[1].get_left_fp(), "lve1");
-//          eli::test::octave_finish(1);
+//          eli::test::octave_finish(1, false);
 //        }
       }
 
@@ -1473,7 +1473,7 @@ class piecewise_general_skinning_surface_creator_test_suite : public Test::Suite
 //          eli::test::octave_print(1, ribs[1].get_f(), "rib1", true);
 //          eli::test::octave_print(1, ribs[0].get_f(), ribs[0].get_right_fp(), "rve0");
 //          eli::test::octave_print(1, ribs[1].get_f(), ribs[1].get_left_fp(), "lve1");
-//          eli::test::octave_finish(1);
+//          eli::test::octave_finish(1, false);
 //        }
       }
     }
@@ -1592,7 +1592,7 @@ class piecewise_general_skinning_surface_creator_test_suite : public Test::Suite
 //          eli::test::octave_print(1, s, "surf", true);
 //          eli::test::octave_print(1, ribs[0].get_f(), "rib0", true);
 //          eli::test::octave_print(1, ribs[1].get_f(), "rib1", true);
-//          eli::test::octave_finish(1);
+//          eli::test::octave_finish(1, false);
 //        }
       }
 
@@ -1720,7 +1720,7 @@ class piecewise_general_skinning_surface_creator_test_suite : public Test::Suite
 //          eli::test::octave_print(1, s, "surf", true);
 //          eli::test::octave_print(1, ribs[0].get_f(), "rib0", true);
 //          eli::test::octave_print(1, ribs[1].get_f(), "rib1", true);
-//          eli::test::octave_finish(1);
+//          eli::test::octave_finish(1, false);
 //        }
       }
 
@@ -1895,7 +1895,7 @@ class piecewise_general_skinning_surface_creator_test_suite : public Test::Suite
 //          eli::test::octave_print(1, ribs[1].get_f(), "rib1", true);
 //          eli::test::octave_print(1, ribs[0].get_f(), ribs[0].get_right_fp(), "rve0");
 //          eli::test::octave_print(1, ribs[1].get_f(), ribs[1].get_left_fp(), "lve1");
-//          eli::test::octave_finish(1);
+//          eli::test::octave_finish(1, false);
 //        }
       }
 
@@ -2112,7 +2112,7 @@ class piecewise_general_skinning_surface_creator_test_suite : public Test::Suite
 //          eli::test::octave_print(1, ribs[1].get_f(), "rib1", true);
 //          eli::test::octave_print(1, ribs[0].get_f(), ribs[0].get_right_fp(), "rve0");
 //          eli::test::octave_print(1, ribs[1].get_f(), ribs[1].get_left_fp(), "lve1");
-//          eli::test::octave_finish(1);
+//          eli::test::octave_finish(1, false);
 //        }
       }
 
@@ -2328,7 +2328,7 @@ class piecewise_general_skinning_surface_creator_test_suite : public Test::Suite
 //          eli::test::octave_print(1, ribs[1].get_f(), "rib1", true);
 //          eli::test::octave_print(1, ribs[0].get_f(), ribs[0].get_right_fp(), "rve0");
 //          eli::test::octave_print(1, ribs[1].get_f(), ribs[1].get_left_fp(), "lve1");
-//          eli::test::octave_finish(1);
+//          eli::test::octave_finish(1, false);
 //        }
       }
 
@@ -2545,7 +2545,7 @@ class piecewise_general_skinning_surface_creator_test_suite : public Test::Suite
 //          eli::test::octave_print(1, ribs[1].get_f(), "rib1", true);
 //          eli::test::octave_print(1, ribs[0].get_f(), ribs[0].get_right_fp(), "rve0");
 //          eli::test::octave_print(1, ribs[1].get_f(), ribs[1].get_left_fp(), "lve1");
-//          eli::test::octave_finish(1);
+//          eli::test::octave_finish(1, false);
 //        }
       }
     }
@@ -2679,7 +2679,7 @@ class piecewise_general_skinning_surface_creator_test_suite : public Test::Suite
 //          eli::test::octave_print(1, ribs[0].get_f(), "rib0", true);
 //          eli::test::octave_print(1, ribs[1].get_f(), "rib1", true);
 //          eli::test::octave_print(1, ribs[2].get_f(), "rib2", true);
-//          eli::test::octave_finish(1);
+//          eli::test::octave_finish(1, false);
 //        }
       }
 
@@ -2849,7 +2849,7 @@ class piecewise_general_skinning_surface_creator_test_suite : public Test::Suite
 //          eli::test::octave_print(1, ribs[0].get_f(), "rib0", true);
 //          eli::test::octave_print(1, ribs[1].get_f(), "rib1", true);
 //          eli::test::octave_print(1, ribs[2].get_f(), "rib2", true);
-//          eli::test::octave_finish(1);
+//          eli::test::octave_finish(1, false);
 //        }
       }
 
@@ -3089,7 +3089,7 @@ class piecewise_general_skinning_surface_creator_test_suite : public Test::Suite
 //          eli::test::octave_print(1, ribs[1].get_f(), ribs[1].get_left_fp(), "lve1");
 //          eli::test::octave_print(1, ribs[1].get_f(), ribs[1].get_right_fp(), "rve1");
 //          eli::test::octave_print(1, ribs[2].get_f(), ribs[2].get_left_fp(), "lve2");
-//          eli::test::octave_finish(1);
+//          eli::test::octave_finish(1, false);
 //        }
       }
 
@@ -3351,7 +3351,7 @@ class piecewise_general_skinning_surface_creator_test_suite : public Test::Suite
 //          eli::test::octave_print(1, ribs[1].get_f(), ribs[1].get_left_fp(), "lve1");
 //          eli::test::octave_print(1, ribs[1].get_f(), ribs[1].get_right_fp(), "rve1");
 //          eli::test::octave_print(1, ribs[2].get_f(), ribs[2].get_left_fp(), "lve2");
-//          eli::test::octave_finish(1);
+//          eli::test::octave_finish(1, false);
 //        }
       }
 
@@ -3654,7 +3654,7 @@ class piecewise_general_skinning_surface_creator_test_suite : public Test::Suite
 //          eli::test::octave_print(1, ribs[1].get_f(), ribs[1].get_left_fp(), "lve1");
 //          eli::test::octave_print(1, ribs[1].get_f(), ribs[1].get_right_fp(), "rve1");
 //          eli::test::octave_print(1, ribs[2].get_f(), ribs[2].get_left_fp(), "lve2");
-//          eli::test::octave_finish(1);
+//          eli::test::octave_finish(1, false);
 //        }
       }
 
@@ -3979,7 +3979,7 @@ class piecewise_general_skinning_surface_creator_test_suite : public Test::Suite
 //          eli::test::octave_print(1, ribs[1].get_f(), ribs[1].get_left_fp(), "lve1");
 //          eli::test::octave_print(1, ribs[1].get_f(), ribs[1].get_right_fp(), "rve1");
 //          eli::test::octave_print(1, ribs[2].get_f(), ribs[2].get_left_fp(), "lve2");
-//          eli::test::octave_finish(1);
+//          eli::test::octave_finish(1, false);
 //        }
       }
 
@@ -4289,7 +4289,7 @@ class piecewise_general_skinning_surface_creator_test_suite : public Test::Suite
 //          eli::test::octave_print(1, ribs[1].get_f(), ribs[1].get_left_fp(), "lve1");
 //          eli::test::octave_print(1, ribs[1].get_f(), ribs[1].get_right_fp(), "rve1");
 //          eli::test::octave_print(1, ribs[2].get_f(), ribs[2].get_left_fp(), "lve2");
-//          eli::test::octave_finish(1);
+//          eli::test::octave_finish(1, false);
 //        }
       }
     }
@@ -4431,7 +4431,7 @@ class piecewise_general_skinning_surface_creator_test_suite : public Test::Suite
 //          eli::test::octave_print(1, ribs[0].get_f(), "rib0", true);
 //          eli::test::octave_print(1, ribs[1].get_f(), "rib1", true);
 //          eli::test::octave_print(1, ribs[2].get_f(), "rib2", true);
-//          eli::test::octave_finish(1);
+//          eli::test::octave_finish(1, false);
 //        }
       }
 
@@ -4615,7 +4615,7 @@ class piecewise_general_skinning_surface_creator_test_suite : public Test::Suite
 //          eli::test::octave_print(1, ribs[0].get_f(), "rib0", true);
 //          eli::test::octave_print(1, ribs[1].get_f(), "rib1", true);
 //          eli::test::octave_print(1, ribs[2].get_f(), "rib2", true);
-//          eli::test::octave_finish(1);
+//          eli::test::octave_finish(1, false);
 //        }
       }
 
@@ -4760,7 +4760,7 @@ class piecewise_general_skinning_surface_creator_test_suite : public Test::Suite
 //          eli::test::octave_print(1, ribs[0].get_f(), "rib0", true);
 //          eli::test::octave_print(1, ribs[1].get_f(), "rib1", true);
 //          eli::test::octave_print(1, ribs[2].get_f(), "rib2", true);
-//          eli::test::octave_finish(1);
+//          eli::test::octave_finish(1, false);
 //        }
       }
 
@@ -4956,7 +4956,7 @@ class piecewise_general_skinning_surface_creator_test_suite : public Test::Suite
 //          eli::test::octave_print(1, ribs[0].get_f(), "rib0", true);
 //          eli::test::octave_print(1, ribs[1].get_f(), "rib1", true);
 //          eli::test::octave_print(1, ribs[2].get_f(), "rib2", true);
-//          eli::test::octave_finish(1);
+//          eli::test::octave_finish(1, false);
 //        }
       }
     }
@@ -5098,7 +5098,7 @@ class piecewise_general_skinning_surface_creator_test_suite : public Test::Suite
 //          eli::test::octave_print(1, ribs[0].get_f(), "rib0", true);
 //          eli::test::octave_print(1, ribs[1].get_f(), "rib1", true);
 //          eli::test::octave_print(1, ribs[2].get_f(), "rib2", true);
-//          eli::test::octave_finish(1);
+//          eli::test::octave_finish(1, false);
 //        }
       }
 
@@ -5244,7 +5244,7 @@ class piecewise_general_skinning_surface_creator_test_suite : public Test::Suite
 //          eli::test::octave_print(1, ribs[0].get_f(), "rib0", true);
 //          eli::test::octave_print(1, ribs[1].get_f(), "rib1", true);
 //          eli::test::octave_print(1, ribs[2].get_f(), "rib2", true);
-//          eli::test::octave_finish(1);
+//          eli::test::octave_finish(1, false);
 //        }
       }
     }

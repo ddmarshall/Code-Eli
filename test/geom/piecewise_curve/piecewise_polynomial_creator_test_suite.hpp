@@ -125,7 +125,7 @@ class piecewise_polynomial_creator_test_suite : public Test::Suite
 //        eli::test::octave_start(1);
 //        eli::test::octave_print(1, c, "poly");
 //        eli::test::octave_print(1, pc, "piecewise");
-//        eli::test::octave_finish(1);
+//        eli::test::octave_finish(1, false);
 //      }
     }
 

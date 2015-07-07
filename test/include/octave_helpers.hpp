@@ -52,7 +52,7 @@ namespace eli
       std::cout << "grid on;" << std::endl;
     }
 
-    inline void octave_finish(int figno)
+    inline void octave_finish(int figno, bool axis_equal)
     {
       std::cout << "figure(" << figno << ");" << std::endl;
       std::cout << "hold off;" << std::endl;
@@ -60,6 +60,10 @@ namespace eli
       std::cout << "xlabel('x');" << std::endl;
       std::cout << "ylabel('y');" << std::endl;
       std::cout << "zlabel('z');" << std::endl;
+      if (axis_equal)
+      {
+        std::cout << "axis equal;" << std::endl;
+      }
     }
 
     template<typename point__>
@@ -575,7 +579,6 @@ namespace eli
       std::cout << "setenv('GNUTERM', 'x11');" << std::endl;
       std::cout << "plot(" << nm << "_curv_x, "
                            << nm << "_curv_y, '-c');" << std::endl;
-      std::cout << "axis equal" << std::endl;
     }
 
     template<typename data__>
@@ -635,7 +638,6 @@ namespace eli
       std::cout << "setenv('GNUTERM', 'x11');" << std::endl;
       std::cout << "plot(" << nm << "_curv_x, "
                            << nm << "_curv_y, '-c');" << std::endl;
-      std::cout << "axis equal" << std::endl;
     }
 
     template<typename data__>

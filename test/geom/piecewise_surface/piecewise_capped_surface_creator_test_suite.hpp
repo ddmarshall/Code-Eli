@@ -152,7 +152,7 @@ class piecewise_capped_surface_creator_test_suite : public Test::Suite
 //          eli::test::octave_print(1, ribs[1].get_f(), "rib1", true);
 //          eli::test::octave_print(1, ribs[2].get_f(), "rib2", true);
 //          eli::test::octave_print(1, s_orig, "surf", true);
-//          eli::test::octave_finish(1);
+//          eli::test::octave_finish(1, false);
 //        }
       }
 
@@ -172,7 +172,7 @@ class piecewise_capped_surface_creator_test_suite : public Test::Suite
 //          std::cout.flush();
 //          eli::test::octave_start(1);
 //          eli::test::octave_print(1, s_umin_cap, "surf", true);
-//          eli::test::octave_finish(1);
+//          eli::test::octave_finish(1, false);
 //        }
       }
 
@@ -192,7 +192,7 @@ class piecewise_capped_surface_creator_test_suite : public Test::Suite
 //          std::cout.flush();
 //          eli::test::octave_start(1);
 //          eli::test::octave_print(1, s_umax_cap, "surf", true);
-//          eli::test::octave_finish(1);
+//          eli::test::octave_finish(1, false);
 //        }
       }
 
@@ -218,7 +218,7 @@ class piecewise_capped_surface_creator_test_suite : public Test::Suite
 //          std::cout.flush();
 //          eli::test::octave_start(1);
 //          eli::test::octave_print(1, s_uminmax_cap, "surf", true);
-//          eli::test::octave_finish(1);
+//          eli::test::octave_finish(1, false);
 //        }
       }
     }
