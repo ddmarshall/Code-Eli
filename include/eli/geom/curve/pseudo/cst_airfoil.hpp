@@ -87,7 +87,7 @@ namespace eli
             typedef typename airfoil_curve_type::monomial_coefficient_type monomial_coefficient_type;
 
           public:
-            cst_airfoil() {}
+            cst_airfoil() : upper(2, true), lower(2, false) {}
             cst_airfoil(index_type deg) : upper(deg, true), lower(deg, false) {}
             cst_airfoil(index_type degu, index_type degl) : upper(degu, true), lower(degl, false) {}
             cst_airfoil(const cst_airfoil<data_type, tolerance_type> &a) : upper(a.upper), lower(a.lower) {}
