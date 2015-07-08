@@ -41,6 +41,7 @@ namespace eli
           typedef typename base_class_type::index_type index_type;
           typedef typename base_class_type::tolerance_type tolerance_type;
           typedef unsigned short dimension_type;
+          typedef eli::geom::curve::pseudo::cst_airfoil<data_type> cst_airfoil_type;
 
           piecewise_cst_airfoil_fitter()
             : piecewise_creator_base<data_type, dim__, tolerance_type>(2, 0),
@@ -290,7 +291,12 @@ namespace eli
             return true;
           }
 
-          virtual bool create(piecewise<bezier, data_type, dim__, tolerance_type> &pc) const
+          // This will create a CST airfoil for the given points. Note that CST airfoils
+          // are defined with leading edge (x,y)=(0,0) and trailing edge x=1, so if
+          // airfoil points are not in that range, then the results CST airfoil will
+          // represent the original airfoil translated, rotated, & scaled to get to CST's
+          // cannonical representation.
+          bool create(cst_airfoil_type &cst) const
           {
             const int LOWER(0), UPPER(1);
             tolerance_type tol;
@@ -334,6 +340,7 @@ namespace eli
             // * Find chord line (leading edge and trailing edge)
             // * translate, rotate, & scale so that points go from (0,0) to x=1
             //   (don't forget te_pt[] which holds the trailing edge
+            // Need to store the translation, rotation, and scaling in member variables
 
             // extract trailing edge thicknesses and slopes for fitting
             data_type dte[2], te_slope[2];
@@ -430,9 +437,7 @@ namespace eli
 //            std::cout << "cp=" << cp << std::endl;
 
             // Create CST airfoil from control points
-            typedef eli::geom::curve::pseudo::cst_airfoil<data_type> cst_airfoil_type;
-
-            cst_airfoil_type cst(n[UPPER], n[LOWER]);
+            cst.resize(n[UPPER], n[LOWER]);
             {
               typedef typename cst_airfoil_type::control_point_type cst_control_point_type;
 
@@ -453,7 +458,19 @@ namespace eli
               cst.set_trailing_edge_thickness(dte[UPPER], -dte[LOWER]);
             }
 
-            // translate, rotate, & scale back to original
+            return true;
+          }
+
+          virtual bool create(piecewise<bezier, data_type, dim__, tolerance_type> &pc) const
+          {
+            cst_airfoil_type cst;
+
+            // create the CST airfoil
+            if (!create(cst))
+            {
+              assert(false);
+              return false;
+            }
 
             // build piecewise bezier curve using CST Airfoil creator
             {
@@ -477,6 +494,10 @@ namespace eli
                 return false;
               }
             }
+
+            // translate, rotate, & scale back to original
+            // Need to use the translation, rotation, and scaling as member variables. Get
+            // them from the get operators.
 
             return true;
           }

@@ -42,6 +42,8 @@ class piecewise_cst_airfoil_creator_test_suite : public Test::Suite
     typedef typename piecewise_curve_type::tolerance_type tolerance_type;
     typedef eli::geom::curve::pseudo::cst_airfoil<data_type> cst_airfoil_type;
     typedef typename cst_airfoil_type::control_point_type cst_airfoil_control_point_type;
+    typedef eli::geom::curve::piecewise_cst_airfoil_fitter<data__, 3, tolerance_type> airfoil_fitter_type;
+
 
     tolerance_type tol;
 
@@ -147,6 +149,16 @@ class piecewise_cst_airfoil_creator_test_suite : public Test::Suite
     void create_cst_airfoil_points(std::vector<point_type, Eigen::aligned_allocator<point_type>> &upts,
                                    std::vector<point_type, Eigen::aligned_allocator<point_type>> &lpts)
     {
+      std::vector<cst_airfoil_control_point_type, Eigen::aligned_allocator<cst_airfoil_control_point_type>> cpu, cpl;
+
+      create_cst_airfoil_points(upts, lpts, cpu, cpl);
+    }
+
+    void create_cst_airfoil_points(std::vector<point_type, Eigen::aligned_allocator<point_type>> &upts,
+                                   std::vector<point_type, Eigen::aligned_allocator<point_type>> &lpts,
+                                   std::vector<cst_airfoil_control_point_type, Eigen::aligned_allocator<cst_airfoil_control_point_type>> &cpu,
+                                   std::vector<cst_airfoil_control_point_type, Eigen::aligned_allocator<cst_airfoil_control_point_type>> &cpl)
+    {
       // create an asymmetric CST airfoil
       typedef eli::geom::curve::pseudo::cst_airfoil<data__> cst_airfoil_type;
       typedef typename cst_airfoil_type::point_type cst_airfoil_point_type;
@@ -155,11 +167,11 @@ class piecewise_cst_airfoil_creator_test_suite : public Test::Suite
       typedef typename cst_airfoil_type::control_point_type cst_airfoil_control_point_type;
 
       cst_airfoil_type cst(7, 5);
-      cst_airfoil_control_point_type cpu[8], cpl[6];
       cst_airfoil_data_type dteu(0.007), dtel(0.005);
       cst_airfoil_index_type i;
 
       // set the control points
+      cpu.resize(8);
       cpu[0] << static_cast<data_type>( 0.17);
       cpu[1] << static_cast<data_type>( 0.16);
       cpu[2] << static_cast<data_type>( 0.16);
@@ -168,6 +180,7 @@ class piecewise_cst_airfoil_creator_test_suite : public Test::Suite
       cpu[5] << static_cast<data_type>( 0.14);
       cpu[6] << static_cast<data_type>( 0.14);
       cpu[7] << static_cast<data_type>( 0.14);
+      cpl.resize(6);
       cpl[0] << static_cast<data_type>(-0.17);
       cpl[1] << static_cast<data_type>( 0.08);
       cpl[2] << static_cast<data_type>( 0.06);
@@ -192,12 +205,14 @@ class piecewise_cst_airfoil_creator_test_suite : public Test::Suite
       {
         cst_airfoil_point_type pt(cst.f(static_cast<data_type>(i)/(upts.size()-1)));
         upts[i] << pt.x(), pt.y(), 0;
+//        std::cout << "upts[" << i << "]=" << upts[i] << std::endl;
       }
       lpts.resize(20);
       for (i=0; i<lpts.size(); ++i)
       {
         cst_airfoil_point_type pt(cst.f(-static_cast<data_type>(i)/(lpts.size()-1)));
         lpts[i] << pt.x(), pt.y(), 0;
+//        std::cout << "lpts[" << i << "]=" << lpts[i] << std::endl;
       }
     }
 
@@ -206,18 +221,21 @@ class piecewise_cst_airfoil_creator_test_suite : public Test::Suite
     {
       // add the tests
       TEST_ADD(piecewise_cst_airfoil_creator_test_suite<float>::create_airfoil_test);
+      TEST_ADD(piecewise_cst_airfoil_creator_test_suite<float>::fit_airfoil_to_cst_test);
       TEST_ADD(piecewise_cst_airfoil_creator_test_suite<float>::fit_airfoil_test);
     }
     void AddTests(const double &)
     {
       // add the tests
       TEST_ADD(piecewise_cst_airfoil_creator_test_suite<double>::create_airfoil_test);
+      TEST_ADD(piecewise_cst_airfoil_creator_test_suite<double>::fit_airfoil_to_cst_test);
       TEST_ADD(piecewise_cst_airfoil_creator_test_suite<double>::fit_airfoil_test);
     }
     void AddTests(const long double &)
     {
       // add the tests
       TEST_ADD(piecewise_cst_airfoil_creator_test_suite<long double>::create_airfoil_test);
+      TEST_ADD(piecewise_cst_airfoil_creator_test_suite<long double>::fit_airfoil_to_cst_test);
       TEST_ADD(piecewise_cst_airfoil_creator_test_suite<long double>::fit_airfoil_test);
     }
 
@@ -340,10 +358,82 @@ class piecewise_cst_airfoil_creator_test_suite : public Test::Suite
 //      }
     }
 
+    void fit_airfoil_to_cst_test()
+    {
+      typedef eli::geom::curve::pseudo::cst_airfoil<data_type> cst_airfoil_type;
+
+      airfoil_fitter_type pcaf;
+      cst_airfoil_type cst;
+      std::vector<point_type, Eigen::aligned_allocator<point_type>> upt, lpt;
+      std::vector<cst_airfoil_control_point_type, Eigen::aligned_allocator<cst_airfoil_control_point_type>> cpu_ref, cpl_ref;
+      point_type pt, pt_ref;
+      data_type t, t0, t1, t2;
+      index_type degu, degl;
+      bool rtn_flag;
+
+      // get airfoil points
+      create_cst_airfoil_points(upt, lpt, cpu_ref, cpl_ref);
+
+      // set the parameterization
+      t0=-1;
+      t1=0;
+      t2=1;
+
+      // create curve
+      degu=7;
+      degl=5;
+      rtn_flag=pcaf.set_conditions(upt.begin(), static_cast<index_type>(upt.size()), degu,
+                                   lpt.begin(), static_cast<index_type>(lpt.size()), degl, false);
+      TEST_ASSERT(rtn_flag);
+      pcaf.set_t0(t0);
+      pcaf.set_segment_dt(t1-t0, 0);
+      pcaf.set_segment_dt(t2-t1, 1);
+      rtn_flag=pcaf.create(cst);
+      TEST_ASSERT(rtn_flag);
+
+      // cycle through CST control points to compare to the reference values
+      cst_airfoil_control_point_type cp;
+      index_type i;
+
+      for (i=0; i<=cst.upper_degree(); ++i)
+      {
+        cp = cst.get_upper_control_point(i);
+        std::string str("Error for Upper Control Point "+std::to_string(i));
+        TEST_ASSERT_MSG(tol.approximately_equal(cp, cpu_ref[i]), str.data());
+//        std::cout << "diff=" << (cp-cpu_ref[i]).norm() << std::endl;
+      }
+
+      for (i=0; i<=cst.lower_degree(); ++i)
+      {
+        cp = cst.get_lower_control_point(i);
+        std::string str("Error for Lower Control Point "+std::to_string(i));
+        TEST_ASSERT_MSG(tol.approximately_equal(cp, cpl_ref[i]), str.data());
+//        std::cout << "diff=" << (cp-cpu_ref[i]).norm() << std::endl;
+      }
+
+//      if (typeid(data_type)==typeid(float))
+//      {
+//        std::cout.flush();
+//        eli::test::octave_start(1);
+//        // print out the upper surface points
+//        for (size_t n=0; n<upt.size(); ++n)
+//        {
+//          std::string name("upt"); name+=std::to_string(n);
+//          eli::test::octave_print(1, upt[n], name);
+//        }
+//        // print out the lower surface points
+//        for (size_t n=0; n<lpt.size(); ++n)
+//        {
+//          std::string name("lpt"); name+=std::to_string(n);
+//          eli::test::octave_print(1, lpt[n], name);
+//        }
+//        eli::test::octave_print(1, cst, "cst");
+//        eli::test::octave_finish(1, true);
+//      }
+    }
+
     void fit_airfoil_test()
     {
-      typedef eli::geom::curve::piecewise_cst_airfoil_fitter<data__, 3, tolerance_type> airfoil_fitter_type;
-
       // fit to simple two vector specification
       {
         airfoil_fitter_type pcaf;
