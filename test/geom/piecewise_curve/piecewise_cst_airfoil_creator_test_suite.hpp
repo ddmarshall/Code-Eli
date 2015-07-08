@@ -475,15 +475,8 @@ class piecewise_cst_airfoil_creator_test_suite : public Test::Suite
         TEST_ASSERT((pt-pt_ref).norm()<1e-5);
         t  = 0.95;
         pt = pc.f(t);
-        if (typeid(data_type)==typeid(float))
-        {
-          pt_ref << t*t, 0.01116413716, 0;
-        }
-        else
-        {
-          pt_ref << t*t, 0.01130447058, 0;
-        }
-        TEST_ASSERT((pt-pt_ref).norm()<1e-5);
+        pt_ref << t*t, 0.01116413716, 0;
+        TEST_ASSERT((pt-pt_ref).norm()<2e-4);
 
 //        if (typeid(data_type)==typeid(float))
 //        {
