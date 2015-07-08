@@ -76,6 +76,7 @@ set (PIECEWISE_PSEUDO_CREATOR_TEST_HEADER ${_ELI_TEST_INCLUDE_DIR}/octave_helper
                                           ${ELI_SOURCE_DIR}/include/eli/util/tolerance.hpp
                                           ${ELI_SOURCE_DIR}/include/eli/mutil/fd/d1o2.hpp
                                           ${ELI_SOURCE_DIR}/include/eli/mutil/fd/d2o2.hpp
+                                          ${ELI_SOURCE_DIR}/include/eli/mutil/opt/least_squares.hpp
                                           ${ELI_SOURCE_DIR}/include/eli/geom/general/continuity.hpp
                                           ${ELI_SOURCE_DIR}/include/eli/geom/curve/bezier.hpp
                                           ${ELI_SOURCE_DIR}/include/eli/geom/curve/length.hpp
@@ -87,6 +88,7 @@ set (PIECEWISE_PSEUDO_CREATOR_TEST_HEADER ${_ELI_TEST_INCLUDE_DIR}/octave_helper
                                           ${ELI_SOURCE_DIR}/include/eli/geom/curve/piecewise_explicit_bezier_creator.hpp
                                           ${ELI_SOURCE_DIR}/include/eli/geom/curve/piecewise_polynomial_creator.hpp
                                           ${ELI_SOURCE_DIR}/include/eli/geom/curve/piecewise_cst_airfoil_creator.hpp
+                                          ${ELI_SOURCE_DIR}/include/eli/geom/curve/piecewise_cst_airfoil_fitter.hpp
                                           ${ELI_SOURCE_DIR}/include/eli/geom/curve/pseudo/four_digit.hpp
                                           ${ELI_SOURCE_DIR}/include/eli/geom/curve/pseudo/explicit_bezier.hpp
                                           ${ELI_SOURCE_DIR}/include/eli/geom/curve/pseudo/polynomial.hpp
