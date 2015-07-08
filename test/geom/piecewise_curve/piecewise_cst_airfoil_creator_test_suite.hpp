@@ -42,7 +42,7 @@ class piecewise_cst_airfoil_creator_test_suite : public Test::Suite
     typedef typename piecewise_curve_type::tolerance_type tolerance_type;
     typedef eli::geom::curve::pseudo::cst_airfoil<data_type> cst_airfoil_type;
     typedef typename cst_airfoil_type::control_point_type cst_airfoil_control_point_type;
-    typedef eli::geom::curve::piecewise_cst_airfoil_fitter<data__, 3, tolerance_type> airfoil_fitter_type;
+    typedef eli::geom::curve::piecewise_cst_airfoil_fitter<data_type, 3, tolerance_type> airfoil_fitter_type;
 
 
     tolerance_type tol;
@@ -160,11 +160,9 @@ class piecewise_cst_airfoil_creator_test_suite : public Test::Suite
                                    std::vector<cst_airfoil_control_point_type, Eigen::aligned_allocator<cst_airfoil_control_point_type>> &cpl)
     {
       // create an asymmetric CST airfoil
-      typedef eli::geom::curve::pseudo::cst_airfoil<data__> cst_airfoil_type;
       typedef typename cst_airfoil_type::point_type cst_airfoil_point_type;
       typedef typename cst_airfoil_type::data_type cst_airfoil_data_type;
       typedef typename cst_airfoil_type::index_type cst_airfoil_index_type;
-      typedef typename cst_airfoil_type::control_point_type cst_airfoil_control_point_type;
 
       cst_airfoil_type cst(7, 5);
       cst_airfoil_data_type dteu(0.007), dtel(0.005);
@@ -201,14 +199,14 @@ class piecewise_cst_airfoil_creator_test_suite : public Test::Suite
 
       // sample the lower and upper surfaces
       upts.resize(24);
-      for (i=0; i<upts.size(); ++i)
+      for (i=0; i<static_cast<cst_airfoil_index_type>(upts.size()); ++i)
       {
         cst_airfoil_point_type pt(cst.f(static_cast<data_type>(i)/(upts.size()-1)));
         upts[i] << pt.x(), pt.y(), 0;
 //        std::cout << "upts[" << i << "]=" << upts[i] << std::endl;
       }
       lpts.resize(20);
-      for (i=0; i<lpts.size(); ++i)
+      for (i=0; i<static_cast<cst_airfoil_index_type>(lpts.size()); ++i)
       {
         cst_airfoil_point_type pt(cst.f(-static_cast<data_type>(i)/(lpts.size()-1)));
         lpts[i] << pt.x(), pt.y(), 0;
@@ -360,14 +358,12 @@ class piecewise_cst_airfoil_creator_test_suite : public Test::Suite
 
     void fit_airfoil_to_cst_test()
     {
-      typedef eli::geom::curve::pseudo::cst_airfoil<data_type> cst_airfoil_type;
-
       airfoil_fitter_type pcaf;
       cst_airfoil_type cst;
       std::vector<point_type, Eigen::aligned_allocator<point_type>> upt, lpt;
       std::vector<cst_airfoil_control_point_type, Eigen::aligned_allocator<cst_airfoil_control_point_type>> cpu_ref, cpl_ref;
       point_type pt, pt_ref;
-      data_type t, t0, t1, t2;
+      data_type t0, t1, t2;
       index_type degu, degl;
       bool rtn_flag;
 
@@ -520,7 +516,7 @@ class piecewise_cst_airfoil_creator_test_suite : public Test::Suite
         piecewise_curve_type pc;
         std::vector<point_type, Eigen::aligned_allocator<point_type>> upt, lpt;
         point_type pt, pt_ref;
-        data_type t, t0, t1, t2;
+        data_type t0, t1, t2;
         index_type degu, degl;
         bool rtn_flag;
 

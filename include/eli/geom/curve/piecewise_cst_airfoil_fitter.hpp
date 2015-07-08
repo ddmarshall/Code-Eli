@@ -320,7 +320,7 @@ namespace eli
             index_type i, iupper(lower_pt.size()-2), npts(upper_pt.size()-2+lower_pt.size()-2);
             Eigen::Matrix<data_type, Eigen::Dynamic, dim__> S(npts,dim__);
 
-            for (i=1; i<lower_pt.size()-1; ++i)
+            for (i=1; i<static_cast<index_type>(lower_pt.size())-1; ++i)
             {
               for (index_type j=0; j<dim__; ++j)
               {
@@ -328,7 +328,7 @@ namespace eli
               }
             }
 
-            for (i=1; i<upper_pt.size()-1; ++i)
+            for (i=1; i<static_cast<index_type>(upper_pt.size())-1; ++i)
             {
               for (index_type j=0; j<dim__; ++j)
               {
@@ -505,8 +505,10 @@ namespace eli
         private:
           typedef std::vector<point_type> airfoil_point_collection_type;
 
-          airfoil_point_collection_type upper_pt, lower_pt;
-          index_type upper_degree, lower_degree;
+          airfoil_point_collection_type upper_pt;
+          index_type upper_degree;
+          airfoil_point_collection_type lower_pt;
+          index_type lower_degree;
           bool approx_te_slope;
       };
     }
