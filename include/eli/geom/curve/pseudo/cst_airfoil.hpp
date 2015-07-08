@@ -136,6 +136,12 @@ namespace eli
               return lower.degree();
             }
 
+            void resize(index_type udeg, index_type ldeg)
+            {
+              resize_upper(udeg);
+              resize_lower(ldeg);
+            }
+
             void upper_degree_promote()
             {
               upper.degree_promote();
