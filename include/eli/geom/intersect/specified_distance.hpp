@@ -1,5 +1,5 @@
 /*********************************************************************************
-* Copyright (c) 2013 David D. Marshall <ddmarsha@calpoly.edu>
+* Copyright (c) 2015 Rob McDonald <ramcdona@calpoly.edu>
 *
 * All rights reserved. This program and the accompanying materials
 * are made available under the terms of the Eclipse Public License v1.0
@@ -7,14 +7,12 @@
 * http://www.eclipse.org/legal/epl-v10.html
 *
 * Contributors:
-*    David D. Marshall - initial code and implementation
+*    Rob McDonald - initial code and implementation
 ********************************************************************************/
 
-#ifndef eli_geom_intersect_hpp
-#define eli_geom_intersect_hpp
+#ifndef eli_geom_intersect_specified_distance_hpp
+#define eli_geom_intersect_specified_distance_hpp
 
-#include "eli/geom/intersect/minimum_distance.hpp"
-#include "eli/geom/intersect/specified_distance.hpp"
-#include "eli/geom/intersect/specified_thickness.hpp"
+#include "eli/geom/intersect/specified_distance_curve.hpp"
 
 #endif

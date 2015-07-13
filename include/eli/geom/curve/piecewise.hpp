@@ -337,6 +337,11 @@ namespace eli
             return get_parameter_min();
           }
 
+          void set_tmax(const data_type &tmax_in)
+          {
+            tmax = tmax_in;
+          }
+
           void set_t0(const data_type &t0_in)
           {
             if(!segments.empty())
@@ -360,6 +365,52 @@ namespace eli
             else
             {
               tmax=t0_in;
+            }
+          }
+
+          void set_t( const data_type &t_old, const data_type &t_new )
+          {
+            tol__ tol;
+
+            if(!segments.empty())
+            {
+              segment_collection_type shiftseg;
+              for (typename segment_collection_type::iterator it=segments.begin(); it!=segments.end(); ++it)
+              {
+
+                if( tol.approximately_equal(t_old, it->first) )
+                {
+                  shiftseg.insert( shiftseg.end(), std::make_pair( t_new, it->second) );
+                }
+                else
+                {
+                  shiftseg.insert( shiftseg.end(), std::make_pair( it->first, it->second) );
+                }
+              }
+              segments.swap(shiftseg);
+            }
+          }
+
+          void scale_t( const data_type &t_min_new, const data_type &t_max_new )
+          {
+            if(segments.empty())
+            {
+              tmax = t_min_new;
+            }
+            else
+            {
+              data_type t_min = segments.begin()->first;
+              data_type t_max = tmax;
+              data_type t_scale = (t_max_new - t_min_new) / (t_max - t_min);
+
+              segment_collection_type scaleseg;
+              for (typename segment_collection_type::iterator it=segments.begin(); it!=segments.end(); ++it)
+              {
+                data_type t = t_min_new + t_scale * (it->first - t_min);
+                scaleseg.insert( scaleseg.end(), std::make_pair( t, it->second) );
+              }
+              segments.swap(scaleseg);
+              tmax = t_max_new;
             }
           }
 
