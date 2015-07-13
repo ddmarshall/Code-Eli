@@ -294,20 +294,21 @@ namespace eli
           // This will create a CST airfoil for the given points. Note that CST airfoils
           // are defined with leading edge (x,y)=(0,0) and trailing edge x=1, so if
           // airfoil points are not in that range, then the results CST airfoil will
-          // represent the original airfoil translated, rotated, & scaled to get to CST's
+          // represent the original airfoil but translated, rotated, & scaled to get to CST's
           // cannonical representation.
-          bool create(cst_airfoil_type &cst) const
+          bool create(cst_airfoil_type &cst, point_type &le_pt, data_type &theta, data_type &scale_factor) const
           {
             const int LOWER(0), UPPER(1);
             tolerance_type tol;
 
             // store the trailing edge points for later use
-            point_type le_pt(1,3), te_pt[2];
+            point_type te_pt[2], te_pt_ave;
 
-            te_pt[LOWER].resize(1,3);
-            te_pt[UPPER].resize(1,3);
+            te_pt[LOWER].resize(1,dim__);
+            te_pt[UPPER].resize(1,dim__);
             te_pt[LOWER]=lower_pt.back();
             te_pt[UPPER]=upper_pt.back();
+            te_pt_ave=0.5*(te_pt[LOWER]+te_pt[UPPER]);
             le_pt=lower_pt[LOWER];
             if (!tol.approximately_equal(le_pt, upper_pt[0]))
             {
@@ -336,11 +337,53 @@ namespace eli
               }
             }
 
-// TODO: IMPLEMENT THIS
             // * Find chord line (leading edge and trailing edge)
             // * translate, rotate, & scale so that points go from (0,0) to x=1
             //   (don't forget te_pt[] which holds the trailing edge
             // Need to store the translation, rotation, and scaling in member variables
+            theta=-atan2(te_pt_ave.y()-le_pt.y(), te_pt_ave.x()-le_pt.x());
+            scale_factor=(te_pt_ave-le_pt).norm();
+
+            // translate leading edge to origin
+            data_type ct(std::cos(theta)), st(std::sin(theta));
+
+            // any theta less than ~0.5730 deg. will be considered zero and scale factors
+            // within between 0.999 and 1.001 will be considered one
+            if ((std::abs(theta) < 0.01) && (std::abs(scale_factor-1) < 0.001))
+            {
+              theta=0;
+              scale_factor=1;
+            }
+            else
+            {
+              point_type pt;
+
+              for (i=0; i<npts; ++i)
+              {
+                // translate to get leading edge at origin
+                S.row(i)-=le_pt;
+
+                // rotate back to chord line along x-axis
+                pt = S.row(i);
+                S.row(i) << (pt.x()*ct-pt.y()*st), (pt.x()*st+pt.y()*ct), pt.z();
+
+                // scale
+                S.row(i) /= scale_factor;
+
+//                std::cout << "pt[" << std::setw(2) << i << "]=" << S.row(i) << std::endl;
+              }
+
+              // need to transform trailing edge points
+              te_pt[LOWER]-=le_pt;
+              te_pt[UPPER]-=le_pt;
+              pt=te_pt[LOWER]; te_pt[LOWER] << (pt.x()*ct-pt.y()*st), (pt.x()*st+pt.y()*ct), pt.z();
+              pt=te_pt[UPPER]; te_pt[UPPER] << (pt.x()*ct-pt.y()*st), (pt.x()*st+pt.y()*ct), pt.z();
+              te_pt[LOWER]/= scale_factor;
+              te_pt[UPPER]/= scale_factor;
+            }
+
+            // need to return the angle needed to rotate a canonical airfoil to this orientation
+            theta=-theta;
 
             // extract trailing edge thicknesses and slopes for fitting
             data_type dte[2], te_slope[2];
@@ -464,9 +507,11 @@ namespace eli
           virtual bool create(piecewise<bezier, data_type, dim__, tolerance_type> &pc) const
           {
             cst_airfoil_type cst;
+            point_type le;
+            data_type theta, scale_factor;
 
             // create the CST airfoil
-            if (!create(cst))
+            if (!create(cst, le, theta, scale_factor))
             {
               assert(false);
               return false;
@@ -495,9 +540,17 @@ namespace eli
               }
             }
 
-            // translate, rotate, & scale back to original
+            // scale, rotate, & translate back to original
             // Need to use the translation, rotation, and scaling as member variables. Get
             // them from the get operators.
+            typename piecewise<bezier, data_type, dim__, tolerance_type>::rotation_matrix_type rmat;
+
+            rmat.setIdentity();
+            rmat(0,0)=std::cos(theta); rmat(0,1)=-std::sin(theta);
+            rmat(1,0)=-rmat(0,1);      rmat(1,1)=rmat(0,0);
+            pc.scale(scale_factor);
+            pc.rotate(rmat);
+            pc.translate(le);
 
             return true;
           }

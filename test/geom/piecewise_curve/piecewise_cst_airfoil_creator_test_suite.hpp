@@ -95,67 +95,116 @@ class piecewise_cst_airfoil_creator_test_suite : public Test::Suite
       pts[39] << 1.0000, 0.0050, 0;
     }
 
-    void create_airfoil_points(std::vector<point_type, Eigen::aligned_allocator<point_type>> &upts,
-                               std::vector<point_type, Eigen::aligned_allocator<point_type>> &lpts)
+    void create_airfoil_points(std::vector<point_type, Eigen::aligned_allocator<point_type>> &upt,
+                               std::vector<point_type, Eigen::aligned_allocator<point_type>> &lpt)
     {
       // upper surface
-      upts.resize(24);
-      upts[ 0] << 0.0000, 0.0000, 0;
-      upts[ 1] << 0.0013, 0.0030, 0;
-      upts[ 2] << 0.0045, 0.0094, 0;
-      upts[ 3] << 0.0096, 0.0138, 0;
-      upts[ 4] << 0.0165, 0.0183, 0;
-      upts[ 5] << 0.0252, 0.0228, 0;
-      upts[ 6] << 0.0477, 0.0315, 0;
-      upts[ 7] << 0.0767, 0.0397, 0;
-      upts[ 8] << 0.1118, 0.0473, 0;
-      upts[ 9] << 0.1524, 0.0539, 0;
-      upts[10] << 0.1980, 0.0593, 0;
-      upts[11] << 0.2979, 0.0636, 0;
-      upts[12] << 0.3015, 0.0665, 0;
-      upts[13] << 0.3578, 0.0680, 0;
-      upts[14] << 0.4160, 0.0680, 0;
-      upts[15] << 0.4455, 0.0675, 0;
-      upts[16] << 0.5049, 0.0652, 0;
-      upts[17] << 0.5930, 0.0585, 0;
-      upts[18] << 0.6501, 0.0514, 0;
-      upts[19] << 0.7050, 0.0416, 0;
-      upts[20] << 0.7623, 0.0297, 0;
-      upts[21] << 0.8168, 0.0221, 0;
-      upts[22] << 0.9074, 0.0108, 0;
-      upts[23] << 1.0000, 0.0050, 0;
+      upt.resize(24);
+      upt[ 0] << 0.0000, 0.0000, 0;
+      upt[ 1] << 0.0013, 0.0030, 0;
+      upt[ 2] << 0.0045, 0.0094, 0;
+      upt[ 3] << 0.0096, 0.0138, 0;
+      upt[ 4] << 0.0165, 0.0183, 0;
+      upt[ 5] << 0.0252, 0.0228, 0;
+      upt[ 6] << 0.0477, 0.0315, 0;
+      upt[ 7] << 0.0767, 0.0397, 0;
+      upt[ 8] << 0.1118, 0.0473, 0;
+      upt[ 9] << 0.1524, 0.0539, 0;
+      upt[10] << 0.1980, 0.0593, 0;
+      upt[11] << 0.2979, 0.0636, 0;
+      upt[12] << 0.3015, 0.0665, 0;
+      upt[13] << 0.3578, 0.0680, 0;
+      upt[14] << 0.4160, 0.0680, 0;
+      upt[15] << 0.4455, 0.0675, 0;
+      upt[16] << 0.5049, 0.0652, 0;
+      upt[17] << 0.5930, 0.0585, 0;
+      upt[18] << 0.6501, 0.0514, 0;
+      upt[19] << 0.7050, 0.0416, 0;
+      upt[20] << 0.7623, 0.0297, 0;
+      upt[21] << 0.8168, 0.0221, 0;
+      upt[22] << 0.9074, 0.0108, 0;
+      upt[23] << 1.0000, 0.0050, 0;
 
       // lower surface
-      lpts.resize(17);
-      lpts[ 0] << 0.0000, 0.0000, 0;
-      lpts[ 1] << 0.0029,-0.0077, 0;
-      lpts[ 2] << 0.0076,-0.0116, 0;
-      lpts[ 3] << 0.0143,-0.0112, 0;
-      lpts[ 4] << 0.0451,-0.0284, 0;
-      lpts[ 5] << 0.0741,-0.0365, 0;
-      lpts[ 6] << 0.1029,-0.0441, 0;
-      lpts[ 7] << 0.1499,-0.0511, 0;
-      lpts[ 8] << 0.2453,-0.0621, 0;
-      lpts[ 9] << 0.2986,-0.0657, 0;
-      lpts[10] << 0.3545,-0.0678, 0;
-      lpts[11] << 0.4123,-0.0684, 0;
-      lpts[12] << 0.6178,-0.0572, 0;
-      lpts[13] << 0.7017,-0.0453, 0;
-      lpts[14] << 0.8078,-0.0247, 0;
-      lpts[15] << 0.9012,-0.0087, 0;
-      lpts[16] << 1.0000,-0.0020, 0;
+      lpt.resize(17);
+      lpt[ 0] << 0.0000, 0.0000, 0;
+      lpt[ 1] << 0.0029,-0.0077, 0;
+      lpt[ 2] << 0.0076,-0.0116, 0;
+      lpt[ 3] << 0.0143,-0.0112, 0;
+      lpt[ 4] << 0.0451,-0.0284, 0;
+      lpt[ 5] << 0.0741,-0.0365, 0;
+      lpt[ 6] << 0.1029,-0.0441, 0;
+      lpt[ 7] << 0.1499,-0.0511, 0;
+      lpt[ 8] << 0.2453,-0.0621, 0;
+      lpt[ 9] << 0.2986,-0.0657, 0;
+      lpt[10] << 0.3545,-0.0678, 0;
+      lpt[11] << 0.4123,-0.0684, 0;
+      lpt[12] << 0.6178,-0.0572, 0;
+      lpt[13] << 0.7017,-0.0453, 0;
+      lpt[14] << 0.8078,-0.0247, 0;
+      lpt[15] << 0.9012,-0.0087, 0;
+      lpt[16] << 1.0000,-0.0020, 0;
     }
 
-    void create_cst_airfoil_points(std::vector<point_type, Eigen::aligned_allocator<point_type>> &upts,
-                                   std::vector<point_type, Eigen::aligned_allocator<point_type>> &lpts)
+
+    void create_airfoil_points(std::vector<point_type, Eigen::aligned_allocator<point_type>> &upt,
+                               std::vector<point_type, Eigen::aligned_allocator<point_type>> &lpt,
+                               point_type & le_pt, point_type &te_pt)
+    {
+      // get the airfoil points
+      create_airfoil_points(upt, lpt);
+
+      // adjust the lower surface points to put trailing edge half-way
+      // between upper and lower trailing edge points
+      data_type y_offset(-0.003);
+
+      for (index_type i=0; i<static_cast<index_type>(lpt.size()); ++i)
+      {
+        lpt[i].y()+=lpt[i].x()*y_offset;
+      }
+
+      // transform airfoil points
+      data_type scale(2.5);
+      data_type theta(30*eli::constants::math<data_type>::pi()/180);
+      le_pt << 1, 2, 0;
+      te_pt << le_pt.x()+std::cos(theta), le_pt.y()+std::sin(theta), 0;
+
+      for (index_type i=0; i<static_cast<index_type>(upt.size()); ++i)
+      {
+        // (1) scale
+        upt[i] = scale*upt[i];
+
+        // (2) rotate
+        data_type ptx(upt[i].x()), pty(upt[i].y()), ptz(upt[i].z()), ct(std::cos(theta)), st(std::sin(theta));
+        upt[i] << (ptx*ct-pty*st), (ptx*st+pty*ct), ptz;
+
+        // (3) translate
+        upt[i] = upt[i]+le_pt;
+      }
+      for (index_type i=0; i<static_cast<index_type>(lpt.size()); ++i)
+      {
+        // (1) scale
+        lpt[i] = scale*lpt[i];
+
+        // (2) rotate
+        data_type ptx(lpt[i].x()), pty(lpt[i].y()), ptz(lpt[i].z()), ct(std::cos(theta)), st(std::sin(theta));
+        lpt[i] << (ptx*ct-pty*st), (ptx*st+pty*ct), ptz;
+
+        // (3) translate
+        lpt[i] = lpt[i]+le_pt;
+      }
+    }
+
+    void create_cst_airfoil_points(std::vector<point_type, Eigen::aligned_allocator<point_type>> &upt,
+                                   std::vector<point_type, Eigen::aligned_allocator<point_type>> &lpt)
     {
       std::vector<cst_airfoil_control_point_type, Eigen::aligned_allocator<cst_airfoil_control_point_type>> cpu, cpl;
 
-      create_cst_airfoil_points(upts, lpts, cpu, cpl);
+      create_cst_airfoil_points(upt, lpt, cpu, cpl);
     }
 
-    void create_cst_airfoil_points(std::vector<point_type, Eigen::aligned_allocator<point_type>> &upts,
-                                   std::vector<point_type, Eigen::aligned_allocator<point_type>> &lpts,
+    void create_cst_airfoil_points(std::vector<point_type, Eigen::aligned_allocator<point_type>> &upt,
+                                   std::vector<point_type, Eigen::aligned_allocator<point_type>> &lpt,
                                    std::vector<cst_airfoil_control_point_type, Eigen::aligned_allocator<cst_airfoil_control_point_type>> &cpu,
                                    std::vector<cst_airfoil_control_point_type, Eigen::aligned_allocator<cst_airfoil_control_point_type>> &cpl)
     {
@@ -198,19 +247,19 @@ class piecewise_cst_airfoil_creator_test_suite : public Test::Suite
       cst.set_trailing_edge_thickness(dteu, dtel);
 
       // sample the lower and upper surfaces
-      upts.resize(24);
-      for (i=0; i<static_cast<cst_airfoil_index_type>(upts.size()); ++i)
+      upt.resize(24);
+      for (i=0; i<static_cast<cst_airfoil_index_type>(upt.size()); ++i)
       {
-        cst_airfoil_point_type pt(cst.f(static_cast<data_type>(i)/(upts.size()-1)));
-        upts[i] << pt.x(), pt.y(), 0;
-//        std::cout << "upts[" << i << "]=" << upts[i] << std::endl;
+        cst_airfoil_point_type pt(cst.f(static_cast<data_type>(i)/(upt.size()-1)));
+        upt[i] << pt.x(), pt.y(), 0;
+//        std::cout << "upt[" << i << "]=" << upt[i] << std::endl;
       }
-      lpts.resize(20);
-      for (i=0; i<static_cast<cst_airfoil_index_type>(lpts.size()); ++i)
+      lpt.resize(20);
+      for (i=0; i<static_cast<cst_airfoil_index_type>(lpt.size()); ++i)
       {
-        cst_airfoil_point_type pt(cst.f(-static_cast<data_type>(i)/(lpts.size()-1)));
-        lpts[i] << pt.x(), pt.y(), 0;
-//        std::cout << "lpts[" << i << "]=" << lpts[i] << std::endl;
+        cst_airfoil_point_type pt(cst.f(-static_cast<data_type>(i)/(lpt.size()-1)));
+        lpt[i] << pt.x(), pt.y(), 0;
+//        std::cout << "lpt[" << i << "]=" << lpt[i] << std::endl;
       }
     }
 
@@ -358,90 +407,18 @@ class piecewise_cst_airfoil_creator_test_suite : public Test::Suite
 
     void fit_airfoil_to_cst_test()
     {
-      airfoil_fitter_type pcaf;
-      cst_airfoil_type cst;
-      std::vector<point_type, Eigen::aligned_allocator<point_type>> upt, lpt;
-      std::vector<cst_airfoil_control_point_type, Eigen::aligned_allocator<cst_airfoil_control_point_type>> cpu_ref, cpl_ref;
-      point_type pt, pt_ref;
-      data_type t0, t1, t2;
-      index_type degu, degl;
-      bool rtn_flag;
-
-      // get airfoil points
-      create_cst_airfoil_points(upt, lpt, cpu_ref, cpl_ref);
-
-      // set the parameterization
-      t0=-1;
-      t1=0;
-      t2=1;
-
-      // create curve
-      degu=7;
-      degl=5;
-      rtn_flag=pcaf.set_conditions(upt.begin(), static_cast<index_type>(upt.size()), degu,
-                                   lpt.begin(), static_cast<index_type>(lpt.size()), degl, false);
-      TEST_ASSERT(rtn_flag);
-      pcaf.set_t0(t0);
-      pcaf.set_segment_dt(t1-t0, 0);
-      pcaf.set_segment_dt(t2-t1, 1);
-      rtn_flag=pcaf.create(cst);
-      TEST_ASSERT(rtn_flag);
-
-      // cycle through CST control points to compare to the reference values
-      cst_airfoil_control_point_type cp;
-      index_type i;
-
-      for (i=0; i<=cst.upper_degree(); ++i)
-      {
-        cp = cst.get_upper_control_point(i);
-        std::string str("Error for Upper Control Point "+std::to_string(i));
-        TEST_ASSERT_MSG(tol.approximately_equal(cp, cpu_ref[i]), str.data());
-//        std::cout << "diff=" << (cp-cpu_ref[i]).norm() << std::endl;
-      }
-
-      for (i=0; i<=cst.lower_degree(); ++i)
-      {
-        cp = cst.get_lower_control_point(i);
-        std::string str("Error for Lower Control Point "+std::to_string(i));
-        TEST_ASSERT_MSG(tol.approximately_equal(cp, cpl_ref[i]), str.data());
-//        std::cout << "diff=" << (cp-cpu_ref[i]).norm() << std::endl;
-      }
-
-//      if (typeid(data_type)==typeid(float))
-//      {
-//        std::cout.flush();
-//        eli::test::octave_start(1);
-//        // print out the upper surface points
-//        for (size_t n=0; n<upt.size(); ++n)
-//        {
-//          std::string name("upt"); name+=std::to_string(n);
-//          eli::test::octave_print(1, upt[n], name);
-//        }
-//        // print out the lower surface points
-//        for (size_t n=0; n<lpt.size(); ++n)
-//        {
-//          std::string name("lpt"); name+=std::to_string(n);
-//          eli::test::octave_print(1, lpt[n], name);
-//        }
-//        eli::test::octave_print(1, cst, "cst");
-//        eli::test::octave_finish(1, true);
-//      }
-    }
-
-    void fit_airfoil_test()
-    {
-      // fit to simple two vector specification
       {
         airfoil_fitter_type pcaf;
-        piecewise_curve_type pc;
+        cst_airfoil_type cst;
         std::vector<point_type, Eigen::aligned_allocator<point_type>> upt, lpt;
+        std::vector<cst_airfoil_control_point_type, Eigen::aligned_allocator<cst_airfoil_control_point_type>> cpu_ref, cpl_ref;
         point_type pt, pt_ref;
-        data_type t, t0, t1, t2;
+        data_type t0, t1, t2, angle, scale_factor;
         index_type degu, degl;
         bool rtn_flag;
 
         // get airfoil points
-        create_airfoil_points(upt, lpt);
+        create_cst_airfoil_points(upt, lpt, cpu_ref, cpl_ref);
 
         // set the parameterization
         t0=-1;
@@ -449,34 +426,42 @@ class piecewise_cst_airfoil_creator_test_suite : public Test::Suite
         t2=1;
 
         // create curve
-        degu=8;
-        degl=8;
+        degu=7;
+        degl=5;
         rtn_flag=pcaf.set_conditions(upt.begin(), static_cast<index_type>(upt.size()), degu,
-                                     lpt.begin(), static_cast<index_type>(lpt.size()), degl, true);
+                                     lpt.begin(), static_cast<index_type>(lpt.size()), degl, false);
         TEST_ASSERT(rtn_flag);
         pcaf.set_t0(t0);
         pcaf.set_segment_dt(t1-t0, 0);
         pcaf.set_segment_dt(t2-t1, 1);
-        rtn_flag=pcaf.create(pc);
+        rtn_flag=pcaf.create(cst, pt, angle, scale_factor);
         TEST_ASSERT(rtn_flag);
 
-        // test various points
-        t  =-0.8;
-        pt = pc.f(t);
-        pt_ref << t*t, -0.05448192672, 0;
-        TEST_ASSERT((pt-pt_ref).norm()<1e-5);
-        t  =-0.1;
-        pt = pc.f(t);
-        pt_ref << t*t, -0.0121366373, 0;
-        TEST_ASSERT((pt-pt_ref).norm()<1e-5);
-        t  = 0.1;
-        pt = pc.f(t);
-        pt_ref << t*t, 0.01311318449, 0;
-        TEST_ASSERT((pt-pt_ref).norm()<1e-5);
-        t  = 0.95;
-        pt = pc.f(t);
-        pt_ref << t*t, 0.01116413716, 0;
-        TEST_ASSERT((pt-pt_ref).norm()<2e-4);
+        // make sure got back correct angle and scale factor
+        pt_ref.setZero();
+        TEST_ASSERT(pt==pt_ref);
+        TEST_ASSERT(tol.approximately_equal(angle, 0));
+        TEST_ASSERT(tol.approximately_equal(scale_factor, 1));
+
+        // cycle through CST control points to compare to the reference values
+        cst_airfoil_control_point_type cp;
+        index_type i;
+
+        for (i=0; i<=cst.upper_degree(); ++i)
+        {
+          cp = cst.get_upper_control_point(i);
+          std::string str("Error for Upper Control Point "+std::to_string(i));
+          TEST_ASSERT_MSG(tol.approximately_equal(cp, cpu_ref[i]), str.data());
+//          std::cout << "diff=" << (cp-cpu_ref[i]).norm() << std::endl;
+        }
+
+        for (i=0; i<=cst.lower_degree(); ++i)
+        {
+          cp = cst.get_lower_control_point(i);
+          std::string str("Error for Lower Control Point "+std::to_string(i));
+          TEST_ASSERT_MSG(tol.approximately_equal(cp, cpl_ref[i]), str.data());
+//          std::cout << "diff=" << (cp-cpu_ref[i]).norm() << std::endl;
+        }
 
 //        if (typeid(data_type)==typeid(float))
 //        {
@@ -494,13 +479,9 @@ class piecewise_cst_airfoil_creator_test_suite : public Test::Suite
 //            std::string name("lpt"); name+=std::to_string(n);
 //            eli::test::octave_print(1, lpt[n], name);
 //          }
-//          eli::test::octave_print(1, pc, "piecewise");
+//          eli::test::octave_print(1, cst, "cst");
 //          eli::test::octave_finish(1, true);
 //        }
-      }
-
-      // scale, translate, and rotate points
-      {
       }
 
       // fit to a known CST airfoil shape
@@ -590,6 +571,155 @@ class piecewise_cst_airfoil_creator_test_suite : public Test::Suite
 //          std::cout << "cp_ref[" << std::setw(2) << i << "] << " << std::setprecision(15)
 //                    << cp[i].x() << ", " << cp[i].y() << ", " << cp[i].z() << ";" << std::endl;
         }
+
+//        if (typeid(data_type)==typeid(float))
+//        {
+//          std::cout.flush();
+//          eli::test::octave_start(1);
+//          // print out the upper surface points
+//          for (size_t n=0; n<upt.size(); ++n)
+//          {
+//            std::string name("upt"); name+=std::to_string(n);
+//            eli::test::octave_print(1, upt[n], name);
+//          }
+//          // print out the lower surface points
+//          for (size_t n=0; n<lpt.size(); ++n)
+//          {
+//            std::string name("lpt"); name+=std::to_string(n);
+//            eli::test::octave_print(1, lpt[n], name);
+//          }
+//          eli::test::octave_print(1, pc, "piecewise");
+//          eli::test::octave_finish(1, true);
+//        }
+      }
+    }
+
+    void fit_airfoil_test()
+    {
+      // fit to simple two vector specification
+      {
+        airfoil_fitter_type pcaf;
+        piecewise_curve_type pc;
+        std::vector<point_type, Eigen::aligned_allocator<point_type>> upt, lpt;
+        point_type pt, pt_ref;
+        data_type t, t0, t1, t2;
+        index_type degu, degl;
+        bool rtn_flag;
+
+        // get airfoil points
+        create_airfoil_points(upt, lpt);
+
+        // set the parameterization
+        t0=-1;
+        t1=0;
+        t2=1;
+
+        // create curve
+        degu=8;
+        degl=8;
+        rtn_flag=pcaf.set_conditions(upt.begin(), static_cast<index_type>(upt.size()), degu,
+                                     lpt.begin(), static_cast<index_type>(lpt.size()), degl, true);
+        TEST_ASSERT(rtn_flag);
+        pcaf.set_t0(t0);
+        pcaf.set_segment_dt(t1-t0, 0);
+        pcaf.set_segment_dt(t2-t1, 1);
+        rtn_flag=pcaf.create(pc);
+        TEST_ASSERT(rtn_flag);
+
+        // test various points
+        t  =-0.8;
+        pt = pc.f(t);
+        pt_ref << t*t, -0.05448192672, 0;
+        TEST_ASSERT((pt-pt_ref).norm()<1e-5);
+        t  =-0.1;
+        pt = pc.f(t);
+        pt_ref << t*t, -0.0121366373, 0;
+        TEST_ASSERT((pt-pt_ref).norm()<1e-5);
+        t  = 0.1;
+        pt = pc.f(t);
+        pt_ref << t*t, 0.01311318449, 0;
+        TEST_ASSERT((pt-pt_ref).norm()<1e-5);
+        t  = 0.95;
+        pt = pc.f(t);
+        pt_ref << t*t, 0.01116413716, 0;
+        TEST_ASSERT((pt-pt_ref).norm()<2e-4);
+
+//        if (typeid(data_type)==typeid(float))
+//        {
+//          std::cout.flush();
+//          eli::test::octave_start(1);
+//          // print out the upper surface points
+//          for (size_t n=0; n<upt.size(); ++n)
+//          {
+//            std::string name("upt"); name+=std::to_string(n);
+//            eli::test::octave_print(1, upt[n], name);
+//          }
+//          // print out the lower surface points
+//          for (size_t n=0; n<lpt.size(); ++n)
+//          {
+//            std::string name("lpt"); name+=std::to_string(n);
+//            eli::test::octave_print(1, lpt[n], name);
+//          }
+//          eli::test::octave_print(1, pc, "piecewise");
+//          eli::test::octave_finish(1, true);
+//        }
+      }
+
+      // scale, translate, and rotate points
+      {
+        airfoil_fitter_type pcaf;
+        piecewise_curve_type pc;
+        std::vector<point_type, Eigen::aligned_allocator<point_type>> upt, lpt;
+        point_type pt, pt_ref, lept, tept;
+        data_type t, t0, t1, t2;
+        index_type degu, degl;
+        bool rtn_flag;
+
+        // get airfoil points
+        create_airfoil_points(upt, lpt, lept, tept);
+
+        // set the parameterization
+        t0=-1;
+        t1=0;
+        t2=1;
+
+        // create curve
+        degu=8;
+        degl=8;
+        rtn_flag=pcaf.set_conditions(upt.begin(), static_cast<index_type>(upt.size()), degu,
+                                     lpt.begin(), static_cast<index_type>(lpt.size()), degl, true);
+        TEST_ASSERT(rtn_flag);
+        pcaf.set_t0(t0);
+        pcaf.set_segment_dt(t1-t0, 0);
+        pcaf.set_segment_dt(t2-t1, 1);
+        rtn_flag=pcaf.create(pc);
+        TEST_ASSERT(rtn_flag);
+
+
+        // test various points
+        t  =-0.8;
+        pt = pc.f(t);
+//        std::cout << "pt_ref << " << std::setprecision(15) << pt.x() << ", " << pt.y() << ", " << pt.z() << ";" << std::endl;
+        pt_ref << 2.45614305445983, 2.67788624658704, 0;
+        TEST_ASSERT((pt-pt_ref).norm()<1e-5);
+
+        t  =-0.1;
+        pt = pc.f(t);
+//        std::cout << "pt_ref << " << std::setprecision(15) << pt.x() << ", " << pt.y() << ", " << pt.z() << ";" << std::endl;
+        pt_ref << 1.03685893171540, 1.98615845755622, 0;
+        TEST_ASSERT((pt-pt_ref).norm()<1e-5);
+
+        t  = 0.1;
+        pt = pc.f(t);
+//        std::cout << "pt_ref << " << std::setprecision(15) << pt.x() << ", " << pt.y() << ", " << pt.z() << ";" << std::endl;
+        pt_ref << 1.00525915448552, 2.04089087722623, 0;
+        TEST_ASSERT((pt-pt_ref).norm()<1e-5);
+
+        t  = 0.95;
+        pt = pc.f(t);
+//        std::cout << "pt_ref << " << std::setprecision(15) << pt.x() << ", " << pt.y() << ", " << pt.z() << ";" << std::endl;
+        pt_ref << 2.93983922906606, 3.15259989674235, 0;
+        TEST_ASSERT((pt-pt_ref).norm()<2e-4);
 
 //        if (typeid(data_type)==typeid(float))
 //        {
