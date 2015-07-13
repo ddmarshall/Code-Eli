@@ -61,11 +61,16 @@ namespace eli
           }
 
 #if (defined(NDEBUG) && defined(__GNUC__))
-#  if ((__GNUC__==4) && ( (__GNUC_MINOR__==6) || (__GNUC_MINOR__==5) ))
+# if (__GNUC__==4)
+#   if (__GNUC_MINOR__==6)
 #    pragma GCC diagnostic push
+#   endif
+#   if ((__GNUC_MINOR__==5) || (__GNUC_MINOR__==6))
 #    pragma GCC diagnostic ignored "-Wstrict-overflow"
-#  endif
+#   endif
+# endif
 #endif
+
           data_type get_segment_dt(const index_type &i) const
           {
             if ((i<0) || (i>=static_cast<index_type>(dt.size())))

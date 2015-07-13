@@ -52,7 +52,7 @@ namespace eli
       std::cout << "grid on;" << std::endl;
     }
 
-    inline void octave_finish(int figno)
+    inline void octave_finish(int figno, bool axis_equal)
     {
       std::cout << "figure(" << figno << ");" << std::endl;
       std::cout << "hold off;" << std::endl;
@@ -60,6 +60,10 @@ namespace eli
       std::cout << "xlabel('x');" << std::endl;
       std::cout << "ylabel('y');" << std::endl;
       std::cout << "zlabel('z');" << std::endl;
+      if (axis_equal)
+      {
+        std::cout << "axis equal;" << std::endl;
+      }
     }
 
     template<typename point__>
@@ -181,7 +185,7 @@ namespace eli
       }
 
       // initialize the t parameters
-      index_type nt(33);
+      index_type nt(201);
       std::vector<data__> t(nt);
       for (i=0; i<nt; ++i)
       {
@@ -281,7 +285,7 @@ namespace eli
       }
 
       // initialize the t parameters
-      index_type nt(33);
+      index_type nt(201);
       std::vector<data__> t(nt);
       for (i=0; i<nt; ++i)
       {
@@ -360,7 +364,7 @@ namespace eli
       }
 
       // initialize the t parameters
-      index_type nt(33);
+      index_type nt(201);
       std::vector<data__> t(nt);
       for (i=0; i<nt; ++i)
       {
@@ -419,7 +423,7 @@ namespace eli
       }
 
       // initialize the t parameters
-      index_type nt(33);
+      index_type nt(201);
       std::vector<data__> t(nt);
       for (i=0; i<nt; ++i)
       {
@@ -478,7 +482,7 @@ namespace eli
       }
 
       // initialize the t parameters
-      index_type nt(33);
+      index_type nt(201);
       std::vector<data__> t(nt);
       for (i=0; i<nt; ++i)
       {
@@ -543,7 +547,7 @@ namespace eli
       }
 
       // initialize the t parameters
-      index_type nt(33);
+      index_type nt(201);
       std::vector<data__> t(nt);
       for (i=0; i<nt; ++i)
       {
@@ -602,7 +606,7 @@ namespace eli
       }
 
       // initialize the t parameters
-      index_type nt(33);
+      index_type nt(201);
       std::vector<data__> t(nt);
       for (i=0; i<nt; ++i)
       {

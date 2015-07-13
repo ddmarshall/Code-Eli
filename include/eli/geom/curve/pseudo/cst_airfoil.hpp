@@ -87,9 +87,9 @@ namespace eli
             typedef typename airfoil_curve_type::monomial_coefficient_type monomial_coefficient_type;
 
           public:
-            cst_airfoil() {}
+            cst_airfoil() : upper(2, true), lower(2, false) {}
             cst_airfoil(index_type deg) : upper(deg, true), lower(deg, false) {}
-            cst_airfoil(index_type degu, index_type degl) : upper(degu), lower(degl) {}
+            cst_airfoil(index_type degu, index_type degl) : upper(degu, true), lower(degl, false) {}
             cst_airfoil(const cst_airfoil<data_type, tolerance_type> &a) : upper(a.upper), lower(a.lower) {}
             ~cst_airfoil(){}
 
@@ -134,6 +134,12 @@ namespace eli
             index_type lower_degree()
             {
               return lower.degree();
+            }
+
+            void resize(index_type udeg, index_type ldeg)
+            {
+              resize_upper(udeg);
+              resize_lower(ldeg);
             }
 
             void upper_degree_promote()
@@ -219,12 +225,32 @@ namespace eli
 
             data_type get_trailing_edge_thickness() const
             {
-              return upper.get_trailing_edge_thickness()+lower.get_trailing_edge_thickness();
+              data_type u, l;
+              get_trailing_edge_thickness(u, l);
+              return u+l;
             }
+            data_type get_upper_trailing_edge_thickness() const
+            {
+              return upper.get_trailing_edge_thickness();
+            }
+            data_type get_lower_trailing_edge_thickness() const
+            {
+              return lower.get_trailing_edge_thickness();
+            }
+
             void set_trailing_edge_thickness(const data_type &dte)
             {
-              upper.set_trailing_edge_thickness(0.5*dte);
-              lower.set_trailing_edge_thickness(0.5*dte);
+              set_trailing_edge_thickness(0.5*dte, 0.5*dte);
+            }
+            void get_trailing_edge_thickness(data_type &dteu, data_type &dtel) const
+            {
+              dteu=upper.get_trailing_edge_thickness();
+              dtel=lower.get_trailing_edge_thickness();
+            }
+            void set_trailing_edge_thickness(const data_type &dteu, const data_type &dtel)
+            {
+              upper.set_trailing_edge_thickness(dteu);
+              lower.set_trailing_edge_thickness(dtel);
             }
 
             void set_upper_control_point(const control_point_type &cp_in, const index_type &i)

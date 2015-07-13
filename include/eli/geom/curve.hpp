@@ -28,4 +28,7 @@
 #include "eli/geom/curve/equivalent_curves.hpp"
 #include "eli/geom/curve/pseudo.hpp"
 
+// include utilities
+#include "eli/geom/curve/utility.hpp"
+
 #endif

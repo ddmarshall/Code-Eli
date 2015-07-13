@@ -125,7 +125,7 @@ class piecewise_four_digit_creator_test_suite : public Test::Suite
 //        eli::test::octave_start(1);
 //        eli::test::octave_print(1, four_series, "poly");
 //        eli::test::octave_print(1, af_pc, "piecewise");
-//        eli::test::octave_finish(1);
+//        eli::test::octave_finish(1, false);
 //      }
 
       // test lower surface trailing edge
@@ -250,7 +250,7 @@ class piecewise_four_digit_creator_test_suite : public Test::Suite
 //        eli::test::octave_start(1);
 //        eli::test::octave_print(1, four_series, "poly");
 //        eli::test::octave_print(1, af_pc, "piecewise");
-//        eli::test::octave_finish(1);
+//        eli::test::octave_finish(1, false);
 //      }
 
       // test lower surface trailing edge
