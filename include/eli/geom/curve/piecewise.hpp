@@ -468,6 +468,16 @@ namespace eli
             }
           }
 
+          void scale(const data_type &s)
+          {
+            typename segment_collection_type::iterator it;
+
+            for (it=segments.begin(); it!=segments.end(); ++it)
+            {
+              it->second.scale(s);
+            }
+          }
+
           void rotate(const rotation_matrix_type &rmat)
           {
             typename segment_collection_type::iterator it;
