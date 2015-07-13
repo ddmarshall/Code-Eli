@@ -90,11 +90,12 @@ namespace eli
           //   location.
           // * The airfoil points are processed before being stored, so it is not possible to
           //   retrieve the raw points back from the class.
+#if 0
           template<typename it_type>
           void set_airfoil_points(it_type itp, index_type npts)
           {
             assert(false);
-#if 0
+
             it_type it, le_lower(ite), le_upper(ite);
             data_type lower_xmax, upper_xmax, xmin;
 
@@ -225,8 +226,8 @@ namespace eli
             // determine the trailing edge spacings
             upper_dzi=upper_pt.back().y();
             lower_dzi=lower_pt.back().y();
-#endif
           }
+#endif
 
           template<typename it_type>
           void set_airfoil_points(it_type itu, index_type nupper, it_type itl, index_type nlower)
