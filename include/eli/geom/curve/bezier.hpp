@@ -172,6 +172,25 @@ namespace eli
             return true;
           }
 
+          bool abouteq(const bezier<data_type, dim__, tolerance_type> &bc, const data_type &ttol2 ) const
+          {
+            if (this==&bc)
+              return true;
+
+            if ((B.rows()!=B.rows()) || (B.cols()!=B.cols()))
+              return false;
+
+            for (index_type i=0; i<=degree(); ++i)
+            {
+              if ( eli::geom::point::distance2( get_control_point(i), bc.get_control_point(i) ) > ttol2 )
+              {
+                return false;
+              }
+            }
+
+            return true;
+          }
+
           data_type eqp_distance_bound(const bezier<data_type, dim__, tolerance_type> &bc) const
           {
             if (this==&bc)

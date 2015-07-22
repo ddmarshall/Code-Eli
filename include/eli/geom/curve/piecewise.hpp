@@ -328,6 +328,26 @@ namespace eli
             return !operator==(p);
           }
 
+          bool abouteq(const piecewise<curve__, data_type, dim__> &p, const data_type ttol2 ) const
+          {
+            if (this==&p)
+              return true;
+            if (tmax!=p.tmax)
+              return false;
+            if (tol!=p.tol)
+              return false;
+            if (number_segments()!=p.number_segments())
+              return false;
+            typename segment_collection_type::const_iterator scit, it;
+            for (scit=segments.begin(), it=p.segments.begin(); scit!=segments.end(); ++scit, ++it)
+            {
+              if ( ! it->second.abouteq( scit->second, ttol2 ) )
+              return false;
+            }
+
+            return true;
+          }
+
           static dimension_type dimension() {return dim__;}
 
           data_type get_tmax() const {return tmax;}
