@@ -290,9 +290,12 @@ namespace eli
             bool rtn_flag;
             error_code er;
 
+            pc.set_t0(this->get_t0());
+
             //
             // lower surface
             //
+            data_type seg_dt(this->get_segment_dt(0));
 
             // build lower aft curve
             rtn_flag=poly_creator.set_conditions(cl_back);
@@ -333,7 +336,7 @@ namespace eli
               cp(0)=1;
               c.set_control_point(cp, 0);
             }
-            er=pc.push_back(c, 1-t_split);
+            er=pc.push_back(c, seg_dt*(1-t_split));
             if (er!=piecewise_curve_type::NO_ERRORS)
             {
               pc.clear();
@@ -377,7 +380,7 @@ namespace eli
               }
               pc_temp.get(c, 1);
               c.set_control_point(cp_split, 0);
-              er=pc.push_back(c, t_split);
+              er=pc.push_back(c, seg_dt*t_split);
               if (er!=piecewise_curve_type::NO_ERRORS)
               {
                 pc.clear();
@@ -399,6 +402,7 @@ namespace eli
             //
             // upper surface
             //
+            seg_dt=this->get_segment_dt(1);
 
             // build upper front curve
             rtn_flag=poly_creator.set_conditions(cu_front);
@@ -425,7 +429,7 @@ namespace eli
                 cp(0)=1;
                 c.set_control_point(cp, c.degree());
               }
-              er=pc.push_back(c, 1);
+              er=pc.push_back(c, seg_dt);
             }
             // else need to split curve and extract the front portion for airfoil
             else
@@ -438,7 +442,7 @@ namespace eli
               }
               pc_temp.get(c, 0);
               cp_split=c.get_control_point(c.degree());
-              er=pc.push_back(c, t_split);
+              er=pc.push_back(c, seg_dt*t_split);
             }
             if (er!=piecewise_curve_type::NO_ERRORS)
             {
@@ -477,7 +481,7 @@ namespace eli
                 cp(0)=1;
                 c.set_control_point(cp, c.degree());
               }
-              er=pc.push_back(c, 1-t_split);
+              er=pc.push_back(c, seg_dt*(1-t_split));
               if (er!=piecewise_curve_type::NO_ERRORS)
               {
                 pc.clear();
