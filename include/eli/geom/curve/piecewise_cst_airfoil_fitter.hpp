@@ -508,8 +508,6 @@ namespace eli
 
             // fill the least squares constraints
             {
-              data_type coef, k, tau, t;
-
               A.setZero();
               b_rhs.setZero();
               for (i=1; i<static_cast<index_type>(fit_point.rows()-1); ++i)
