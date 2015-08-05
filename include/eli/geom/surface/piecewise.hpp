@@ -1369,7 +1369,8 @@ namespace eli
               key.swap(rkey);
 
               // Parametric length should stay the same.
-              assert(p == pmax);
+              tolerance_type tol;
+              assert(tol.approximately_equal(p, pmax));
             }
 
 
