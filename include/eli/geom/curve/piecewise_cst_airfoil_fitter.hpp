@@ -652,16 +652,16 @@ namespace eli
                 if (actual_leading_edge_t<0)
                 {
                   t_split=this->get_t0()+(1-tsqrt)*this->get_segment_dt(0);
-                  dt[0]=1;
-                  dt[1]=tsqrt;
-                  dt[2]=1-tsqrt;
+                  dt[0]=this->get_segment_dt(0);
+                  dt[1]=tsqrt*this->get_segment_dt(1);
+                  dt[2]=(1-tsqrt)*this->get_segment_dt(1);
                 }
                 else
                 {
                   t_split=this->get_t0()+this->get_segment_dt(0)+tsqrt*this->get_segment_dt(1);
-                  dt[0]=1-tsqrt;
-                  dt[1]=tsqrt;
-                  dt[2]=1;
+                  dt[0]=(1-tsqrt)*this->get_segment_dt(0);
+                  dt[1]=tsqrt*this->get_segment_dt(0);
+                  dt[2]=this->get_segment_dt(1);
                 }
 //                std::cout << "split index=" << t_split << "\tf(t_split)=" << pc_temp.f(t_split) << std::endl;
                 pc_temp.split(t_split);
