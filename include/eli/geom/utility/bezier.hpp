@@ -313,6 +313,24 @@ namespace eli
       }
 
       template<typename Derived>
+      void bezier_coefficient_factors(Eigen::MatrixBase<Derived> &co, const typename Derived::Scalar &t, const typename Derived::Index &n)
+      {
+        typename Derived::Scalar coef(1), k(1), tau(std::pow(1-t, n));
+        typename Derived::Index j;
+
+        co.derived().resize(n+1, 1);
+
+        j=0;
+        co(j)=coef*k*tau;
+        for (j=1; j<=n; ++j)
+        {
+          k*=static_cast<typename Derived::Scalar>(n-j+1)/j;
+          tau*=t/(1-t);
+          co(j)=coef*k*tau;
+        }
+      }
+
+      template<typename Derived>
       void bezier_N(Eigen::MatrixBase<Derived> &N, const typename Derived::Index &n)
       {
         typename Derived::Index i,j;
