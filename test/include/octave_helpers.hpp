@@ -66,6 +66,106 @@ namespace eli
       }
     }
 
+    template<typename data__, typename index__>
+    void calculate_t(std::vector<data__> &t, std::vector<index__> &npseg, const std::vector<data__> &tseg, const data__ &dt)
+    {
+      typedef index__ index_type;
+      typedef data__ data_type;
+
+      index_type i, j, nt, nt_cumulative(0), nsegs(static_cast<index_type> (tseg.size())-1);
+      nt=(tseg[nsegs]-tseg[0])/dt;
+
+      // calulate the actual number of points to allocate taking into
+      // account that small segments will get at least 2 points
+      for (i=0; i<nsegs; ++i)
+      {
+        npseg[i]=std::max(static_cast<data_type>(2), std::ceil((tseg[i+1]-tseg[i])/dt));
+        nt_cumulative+=npseg[i];
+      }
+      nt=nt_cumulative;
+
+      // initialize the t parameters
+      index_type nrun(0);
+      data_type small_num(std::sqrt(std::numeric_limits<data_type>::epsilon()));
+
+      t.resize(nt);
+      for (i=0; i<nsegs; ++i)
+      {
+        if (i>0)
+        {
+          t[nrun]=tseg[i]*(1+small_num);
+        }
+        else
+        {
+          t[nrun]=tseg[i];
+        }
+        ++nrun;
+        for (j=1; j<(npseg[i]-1); ++j, ++nrun)
+        {
+          t[nrun]=tseg[i]+(tseg[i+1]-tseg[i])*static_cast<data_type>(j)/(npseg[i]-1);
+        }
+        if (i<(nsegs-1))
+        {
+          t[nrun]=tseg[i+1]*(1-small_num);
+        }
+        else
+        {
+          t[nrun]=tseg[i+1];
+        }
+        ++nrun;
+      }
+    }
+
+    template<typename data__, typename index__>
+    void calculate_t(std::vector<data__> &t, std::vector<index__> &npseg, const std::vector<data__> &tseg, const data__ &dt)
+    {
+      typedef index__ index_type;
+      typedef data__ data_type;
+
+      index_type i, j, nt, nt_cumulative(0), nsegs(static_cast<index_type> (tseg.size())-1);
+      nt=(tseg[nsegs]-tseg[0])/dt;
+
+      // calulate the actual number of points to allocate taking into
+      // account that small segments will get at least 2 points
+      for (i=0; i<nsegs; ++i)
+      {
+        npseg[i]=std::max(static_cast<data_type>(2), std::ceil((tseg[i+1]-tseg[i])/dt));
+        nt_cumulative+=npseg[i];
+      }
+      nt=nt_cumulative;
+
+      // initialize the t parameters
+      index_type nrun(0);
+      data_type small_num(std::sqrt(std::numeric_limits<data_type>::epsilon()));
+
+      t.resize(nt);
+      for (i=0; i<nsegs; ++i)
+      {
+        if (i>0)
+        {
+          t[nrun]=tseg[i]*(1+small_num);
+        }
+        else
+        {
+          t[nrun]=tseg[i];
+        }
+        ++nrun;
+        for (j=1; j<(npseg[i]-1); ++j, ++nrun)
+        {
+          t[nrun]=tseg[i]+(tseg[i+1]-tseg[i])*static_cast<data_type>(j)/(npseg[i]-1);
+        }
+        if (i<(nsegs-1))
+        {
+          t[nrun]=tseg[i+1]*(1-small_num);
+        }
+        else
+        {
+          t[nrun]=tseg[i+1];
+        }
+        ++nrun;
+      }
+    }
+
     template<typename point__>
     void octave_print(int figno, const point__ &pt, const std::string &name="")
     {
@@ -653,7 +753,6 @@ namespace eli
       std::string nm, cpxbuf, cpybuf, cxbuf, cybuf;
 
       index_type i, pp, ns;
-      data_type tmin(pc.get_parameter_min()), tmax(pc.get_parameter_max());
 
       ns=pc.number_segments();
 
@@ -696,12 +795,18 @@ namespace eli
       }
 
       // initialize the t parameters
-      index_type nt(129);
-      std::vector<data__> t(nt);
-      for (i=0; i<nt; ++i)
-      {
-        t[i]=tmin+(tmax-tmin)*static_cast<data__>(i)/(nt-1);
-      }
+      const index_type npts(129);
+      index_type nsegs(pc.number_segments()), nt;
+      data_type dt;
+      std::vector<data_type> tseg(nsegs+1);
+      std::vector<index_type> npseg(nsegs);
+      std::vector<data_type> t;
+
+      pc.get_parameters(tseg.begin());
+      dt=(tseg[nsegs]-tseg[0])/npts;
+
+      calculate_t(t, npseg, tseg, dt);
+      nt=t.size();
 
       // set the curve points
       cxbuf=nm+"_curv_x=[";
@@ -755,7 +860,6 @@ namespace eli
       std::string nm, cpxbuf, cpybuf, cpzbuf, cxbuf, cybuf, czbuf;
 
       index_type i, pp, ns;
-      data_type tmin(pc.get_parameter_min()), tmax(pc.get_parameter_max());
 
       ns=pc.number_segments();
 
@@ -802,12 +906,18 @@ namespace eli
       }
 
       // initialize the t parameters
-      index_type nt(129);
-      std::vector<data__> t(nt);
-      for (i=0; i<nt; ++i)
-      {
-        t[i]=tmin+(tmax-tmin)*static_cast<data__>(i)/(nt-1);
-      }
+      const index_type npts(129);
+      index_type nsegs(pc.number_segments()), nt;
+      data_type dt;
+      std::vector<data_type> tseg(nsegs+1);
+      std::vector<index_type> npseg(nsegs);
+      std::vector<data_type> t;
+
+      pc.get_parameters(tseg.begin());
+      dt=(tseg[nsegs]-tseg[0])/npts;
+
+      calculate_t(t, npseg, tseg, dt);
+      nt=t.size();
 
       // set the curve points
       cxbuf=nm+"_curv_x=[";
