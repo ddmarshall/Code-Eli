@@ -542,8 +542,19 @@ namespace eli
                     A(i-row_offset,j+ind_offset)=co(j);
                   }
 
-                  b_rhs(i-row_offset)=(fit_point.row(i).y()-t*dte[itemp])/(sqrt(t)*(1-t));
-//                  std::cout << "i=" << std::setw(3) << i << "\tt=" << t << "\tb_rhs(" << std::setw(3) << i << ")=" << b_rhs(i-row_offset) << std::endl;
+                  // hack for rare cases when still get negative t
+                  if (t<=0)
+                  {
+//                    std::cout << "negative t at point " << i << " :" << fit_point.row(i) << std::endl;
+//                    std::cout << "fit points:" << fit_point << std::endl;
+                    A.row(i-row_offset)=A.row(i-row_offset-1);
+                    b_rhs(i-row_offset)=b_rhs(i-row_offset-1);
+                  }
+                  else
+                  {
+                    b_rhs(i-row_offset)=(fit_point.row(i).y()-t*dte[itemp])/(sqrt(t)*(1-t));
+//                    std::cout << "i=" << std::setw(3) << i << "\tt=" << t << "\tb_rhs(" << std::setw(3) << i << ")=" << b_rhs(i-row_offset) << std::endl;
+                  }
                 }
               }
             }
@@ -551,8 +562,16 @@ namespace eli
             eli::mutil::opt::least_squares_eqcon(cp, A, b_rhs, B, d_rhs);
 
 //            std::cout << "A=" << A << std::endl;
+//            {
+//              Eigen::JacobiSVD<Eigen::Matrix<data_type, Eigen::Dynamic, Eigen::Dynamic>> svd(A);
+//              std::cout << "Cond(A)=" << svd.singularValues()(0) / svd.singularValues()(svd.singularValues().size()-1) << std::endl;
+//            }
 //            std::cout << "b_rhs=" << b_rhs << std::endl;
 //            std::cout << "B=" << B << std::endl;
+//            {
+//              Eigen::JacobiSVD<Eigen::Matrix<data_type, Eigen::Dynamic, Eigen::Dynamic>> svd(B);
+//              std::cout << "Cond(B)=" << svd.singularValues()(0) / svd.singularValues()(svd.singularValues().size()-1) << std::endl;
+//            }
 //            std::cout << "d_rhs=" << d_rhs << std::endl;
 //            std::cout << "cp=" << cp << std::endl;
 
