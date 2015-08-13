@@ -64,6 +64,28 @@ add_executable(${PIECEWISE_CURVE_CREATOR_TEST_EXE} ${PIECEWISE_CURVE_CREATOR_TES
 target_link_libraries(${PIECEWISE_CURVE_CREATOR_TEST_EXE} ${_ELI_TEST_LIBRARIES_LIST})
 add_test(NAME ${PIECEWISE_CURVE_CREATOR_TEST_EXE} COMMAND $<TARGET_FILE:${PIECEWISE_CURVE_CREATOR_TEST_EXE}> --text)
 
+# add the piecewise_curve_fitter test
+set (PIECEWISE_CURVE_FITTER_TEST_EXE PiecewiseCurveFitterTest)
+set (PIECEWISE_CURVE_FITTER_TEST_SOURCE ${PROJECT_SOURCE_DIR}/piecewise_curve_fitter_test.cpp)
+set (PIECEWISE_CURVE_FITTER_TEST_HEADER ${_ELI_TEST_INCLUDE_DIR}/octave_helpers.hpp
+                                         ${PROJECT_SOURCE_DIR}/piecewise_adaptive_airfoil_fitter_test_suite.hpp
+                                         ${ELI_SOURCE_DIR}/include/eli/constants/math.hpp
+                                         ${ELI_SOURCE_DIR}/include/eli/util/tolerance.hpp
+                                         ${ELI_SOURCE_DIR}/include/eli/mutil/opt/least_squares.hpp
+                                         ${ELI_SOURCE_DIR}/include/eli/geom/general/continuity.hpp
+                                         ${ELI_SOURCE_DIR}/include/eli/geom/intersect/minimum_distance_curve.hpp
+                                         ${ELI_SOURCE_DIR}/include/eli/geom/curve/bezier.hpp
+                                         ${ELI_SOURCE_DIR}/include/eli/geom/curve/length.hpp
+                                         ${ELI_SOURCE_DIR}/include/eli/geom/curve/curvature.hpp
+                                         ${ELI_SOURCE_DIR}/include/eli/geom/curve/piecewise.hpp
+                                         ${ELI_SOURCE_DIR}/include/eli/geom/curve/utility.hpp
+                                         ${ELI_SOURCE_DIR}/include/eli/geom/curve/piecewise_creator_base.hpp
+                                         ${ELI_SOURCE_DIR}/include/eli/geom/curve/piecewise_adaptive_airfoil_fitter.hpp)
+
+add_executable(${PIECEWISE_CURVE_FITTER_TEST_EXE} ${PIECEWISE_CURVE_FITTER_TEST_SOURCE} ${PIECEWISE_CURVE_FITTER_TEST_HEADER})
+target_link_libraries(${PIECEWISE_CURVE_FITTER_TEST_EXE} ${_ELI_TEST_LIBRARIES_LIST})
+add_test(NAME ${PIECEWISE_CURVE_FITTER_TEST_EXE} COMMAND $<TARGET_FILE:${PIECEWISE_CURVE_FITTER_TEST_EXE}> --text)
+
 # add the piecewise_pseudo_creator test
 set (PIECEWISE_PSEUDO_CREATOR_TEST_EXE PiecewisePseudoCreatorTest)
 set (PIECEWISE_PSEUDO_CREATOR_TEST_SOURCE ${PROJECT_SOURCE_DIR}/piecewise_pseudo_creator_test.cpp)
