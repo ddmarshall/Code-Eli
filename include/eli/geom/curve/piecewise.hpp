@@ -610,7 +610,7 @@ namespace eli
             segments.swap(rseg);
 
             // Parametric length should stay the same.
-            assert(t == tmax);
+            // assert(t == tmax);
 
             // check if still connected
             assert(check_continuity(eli::geom::general::C0));

@@ -1369,7 +1369,7 @@ namespace eli
               key.swap(rkey);
 
               // Parametric length should stay the same.
-              assert(p == pmax);
+              // assert(p == pmax);
             }
 
 

@@ -142,8 +142,8 @@ namespace eli
             second_half.reverse();
             second_half.set_t0(first_half.get_t0());
 
-            assert(first_half.get_t0()==second_half.get_t0());
-            assert(first_half.get_tmax()==second_half.get_tmax());
+            // assert(first_half.get_t0()==second_half.get_t0());
+            // assert(first_half.get_tmax()==second_half.get_tmax());
 
             // create surface connecting two edges with param spacing of 2*delta_param and points for other two edges
             // cap u-direction goes from second_half curve to first_half curve
