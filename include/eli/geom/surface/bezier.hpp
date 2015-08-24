@@ -470,6 +470,24 @@ namespace eli
             return ans;
           }
 
+          void f_u( bezier<data_type, dim__, tol__> &bs_fu ) const
+          {
+            index_type i, n(degree_u()), m(degree_v());
+
+            // check to make sure have valid curve
+            assert(n>=0);
+            assert(m>=0);
+
+            // resize the surfaces
+            bs_fu.resize(n-1, m);
+
+            for (i=0; i<=m; ++i)
+            {
+              // create the control points for first derivative curve
+              eli::geom::utility::bezier_p_control_point(bs_fu.B_u[i], B_u[i]);
+            }
+          }
+
           point_type f_v(const data_type &u, const data_type &v) const
           {
             point_type ans, tmp;
@@ -519,6 +537,24 @@ namespace eli
             }
 
             return ans;
+          }
+
+          void f_v( bezier<data_type, dim__, tol__> &bs_fv ) const
+          {
+            index_type i, n(degree_u()), m(degree_v());
+
+            // check to make sure have valid curve
+            assert(n>=0);
+            assert(m>=0);
+
+            // resize the surfaces
+            bs_fv.resize(n, m-1);
+
+            for (i=0; i<=n; ++i)
+            {
+              // create the control points for first derivative curve
+              eli::geom::utility::bezier_p_control_point(bs_fv.B_v[i], B_v[i]);
+            }
           }
 
           point_type f_uu(const data_type &u, const data_type &v) const

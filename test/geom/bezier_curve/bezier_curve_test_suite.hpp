@@ -383,6 +383,7 @@ class bezier_curve_test_suite : public Test::Suite
       cntrl_in[3] << 4.0, 1.0, 0.0;
 
       bezier_type bc1(3);
+      bezier_type bp;
       point_type eval_out, eval_ref;
       data_type t;
 
@@ -392,20 +393,28 @@ class bezier_curve_test_suite : public Test::Suite
         bc1.set_control_point(cntrl_in[i], i);
       }
 
+      bc1.fp( bp );
+
       // test 1st derivative at end points
       t=0;
       eval_out=bc1.fp(t);
       eval_ref << -3, -1.5, 0;
       TEST_ASSERT(eval_out==eval_ref);
+      eval_out=bp.f(t);
+      TEST_ASSERT(eval_out==eval_ref);
       t=1;
       eval_out=bc1.fp(t);
       eval_ref << 1.5, 3, 0;
+      TEST_ASSERT(eval_out==eval_ref);
+      eval_out=bp.f(t);
       TEST_ASSERT(eval_out==eval_ref);
 
       // test 1st derivative at interior point
       t=static_cast<data__>(0.45);
       eval_out=bc1.fp(t);
       eval_ref << static_cast<data__>(3.10875), static_cast<data__>(-2.07375), static_cast<data__>(0);
+      TEST_ASSERT((eval_out-eval_ref).norm() < 5e3*eps);
+      eval_out=bp.f(t);
       TEST_ASSERT((eval_out-eval_ref).norm() < 5e3*eps);
     }
 

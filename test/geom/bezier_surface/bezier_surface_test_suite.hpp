@@ -771,26 +771,46 @@ class bezier_surface_test_suite : public Test::Suite
         }
       }
 
+      bezier_type bu, bv;
+      bez.f_u( bu );
+      bez.f_v( bv );
+
       // test evaluation at corners
       u=0; v=0;
       pt_out=bez.f_u(u, v);
       TEST_ASSERT(pt_out==static_cast<data_type>(n)*(pt[1][0]-pt[0][0]));
       pt_out=bez.f_v(u, v);
       TEST_ASSERT(pt_out==static_cast<data_type>(m)*(pt[0][1]-pt[0][0]));
+      pt_out=bu.f(u, v);
+      TEST_ASSERT(pt_out==static_cast<data_type>(n)*(pt[1][0]-pt[0][0]));
+      pt_out=bv.f(u, v);
+      TEST_ASSERT(pt_out==static_cast<data_type>(m)*(pt[0][1]-pt[0][0]));
       u=1; v=0;
       pt_out=bez.f_u(u, v);
       TEST_ASSERT(pt_out==static_cast<data_type>(n)*(pt[3][0]-pt[2][0]));
       pt_out=bez.f_v(u, v);
+      TEST_ASSERT(pt_out==static_cast<data_type>(m)*(pt[3][1]-pt[3][0]));
+      pt_out=bu.f(u, v);
+      TEST_ASSERT(pt_out==static_cast<data_type>(n)*(pt[3][0]-pt[2][0]));
+      pt_out=bv.f(u, v);
       TEST_ASSERT(pt_out==static_cast<data_type>(m)*(pt[3][1]-pt[3][0]));
       u=0; v=1;
       pt_out=bez.f_u(u, v);
       TEST_ASSERT(pt_out==static_cast<data_type>(n)*(pt[1][3]-pt[0][3]));
       pt_out=bez.f_v(u, v);
       TEST_ASSERT(pt_out==static_cast<data_type>(m)*(pt[0][3]-pt[0][2]));
+      pt_out=bu.f(u, v);
+      TEST_ASSERT(pt_out==static_cast<data_type>(n)*(pt[1][3]-pt[0][3]));
+      pt_out=bv.f(u, v);
+      TEST_ASSERT(pt_out==static_cast<data_type>(m)*(pt[0][3]-pt[0][2]));
       u=1; v=1;
       pt_out=bez.f_u(u, v);
       TEST_ASSERT(pt_out==static_cast<data_type>(n)*(pt[3][3]-pt[2][3]));
       pt_out=bez.f_v(u, v);
+      TEST_ASSERT(pt_out==static_cast<data_type>(m)*(pt[3][3]-pt[3][2]));
+      pt_out=bu.f(u, v);
+      TEST_ASSERT(pt_out==static_cast<data_type>(n)*(pt[3][3]-pt[2][3]));
+      pt_out=bv.f(u, v);
       TEST_ASSERT(pt_out==static_cast<data_type>(m)*(pt[3][3]-pt[3][2]));
 
       // test evaluation at interior point u=v=1/2
@@ -798,8 +818,12 @@ class bezier_surface_test_suite : public Test::Suite
       pt_ref << 30, 0, 0;
       pt_out=bez.f_u(u, v);
       TEST_ASSERT(pt_out==pt_ref);
+      pt_out=bu.f(u, v);
+      TEST_ASSERT(pt_out==pt_ref);
       pt_ref << 0, 0, -30;
       pt_out=bez.f_v(u, v);
+      TEST_ASSERT(pt_out==pt_ref);
+      pt_out=bv.f(u, v);
       TEST_ASSERT(pt_out==pt_ref);
 
       // test evaluation at interior point u=1/4, v=3/4
@@ -807,8 +831,12 @@ class bezier_surface_test_suite : public Test::Suite
       pt_ref << 30, 3.28125, 0;
       pt_out=bez.f_u(u, v);
       TEST_ASSERT(pt_out==pt_ref);
+      pt_out=bu.f(u, v);
+      TEST_ASSERT(pt_out==pt_ref);
       pt_ref << 0, -3.28125, -30;
       pt_out=bez.f_v(u, v);
+      TEST_ASSERT(pt_out==pt_ref);
+      pt_out=bv.f(u, v);
       TEST_ASSERT(pt_out==pt_ref);
     }
 
