@@ -139,7 +139,7 @@ namespace eli
           {
             if (this == &bc)
               return true;
-            if ((B.rows()!=B.rows()) || (B.cols()!=B.cols()))
+            if ((B.rows()!=bc.B.rows()) || (B.cols()!=bc.B.cols()))
               return false;
             if (B!=bc.B)
               return false;
@@ -158,7 +158,7 @@ namespace eli
             if (this==&bc)
               return true;
 
-            if ((B.rows()!=B.rows()) || (B.cols()!=B.cols()))
+            if ((B.rows()!=bc.B.rows()) || (B.cols()!=bc.B.cols()))
               return false;
 
             for (index_type i=0; i<=degree(); ++i)
@@ -177,7 +177,7 @@ namespace eli
             if (this==&bc)
               return true;
 
-            if ((B.rows()!=B.rows()) || (B.cols()!=B.cols()))
+            if ((B.rows()!=bc.B.rows()) || (B.cols()!=bc.B.cols()))
               return false;
 
             for (index_type i=0; i<=degree(); ++i)
