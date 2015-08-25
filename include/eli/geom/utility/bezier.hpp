@@ -451,6 +451,63 @@ namespace eli
           }
         }
       }
+
+      template<typename Derived1, typename Derived2>
+      void bezier_control_points_to_scaled_bezier(Eigen::MatrixBase<Derived1> &scp, const Eigen::MatrixBase<Derived2> &cp)
+      {
+        // dimension check
+        assert(cp.cols()==scp.cols());
+        assert(cp.rows()==scp.rows());
+
+        typename Derived1::Index i, n(cp.rows()-1);
+        typename Derived1::Scalar bc;
+
+        for (i=0; i<=n; ++i)
+        {
+          eli::mutil::dm::binomial_coefficient(bc, n, i);
+          scp.row(i) = cp.row(i) * bc;
+        }
+      }
+
+      template<typename Derived1, typename Derived2>
+      void scaled_bezier_to_control_points_bezier(Eigen::MatrixBase<Derived1> &cp, const Eigen::MatrixBase<Derived2> &scp)
+      {
+        // dimension check
+        assert(scp.cols()==cp.cols());
+        assert(scp.rows()==cp.rows());
+
+        typename Derived1::Index i, n(scp.rows()-1);
+        typename Derived1::Scalar bc;
+
+        for (i=0; i<=n; ++i)
+        {
+          eli::mutil::dm::binomial_coefficient(bc, n, i);
+          cp.row(i) = scp.row(i) / bc;
+        }
+      }
+
+      template<typename Derived1, typename Derived2>
+      void multiply_scaled_bezier(Eigen::MatrixBase<Derived1> &c, const Eigen::MatrixBase<Derived2> &a, const Eigen::MatrixBase<Derived2> &b)
+      {
+        typename Derived1::Index i, j, k, m( a.rows() - 1 ), n( b.rows() - 1 );
+
+        // dimension check
+        assert( a.cols() == b.cols() );
+        assert( a.cols() == c.cols() );
+
+        c.derived().resize( n + m + 1, a.cols() );
+        c.setZero();
+
+        for ( j = 0; j <= n; ++j )
+        {
+          for ( i = 0; i <= m; i++ )
+          {
+            k = i + j;
+            c.row(k) = c.row(k) + a.row(i).cwiseProduct(b.row(j));
+          }
+        }
+      }
+
     }
   }
 }

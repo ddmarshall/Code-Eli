@@ -730,6 +730,27 @@ namespace eli
             B=ctrl;
           }
 
+          void product( const bezier<data_type, dim__> &a, const bezier<data_type, dim__> &b)
+          {
+            assert( a.B.cols() == dim__ );
+            assert( b.B.cols() == dim__ );
+
+            index_type m( a.degree() ), n( b.degree() );
+            control_point_matrix_type scaleda, scaledb, scaledc;
+
+            scaleda.resize( m + 1, dim__ );
+            eli::geom::utility::bezier_control_points_to_scaled_bezier( scaleda, a.B );
+
+            scaledb.resize( n + 1, dim__ );
+            eli::geom::utility::bezier_control_points_to_scaled_bezier( scaledb, b.B );
+
+            scaledc.resize( m + n + 1, dim__ );
+            eli::geom::utility::multiply_scaled_bezier( scaledc, scaleda, scaledb );
+
+            resize( m + n );
+            eli::geom::utility::scaled_bezier_to_control_points_bezier( B, scaledc );
+          }
+
         private:
           typedef Eigen::Matrix<data_type, Eigen::Dynamic, dim__> control_point_matrix_type;
           typedef Eigen::Matrix<data_type, Eigen::Dynamic, dim__> row_pts_type;

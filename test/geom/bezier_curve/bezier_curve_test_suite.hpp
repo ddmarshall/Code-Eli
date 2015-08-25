@@ -59,6 +59,7 @@ class bezier_curve_test_suite : public Test::Suite
       TEST_ADD(bezier_curve_test_suite<float>::distance_bound_test);
       TEST_ADD(bezier_curve_test_suite<float>::split_test);
       TEST_ADD(bezier_curve_test_suite<float>::length_test);
+      TEST_ADD(bezier_curve_test_suite<float>::math_test);
     }
     void AddTests(const double &)
     {
@@ -80,6 +81,7 @@ class bezier_curve_test_suite : public Test::Suite
       TEST_ADD(bezier_curve_test_suite<double>::distance_bound_test);
       TEST_ADD(bezier_curve_test_suite<double>::split_test);
       TEST_ADD(bezier_curve_test_suite<double>::length_test);
+      TEST_ADD(bezier_curve_test_suite<double>::math_test);
     }
     void AddTests(const long double &)
     {
@@ -101,6 +103,7 @@ class bezier_curve_test_suite : public Test::Suite
       TEST_ADD(bezier_curve_test_suite<long double>::distance_bound_test);
       TEST_ADD(bezier_curve_test_suite<long double>::split_test);
       TEST_ADD(bezier_curve_test_suite<long double>::length_test);
+      TEST_ADD(bezier_curve_test_suite<long double>::math_test);
     }
 
   public:
@@ -1755,6 +1758,71 @@ class bezier_curve_test_suite : public Test::Suite
       length(length01_cal, bc1, t0, t1, tol);
       length(length12_cal, bc1, t1, t2, tol);
       TEST_ASSERT_DELTA(1, (length01_cal+length12_cal)/length_cal, tol);
+    }
+
+    void math_test()
+    {
+      data_type eps(std::numeric_limits<data__>::epsilon());
+
+      point_type cntrl_in[7];
+
+      cntrl_in[0] <<  0, 0, 0;
+      cntrl_in[1] <<  2, 6, 0;
+      cntrl_in[2] <<  3, 0, 0;
+      cntrl_in[3] <<  5, 4, 0;
+      cntrl_in[4] <<  7, 1, 0;
+      cntrl_in[5] <<  5, 5, 0;
+      cntrl_in[6] << 10, 6, 0;
+
+      bezier_type bc1(6);
+
+      // set control points
+      for (index_type i=0; i<7; ++i)
+      {
+        bc1.set_control_point(cntrl_in[i], i);
+      }
+
+      point_type  cntrl_in2[4];
+
+      // set control points
+      cntrl_in2[0] << 0, 0, 0;
+      cntrl_in2[1] << 0, 2, 0;
+      cntrl_in2[2] << 8, 2, 0;
+      cntrl_in2[3] << 4, 0, 0;
+
+      bezier_type bc2(3);
+
+      // set control points
+      for (index_type i=0; i<4; ++i)
+      {
+        bc2.set_control_point(cntrl_in2[i], i);
+      }
+
+
+      bezier_type bc3;
+
+      bc3.product( bc1, bc2 );
+
+      point_type eval_out, eval_ref, a, b;
+      data_type t;
+
+      t = 0.5;
+
+      eval_out = bc3.f( t );
+      eval_ref = bc1.f(t).cwiseProduct( bc2.f(t) );
+
+      TEST_ASSERT( (eval_out-eval_ref).norm() < 5*eps );
+
+      size_t i, n(20);
+
+      for ( i = 0; i < n; i++ )
+      {
+        t = i * 1.0 / (n-1);
+        eval_out = bc3.f( t );
+        eval_ref = bc1.f(t).cwiseProduct( bc2.f(t) );
+        TEST_ASSERT( (eval_out-eval_ref).norm() < 100*eps );
+      }
+
     }
 };
 
