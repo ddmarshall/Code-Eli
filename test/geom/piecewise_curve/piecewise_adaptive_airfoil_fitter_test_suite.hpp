@@ -21,6 +21,8 @@
 #include <iomanip>  // std::setw
 #include <limits>   // std::numeric_limits
 
+#include "octave_helpers.hpp"
+
 #include "eli/constants/math.hpp"
 #include "eli/geom/curve/bezier.hpp"
 #include "eli/geom/curve/piecewise.hpp"
@@ -37,6 +39,8 @@ class piecewise_adaptive_airfoil_fitter_test_suite : public Test::Suite
     typedef typename piecewise_curve_type::data_type data_type;
     typedef typename piecewise_curve_type::index_type index_type;
     typedef typename piecewise_curve_type::tolerance_type tolerance_type;
+    typedef eli::geom::curve::piecewise_adaptive_airfoil_fitter<data_type, 3, tolerance_type> airfoil_fitter_type;
+    typedef typename airfoil_fitter_type::subdivide_method subdivide_method;
 
     tolerance_type tol;
 
@@ -192,23 +196,20 @@ class piecewise_adaptive_airfoil_fitter_test_suite : public Test::Suite
     void AddTests(const float &)
     {
       // add the tests
-      TEST_ADD(piecewise_adaptive_airfoil_fitter_test_suite<float>::create_airfoil_test);
-      TEST_ADD(piecewise_adaptive_airfoil_fitter_test_suite<float>::fit_airfoil_to_cst_test);
-      TEST_ADD(piecewise_adaptive_airfoil_fitter_test_suite<float>::fit_airfoil_test);
+      TEST_ADD(piecewise_adaptive_airfoil_fitter_test_suite<float>::fit_airfoil_simple_test);
+      TEST_ADD(piecewise_adaptive_airfoil_fitter_test_suite<float>::fit_airfoil_transform_test);
     }
     void AddTests(const double &)
     {
       // add the tests
-      TEST_ADD(piecewise_adaptive_airfoil_fitter_test_suite<double>::create_airfoil_test);
-      TEST_ADD(piecewise_adaptive_airfoil_fitter_test_suite<double>::fit_airfoil_to_cst_test);
-      TEST_ADD(piecewise_adaptive_airfoil_fitter_test_suite<double>::fit_airfoil_test);
+      TEST_ADD(piecewise_adaptive_airfoil_fitter_test_suite<double>::fit_airfoil_simple_test);
+      TEST_ADD(piecewise_adaptive_airfoil_fitter_test_suite<double>::fit_airfoil_transform_test);
     }
     void AddTests(const long double &)
     {
       // add the tests
-      TEST_ADD(piecewise_adaptive_airfoil_fitter_test_suite<long double>::create_airfoil_test);
-      TEST_ADD(piecewise_adaptive_airfoil_fitter_test_suite<long double>::fit_airfoil_to_cst_test);
-      TEST_ADD(piecewise_adaptive_airfoil_fitter_test_suite<long double>::fit_airfoil_test);
+      TEST_ADD(piecewise_adaptive_airfoil_fitter_test_suite<long double>::fit_airfoil_simple_test);
+      TEST_ADD(piecewise_adaptive_airfoil_fitter_test_suite<long double>::fit_airfoil_transform_test);
     }
 
   public:
@@ -222,149 +223,41 @@ class piecewise_adaptive_airfoil_fitter_test_suite : public Test::Suite
 
   private:
 
-    void create_airfoil_test()
+    void fit_airfoil_simple_test()
     {
-#if 0
-      typedef eli::geom::curve::piecewise_cst_airfoil_creator<data__, 3, tolerance_type> airfoil_creator_type;
-
-      airfoil_creator_type pcst;
-      piecewise_curve_type pc;
-      cst_airfoil_type cst(7);
-      cst_airfoil_control_point_type cp[8];
-      data_type dte(2*0.00126), ti, t0, t1, t2, t[6];
-      point_type pt_out, pt_ref;
-      typename cst_airfoil_type::point_type pt2_ref;
-      index_type i;
-      bool rtn_flag;
-
-      // set the control points
-      cp[0] << static_cast<data_type>(0.170987592880629);
-      cp[1] << static_cast<data_type>(0.157286894410384);
-      cp[2] << static_cast<data_type>(0.162311658384540);
-      cp[3] << static_cast<data_type>(0.143623187913493);
-      cp[4] << static_cast<data_type>(0.149218456400780);
-      cp[5] << static_cast<data_type>(0.137218405082418);
-      cp[6] << static_cast<data_type>(0.140720628655908);
-      cp[7] << static_cast<data_type>(0.141104769355436);
-      for (i=0; i<=cst.upper_degree(); ++i)
-      {
-        cst.set_upper_control_point(cp[i], i);
-        cst.set_lower_control_point(-cp[i], i);
-      }
-
-      // set the trailing edge thickness of CST airfoil
-      cst.set_trailing_edge_thickness(dte);
-
-      // set the parameterization
-      t0=-1;
-      t1=0;
-      t2=1;
-
-      // set the parameters to evaluate the tests
-      t[0] = t0+(t2-t0)*static_cast<data_type>(0);
-      t[1] = t0+(t2-t0)*static_cast<data_type>(0.1);
-      t[2] = t0+(t2-t0)*static_cast<data_type>(0.27);
-      t[3] = t0+(t2-t0)*static_cast<data_type>(0.5);
-      t[4] = t0+(t2-t0)*static_cast<data_type>(0.73);
-      t[5] = t0+(t2-t0)*static_cast<data_type>(1);
-
-      // create curve
-      rtn_flag=pcst.set_conditions(cst);
-      TEST_ASSERT(rtn_flag);
-      pcst.set_t0(t0);
-      pcst.set_segment_dt(t1-t0, 0);
-      pcst.set_segment_dt(t2-t1, 1);
-      rtn_flag=pcst.create(pc);
-      TEST_ASSERT(rtn_flag);
-
-      // evaluate the points (note need to transform parameterization to match points
-      i=0;
-      ti=t[i];
-      pt_out=pc.f((ti<0)?-std::sqrt(-ti) : std::sqrt(ti));
-      ti=2*(t[i]-t0)/(t2-t0)-1;
-      pt2_ref=cst.f(ti);
-      pt_ref << pt2_ref(0), pt2_ref(1), 0;
-      TEST_ASSERT(tol.approximately_equal(pt_out, pt_ref));
-      i=1;
-      ti=t[i];
-      pt_out=pc.f((ti<0)?-std::sqrt(-ti) : std::sqrt(ti));
-      ti=2*(t[i]-t0)/(t2-t0)-1;
-      pt2_ref=cst.f(ti);
-      pt_ref << pt2_ref(0), pt2_ref(1), 0;
-      TEST_ASSERT(tol.approximately_equal(pt_out, pt_ref));
-      i=2;
-      ti=t[i];
-      pt_out=pc.f((ti<0)?-std::sqrt(-ti) : std::sqrt(ti));
-      ti=2*(t[i]-t0)/(t2-t0)-1;
-      pt2_ref=cst.f(ti);
-      pt_ref << pt2_ref(0), pt2_ref(1), 0;
-      TEST_ASSERT(tol.approximately_equal(pt_out, pt_ref));
-      i=3;
-      ti=t[i];
-      pt_out=pc.f((ti<0)?-std::sqrt(-ti) : std::sqrt(ti));
-      ti=2*(t[i]-t0)/(t2-t0)-1;
-      pt2_ref=cst.f(ti);
-      pt_ref << pt2_ref(0), pt2_ref(1), 0;
-      TEST_ASSERT(tol.approximately_equal(pt_out, pt_ref));
-      i=4;
-      ti=t[i];
-      pt_out=pc.f((ti<0)?-std::sqrt(-ti) : std::sqrt(ti));
-      ti=2*(t[i]-t0)/(t2-t0)-1;
-      pt2_ref=cst.f(ti);
-      pt_ref << pt2_ref(0), pt2_ref(1), 0;
-      TEST_ASSERT(tol.approximately_equal(pt_out, pt_ref));
-      i=5;
-      ti=t[i];
-      pt_out=pc.f((ti<0)?-std::sqrt(-ti) : std::sqrt(ti));
-      ti=2*(t[i]-t0)/(t2-t0)-1;
-      pt2_ref=cst.f(ti);
-      pt_ref << pt2_ref(0), pt2_ref(1), 0;
-      TEST_ASSERT(tol.approximately_equal(pt_out, pt_ref));
-
-//      if (typeid(data_type)==typeid(float))
-//      {
-//        std::cout.flush();
-//        eli::test::octave_start(1);
-//        eli::test::octave_print(1, cst, "cst");
-//        eli::test::octave_print(1, pc, "piecewise");
-//        eli::test::octave_finish(1, false);
-//      }
-#endif
-    }
-
-    void fit_airfoil_to_cst_test()
-    {
-#if 0
       {
         airfoil_fitter_type pcaf;
-        cst_airfoil_type cst;
+        piecewise_curve_type af;
         std::vector<point_type, Eigen::aligned_allocator<point_type>> upt, lpt;
-        std::vector<cst_airfoil_control_point_type, Eigen::aligned_allocator<cst_airfoil_control_point_type>> cpu_ref, cpl_ref;
         point_type pt, pt_ref;
         data_type t0, t1, t2, angle, scale_factor;
-        index_type degu, degl;
+        data_type fit_tol;
         bool rtn_flag;
 
         // get airfoil points
-        create_cst_airfoil_points(upt, lpt, cpu_ref, cpl_ref);
+        create_airfoil_points(upt, lpt);
 
         // set the parameterization
-        t0=-1;
-        t1=0;
-        t2=1;
+        t0=0;
+        t1=2;
+        t2=4;
 
         // create curve
-        degu=7;
-        degl=5;
-        rtn_flag=pcaf.set_conditions(upt.begin(), static_cast<index_type>(upt.size()), degu,
-                                     lpt.begin(), static_cast<index_type>(lpt.size()), degl, false);
+//        subdivide_method sm(airfoil_fitter_type::BISECTION);
+        subdivide_method sm(airfoil_fitter_type::MAX_ERROR);
+
+        fit_tol=1e-4;
+        rtn_flag=pcaf.set_conditions(upt.begin(), static_cast<index_type>(upt.size()),
+                                     lpt.begin(), static_cast<index_type>(lpt.size()),
+                                     sm, fit_tol, false);
         TEST_ASSERT(rtn_flag);
         pcaf.set_t0(t0);
         pcaf.set_segment_dt(t1-t0, 0);
         pcaf.set_segment_dt(t2-t1, 1);
-        rtn_flag=pcaf.create(cst, pt, angle, scale_factor);
+        rtn_flag=pcaf.create(af);
         TEST_ASSERT(rtn_flag);
 
+#if 0
         // make sure got back correct angle and scale factor
         pt_ref.setZero();
         TEST_ASSERT(pt==pt_ref);
@@ -390,28 +283,30 @@ class piecewise_adaptive_airfoil_fitter_test_suite : public Test::Suite
           TEST_ASSERT_MSG(tol.approximately_equal(cp, cpl_ref[i]), str.data());
 //          std::cout << "diff=" << (cp-cpu_ref[i]).norm() << std::endl;
         }
+#endif
 
-//        if (typeid(data_type)==typeid(float))
-//        {
-//          std::cout.flush();
-//          eli::test::octave_start(1);
-//          // print out the upper surface points
-//          for (size_t n=0; n<upt.size(); ++n)
-//          {
-//            std::string name("upt"); name+=std::to_string(n);
-//            eli::test::octave_print(1, upt[n], name);
-//          }
-//          // print out the lower surface points
-//          for (size_t n=0; n<lpt.size(); ++n)
-//          {
-//            std::string name("lpt"); name+=std::to_string(n);
-//            eli::test::octave_print(1, lpt[n], name);
-//          }
-//          eli::test::octave_print(1, cst, "cst");
-//          eli::test::octave_finish(1, true);
-//        }
+        if (typeid(data_type)==typeid(float))
+        {
+          std::cout.flush();
+          eli::test::octave_start(1);
+          // print out the upper surface points
+          for (size_t n=0; n<upt.size(); ++n)
+          {
+            std::string name("upt"); name+=std::to_string(n);
+            eli::test::octave_print(1, upt[n], name);
+          }
+          // print out the lower surface points
+          for (size_t n=0; n<lpt.size(); ++n)
+          {
+            std::string name("lpt"); name+=std::to_string(n);
+            eli::test::octave_print(1, lpt[n], name);
+          }
+          eli::test::octave_print(1, af, "af");
+          eli::test::octave_finish(1, true);
+        }
       }
 
+#if 0
       // fit to a known CST airfoil shape
       {
         airfoil_fitter_type pcaf;
@@ -523,7 +418,7 @@ class piecewise_adaptive_airfoil_fitter_test_suite : public Test::Suite
 #endif
     }
 
-    void fit_airfoil_test()
+    void fit_airfoil_transform_test()
     {
 #if 0
       // fit to simple two vector specification

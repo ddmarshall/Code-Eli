@@ -571,10 +571,18 @@ namespace eli
 
           virtual bool create(piecewise<bezier, data_type, dim__, tolerance_type> &pc) const
           {
+            std::vector<fit_data> fts;
+
+            return create(pc, fts);
+          }
+
+          virtual bool create(piecewise<bezier, data_type, dim__, tolerance_type> &pc, std::vector<fit_data> &fts) const
+          {
             index_type nsegs(this->get_number_segments()), i, j;
             std::vector<index_type> seg_degree(nsegs), seg_fit(nsegs);
             std::vector<joint_data> joint_states(joints);
 
+            fts=fits;
             pc.clear();
 
             // fix: cannot handle closed curves
@@ -737,15 +745,15 @@ namespace eli
               // account for degrees associated with fits points
               if (max_degree[i]<=0)
               {
-                seg_degree[i]+=fits[i].npoints();
+                seg_degree[i]+=fts[i].npoints();
               }
               else
               {
-                seg_degree[i]+=std::min(max_degree[i]-seg_degree[i], fits[i].npoints());
+                seg_degree[i]+=std::min(max_degree[i]-seg_degree[i], fts[i].npoints());
               }
 
               seg_ind[i+1]=seg_ind[i]+seg_degree[i]+1;
-              seg_fit[i]=fits[i].npoints();
+              seg_fit[i]=fts[i].npoints();
               seg_fit_ind[i+1]=seg_fit_ind[i]+seg_fit[i];
             }
 
@@ -867,34 +875,40 @@ namespace eli
               }
 
               // for each non-empty fit segment build the rows of the A matrix and b vector
+              data_type running_t(this->get_t0());
+
               cond_no=0;
               for (i=0; i<nsegs; ++i)
               {
-                if (fits[i].npoints()>0)
+                data_type dt(this->get_segment_dt(i));
+
+                if (fts[i].npoints()>0)
                 {
                   data_type len;
-                  std::vector<data_type> param(fits[i].npoints());
+                  std::vector<data_type> param(fts[i].npoints());
 
                   // need to determine the parameteric coordinate for each fit point
-                  param[0]=geom::point::distance(fits[i].get_point(0), joint_states[i].get_f());
-                  for (j=1; j<fits[i].npoints(); ++j)
+                  param[0]=geom::point::distance(fts[i].get_point(0), joint_states[i].get_f());
+                  for (j=1; j<fts[i].npoints(); ++j)
                   {
-                    param[j]=param[j-1]+geom::point::distance(fits[i].get_point(j-1), fits[i].get_point(j));
+                    param[j]=param[j-1]+geom::point::distance(fts[i].get_point(j-1), fts[i].get_point(j));
                   }
-                  len=param.back()+geom::point::distance(fits[i].get_point(fits[i].npoints()-1), joint_states[i+1].get_f());
+                  len=param.back()+geom::point::distance(fts[i].get_point(fts[i].npoints()-1), joint_states[i+1].get_f());
 
                   // set the point fit condition
-                  for (j=0; j<fits[i].npoints(); ++j)
+                  for (j=0; j<fts[i].npoints(); ++j)
                   {
                     assert(cond_no*dim__<rA);
 
                     param[j]/=len;
-                    set_fit_point_condition(rows, rhs_seg, seg_ind[i], seg_degree[i], fits[i].get_point(j), param[j]);
+                    set_fit_point_condition(rows, rhs_seg, seg_ind[i], seg_degree[i], fts[i].get_point(j), param[j]);
                     A.block(cond_no*dim__, 0, dim__, nx)=rows;
                     b_rhs.block(cond_no*dim__, 0, dim__, 1)=rhs_seg;
                     ++cond_no;
+                    fts[i].set_parameter(j, running_t+param[j]*dt);
                   }
                 }
+                running_t+=dt;
               }
               assert(cond_no*dim__==rA);
 
