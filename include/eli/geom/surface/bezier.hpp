@@ -165,11 +165,7 @@ namespace eli
 
           void resize(const index_type &u_dim, const index_type &v_dim)
           {
-            // allocate the control points
-            point_data.resize(dim__*(u_dim+1)*(v_dim+1));
-
-            // set the B_u and B_v maps
-            set_Bs(u_dim, v_dim);
+            resize( B_u, B_v, point_data, u_dim, v_dim );
           }
 
           point_type get_control_point(const index_type &i, const index_type &j) const
@@ -1336,26 +1332,41 @@ namespace eli
           }
 
         private:
+
+          static void resize( u_control_point_matrix_container &uvec, v_control_point_matrix_container &vvec, control_point_container &data, const index_type &u_dim, const index_type &v_dim)
+          {
+            // allocate the control points
+            data.resize(dim__*(u_dim+1)*(v_dim+1));
+
+            // set the B_u and B_v maps
+            set_Bs( uvec, vvec, data, u_dim, v_dim);
+          }
+
           void set_Bs(index_type n, index_type m)
           {
+            set_Bs( B_u, B_v, point_data, n, m );
+          }
+
+          static void set_Bs( u_control_point_matrix_container &uvec, v_control_point_matrix_container &vvec, control_point_container &data, index_type n, index_type m)
+          {
             // allocate vectors of control point maps
-            B_u.resize(m+1, control_point_matrix_type(nullptr, m+1, dim__, Eigen::Stride<1, dim__>()));
+            uvec.resize(m+1, control_point_matrix_type(nullptr, m+1, dim__, Eigen::Stride<1, dim__>()));
             for (index_type j=0; j<=m; ++j)
             {
 #ifdef ELI_NO_VECTOR_DATA
-              new (&(B_u.at(0))+j) control_point_matrix_type(&(point_data.at(0))+j*(n+1)*dim__, n+1, dim__, Eigen::Stride<1, dim__>());
+              new (&(uvec.at(0))+j) control_point_matrix_type(&(data.at(0))+j*(n+1)*dim__, n+1, dim__, Eigen::Stride<1, dim__>());
 #else
-              new (B_u.data()+j) control_point_matrix_type(point_data.data()+j*(n+1)*dim__, n+1, dim__, Eigen::Stride<1, dim__>());
+              new (uvec.data()+j) control_point_matrix_type(data.data()+j*(n+1)*dim__, n+1, dim__, Eigen::Stride<1, dim__>());
 #endif
             }
 
-            B_v.resize(n+1, v_dir_control_point_matrix_type(nullptr, n+1, dim__, Eigen::Stride<1, Eigen::Dynamic>(1, (n+1)*dim__)));
+            vvec.resize(n+1, v_dir_control_point_matrix_type(nullptr, n+1, dim__, Eigen::Stride<1, Eigen::Dynamic>(1, (n+1)*dim__)));
             for (index_type i=0; i<=n; ++i)
             {
 #ifdef ELI_NO_VECTOR_DATA
-              new (&(B_v.at(0))+i) v_dir_control_point_matrix_type(&(point_data.at(0))+i*dim__, m+1, dim__, Eigen::Stride<1, Eigen::Dynamic>(1, (n+1)*dim__));
+              new (&(vvec.at(0))+i) v_dir_control_point_matrix_type(&(data.at(0))+i*dim__, m+1, dim__, Eigen::Stride<1, Eigen::Dynamic>(1, (n+1)*dim__));
 #else
-              new (B_v.data()+i) v_dir_control_point_matrix_type(point_data.data()+i*dim__, m+1, dim__, Eigen::Stride<1, Eigen::Dynamic>(1, (n+1)*dim__));
+              new (vvec.data()+i) v_dir_control_point_matrix_type(data.data()+i*dim__, m+1, dim__, Eigen::Stride<1, Eigen::Dynamic>(1, (n+1)*dim__));
 #endif
             }
           }
