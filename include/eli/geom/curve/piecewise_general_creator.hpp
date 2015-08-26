@@ -129,6 +129,12 @@ namespace eli
 
               bool operator!=(const joint_data &jd) const {return !operator==(jd);}
 
+              void reset()
+              {
+                conditions=0;
+                continuity=C0;
+              }
+
               // point interface
               bool set_f(const point_type &p)
               {
@@ -392,6 +398,11 @@ namespace eli
               bool operator!=(const fit_data &fd) const
               {
                 return !operator==(fd);
+              }
+
+              void reset()
+              {
+                point.clear();
               }
 
               index_type npoints() const
