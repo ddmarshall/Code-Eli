@@ -175,13 +175,13 @@ namespace eli
         std::cout << "plot3(" << nm << "_pt_x, "
                               << nm << "_pt_y, "
                               << nm << "_pt_z, "
-                              << "'ob');" << std::endl;
+                              << "'d', 'Color', [0 0 0.75], 'MarkerFaceColor', [0 0 0.75]);" << std::endl;
       }
       else
       {
         std::cout << "plot(" << nm << "_pt_x, "
                              << nm << "_pt_y, "
-                             << "'ob');" << std::endl;
+                             << "'d', 'Color', [0 0 0.75], 'MarkerFaceColor', [0 0 0.75]);" << std::endl;
       }
     }
 
@@ -692,7 +692,7 @@ namespace eli
 
     template<typename data__>
     void octave_print(int figno, const eli::geom::curve::piecewise<eli::geom::curve::bezier, data__, 2> &pc,
-                      const std::string &name="", bool show_control_points=true)
+                      const std::string &name="", bool show_control_points=true, bool show_segment_end_points=true)
     {
       typedef eli::geom::curve::piecewise<eli::geom::curve::bezier, data__, 2> piecewise_curve_type;
       typedef typename piecewise_curve_type::curve_type curve_type;
@@ -700,7 +700,7 @@ namespace eli
       typedef typename piecewise_curve_type::point_type point_type;
       typedef typename piecewise_curve_type::index_type index_type;
 
-      std::string nm, cpxbuf, cpybuf, cxbuf, cybuf;
+      std::string nm, cpxbuf, cpybuf, cxbuf, cybuf, jointxbuf, jointybuf;
 
       index_type i, pp, ns;
 
@@ -721,16 +721,34 @@ namespace eli
       {
         cpxbuf=nm+"_curv_cp_x=[";
         cpybuf=nm+"_curv_cp_y=[";
-        for (pp=0; pp<ns; ++pp)
+      }
+      if (show_segment_end_points)
+      {
+        jointxbuf=nm+"_curv_joint_x=[";
+        jointybuf=nm+"_curv_joint_y=[";
+      }
+      for (pp=0; pp<ns; ++pp)
+      {
+        index_type bez_deg;
+        curve_type bez;
+        pc.get(bez, pp);
+        bez_deg=bez.degree();
+        for (i=0; i<=bez_deg; ++i)
         {
-          index_type bez_deg;
-          curve_type bez;
-          pc.get(bez, pp);
-          bez_deg=bez.degree();
-          for (i=0; i<=bez_deg; ++i)
-          {
-            point_type pt(bez.get_control_point(i));
+          point_type pt(bez.get_control_point(i));
 
+          if (show_segment_end_points && ((i==0) || (i==bez_deg)))
+          {
+            jointxbuf+=std::to_string(pt.x());
+            jointybuf+=std::to_string(pt.y());
+            if ((pp<(ns-1)) || ((pp==(ns-1)) && (i==0)))
+            {
+              jointxbuf+=", ";
+              jointybuf+=", ";
+            }
+          }
+          if (show_control_points)
+          {
             cpxbuf+=std::to_string(pt.x());
             cpybuf+=std::to_string(pt.y());
             if ((pp<(ns-1)) || ((pp==(ns-1)) && (i<bez_deg)))
@@ -740,8 +758,16 @@ namespace eli
             }
           }
         }
-        cpxbuf+="];";
-        cpybuf+="];";
+        if (show_control_points)
+        {
+          cpxbuf+="];";
+          cpybuf+="];";
+        }
+        if (show_segment_end_points)
+        {
+          jointxbuf+="];";
+          jointybuf+="];";
+        }
       }
 
       // initialize the t parameters
@@ -785,21 +811,32 @@ namespace eli
         std::cout << cpxbuf << std::endl;
         std::cout << cpybuf << std::endl;
       }
+      if (show_segment_end_points)
+      {
+        std::cout << jointxbuf << std::endl;
+        std::cout << jointybuf << std::endl;
+      }
       std::cout << "setenv('GNUTERM', 'x11');" << std::endl;
       std::cout << "plot(" << nm << "_curv_x, "
                            << nm << "_curv_y, "
                            << "'-g');" << std::endl;
       if (show_control_points)
       {
-        std::cout << "plot3(" << nm << "_curv_cp_x', "
-                              << nm << "_curv_cp_y', "
-                              << "'-o', 'Color', [0 0.5 0], 'MarkerFaceColor', [0 0.5 0]);" << std::endl;
+        std::cout << "plot(" << nm << "_curv_cp_x', "
+                             << nm << "_curv_cp_y', "
+                             << "'-o', 'Color', [0 0.5 0], 'MarkerFaceColor', [0 0.5 0]);" << std::endl;
+      }
+      if (show_segment_end_points)
+      {
+        std::cout << "plot(" << nm << "_curv_joint_x', "
+                             << nm << "_curv_joint_y', "
+                             << "'s', 'Color', [0.75 0 0], 'MarkerFaceColor', [0.75 0 0]);" << std::endl;
       }
     }
 
     template<typename data__>
     void octave_print(int figno, const eli::geom::curve::piecewise<eli::geom::curve::bezier, data__, 3> &pc,
-                      const std::string &name="", bool show_control_points=true)
+                      const std::string &name="", bool show_control_points=true, bool show_segment_end_points=true)
     {
       typedef eli::geom::curve::piecewise<eli::geom::curve::bezier, data__, 3> piecewise_curve_type;
       typedef typename piecewise_curve_type::curve_type curve_type;
@@ -807,7 +844,7 @@ namespace eli
       typedef typename piecewise_curve_type::point_type point_type;
       typedef typename piecewise_curve_type::index_type index_type;
 
-      std::string nm, cpxbuf, cpybuf, cpzbuf, cxbuf, cybuf, czbuf;
+      std::string nm, cpxbuf, cpybuf, cpzbuf, cxbuf, cybuf, czbuf, jointxbuf, jointybuf, jointzbuf;
 
       index_type i, pp, ns;
 
@@ -829,16 +866,37 @@ namespace eli
         cpxbuf=nm+"_curv_cp_x=[";
         cpybuf=nm+"_curv_cp_y=[";
         cpzbuf=nm+"_curv_cp_z=[";
-        for (pp=0; pp<ns; ++pp)
+      }
+      if (show_segment_end_points)
+      {
+        jointxbuf=nm+"_curv_joint_x=[";
+        jointybuf=nm+"_curv_joint_y=[";
+        jointzbuf=nm+"_curv_joint_z=[";
+      }
+      for (pp=0; pp<ns; ++pp)
+      {
+        index_type bez_deg;
+        curve_type bez;
+        pc.get(bez, pp);
+        bez_deg=bez.degree();
+        for (i=0; i<=bez_deg; ++i)
         {
-          index_type bez_deg;
-          curve_type bez;
-          pc.get(bez, pp);
-          bez_deg=bez.degree();
-          for (i=0; i<=bez_deg; ++i)
-          {
-            point_type pt(bez.get_control_point(i));
+          point_type pt(bez.get_control_point(i));
 
+          if (show_segment_end_points && ((i==0) || (i==bez_deg)))
+          {
+            jointxbuf+=std::to_string(pt.x());
+            jointybuf+=std::to_string(pt.y());
+            jointzbuf+=std::to_string(pt.z());
+            if ((pp<(ns-1)) || ((pp==(ns-1)) && (i==0)))
+            {
+              jointxbuf+=", ";
+              jointybuf+=", ";
+              jointzbuf+=", ";
+            }
+          }
+          if (show_control_points)
+          {
             cpxbuf+=std::to_string(pt.x());
             cpybuf+=std::to_string(pt.y());
             cpzbuf+=std::to_string(pt.z());
@@ -850,9 +908,18 @@ namespace eli
             }
           }
         }
+      }
+      if (show_control_points)
+      {
         cpxbuf+="];";
         cpybuf+="];";
         cpzbuf+="];";
+      }
+      if (show_segment_end_points)
+      {
+        jointxbuf+="];";
+        jointybuf+="];";
+        jointzbuf+="];";
       }
 
       // initialize the t parameters
@@ -902,6 +969,12 @@ namespace eli
         std::cout << cpybuf << std::endl;
         std::cout << cpzbuf << std::endl;
       }
+      if (show_segment_end_points)
+      {
+        std::cout << jointxbuf << std::endl;
+        std::cout << jointybuf << std::endl;
+        std::cout << jointzbuf << std::endl;
+      }
       std::cout << "setenv('GNUTERM', 'x11');" << std::endl;
       std::cout << "plot3(" << nm << "_curv_x, "
                             << nm << "_curv_y, "
@@ -913,6 +986,13 @@ namespace eli
                               << nm << "_curv_cp_y', "
                               << nm << "_curv_cp_z', "
                               << "'-o', 'Color', [0 0.5 0], 'MarkerFaceColor', [0 0.5 0]);" << std::endl;
+      }
+      if (show_segment_end_points)
+      {
+        std::cout << "plot3(" << nm << "_curv_joint_x', "
+                              << nm << "_curv_joint_y', "
+                              << nm << "_curv_joint_z', "
+                              << "'s', 'Color', [0.75 0 0], 'MarkerFaceColor', [0.75 0 0]);" << std::endl;
       }
     }
 
