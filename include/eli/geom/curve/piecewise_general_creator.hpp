@@ -416,7 +416,7 @@ namespace eli
 
                 if (indx==npoints())
                 {
-                  point.push_back(pt);
+                  point.push_back(std::make_pair(static_cast<data_type>(0), pt));
                 }
 
                 return indx;
@@ -430,7 +430,7 @@ namespace eli
                   return point_type();
                 }
 
-                return point[i];
+                return point[i].second;
               }
 
               void remove_point(index_type i)
@@ -449,6 +449,28 @@ namespace eli
                 remove_point(find_point(pt));
               }
 
+              void set_parameter(index_type i, data_type t)
+              {
+                if (i>=npoints())
+                {
+                  assert(false);
+                  return;
+                }
+
+                point[i].first=t;
+              }
+
+              data_type get_parameter(index_type i)
+              {
+                if (i>=npoints())
+                {
+                  assert(false);
+                  return 0;
+                }
+
+                return point[i].first;
+              }
+
             protected:
               index_type find_point(const point_type &pt) const
               {
@@ -456,7 +478,7 @@ namespace eli
 
                 for (index_type i=0;i<npoints(); ++i)
                 {
-                  if (tol.approximately_equal(point[i], pt))
+                  if (tol.approximately_equal(point[i].second, pt))
                     return i;
                 }
 
@@ -464,7 +486,7 @@ namespace eli
               }
 
             private:
-              std::vector<point_type> point;
+              std::vector<std::pair<data_type, point_type>> point;
           };
 
         public:
