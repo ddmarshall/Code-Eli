@@ -1331,6 +1331,82 @@ namespace eli
             return maxd;
           }
 
+
+          void product( const bezier<data_type, dim__, tol__> &a, const bezier<data_type, dim__, tol__> &b)
+          {
+            index_type i, mu(a.degree_u()), mv(a.degree_v()), nu(b.degree_u()), nv(b.degree_v());
+
+            u_control_point_matrix_container a_u, b_u;
+            v_control_point_matrix_container a_v, b_v;
+            control_point_container a_data, b_data;
+
+            a_data = a.point_data;
+            set_Bs(a_u, a_v, a_data, mu, mv);
+            b_data = b.point_data;
+            set_Bs( b_u, b_v, b_data, nu, nv );
+
+            resize( mu + nu, mv + nv );
+
+            for ( size_t i=1; i<point_data.size(); i++)
+            {
+              point_data[i] = 0.0;
+            }
+
+            for (i=0; i<=mu; ++i)
+            {
+              eli::geom::utility::bezier_control_points_to_scaled_bezier( a_v[i] );
+            }
+
+            for (i=0; i<=mv; ++i)
+            {
+              eli::geom::utility::bezier_control_points_to_scaled_bezier( a_u[i] );
+            }
+
+            for (i=0; i<=nu; ++i)
+            {
+              eli::geom::utility::bezier_control_points_to_scaled_bezier( b_v[i] );
+            }
+
+            for (i=0; i<=nv; ++i)
+            {
+              eli::geom::utility::bezier_control_points_to_scaled_bezier( b_u[i] );
+            }
+
+            index_type ia, ib, ic;
+            index_type ja, jb, jc;
+
+            for (ia = 0; ia <= mu; ia++ )
+            {
+              for (ib = 0; ib <= nu; ib++ )
+              {
+                ic = ia + ib;
+
+                for (ja = 0; ja <= mv; ja++ )
+                {
+                  for (jb = 0; jb <= nv; jb++ )
+                  {
+                    jc = ja + jb;
+
+                    B_u[jc].row(ic) = B_u[jc].row(ic) + a_u[ja].row(ia).cwiseProduct( b_u[jb].row(ib) );
+                  }
+                }
+              }
+            }
+
+            for (i=0; i<=mu+nu; ++i)
+            {
+              eli::geom::utility::scaled_bezier_to_control_points_bezier( B_v[i] );
+            }
+
+            for (i=0; i<=mv+nv; ++i)
+            {
+              eli::geom::utility::scaled_bezier_to_control_points_bezier( B_u[i] );
+            }
+
+          }
+
+
+
         private:
 
           static void resize( u_control_point_matrix_container &uvec, v_control_point_matrix_container &vvec, control_point_container &data, const index_type &u_dim, const index_type &v_dim)

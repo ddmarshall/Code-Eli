@@ -62,6 +62,7 @@ class bezier_surface_test_suite : public Test::Suite
       TEST_ADD(bezier_surface_test_suite<float>::split_test);
       TEST_ADD(bezier_surface_test_suite<float>::normal_test);
       TEST_ADD(bezier_surface_test_suite<float>::get_curve_test);
+      TEST_ADD(bezier_surface_test_suite<float>::math_test);
     }
     void AddTests(const double &)
     {
@@ -84,6 +85,7 @@ class bezier_surface_test_suite : public Test::Suite
       TEST_ADD(bezier_surface_test_suite<double>::split_test);
       TEST_ADD(bezier_surface_test_suite<double>::normal_test);
       TEST_ADD(bezier_surface_test_suite<double>::get_curve_test);
+      TEST_ADD(bezier_surface_test_suite<double>::math_test);
     }
     void AddTests(const long double &)
     {
@@ -106,6 +108,7 @@ class bezier_surface_test_suite : public Test::Suite
       TEST_ADD(bezier_surface_test_suite<long double>::split_test);
       TEST_ADD(bezier_surface_test_suite<long double>::normal_test);
       TEST_ADD(bezier_surface_test_suite<long double>::get_curve_test);
+      TEST_ADD(bezier_surface_test_suite<long double>::math_test);
     }
 
   public:
@@ -3371,6 +3374,203 @@ class bezier_surface_test_suite : public Test::Suite
       pt_ref=bez.f(u, v);
       pt_out=c.f(u);
       TEST_ASSERT(pt_out==pt_ref);
+    }
+
+    void math_test()
+    {
+      data_type eps(std::numeric_limits<data__>::epsilon());
+
+      index_type n(3), m(3);
+      point_type pt[6+1][4+1];
+
+      // create surface with specified control points
+      pt[0][0] << -15, 0,  15;
+      pt[1][0] <<  -5, 5,  15;
+      pt[2][0] <<   5, 5,  15;
+      pt[3][0] <<  15, 0,  15;
+      pt[0][1] << -15, 5,   5;
+      pt[1][1] <<  -5, 5,   5;
+      pt[2][1] <<   5, 5,   5;
+      pt[3][1] <<  15, 5,   5;
+      pt[0][2] << -15, 5,  -5;
+      pt[1][2] <<  -5, 5,  -5;
+      pt[2][2] <<   5, 5,  -5;
+      pt[3][2] <<  15, 5,  -5;
+      pt[0][3] << -15, 0, -15;
+      pt[1][3] <<  -5, 5, -15;
+      pt[2][3] <<   5, 5, -15;
+      pt[3][3] <<  15, 0, -15;
+
+      // create surface with specified dimensions and set control points
+      bezier_type bez1(n, m);
+
+      for (index_type i=0; i<=n; ++i)
+      {
+        for (index_type j=0; j<=m; ++j)
+        {
+          bez1.set_control_point(pt[i][j], i, j);
+        }
+      }
+
+      // set the reference control points
+      pt[0][0] << 0.0, 0.0, 0;
+      pt[1][0] << 0.0, 1.0, 0;
+      pt[2][0] << 2.0, 1.5, 0;
+      pt[3][0] << 3.5, 1.5, 0;
+      pt[0][1] << 0.0, 0.0, 1;
+      pt[1][1] << 0.0, 1.0, 1;
+      pt[2][1] << 2.0, 1.5, 1;
+      pt[3][1] << 3.5, 1.5, 1;
+      pt[0][2] << 0.0, 0.0, 3;
+      pt[1][2] << 0.0, 1.0, 3;
+      pt[2][2] << 2.0, 1.5, 3;
+      pt[3][2] << 3.5, 1.5, 3;
+      pt[0][3] << 0.0, 0.0, 4;
+      pt[1][3] << 0.0, 1.0, 4;
+      pt[2][3] << 2.0, 1.5, 4;
+      pt[3][3] << 3.5, 1.5, 4;
+
+      bezier_type bez2(n, m);
+
+      for (index_type i=0; i<=n; ++i)
+      {
+        for (index_type j=0; j<=m; ++j)
+        {
+          bez2.set_control_point(pt[i][j], i, j);
+        }
+      }
+
+      pt[0][0] << 3.5, 1.5, 0;
+      pt[1][0] << 5.0, 1.5, 0;
+      pt[2][0] << 6.0, 1.0, 0;
+      pt[3][0] << 4.0, 0.0, 0;
+      pt[0][1] << 3.5, 1.5, 1;
+      pt[1][1] << 5.0, 1.5, 1;
+      pt[2][1] << 6.0, 1.0, 1;
+      pt[3][1] << 4.0, 0.0, 1;
+      pt[0][2] << 3.5, 1.5, 3;
+      pt[1][2] << 5.0, 1.5, 3;
+      pt[2][2] << 6.0, 1.0, 3;
+      pt[3][2] << 4.0, 0.0, 3;
+      pt[0][3] << 3.5, 1.5, 4;
+      pt[1][3] << 5.0, 1.5, 4;
+      pt[2][3] << 6.0, 1.0, 4;
+      pt[3][3] << 4.0, 0.0, 4;
+
+      bezier_type bez3(n, m);
+
+      for (index_type i=0; i<=n; ++i)
+      {
+        for (index_type j=0; j<=m; ++j)
+        {
+          bez3.set_control_point(pt[i][j], i, j);
+        }
+      }
+
+      // create surface with specified control points
+      pt[0][0] <<  0, 0, 15;
+      pt[1][0] <<  2, 6, 15;
+      pt[2][0] <<  3, 0, 15;
+      pt[3][0] <<  5, 4, 15;
+      pt[4][0] <<  7, 1, 15;
+      pt[5][0] <<  5, 5, 15;
+      pt[6][0] << 10, 6, 15;
+      pt[0][1] <<  0, 0, 11;
+      pt[1][1] <<  2, 6, 11;
+      pt[2][1] <<  3, 0, 11;
+      pt[3][1] <<  5, 4, 11;
+      pt[4][1] <<  7, 1, 11;
+      pt[5][1] <<  5, 5, 11;
+      pt[6][1] << 10, 6, 11;
+      pt[0][2] <<  0, 0,  3;
+      pt[1][2] <<  2, 6,  3;
+      pt[2][2] <<  3, 0,  3;
+      pt[3][2] <<  5, 4,  3;
+      pt[4][2] <<  7, 1,  3;
+      pt[5][2] <<  5, 5,  3;
+      pt[6][2] << 10, 6,  3;
+      pt[0][3] <<  0, 0,  0;
+      pt[1][3] <<  2, 6,  0;
+      pt[2][3] <<  3, 0,  0;
+      pt[3][3] <<  5, 4,  0;
+      pt[4][3] <<  7, 1,  0;
+      pt[5][3] <<  5, 5,  0;
+      pt[6][3] << 10, 6,  0;
+      pt[0][4] <<  0, 0, -5;
+      pt[1][4] <<  2, 6, -5;
+      pt[2][4] <<  3, 0, -5;
+      pt[3][4] <<  5, 4, -5;
+      pt[4][4] <<  7, 1, -5;
+      pt[5][4] <<  5, 5, -5;
+      pt[6][4] << 10, 6, -5;
+
+      n = 6;
+      m = 4;
+
+      bezier_type bez4(n, m);
+
+      for (index_type i=0; i<=n; ++i)
+      {
+        for (index_type j=0; j<=m; ++j)
+        {
+          bez4.set_control_point(pt[i][j], i, j);
+        }
+      }
+
+      point_type pt_out, pt_ref;
+      data_type u, v;
+
+      n = 20;
+      m = 30;
+
+      bezier_type bez5;
+      bez5.product( bez1, bez4 );
+
+      for (index_type i=0; i<n; ++i)
+      {
+        u = i * 1.0 / (n - 1);
+        for (index_type j=0; j<m; ++j)
+        {
+          v = j * 1.0 / (m - 1);
+
+          pt_out = bez5.f( u, v );
+          pt_ref = bez1.f( u, v ).cwiseProduct( bez4.f( u, v ) );
+          TEST_ASSERT( (pt_out-pt_ref).norm() < 1000*eps );
+        }
+      }
+
+
+      bez5.product( bez2, bez4 );
+
+      for (index_type i=0; i<n; ++i)
+      {
+        u = i * 1.0 / (n - 1);
+        for (index_type j=0; j<m; ++j)
+        {
+          v = j * 1.0 / (m - 1);
+
+          pt_out = bez5.f( u, v );
+          pt_ref = bez2.f( u, v ).cwiseProduct( bez4.f( u, v ) );
+          TEST_ASSERT( (pt_out-pt_ref).norm() < 1000*eps );
+        }
+      }
+
+      bez5.product( bez1, bez3 );
+
+      for (index_type i=0; i<n; ++i)
+      {
+        u = i * 1.0 / (n - 1);
+        for (index_type j=0; j<m; ++j)
+        {
+          v = j * 1.0 / (m - 1);
+
+          pt_out = bez5.f( u, v );
+          pt_ref = bez1.f( u, v ).cwiseProduct( bez3.f( u, v ) );
+          TEST_ASSERT( (pt_out-pt_ref).norm() < 1000*eps );
+        }
+      }
+
+
     }
 };
 
