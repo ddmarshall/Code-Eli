@@ -745,6 +745,7 @@ namespace eli
             eli::geom::utility::bezier_control_points_to_scaled_bezier( scaledb, b.B );
 
             scaledc.resize( m + n + 1, dim__ );
+            scaledc.setZero();
             eli::geom::utility::multiply_scaled_bezier( scaledc, scaleda, scaledb );
 
             resize( m + n );

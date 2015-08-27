@@ -495,8 +495,7 @@ namespace eli
         assert( a.cols() == b.cols() );
         assert( a.cols() == c.cols() );
 
-        c.derived().resize( n + m + 1, a.cols() );
-        c.setZero();
+        assert( c.rows() == m + n + 1 );
 
         for ( j = 0; j <= n; ++j )
         {
