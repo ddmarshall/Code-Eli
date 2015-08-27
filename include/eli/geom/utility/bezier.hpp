@@ -469,6 +469,19 @@ namespace eli
         }
       }
 
+      template<typename Derived1>
+      void bezier_control_points_to_scaled_bezier(Eigen::MatrixBase<Derived1> &cp)
+      {
+        typename Derived1::Index i, n(cp.rows()-1);
+        typename Derived1::Scalar bc;
+
+        for (i=0; i<=n; ++i)
+        {
+          eli::mutil::dm::binomial_coefficient(bc, n, i);
+          cp.row(i) = cp.row(i) * bc;
+        }
+      }
+
       template<typename Derived1, typename Derived2>
       void scaled_bezier_to_control_points_bezier(Eigen::MatrixBase<Derived1> &cp, const Eigen::MatrixBase<Derived2> &scp)
       {
@@ -483,6 +496,19 @@ namespace eli
         {
           eli::mutil::dm::binomial_coefficient(bc, n, i);
           cp.row(i) = scp.row(i) / bc;
+        }
+      }
+
+      template<typename Derived1>
+      void scaled_bezier_to_control_points_bezier(Eigen::MatrixBase<Derived1> &cp)
+      {
+        typename Derived1::Index i, n(cp.rows()-1);
+        typename Derived1::Scalar bc;
+
+        for (i=0; i<=n; ++i)
+        {
+          eli::mutil::dm::binomial_coefficient(bc, n, i);
+          cp.row(i) = cp.row(i) / bc;
         }
       }
 
