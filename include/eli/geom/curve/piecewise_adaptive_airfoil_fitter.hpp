@@ -53,7 +53,7 @@ namespace eli
 
           piecewise_adaptive_airfoil_fitter()
             : piecewise_creator_base<data_type, dim__, tolerance_type>(2, 0),
-              upper_pt(0), lower_pt(0), sub_method(MAX_ERROR), fit_tolerance(1e-6), max_degree(5), approx_te_slope(true)
+              upper_pt(0), lower_pt(0), sub_method(MAX_ERROR), fit_tolerance(1e-6), max_degree(7), approx_te_slope(true)
           {
           }
           piecewise_adaptive_airfoil_fitter(const piecewise_adaptive_airfoil_fitter<data_type, dim__, tolerance_type> &pca)
@@ -568,9 +568,6 @@ namespace eli
             index_type max_splitting_iteration_count(12);    // maximum number of splitting iteration are allowed
                                                              // worst case is have 2^max times more segments than
                                                              // was originally desired
-
-            // fixed order
-            assert(max_degree==5);
 
             // calculate the trailing edge slope
             if (approx_te_slope)
