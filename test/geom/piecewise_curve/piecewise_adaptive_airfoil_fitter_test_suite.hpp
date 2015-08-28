@@ -93,56 +93,105 @@ class piecewise_adaptive_airfoil_fitter_test_suite : public Test::Suite
     }
 
     void create_airfoil_points(std::vector<point_type, Eigen::aligned_allocator<point_type>> &upt,
-                               std::vector<point_type, Eigen::aligned_allocator<point_type>> &lpt)
+                               std::vector<point_type, Eigen::aligned_allocator<point_type>> &lpt, bool clean)
     {
-      // upper surface
-      upt.resize(24);
-      upt[ 0] << 0.0000, 0.0000, 0;
-      upt[ 1] << 0.0013, 0.0030, 0;
-      upt[ 2] << 0.0045, 0.0094, 0;
-      upt[ 3] << 0.0096, 0.0138, 0;
-      upt[ 4] << 0.0165, 0.0183, 0;
-      upt[ 5] << 0.0252, 0.0228, 0;
-      upt[ 6] << 0.0477, 0.0315, 0;
-      upt[ 7] << 0.0767, 0.0397, 0;
-      upt[ 8] << 0.1118, 0.0473, 0;
-      upt[ 9] << 0.1524, 0.0539, 0;
-      upt[10] << 0.1980, 0.0593, 0;
-      upt[11] << 0.2979, 0.0636, 0;
-      upt[12] << 0.3015, 0.0665, 0;
-      upt[13] << 0.3578, 0.0680, 0;
-      upt[14] << 0.4160, 0.0680, 0;
-      upt[15] << 0.4455, 0.0675, 0;
-      upt[16] << 0.5049, 0.0652, 0;
-      upt[17] << 0.5930, 0.0585, 0;
-      upt[18] << 0.6501, 0.0514, 0;
-      upt[19] << 0.7050, 0.0416, 0;
-      upt[20] << 0.7623, 0.0297, 0;
-      upt[21] << 0.8168, 0.0221, 0;
-      upt[22] << 0.9074, 0.0108, 0;
-      upt[23] << 1.0000, 0.0050, 0;
+      if (clean)
+      {
+        // upper surface
+        upt.resize(23);
+        upt[ 0] << 0.0000, 0.0000, 0;
+        upt[ 1] << 0.0013, 0.0030, 0;
+        upt[ 2] << 0.0045, 0.0094, 0;
+        upt[ 3] << 0.0096, 0.0138, 0;
+        upt[ 4] << 0.0165, 0.0183, 0;
+        upt[ 5] << 0.0252, 0.0228, 0;
+        upt[ 6] << 0.0477, 0.0315, 0;
+        upt[ 7] << 0.0767, 0.0397, 0;
+        upt[ 8] << 0.1118, 0.0473, 0;
+        upt[ 9] << 0.1524, 0.0539, 0;
+        upt[10] << 0.1980, 0.0593, 0;
+        upt[11] << 0.3015, 0.0665, 0;
+        upt[12] << 0.3578, 0.0680, 0;
+        upt[13] << 0.4160, 0.0680, 0;
+        upt[14] << 0.4455, 0.0675, 0;
+        upt[15] << 0.5049, 0.0652, 0;
+        upt[16] << 0.5930, 0.0585, 0;
+        upt[17] << 0.6501, 0.0514, 0;
+        upt[18] << 0.7050, 0.0416, 0;
+        upt[19] << 0.7623, 0.0297, 0;
+        upt[20] << 0.8168, 0.0221, 0;
+        upt[21] << 0.9074, 0.0108, 0;
+        upt[22] << 1.0000, 0.0050, 0;
 
-      // lower surface
-      lpt.resize(17);
-      lpt[ 0] << 0.0000, 0.0000, 0;
-      lpt[ 1] << 0.0029,-0.0077, 0;
-      lpt[ 2] << 0.0076,-0.0116, 0;
-      lpt[ 3] << 0.0143,-0.0112, 0;
-      lpt[ 4] << 0.0451,-0.0284, 0;
-      lpt[ 5] << 0.0741,-0.0365, 0;
-      lpt[ 6] << 0.1029,-0.0441, 0;
-      lpt[ 7] << 0.1499,-0.0511, 0;
-      lpt[ 8] << 0.2453,-0.0621, 0;
-      lpt[ 9] << 0.2986,-0.0657, 0;
-      lpt[10] << 0.3545,-0.0678, 0;
-      lpt[11] << 0.4123,-0.0684, 0;
-      lpt[12] << 0.6178,-0.0572, 0;
-      lpt[13] << 0.7017,-0.0453, 0;
-      lpt[14] << 0.8078,-0.0247, 0;
-      lpt[15] << 0.9012,-0.0087, 0;
-      lpt[16] << 1.0000,-0.0020, 0;
+        // lower surface
+        lpt.resize(16);
+        lpt[ 0] << 0.0000, 0.0000, 0;
+        lpt[ 1] << 0.0029,-0.0077, 0;
+        lpt[ 2] << 0.0076,-0.0116, 0;
+        lpt[ 3] << 0.0451,-0.0284, 0;
+        lpt[ 4] << 0.0741,-0.0365, 0;
+        lpt[ 5] << 0.1029,-0.0441, 0;
+        lpt[ 6] << 0.1499,-0.0511, 0;
+        lpt[ 7] << 0.2453,-0.0621, 0;
+        lpt[ 8] << 0.2986,-0.0657, 0;
+        lpt[ 9] << 0.3545,-0.0678, 0;
+        lpt[10] << 0.4123,-0.0684, 0;
+        lpt[11] << 0.6178,-0.0572, 0;
+        lpt[12] << 0.7017,-0.0453, 0;
+        lpt[13] << 0.8078,-0.0247, 0;
+        lpt[14] << 0.9012,-0.0087, 0;
+        lpt[15] << 1.0000,-0.0020, 0;
+      }
+      else
+      {
+        // upper surface
+        upt.resize(24);
+        upt[ 0] << 0.0000, 0.0000, 0;
+        upt[ 1] << 0.0013, 0.0030, 0;
+        upt[ 2] << 0.0045, 0.0094, 0;
+        upt[ 3] << 0.0096, 0.0138, 0;
+        upt[ 4] << 0.0165, 0.0183, 0;
+        upt[ 5] << 0.0252, 0.0228, 0;
+        upt[ 6] << 0.0477, 0.0315, 0;
+        upt[ 7] << 0.0767, 0.0397, 0;
+        upt[ 8] << 0.1118, 0.0473, 0;
+        upt[ 9] << 0.1524, 0.0539, 0;
+        upt[10] << 0.1980, 0.0593, 0;
+        upt[11] << 0.2979, 0.0636, 0;
+        upt[12] << 0.3015, 0.0665, 0;
+        upt[13] << 0.3578, 0.0680, 0;
+        upt[14] << 0.4160, 0.0680, 0;
+        upt[15] << 0.4455, 0.0675, 0;
+        upt[16] << 0.5049, 0.0652, 0;
+        upt[17] << 0.5930, 0.0585, 0;
+        upt[18] << 0.6501, 0.0514, 0;
+        upt[19] << 0.7050, 0.0416, 0;
+        upt[20] << 0.7623, 0.0297, 0;
+        upt[21] << 0.8168, 0.0221, 0;
+        upt[22] << 0.9074, 0.0108, 0;
+        upt[23] << 1.0000, 0.0050, 0;
+
+        // lower surface
+        lpt.resize(17);
+        lpt[ 0] << 0.0000, 0.0000, 0;
+        lpt[ 1] << 0.0029,-0.0077, 0;
+        lpt[ 2] << 0.0076,-0.0116, 0;
+        lpt[ 3] << 0.0143,-0.0112, 0;
+        lpt[ 4] << 0.0451,-0.0284, 0;
+        lpt[ 5] << 0.0741,-0.0365, 0;
+        lpt[ 6] << 0.1029,-0.0441, 0;
+        lpt[ 7] << 0.1499,-0.0511, 0;
+        lpt[ 8] << 0.2453,-0.0621, 0;
+        lpt[ 9] << 0.2986,-0.0657, 0;
+        lpt[10] << 0.3545,-0.0678, 0;
+        lpt[11] << 0.4123,-0.0684, 0;
+        lpt[12] << 0.6178,-0.0572, 0;
+        lpt[13] << 0.7017,-0.0453, 0;
+        lpt[14] << 0.8078,-0.0247, 0;
+        lpt[15] << 0.9012,-0.0087, 0;
+        lpt[16] << 1.0000,-0.0020, 0;
+      }
     }
-
 
     void create_airfoil_points(std::vector<point_type, Eigen::aligned_allocator<point_type>> &upt,
                                std::vector<point_type, Eigen::aligned_allocator<point_type>> &lpt,
@@ -235,7 +284,7 @@ class piecewise_adaptive_airfoil_fitter_test_suite : public Test::Suite
         bool rtn_flag;
 
         // get airfoil points
-        create_airfoil_points(upt, lpt);
+        create_airfoil_points(upt, lpt, true);
 
         // set the parameterization
         t0=0;
@@ -243,8 +292,8 @@ class piecewise_adaptive_airfoil_fitter_test_suite : public Test::Suite
         t2=4;
 
         // create curve
-//        subdivide_method sm(airfoil_fitter_type::BISECTION);
-        subdivide_method sm(airfoil_fitter_type::MAX_ERROR);
+        subdivide_method sm(airfoil_fitter_type::BISECTION);
+//        subdivide_method sm(airfoil_fitter_type::MAX_ERROR);
 
         fit_tol=1e-4;
         rtn_flag=pcaf.set_conditions(upt.begin(), static_cast<index_type>(upt.size()),
