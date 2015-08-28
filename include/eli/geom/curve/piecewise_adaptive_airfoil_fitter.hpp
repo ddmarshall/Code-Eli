@@ -569,9 +569,6 @@ namespace eli
                                                              // worst case is have 2^max times more segments than
                                                              // was originally desired
 
-            // fixed order
-            assert(max_degree==5);
-
             // calculate the trailing edge slope
             if (approx_te_slope)
             {
