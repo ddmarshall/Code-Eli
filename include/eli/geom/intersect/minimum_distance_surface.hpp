@@ -491,6 +491,17 @@ namespace eli
 
         dist_nrm0 = minimum_distance_nrm( u, v, s, pt, u0, v0, retn );
 
+//        if ( retn != tan_solver.converged )
+//        {
+//          printf("Nothing converged.\n" );
+//          printf("%g %g %g\n", dist_tan, dist_nrmt, dist_nrm0 );
+//        }
+//        else
+//        {
+//          printf("Newton x0 converged.\n" );
+//          printf("%g %g %g\n", dist_tan, dist_nrmt, dist_nrm0 );
+//        }
+
         if ( dist_nrm0 < dist_tan )
         {
             return dist_nrm0;
