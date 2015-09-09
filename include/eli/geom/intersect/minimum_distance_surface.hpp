@@ -296,7 +296,7 @@ namespace eli
 
       template<typename surface__>
       typename surface__::data_type minimum_distance_tan(typename surface__::data_type &u, typename surface__::data_type &v, const surface__ &s, const typename surface__::point_type &pt,
-                                                     const typename surface__::data_type &u0, const typename surface__::data_type &v0)
+                                                     const typename surface__::data_type &u0, const typename surface__::data_type &v0, int & ret)
       {
         typedef internal::tangent_plane_method<surface__, 2, 1> nonlinear_solver_type;
 
@@ -355,7 +355,7 @@ namespace eli
         q = s.f(x0(0), x0(1));
         dist0 = eli::geom::point::distance(q, pt);
 
-        tpsolve.find_root( x );
+        ret = tpsolve.find_root( x );
 
         q = s.f(x(0), x(1));
         dist = eli::geom::point::distance(q, pt);
@@ -373,7 +373,7 @@ namespace eli
 
       template<typename surface__>
       typename surface__::data_type minimum_distance_nrm(typename surface__::data_type &u, typename surface__::data_type &v, const surface__ &s, const typename surface__::point_type &pt,
-                                                     const typename surface__::data_type &u0, const typename surface__::data_type &v0)
+                                                     const typename surface__::data_type &u0, const typename surface__::data_type &v0, int & ret)
       {
         typedef eli::mutil::nls::newton_raphson_system_method<typename surface__::data_type, 2, 1> nonlinear_solver_type;
         nonlinear_solver_type nrm;
@@ -427,7 +427,7 @@ namespace eli
         dist0=eli::geom::point::distance(s.f(u0, v0), pt);
 
         // find the root
-        nrm.find_root(ans, g, gp, rhs);
+        ret = nrm.find_root(ans, g, gp, rhs);
         u=ans(0);
         v=ans(1);
 
@@ -463,7 +463,32 @@ namespace eli
       typename surface__::data_type minimum_distance(typename surface__::data_type &u, typename surface__::data_type &v, const surface__ &s, const typename surface__::point_type &pt,
                                                      const typename surface__::data_type &u0, const typename surface__::data_type &v0)
       {
-        return minimum_distance_tan( u, v, s, pt, u0, v0 );
+        internal::tangent_plane_method<surface__, 2, 1> tan_solver;
+        typename surface__::data_type dist_tan, dist_nrmt;
+
+        int rett = -1;
+        dist_tan = minimum_distance_tan( u, v, s, pt, u0, v0, rett );
+
+        if ( rett == tan_solver.converged || rett == tan_solver.hit_constraint )
+        {
+          return dist_tan;
+        }
+
+        typename surface__::data_type u0t, v0t;
+        u0t = u;
+        v0t = v;
+
+        int retn = -1;
+        dist_nrmt = minimum_distance_nrm( u, v, s, pt, u0t, v0t, retn );
+
+        if ( dist_nrmt <= dist_tan )
+        {
+          return dist_nrmt;
+        }
+
+        u = u0t;
+        v = v0t;
+        return dist_tan;
       }
 
       template<typename surface__>
