@@ -464,7 +464,7 @@ namespace eli
                                                      const typename surface__::data_type &u0, const typename surface__::data_type &v0)
       {
         internal::tangent_plane_method<surface__, 2, 1> tan_solver;
-        typename surface__::data_type dist_tan, dist_nrmt;
+        typename surface__::data_type dist_tan, dist_nrmt, dist_nrm0;
 
         int rett = -1;
         dist_tan = minimum_distance_tan( u, v, s, pt, u0, v0, rett );
@@ -481,9 +481,19 @@ namespace eli
         int retn = -1;
         dist_nrmt = minimum_distance_nrm( u, v, s, pt, u0t, v0t, retn );
 
-        if ( dist_nrmt <= dist_tan )
+        if ( retn == tan_solver.converged )
         {
-          return dist_nrmt;
+          if ( dist_nrmt <= dist_tan )
+          {
+            return dist_nrmt;
+          }
+        }
+
+        dist_nrm0 = minimum_distance_nrm( u, v, s, pt, u0, v0, retn );
+
+        if ( dist_nrm0 < dist_tan )
+        {
+            return dist_nrm0;
         }
 
         u = u0t;
