@@ -20,7 +20,7 @@
 
 #include "eli/code_eli.hpp"
 
-#include "eli/mutil/nls/newton_raphson_constrained_system_method.hpp"
+#include "eli/mutil/nls/newton_raphson_system_method.hpp"
 
 #include "eli/geom/intersect/minimum_distance_curve.hpp"
 #include "eli/geom/point/distance.hpp"
@@ -160,7 +160,7 @@ namespace eli
                                                      const typename surface__::data_type &ulb = 0, const typename surface__::data_type &uub = 0,
                                                      const typename surface__::data_type &vlb = 0, const typename surface__::data_type &vub = 0)
       {
-        typedef eli::mutil::nls::newton_raphson_constrained_system_method<typename surface__::data_type, 2, 1> nonlinear_solver_type;
+        typedef eli::mutil::nls::newton_raphson_system_method<typename surface__::data_type, 2, 1> nonlinear_solver_type;
         nonlinear_solver_type nrm;
         internal::surface_g_functor<surface__> g;
         internal::surface_gp_functor<surface__> gp;
@@ -186,8 +186,8 @@ namespace eli
         {
           if (s.open_u())
           {
-            nrm.set_lower_condition(0, umin, nonlinear_solver_type::NRC_EXCLUSIVE);
-            nrm.set_upper_condition(0, umax, nonlinear_solver_type::NRC_EXCLUSIVE);
+            nrm.set_lower_condition(0, umin, nonlinear_solver_type::IRC_EXCLUSIVE);
+            nrm.set_upper_condition(0, umax, nonlinear_solver_type::IRC_EXCLUSIVE);
           }
           else
           {
@@ -196,26 +196,26 @@ namespace eli
         }
         else if (!ulbnded && uubnded)
         {
-          nrm.set_lower_condition(0, umin, nonlinear_solver_type::NRC_EXCLUSIVE);
-          nrm.set_upper_condition(0, uub, nonlinear_solver_type::NRC_EXCLUSIVE);
+          nrm.set_lower_condition(0, umin, nonlinear_solver_type::IRC_EXCLUSIVE);
+          nrm.set_upper_condition(0, uub, nonlinear_solver_type::IRC_EXCLUSIVE);
         }
         else if (ulbnded && !uubnded)
         {
-          nrm.set_lower_condition(0, ulb, nonlinear_solver_type::NRC_EXCLUSIVE);
-          nrm.set_upper_condition(0, umax, nonlinear_solver_type::NRC_EXCLUSIVE);
+          nrm.set_lower_condition(0, ulb, nonlinear_solver_type::IRC_EXCLUSIVE);
+          nrm.set_upper_condition(0, umax, nonlinear_solver_type::IRC_EXCLUSIVE);
         }
         else
         {
-          nrm.set_lower_condition(0, ulb, nonlinear_solver_type::NRC_EXCLUSIVE);
-          nrm.set_upper_condition(0, uub, nonlinear_solver_type::NRC_EXCLUSIVE);
+          nrm.set_lower_condition(0, ulb, nonlinear_solver_type::IRC_EXCLUSIVE);
+          nrm.set_upper_condition(0, uub, nonlinear_solver_type::IRC_EXCLUSIVE);
         }
 
         if (!vlbnded && !vubnded)
         {
           if (s.open_v())
           {
-            nrm.set_lower_condition(1, vmin, nonlinear_solver_type::NRC_EXCLUSIVE);
-            nrm.set_upper_condition(1, vmax, nonlinear_solver_type::NRC_EXCLUSIVE);
+            nrm.set_lower_condition(1, vmin, nonlinear_solver_type::IRC_EXCLUSIVE);
+            nrm.set_upper_condition(1, vmax, nonlinear_solver_type::IRC_EXCLUSIVE);
           }
           else
           {
@@ -224,18 +224,18 @@ namespace eli
         }
         else if (!vlbnded && vubnded)
         {
-          nrm.set_lower_condition(1, vmin, nonlinear_solver_type::NRC_EXCLUSIVE);
-          nrm.set_upper_condition(1, vub, nonlinear_solver_type::NRC_EXCLUSIVE);
+          nrm.set_lower_condition(1, vmin, nonlinear_solver_type::IRC_EXCLUSIVE);
+          nrm.set_upper_condition(1, vub, nonlinear_solver_type::IRC_EXCLUSIVE);
         }
         else if (vlbnded && !vubnded)
         {
-          nrm.set_lower_condition(1, vlb, nonlinear_solver_type::NRC_EXCLUSIVE);
-          nrm.set_upper_condition(1, vmax, nonlinear_solver_type::NRC_EXCLUSIVE);
+          nrm.set_lower_condition(1, vlb, nonlinear_solver_type::IRC_EXCLUSIVE);
+          nrm.set_upper_condition(1, vmax, nonlinear_solver_type::IRC_EXCLUSIVE);
         }
         else
         {
-          nrm.set_lower_condition(1, vlb, nonlinear_solver_type::NRC_EXCLUSIVE);
-          nrm.set_upper_condition(1, vub, nonlinear_solver_type::NRC_EXCLUSIVE);
+          nrm.set_lower_condition(1, vlb, nonlinear_solver_type::IRC_EXCLUSIVE);
+          nrm.set_upper_condition(1, vub, nonlinear_solver_type::IRC_EXCLUSIVE);
         }
 
         // set the initial guess

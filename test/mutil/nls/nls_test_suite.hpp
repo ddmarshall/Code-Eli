@@ -333,7 +333,7 @@ class nls_test_suite : public Test::Suite
 
     void newton_raphson_constrained_method_test()
     {
-      typedef eli::mutil::nls::newton_raphson_constrained_method<data__> nrcm_type;
+      typedef eli::mutil::nls::newton_raphson_method<data__> nrcm_type;
       data__ delta(std::sqrt(std::numeric_limits<data__>::epsilon())), rhs(0.5), root;
       nrcm_type nrcm;
       int stat;
@@ -341,8 +341,8 @@ class nls_test_suite : public Test::Suite
       nrcm.set_absolute_f_tolerance(delta);
       nrcm.set_max_iteration(200);
       nrcm.set_initial_guess(eli::constants::math<data__>::two_pi()+static_cast<data__>(0.3)*eli::constants::math<data__>::pi_by_four());
-      nrcm.set_lower_condition(eli::constants::math<data__>::two_pi(), nrcm_type::NRC_EXCLUSIVE);
-      nrcm.set_upper_condition(eli::constants::math<data__>::pi()*3, nrcm_type::NRC_EXCLUSIVE);
+      nrcm.set_lower_condition(eli::constants::math<data__>::two_pi(), nrcm_type::IRC_EXCLUSIVE);
+      nrcm.set_upper_condition(eli::constants::math<data__>::pi()*3, nrcm_type::IRC_EXCLUSIVE);
 
       // test using user defined functions
       stat = nrcm.find_root(root, std::ptr_fun(my_function<data__>), std::ptr_fun(my_function_derivative<data__>), rhs);
@@ -355,7 +355,7 @@ class nls_test_suite : public Test::Suite
 
       nrcm.set_max_iteration(100);
       nrcm.set_initial_guess(eli::constants::math<data__>::two_pi()+static_cast<data__>(0.3)*eli::constants::math<data__>::pi_by_four());
-      nrcm.set_upper_condition(static_cast<data__>(0.1)+eli::constants::math<data__>::two_pi(), nrcm_type::NRC_EXCLUSIVE);
+      nrcm.set_upper_condition(static_cast<data__>(0.1)+eli::constants::math<data__>::two_pi(), nrcm_type::IRC_EXCLUSIVE);
       stat = nrcm.find_root(root, std::ptr_fun(my_function<data__>), std::ptr_fun(my_function_derivative<data__>), rhs);
       TEST_ASSERT(stat==nrcm_type::hit_constraint);
 
@@ -368,8 +368,8 @@ class nls_test_suite : public Test::Suite
       // test using functor
       nrcm.set_absolute_f_tolerance(delta);
       nrcm.set_max_iteration(200);
-      nrcm.set_lower_condition(eli::constants::math<data__>::two_pi(), nrcm_type::NRC_EXCLUSIVE);
-      nrcm.set_upper_condition(eli::constants::math<data__>::pi()*3, nrcm_type::NRC_EXCLUSIVE);
+      nrcm.set_lower_condition(eli::constants::math<data__>::two_pi(), nrcm_type::IRC_EXCLUSIVE);
+      nrcm.set_upper_condition(eli::constants::math<data__>::pi()*3, nrcm_type::IRC_EXCLUSIVE);
       nrcm.set_initial_guess(eli::constants::math<data__>::two_pi()+static_cast<data__>(0.3)*eli::constants::math<data__>::pi_by_four());
 
       stat = nrcm.find_root(root, my_functor<data__>(), my_functor_derivative<data__>(), rhs);
@@ -466,7 +466,7 @@ class nls_test_suite : public Test::Suite
 
     void newton_raphson_constrained_system_method_test()
     {
-      typedef eli::mutil::nls::newton_raphson_constrained_system_method<data__, 3, 1> nrcs_type;
+      typedef eli::mutil::nls::newton_raphson_system_method<data__, 3, 1> nrcs_type;
 
       data__ delta(std::sqrt(std::numeric_limits<data__>::epsilon()));
       nrcs_type nrcm;
@@ -476,8 +476,8 @@ class nls_test_suite : public Test::Suite
       nrcm.set_absolute_f_tolerance(delta);
       nrcm.set_max_iteration(200);
       nrcm.set_norm_type(nrcs_type::max_norm);
-      nrcm.set_lower_condition(0, 0, nrcs_type::NRC_EXCLUSIVE);
-      nrcm.set_upper_condition(0, 4, nrcs_type::NRC_EXCLUSIVE);
+      nrcm.set_lower_condition(0, 0, nrcs_type::IRC_EXCLUSIVE);
+      nrcm.set_upper_condition(0, 4, nrcs_type::IRC_EXCLUSIVE);
 
       // decoupled system
       // set right hand side, initial guess & exact answer

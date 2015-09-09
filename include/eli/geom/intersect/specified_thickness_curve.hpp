@@ -20,7 +20,7 @@
 
 #include "eli/code_eli.hpp"
 
-#include "eli/mutil/nls/newton_raphson_constrained_system_method.hpp"
+#include "eli/mutil/nls/newton_raphson_system_method.hpp"
 
 #include "eli/geom/point/distance.hpp"
 #include "eli/geom/curve/piecewise.hpp"
@@ -149,7 +149,7 @@ namespace eli
       template<typename curve__>
       typename curve__::data_type specified_thickness(typename curve__::data_type &t1, typename curve__::data_type &t2, const curve__ &c, const typename curve__::point_type &pt, const typename curve__::data_type &d, const typename curve__::data_type &t10, const typename curve__::data_type &t20)
       {
-        typedef eli::mutil::nls::newton_raphson_constrained_system_method<typename curve__::data_type, 2, 1> nonlinear_solver_type;
+        typedef eli::mutil::nls::newton_raphson_system_method<typename curve__::data_type, 2, 1> nonlinear_solver_type;
         nonlinear_solver_type nrm;
         internal::curve_thick_g_functor<curve__> g;
         internal::curve_thick_gp_functor<curve__> gp;
@@ -172,10 +172,10 @@ namespace eli
         nrm.set_absolute_f_tolerance(tol.get_absolute_tolerance());
         nrm.set_max_iteration(10);
 
-        nrm.set_lower_condition(0,tmin, nonlinear_solver_type::NRC_EXCLUSIVE);
-        nrm.set_upper_condition(0,tmid, nonlinear_solver_type::NRC_EXCLUSIVE);
-        nrm.set_lower_condition(1,tmid, nonlinear_solver_type::NRC_EXCLUSIVE);
-        nrm.set_upper_condition(1,tmax, nonlinear_solver_type::NRC_EXCLUSIVE);
+        nrm.set_lower_condition(0,tmin, nonlinear_solver_type::IRC_EXCLUSIVE);
+        nrm.set_upper_condition(0,tmid, nonlinear_solver_type::IRC_EXCLUSIVE);
+        nrm.set_lower_condition(1,tmid, nonlinear_solver_type::IRC_EXCLUSIVE);
+        nrm.set_upper_condition(1,tmax, nonlinear_solver_type::IRC_EXCLUSIVE);
 
         dist0=eli::geom::point::distance(c.f(t10), c.f(t20))-d;
 

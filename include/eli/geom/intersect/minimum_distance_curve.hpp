@@ -20,7 +20,7 @@
 
 #include "eli/code_eli.hpp"
 
-#include "eli/mutil/nls/newton_raphson_constrained_method.hpp"
+#include "eli/mutil/nls/newton_raphson_method.hpp"
 
 #include "eli/geom/point/distance.hpp"
 #include "eli/geom/curve/piecewise.hpp"
@@ -122,7 +122,7 @@ namespace eli
       template<typename curve__>
       typename curve__::data_type minimum_distance(typename curve__::data_type &t, const curve__ &c, const typename curve__::point_type &pt, const typename curve__::data_type &t0)
       {
-        eli::mutil::nls::newton_raphson_constrained_method<typename curve__::data_type> nrm;
+        eli::mutil::nls::newton_raphson_method<typename curve__::data_type> nrm;
         internal::curve_g_functor<curve__> g;
         internal::curve_gp_functor<curve__> gp;
         typename curve__::data_type dist0, dist;
@@ -139,8 +139,8 @@ namespace eli
         nrm.set_max_iteration(10);
         if (c.open())
         {
-          nrm.set_lower_condition(c.get_t0(), eli::mutil::nls::newton_raphson_constrained_method<typename curve__::data_type>::NRC_EXCLUSIVE);
-          nrm.set_upper_condition(c.get_tmax(), eli::mutil::nls::newton_raphson_constrained_method<typename curve__::data_type>::NRC_EXCLUSIVE);
+          nrm.set_lower_condition(c.get_t0(), eli::mutil::nls::iterative_root_base_constrained<typename curve__::data_type>::IRC_EXCLUSIVE);
+          nrm.set_upper_condition(c.get_tmax(), eli::mutil::nls::iterative_root_base_constrained<typename curve__::data_type>::IRC_EXCLUSIVE);
         }
         else
         {
