@@ -1188,6 +1188,46 @@ namespace eli
             invalidate_deriv();
           }
 
+          void sum( const bezier<data_type, dim__, tol__> &a, const bezier<data_type, dim__, tol__> &b)
+          {
+            typedef bezier<data_type, dim__, tol__> surf_type;
+
+            // Make working copies of surfaces.
+            surf_type bsa(a);
+            surf_type bsb(b);
+
+            // Find maximum common order.
+            index_type n(bsa.degree_u()), m(bsa.degree_v());
+            if(bsb.degree_u() > n)
+            {
+              n = bsb.degree_u();
+            }
+
+            if(bsb.degree_v() > m)
+            {
+              m = bsb.degree_v();
+            }
+
+            // Promote both to max common order.
+            bsa.promote_u_to(n);
+            bsa.promote_v_to(m);
+
+            bsb.promote_u_to(n);
+            bsb.promote_v_to(m);
+
+            resize( n, m );
+
+            // Find maximum distance between control points.
+            index_type i, j;
+            for (i=0; i<=n; ++i)
+            {
+              for (j=0; j<=m; ++j)
+              {
+                set_control_point( bsa.get_control_point(i, j) + bsb.get_control_point(i, j), i, j );
+              }
+            }
+          }
+
 
 
         private:
