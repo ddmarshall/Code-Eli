@@ -828,7 +828,7 @@ namespace eli
       template<typename surface__>
       typename surface__::data_type minimum_distance(typename surface__::data_type &u, typename surface__::data_type &v, const surface__ &s, const typename surface__::point_type &pt)
       {
-        return minimum_distance_old( u, v, s, pt );
+        return minimum_distance_new( u, v, s, pt );
       }
 
 // Defined for minimum_distance_curve.  Could be moved to util somewhere.
