@@ -171,7 +171,7 @@ namespace eli
       }
 
       template<typename curve__>
-      typename curve__::data_type minimum_distance(typename curve__::data_type &t, const curve__ &c, const typename curve__::point_type &pt)
+      typename curve__::data_type minimum_distance_old(typename curve__::data_type &t, const curve__ &c, const typename curve__::point_type &pt)
       {
         typename curve__::tolerance_type tol;
         std::list<std::pair<typename curve__::data_type, typename curve__::data_type>> tinit;
@@ -223,6 +223,12 @@ namespace eli
         dist=minimum_distance(t, c, pt, t0);
 
         return dist;
+      }
+
+      template<typename curve__>
+      typename curve__::data_type minimum_distance(typename curve__::data_type &t, const curve__ &c, const typename curve__::point_type &pt)
+      {
+        return minimum_distance_old( t, c, pt );
       }
 
       template< typename first__, typename second__>
