@@ -48,6 +48,8 @@ namespace eli
           typedef eli::geom::general::bounding_box<data_type, dim__, tolerance_type> bounding_box_type;
           typedef eli::geom::curve::bezier<data_type, dim__, tolerance_type> curve_type;
 
+          typedef bezier<data_type, 1, tolerance_type> onedbezsurf;
+
         private:
           typedef Eigen::Map<Eigen::Matrix<data_type, Eigen::Dynamic, dim__>,
                              Eigen::Unaligned,
@@ -1226,6 +1228,36 @@ namespace eli
                 set_control_point( bsa.get_control_point(i, j) + bsb.get_control_point(i, j), i, j );
               }
             }
+          }
+
+          onedbezsurf sumcompsurf() const
+          {
+            onedbezsurf retsurf;
+            index_type n(degree_u()), m(degree_v());
+
+            retsurf.resize( n, m );
+
+            index_type i, j, k;
+            for (i=0; i<=n; ++i)
+            {
+              for (j=0; j<=m; ++j)
+              {
+                data_type d = 0;
+                point_type p = get_control_point( i, j );
+
+                for (k=0; k<dim__; ++k)
+                {
+                  d += p(k);
+                }
+
+                typename onedbezsurf::point_type pd;
+                pd(0) = d;
+
+                retsurf.set_control_point( pd, i, j );
+              }
+            }
+
+            return retsurf;
           }
 
 
