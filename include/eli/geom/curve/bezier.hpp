@@ -782,6 +782,24 @@ namespace eli
             invalidate_deriv();
           }
 
+          void sum( const bezier<data_type, dim__> &a, const bezier<data_type, dim__> &b)
+          {
+            typedef bezier<data_type, dim__> curve_type;
+
+            curve_type ca( a );
+            curve_type cb( b );
+
+            index_type n;
+            n = std::max( ca.degree(), cb.degree() );
+
+            ca.degree_promote_to( n );
+            cb.degree_promote_to( n );
+
+            B = ca.B + cb.B;
+
+            invalidate_deriv();
+          }
+
         private:
           typedef Eigen::Matrix<data_type, Eigen::Dynamic, dim__> control_point_matrix_type;
           typedef Eigen::Matrix<data_type, Eigen::Dynamic, dim__> row_pts_type;
