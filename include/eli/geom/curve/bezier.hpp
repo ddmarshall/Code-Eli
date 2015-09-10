@@ -120,6 +120,8 @@ namespace eli
           typedef eli::geom::general::bounding_box<data_type, dim__, tolerance_type> bounding_box_type;
           typedef Eigen::Matrix<data_type, Eigen::Dynamic, dim__> monomial_coefficient_type;
 
+          typedef bezier<data_type, 1, tolerance_type> onedbezcurve;
+
         public:
           bezier() : B(1, dim__), deriv( NULL ) {}
           bezier(const index_type &n) : B((n<=0)?(1):(n+1), dim__), deriv( NULL ) {}
@@ -798,6 +800,30 @@ namespace eli
             B = ca.B + cb.B;
 
             invalidate_deriv();
+          }
+
+          onedbezcurve sumcompcurve() const
+          {
+            onedbezcurve retcurve;
+
+            index_type n(degree()), i, j;
+
+            retcurve.resize(n);
+            for (i=0; i<=n; ++i)
+            {
+              data_type d = 0;
+              point_type p = get_control_point( i );
+              for (j=0; j<dim__; ++j)
+              {
+                d += p(j);
+              }
+              typename onedbezcurve::point_type pd;
+              pd(0) = d;
+
+              retcurve.set_control_point( pd, i );
+            }
+
+            return retcurve;
           }
 
         private:
