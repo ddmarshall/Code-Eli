@@ -225,6 +225,130 @@ namespace eli
         return dist;
       }
 
+      template<typename onedcurve__>
+      void findnonpos( std::vector< typename onedcurve__::data_type > & optpts,
+              const typename onedcurve__::data_type &tstart,
+              const typename onedcurve__::data_type &tend,
+              const onedcurve__ &objcurve, const typename onedcurve__::index_type &nsplit )
+      {
+        typedef typename onedcurve__::data_type data_type;
+
+        data_type tmid = ( tstart + tend ) * 0.5;
+
+        data_type smallpos = 10000 * std::numeric_limits< data_type >::epsilon();
+
+        onedcurve__ low, high;
+
+        objcurve.split( low, high, 0.5 );
+
+        if ( !low.allpos( smallpos ) )
+        {
+          if ( nsplit <= 0 )
+          {
+            data_type t = tstart;
+            data_type obj = low.f( 0 )(0);
+            data_type obj2 = low.f( 0.5 )(0);
+            if (  obj2 < obj )
+            {
+              obj = obj2;
+              t = ( tstart + tmid ) * 0.5;
+            }
+            obj2 = low.f( 1 )(0);
+            if ( obj2 < obj )
+            {
+              t = tmid;
+            }
+            optpts.push_back( t );
+          }
+          else
+          {
+            findnonpos( optpts, tstart, tmid, low, nsplit - 1 );
+          }
+        }
+
+        if ( !high.allpos( smallpos ) )
+        {
+          if ( nsplit <= 0 )
+          {
+            data_type t = tmid;
+            data_type obj = high.f( 0 )(0);
+            data_type obj2 = high.f( 0.5 )(0);
+            if (  obj2 < obj )
+            {
+              obj = obj2;
+              t = ( tmid + tend ) * 0.5;
+            }
+            obj2 = high.f( 1 )(0);
+            if ( obj2 < obj )
+            {
+              t = tend;
+            }
+            optpts.push_back( t );
+          }
+          else
+          {
+            findnonpos( optpts, tmid, tend, high, nsplit - 1 );
+          }
+        }
+
+      }
+
+      template<typename curve__>
+      typename curve__::data_type minimum_distance_new(typename curve__::data_type &t, const curve__ &c, const typename curve__::point_type &pt)
+      {
+        typedef typename curve__::onedbezcurve objcurve;
+        typedef typename curve__::data_type data_type;
+        typename std::vector< data_type >::size_type i;
+        data_type tt, dd;
+
+        data_type dist = std::numeric_limits<data_type>::max();
+
+        data_type start = 0;
+        data_type end = 1;
+
+        objcurve obj = c.mindistcurve( pt );
+
+        std::vector< data_type > optpts;
+        findnonpos( optpts, start, end, obj, 6 );
+
+        if ( optpts.empty() )
+        {
+          optpts.push_back( 0.5 );
+        }
+
+        for ( i = 0; i < optpts.size(); i++ )
+        {
+          data_type t0 = optpts[i];
+
+          dd = minimum_distance( tt, c, pt, t0 );
+
+          if ( dd < dist )
+          {
+            dist = dd;
+            t = tt;
+          }
+        }
+
+        std::vector< data_type > forcepts;
+        forcepts.push_back( 0 );
+        forcepts.push_back( 1 );
+
+        for ( i = 0; i < forcepts.size(); i++ )
+        {
+          data_type t0 = forcepts[i];
+
+          dd = eli::geom::point::distance( c.f(t0), pt );
+
+          if ( dd < dist )
+          {
+            dist = dd;
+            t = t0;
+          }
+        }
+
+        return dist;
+      }
+
       template<typename curve__>
       typename curve__::data_type minimum_distance(typename curve__::data_type &t, const curve__ &c, const typename curve__::point_type &pt)
       {
