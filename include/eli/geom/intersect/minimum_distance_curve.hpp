@@ -352,7 +352,7 @@ namespace eli
       template<typename curve__>
       typename curve__::data_type minimum_distance(typename curve__::data_type &t, const curve__ &c, const typename curve__::point_type &pt)
       {
-        return minimum_distance_old( t, c, pt );
+        return minimum_distance_new( t, c, pt );
       }
 
       template< typename first__, typename second__>
