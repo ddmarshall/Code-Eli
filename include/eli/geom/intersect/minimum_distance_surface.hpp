@@ -654,6 +654,177 @@ namespace eli
 
       }
 
+      template<typename onedsurf__>
+      void findnonpos( std::vector< std::pair< typename onedsurf__::data_type, typename onedsurf__::data_type > > & optpts,
+              const std::pair< typename onedsurf__::data_type, typename onedsurf__::data_type > &uvstart,
+              const std::pair< typename onedsurf__::data_type, typename onedsurf__::data_type > &uvend,
+              const onedsurf__ &objsurf, const typename onedsurf__::index_type &nsplit )
+      {
+        typedef typename onedsurf__::data_type data_type;
+        typedef std::pair< data_type, data_type > uvpair;
+
+        uvpair uvmid = std::make_pair( (uvstart.first + uvend.first) * 0.5, (uvstart.second + uvend.second) * 0.5 );
+
+        data_type smallpos = 10000 * std::numeric_limits< data_type >::epsilon();
+
+        onedsurf__ ulow, uhigh;
+        onedsurf__ ulowvlow, ulowvhigh, uhighvlow, uhighvhigh;
+
+        objsurf.split_u( ulow, uhigh, 0.5 );
+        ulow.split_v( ulowvlow, ulowvhigh, 0.5 );
+        uhigh.split_v( uhighvlow, uhighvhigh, 0.5 );
+
+        if ( !ulowvlow.allpos( smallpos ) )
+        {
+          if ( nsplit <= 0 )
+          {
+            uvpair uv = std::make_pair( (uvstart.first + uvmid.first) * 0.5, (uvstart.second + uvmid.second) * 0.5 );
+            optpts.push_back( uv );
+          }
+          else
+          {
+            findnonpos( optpts, uvstart, uvmid, ulowvlow, nsplit - 1 );
+          }
+        }
+
+        if ( !ulowvhigh.allpos( smallpos ) )
+        {
+          if ( nsplit <= 0 )
+          {
+            uvpair uv = std::make_pair( (uvstart.first + uvmid.first) * 0.5, (uvmid.second + uvend.second) * 0.5 );
+            optpts.push_back( uv );
+          }
+          else
+          {
+            uvpair uvone = std::make_pair( uvstart.first, uvmid.second );
+            uvpair uvtwo = std::make_pair( uvmid.first, uvend.second );
+
+            findnonpos( optpts, uvone, uvtwo, ulowvhigh, nsplit - 1 );
+          }
+        }
+
+        if ( !uhighvlow.allpos( smallpos ) )
+        {
+          if ( nsplit <= 0 )
+          {
+            uvpair uv = std::make_pair( (uvmid.first + uvend.first) * 0.5, (uvstart.second + uvmid.second) * 0.5 );
+            optpts.push_back( uv );
+          }
+          else
+          {
+            uvpair uvone = std::make_pair( uvmid.first, uvstart.second );
+            uvpair uvtwo = std::make_pair( uvend.first, uvmid.second );
+
+            findnonpos( optpts, uvone, uvtwo, uhighvlow, nsplit - 1 );
+          }
+        }
+
+        if ( !uhighvhigh.allpos( smallpos ) )
+        {
+          if ( nsplit <= 0 )
+          {
+            uvpair uv = std::make_pair( (uvmid.first + uvend.first) * 0.5, (uvmid.second + uvend.second) * 0.5 );
+            optpts.push_back( uv );
+          }
+          else
+          {
+            findnonpos( optpts, uvmid, uvend, uhighvhigh, nsplit - 1 );
+          }
+        }
+
+      }
+
+      template<typename surface__>
+      typename surface__::data_type minimum_distance_new(typename surface__::data_type &u, typename surface__::data_type &v, const surface__ &s, const typename surface__::point_type &pt)
+      {
+        typedef typename surface__::onedbezsurf objsurf;
+        typedef typename surface__::data_type data_type;
+        typedef std::pair< data_type, data_type > uvpair;
+        typename std::vector< uvpair >::size_type i;
+        data_type uu, vv, dd;
+
+        data_type dist = std::numeric_limits<data_type>::max();
+
+        uvpair start = std::make_pair( 0, 0 );
+        uvpair end = std::make_pair( 1, 1 );
+
+        objsurf obj = s.mindistsurf( pt );
+
+        std::vector< uvpair > optpts;
+        findnonpos( optpts, start, end, obj, 6 );
+
+        if ( optpts.empty() )
+        {
+          optpts.push_back( std::make_pair( 0.5, 0.5 ) );
+        }
+
+        for ( i = 0; i < optpts.size(); i++ )
+        {
+          uvpair uv = optpts[i];
+          int ret = -1;
+
+          dd = minimum_distance_nrm( uu, vv, s, pt, uv.first, uv.second, ret );
+
+          if ( dd < dist )
+          {
+            dist = dd;
+            u = uu;
+            v = vv;
+          }
+        }
+
+        // next check edges
+        // Since these are always edges, we could implement an edge curve extraction routine
+        // that returned the control points directly instead of performing an arbitrary curve
+        // extraction calculation.
+
+        typename surface__::data_type umin(0), umax(1), vmin(0), vmax(1);
+
+        typename surface__::curve_type bc;
+
+        s.get_uconst_curve(bc, umin);
+        dd=eli::geom::intersect::minimum_distance(vv, bc, pt);
+
+        if ( dd < dist )
+        {
+          u = umin;
+          v = vv;
+          dist = dd;
+        }
+
+        s.get_uconst_curve(bc, umax);
+        dd=eli::geom::intersect::minimum_distance(vv, bc, pt);
+
+        if ( dd < dist )
+        {
+          u = umax;
+          v  =vv;
+          dist = dd;
+        }
+
+        s.get_vconst_curve(bc, vmin);
+        dd=eli::geom::intersect::minimum_distance(uu, bc, pt);
+
+        if ( dd < dist )
+        {
+          u = uu;
+          v = vmin;
+          dist = dd;
+        }
+
+        s.get_vconst_curve(bc, vmax);
+        dd=eli::geom::intersect::minimum_distance(uu, bc, pt);
+
+        if ( dd < dist )
+        {
+          u = uu;
+          v = vmax;
+          dist = dd;
+        }
+
+        return dist;
+      }
+
       template<typename surface__>
       typename surface__::data_type minimum_distance(typename surface__::data_type &u, typename surface__::data_type &v, const surface__ &s, const typename surface__::point_type &pt)
       {
