@@ -1260,6 +1260,37 @@ namespace eli
             return retsurf;
           }
 
+          onedbezsurf mindistsurf( const point_type & pt ) const
+          {
+            onedbezsurf retsurf;
+            typedef bezier<data_type, dim__, tol__> surf_type;
+
+            surf_type d(*this);
+
+            d.translate( -pt );
+
+            validate_u();
+
+            validate_v();
+
+            surf_type prod1, prod2;
+
+            prod1.product( *deriv_u, d );
+            prod2.product( *deriv_v, d );
+
+            onedbezsurf dot1, dot2;
+            dot1 = prod1.sumcompsurf();
+            dot2 = prod2.sumcompsurf();
+
+            onedbezsurf sq1, sq2;
+
+            sq1.product( dot1, dot1 );
+            sq2.product( dot2, dot2 );
+
+            retsurf.sum( sq1, sq2 );
+
+            return retsurf;
+          }
 
 
         private:
