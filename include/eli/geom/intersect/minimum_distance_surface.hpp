@@ -17,9 +17,11 @@
 #include <vector>
 #include <list>
 #include <algorithm>
+#include <limits>
 
 #include "eli/code_eli.hpp"
 
+#include "eli/mutil/nls/iterative_system_root_base_constrained.hpp"
 #include "eli/mutil/nls/newton_raphson_system_method.hpp"
 
 #include "eli/geom/intersect/minimum_distance_curve.hpp"
@@ -34,6 +36,145 @@ namespace eli
     {
       namespace internal
       {
+
+        template<typename surface__, size_t N__, size_t NSOL__=1>
+        class tangent_plane_method : public mutil::nls::iterative_system_root_base_constrained<typename surface__::data_type, N__, NSOL__>
+        {
+          public:
+            static const int hit_constraint = 101;
+            surface__ s;
+            typename surface__::point_type pt;
+            typename surface__::data_type xtol;
+            typename surface__::index_type maxit;
+
+          public:
+            tangent_plane_method()
+            : mutil::nls::iterative_system_root_base_constrained<typename surface__::data_type, N__, NSOL__>()
+            {
+              x0.setConstant(static_cast<typename surface__::data_type>(0));
+            }
+
+            tangent_plane_method(const tangent_plane_method<surface__, N__, NSOL__> &tpm)
+            : mutil::nls::iterative_system_root_base_constrained<typename surface__::data_type, N__, NSOL__>(tpm), x0(tpm.x0)
+            {
+            }
+
+            ~tangent_plane_method()
+            {
+            }
+
+            void set_initial_guess(const typename mutil::nls::iterative_system_root_base<typename surface__::data_type, N__, NSOL__>::solution_matrix &xg)
+            {
+              x0=xg;
+            }
+
+            const typename mutil::nls::iterative_system_root_base<typename surface__::data_type, N__, NSOL__>::solution_matrix & get_initial_guess() const
+            {
+              return x0;
+            }
+
+            int find_root(typename mutil::nls::iterative_system_root_base<typename surface__::data_type, N__, NSOL__>::solution_matrix &root) const
+            {
+              typename mutil::nls::iterative_system_root_base<typename surface__::data_type, N__, NSOL__>::solution_matrix dx, x(x0);
+              typename surface__::data_type abs_x_norm, prev_dx;
+              typename surface__::index_type count;
+
+              typename surface__::point_type q;
+              typename surface__::point_type Su, Sv, r, A, B, norm;
+
+              typename surface__::tolerance_type tol;
+
+              typename surface__::data_type umin, umax, vmin, vmax;
+              s.get_parameter_min(umin,vmin);
+              s.get_parameter_max(umax,vmax);
+
+              bool divflag = false;
+
+              bool all_zero = false;
+
+              abs_x_norm = std::numeric_limits<typename surface__::data_type>::max();
+              prev_dx = abs_x_norm;
+              count = 0;
+              while ( count < maxit && abs_x_norm > xtol && !all_zero)
+              {
+                q = s.f(x(0), x(1));
+                Su = s.f_u(x(0), x(1));
+                Sv = s.f_v(x(0), x(1));
+
+                r = q - pt;
+
+                A = Sv.cross( r );
+                B = Su.cross( r );
+                norm = Su.cross( Sv );
+
+                typename surface__::data_type N = norm.dot( norm );
+
+                if( fabs( N ) > tol.get_absolute_tolerance() )
+                {
+                    dx(0) = A.dot( norm ) / N;
+                    dx(1) = -B.dot( norm ) / N;
+                }
+                else
+                {
+                    dx(0) = 0.0;
+                    dx(1) = 0.0;
+                }
+
+                dx = this->calculate_delta_factor(x, dx);
+                x+=dx;
+
+                prev_dx = abs_x_norm;
+                abs_x_norm = this->calculate_norm(dx);
+
+                if ( divflag && abs_x_norm > prev_dx ) // Diverging twice in a row.
+                {
+                  // Solution diverging, return initial guess.
+                  root = x0;
+                  return this->no_root_found;
+                }
+                else if ( abs_x_norm > prev_dx ) // Diverging first time
+                {
+                  divflag = true;
+                }
+                else // Not diverging.
+                {
+                  divflag = false;
+                }
+
+                all_zero = true;
+                for (size_t i=0; i<N__; ++i)
+                {
+                  // check if stuck and cannot move x anymore
+                  if ( std::abs( dx(i) ) > std::numeric_limits<typename surface__::data_type>::epsilon() )
+                  {
+                    all_zero = false;
+                    break;
+                  }
+                }
+
+                ++count;
+              }
+
+              // Current solution good enough to keep.
+              root = x;
+
+              if ( all_zero )
+              {
+                return this->hit_constraint;
+              }
+
+              if ( count >= maxit )
+              {
+                return this->max_iteration;
+              }
+
+              return this->converged;
+            }
+
+          private:
+            typename mutil::nls::iterative_system_root_base<typename surface__::data_type, N__, NSOL__>::solution_matrix x0;
+        };
+
         template <typename surface__>
         struct surface_g_functor
         {
@@ -151,6 +292,122 @@ namespace eli
             return rtn;
           }
         };
+      }
+
+      template<typename surface__>
+      typename surface__::data_type minimum_distance_tan(typename surface__::data_type &u, typename surface__::data_type &v, const surface__ &s, const typename surface__::point_type &pt,
+                                                     const typename surface__::data_type &u0, const typename surface__::data_type &v0,
+                                                     bool ulbnded = false, bool uubnded = false, bool vlbnded = false, bool vubnded = false,
+                                                     const typename surface__::data_type &ulb = 0, const typename surface__::data_type &uub = 0,
+                                                     const typename surface__::data_type &vlb = 0, const typename surface__::data_type &vub = 0)
+      {
+        typedef internal::tangent_plane_method<surface__, 2, 1> nonlinear_solver_type;
+
+        typename surface__::data_type umin, umax, vmin, vmax;
+        s.get_parameter_min(umin,vmin);
+        s.get_parameter_max(umax,vmax);
+
+        nonlinear_solver_type tpsolve;
+
+        typename surface__::tolerance_type tol;
+
+
+        if (!ulbnded && !uubnded)
+        {
+          if (s.open_u())
+          {
+            tpsolve.set_lower_condition(0, umin, nonlinear_solver_type::IRC_EXCLUSIVE);
+            tpsolve.set_upper_condition(0, umax, nonlinear_solver_type::IRC_EXCLUSIVE);
+          }
+          else
+          {
+            tpsolve.set_periodic_condition(0, umin, umax);
+          }
+        }
+        else if (!ulbnded && uubnded)
+        {
+          tpsolve.set_lower_condition(0, umin, nonlinear_solver_type::IRC_EXCLUSIVE);
+          tpsolve.set_upper_condition(0, uub, nonlinear_solver_type::IRC_EXCLUSIVE);
+        }
+        else if (ulbnded && !uubnded)
+        {
+          tpsolve.set_lower_condition(0, ulb, nonlinear_solver_type::IRC_EXCLUSIVE);
+          tpsolve.set_upper_condition(0, umax, nonlinear_solver_type::IRC_EXCLUSIVE);
+        }
+        else
+        {
+          tpsolve.set_lower_condition(0, ulb, nonlinear_solver_type::IRC_EXCLUSIVE);
+          tpsolve.set_upper_condition(0, uub, nonlinear_solver_type::IRC_EXCLUSIVE);
+        }
+
+        if (!vlbnded && !vubnded)
+        {
+          if (s.open_v())
+          {
+            tpsolve.set_lower_condition(1, vmin, nonlinear_solver_type::IRC_EXCLUSIVE);
+            tpsolve.set_upper_condition(1, vmax, nonlinear_solver_type::IRC_EXCLUSIVE);
+          }
+          else
+          {
+            tpsolve.set_periodic_condition(1, vmin, vmax);
+          }
+        }
+        else if (!vlbnded && vubnded)
+        {
+          tpsolve.set_lower_condition(1, vmin, nonlinear_solver_type::IRC_EXCLUSIVE);
+          tpsolve.set_upper_condition(1, vub, nonlinear_solver_type::IRC_EXCLUSIVE);
+        }
+        else if (vlbnded && !vubnded)
+        {
+          tpsolve.set_lower_condition(1, vlb, nonlinear_solver_type::IRC_EXCLUSIVE);
+          tpsolve.set_upper_condition(1, vmax, nonlinear_solver_type::IRC_EXCLUSIVE);
+        }
+        else
+        {
+          tpsolve.set_lower_condition(1, vlb, nonlinear_solver_type::IRC_EXCLUSIVE);
+          tpsolve.set_upper_condition(1, vub, nonlinear_solver_type::IRC_EXCLUSIVE);
+        }
+
+        // setup the solver
+        tpsolve.set_absolute_f_tolerance(tol.get_absolute_tolerance());
+        tpsolve.set_max_iteration(20);
+        tpsolve.set_norm_type(nonlinear_solver_type::max_norm);
+
+        typename nonlinear_solver_type::solution_matrix x, x0;
+
+        typename surface__::point_type q;
+        typename surface__::data_type dist, dist0;
+
+
+
+        assert((u0>=umin) && (u0<=umax));
+        assert((v0>=vmin) && (v0<=vmax));
+
+        x0(0) = u0;
+        x0(1) = v0;
+        tpsolve.set_initial_guess( x0 );
+        tpsolve.pt = pt;
+        tpsolve.s = s;
+        tpsolve.maxit = 20;
+        tpsolve.xtol = tol.get_absolute_tolerance();
+
+        q = s.f(x0(0), x0(1));
+        dist0 = eli::geom::point::distance(q, pt);
+
+        tpsolve.find_root( x );
+
+        q = s.f(x(0), x(1));
+        dist = eli::geom::point::distance(q, pt);
+
+        if ( dist > dist0 )
+        {
+          x = x0; // No progress made, restore initial guess.
+          dist = dist0;
+        }
+
+        u = x(0);
+        v = x(1);
+        return dist;
       }
 
       template<typename surface__>
