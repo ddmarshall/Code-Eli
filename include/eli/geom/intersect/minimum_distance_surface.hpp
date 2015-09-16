@@ -154,7 +154,7 @@ namespace eli
       }
 
       template<typename surface__>
-      typename surface__::data_type minimum_distance(typename surface__::data_type &u, typename surface__::data_type &v, const surface__ &s, const typename surface__::point_type &pt,
+      typename surface__::data_type minimum_distance_nrm(typename surface__::data_type &u, typename surface__::data_type &v, const surface__ &s, const typename surface__::point_type &pt,
                                                      const typename surface__::data_type &u0, const typename surface__::data_type &v0,
                                                      bool ulbnded = false, bool uubnded = false, bool vlbnded = false, bool vubnded = false,
                                                      const typename surface__::data_type &ulb = 0, const typename surface__::data_type &uub = 0,
@@ -278,6 +278,16 @@ namespace eli
         u=u0;
         v=v0;
         return dist0;
+      }
+
+      template<typename surface__>
+      typename surface__::data_type minimum_distance(typename surface__::data_type &u, typename surface__::data_type &v, const surface__ &s, const typename surface__::point_type &pt,
+                                                     const typename surface__::data_type &u0, const typename surface__::data_type &v0,
+                                                     bool ulbnded = false, bool uubnded = false, bool vlbnded = false, bool vubnded = false,
+                                                     const typename surface__::data_type &ulb = 0, const typename surface__::data_type &uub = 0,
+                                                     const typename surface__::data_type &vlb = 0, const typename surface__::data_type &vub = 0)
+      {
+        return minimum_distance_nrm( u, v, s, pt, u0, v0, ulbnded, uubnded, vlbnded, vubnded, ulb, uub, vlb, vub );
       }
 
       template<typename surface__>
