@@ -849,6 +849,26 @@ namespace eli
             return retcurve;
           }
 
+          bool allpos( const data_type &smallpos ) const
+          {
+            index_type i, j;
+            index_type n(degree());
+
+            for (i=0; i<=n; ++i)
+            {
+              point_type p = get_control_point( i );
+
+              for (j=0; j<dim__; ++j)
+              {
+                if ( p(j) <= smallpos )
+                {
+                  return false;
+                }
+              }
+            }
+            return true;
+          }
+
         private:
           typedef Eigen::Matrix<data_type, Eigen::Dynamic, dim__> control_point_matrix_type;
           typedef Eigen::Matrix<data_type, Eigen::Dynamic, dim__> row_pts_type;
