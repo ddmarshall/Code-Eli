@@ -826,6 +826,29 @@ namespace eli
             return retcurve;
           }
 
+          onedbezcurve mindistcurve( const point_type & pt ) const
+          {
+            onedbezcurve retcurve;
+            typedef bezier<data_type, dim__> curve_type;
+
+            curve_type c(*this);
+
+            c.translate( -pt );
+
+            validate_deriv();
+
+            curve_type prod;
+
+            prod.product( *deriv, c );
+
+            onedbezcurve dot;
+            dot = prod.sumcompcurve();
+
+            retcurve.product( dot, dot );
+
+            return retcurve;
+          }
+
         private:
           typedef Eigen::Matrix<data_type, Eigen::Dynamic, dim__> control_point_matrix_type;
           typedef Eigen::Matrix<data_type, Eigen::Dynamic, dim__> row_pts_type;
