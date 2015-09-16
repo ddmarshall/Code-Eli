@@ -931,7 +931,7 @@ class bezier_curve_test_suite : public Test::Suite
       t=1;
       eval_out=bc4.fppp(t);
       eval_ref=bc1.fppp(t);
-      TEST_ASSERT((eval_out-eval_ref).norm()<390*4*eps);
+      TEST_ASSERT((eval_out-eval_ref).norm()<390*4*10*eps);
 
       // test 3rd derivative at interior point
       t=static_cast<data__>(0.45);

@@ -426,7 +426,7 @@ class explicit_bezier_curve_test_suite : public Test::Suite
       t=1;
       eval_out=ebc.fpp(t);
       eval_ref=bc.fpp(t);
-      TEST_ASSERT((eval_out-eval_ref).norm()<11*eps);
+      TEST_ASSERT((eval_out-eval_ref).norm()<25*eps);
 
       // test 2nd derivative at interior point
       t=static_cast<data__>(0.45);
