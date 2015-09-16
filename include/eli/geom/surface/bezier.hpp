@@ -1292,6 +1292,28 @@ namespace eli
             return retsurf;
           }
 
+          bool allpos( const data_type &smallpos ) const
+          {
+            index_type i, j, k;
+            index_type n(degree_u()), m(degree_v());
+
+            for (i=0; i<=n; ++i)
+            {
+              for (j=0; j<=m; ++j)
+              {
+                point_type p = get_control_point( i, j );
+
+                for (k=0; k<dim__; ++k)
+                {
+                  if ( p(k) <= smallpos )
+                  {
+                    return false;
+                  }
+                }
+              }
+            }
+            return true;
+          }
 
         private:
 
