@@ -544,7 +544,7 @@ namespace eli
                                                      const typename surface__::data_type &ulb = 0, const typename surface__::data_type &uub = 0,
                                                      const typename surface__::data_type &vlb = 0, const typename surface__::data_type &vub = 0)
       {
-        return minimum_distance_nrm( u, v, s, pt, u0, v0, ulbnded, uubnded, vlbnded, vubnded, ulb, uub, vlb, vub );
+        return minimum_distance_tan( u, v, s, pt, u0, v0, ulbnded, uubnded, vlbnded, vubnded, ulb, uub, vlb, vub );
       }
 
       template<typename surface__>
