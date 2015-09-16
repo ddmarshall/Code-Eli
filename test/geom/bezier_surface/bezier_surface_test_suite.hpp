@@ -1894,7 +1894,7 @@ class bezier_surface_test_suite : public Test::Suite
               TEST_ASSERT_DELTA(d[2],  4,     1e-5);
               TEST_ASSERT_DELTA(d[3],  0,     std::numeric_limits<data_type>::epsilon());
               TEST_ASSERT_DELTA(d[4],  0,     std::numeric_limits<data_type>::epsilon());
-              TEST_ASSERT_DELTA(d[5], 40,     1e-5);
+              TEST_ASSERT_DELTA(d[5], 40,     1e-4);
             }
             else if (k==4)
             {
@@ -1903,7 +1903,7 @@ class bezier_surface_test_suite : public Test::Suite
               TEST_ASSERT_DELTA(d[2],  0,     std::numeric_limits<data_type>::epsilon());
               TEST_ASSERT_DELTA(d[3],  0,     std::numeric_limits<data_type>::epsilon());
               TEST_ASSERT_DELTA(d[4],  0,     std::numeric_limits<data_type>::epsilon());
-              TEST_ASSERT_DELTA(d[5],  8,     1e-6);
+              TEST_ASSERT_DELTA(d[5],  8,     1e-5);
             }
             else
             {
@@ -1912,7 +1912,7 @@ class bezier_surface_test_suite : public Test::Suite
               TEST_ASSERT_DELTA(d[2],  1,      1e-6);
               TEST_ASSERT_DELTA(d[3],  0,      std::numeric_limits<data_type>::epsilon());
               TEST_ASSERT_DELTA(d[4],  0,      std::numeric_limits<data_type>::epsilon());
-              TEST_ASSERT_DELTA(d[5],  4,      2e-6);
+              TEST_ASSERT_DELTA(d[5],  4,      2e-5);
             }
           }
         }
@@ -1965,7 +1965,7 @@ class bezier_surface_test_suite : public Test::Suite
               TEST_ASSERT_DELTA(d[1], 0, 20*std::numeric_limits<data_type>::epsilon());
               TEST_ASSERT_DELTA(d[2], 0, std::numeric_limits<data_type>::epsilon());
               TEST_ASSERT_DELTA(d[3], 9.08901, 1e-5);
-              TEST_ASSERT_DELTA(d[4], 0, std::numeric_limits<data_type>::epsilon());
+              TEST_ASSERT_DELTA(d[4], 0, 1e-6);
               TEST_ASSERT_DELTA(d[5], 0, std::numeric_limits<data_type>::epsilon());
             }
             else
@@ -1974,7 +1974,7 @@ class bezier_surface_test_suite : public Test::Suite
               TEST_ASSERT_DELTA(d[1], 0.0373726, 1e-6);
               TEST_ASSERT_DELTA(d[2], 0, std::numeric_limits<data_type>::epsilon());
               TEST_ASSERT_DELTA(d[3], 12.7067,  1e-4);
-              TEST_ASSERT_DELTA(d[4], 0, std::numeric_limits<data_type>::epsilon());
+              TEST_ASSERT_DELTA(d[4], 0, 1e-6);
               TEST_ASSERT_DELTA(d[5], 0, 9*std::numeric_limits<data_type>::epsilon());
             }
           }
