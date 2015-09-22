@@ -54,15 +54,16 @@ namespace eli
 
           enum joint_continuity
           {
+            NOT_CONNECTED=general::NOT_CONNECTED,
             C0=general::C0,
             C1=general::C1,
-            C2=general::C2
+            C2=general::C2,
           };
 
           class joint_data
           {
             public:
-              joint_data() : conditions(0), continuity(C0)
+              joint_data() : conditions(0), continuity(NOT_CONNECTED)
               {
               }
 
@@ -140,6 +141,12 @@ namespace eli
               {
                 f=p;
                 conditions|=POINT_SET;
+
+                if (get_continuity()<C0)
+                {
+                  set_continuity(C0);
+                }
+
                 return check_state();
               }
               point_type get_f() const {return f;}
@@ -323,10 +330,10 @@ namespace eli
               {
                 tolerance_type tol;
 
-                // check if point set
-                if ((conditions & POINT_SET)==0)
+                // cannot have discontinuous piecewise fitting
+                if (continuity==NOT_CONNECTED)
                   return false;
-
+                  
                 // if highest continuity is C0 then done
                 if (continuity==C0)
                   return true;
@@ -727,6 +734,14 @@ namespace eli
                   break;
                 }
               }
+
+              // if not specifying joint location then need to remove 1 degree of freedom
+              if (!joint_states[i].use_f())
+              {
+                (seg_degree[i]>seg_degree[i-1]) ? (--seg_degree[i]) : (--seg_degree[i-1]);
+                assert(seg_degree[i]>0);
+                assert(seg_degree[i-1]>0);
+              }
             }
 
             // final check of maximum degree and determine number of unknowns
@@ -765,17 +780,23 @@ namespace eli
             for (i=0; i<nsegs; ++i)
             {
               // set the end point conditions
-              assert(cond_no<coef.rows());
-              set_point_condition(rows, rhs_seg, seg_ind[i], seg_degree[i], joint_states[i].get_f(), true);
-              coef.block(cond_no*dim__, 0, dim__, coef.cols())=rows;
-              rhs.block(cond_no*dim__, 0, dim__, 1)=rhs_seg;
-              ++cond_no;
+              if (joint_states[i].use_f())
+              {
+                assert(cond_no<coef.rows());
+                set_point_condition(rows, rhs_seg, seg_ind[i], seg_degree[i], joint_states[i].get_f(), true);
+                coef.block(cond_no*dim__, 0, dim__, coef.cols())=rows;
+                rhs.block(cond_no*dim__, 0, dim__, 1)=rhs_seg;
+                ++cond_no;
+              }
 
-              assert(cond_no<coef.rows());
-              set_point_condition(rows, rhs_seg, seg_ind[i], seg_degree[i], joint_states[i+1].get_f(), false);
-              coef.block(cond_no*dim__, 0, dim__, coef.cols())=rows;
-              rhs.block(cond_no*dim__, 0, dim__, 1)=rhs_seg;
-              ++cond_no;
+              if (joint_states[i+1].use_f())
+              {
+                assert(cond_no<coef.rows());
+                set_point_condition(rows, rhs_seg, seg_ind[i], seg_degree[i], joint_states[i+1].get_f(), false);
+                coef.block(cond_no*dim__, 0, dim__, coef.cols())=rows;
+                rhs.block(cond_no*dim__, 0, dim__, 1)=rhs_seg;
+                ++cond_no;
+              }
 
               // set the end point 1st derivative conditions
               if (joint_states[i].use_right_fp())
@@ -820,6 +841,16 @@ namespace eli
             // FIX: This needs to be changed for closed curves
             for (i=0; i<nsegs; ++i)
             {
+              // set the point continuous without specifying value
+              if ( (joint_states[i].get_continuity()>NOT_CONNECTED) && !joint_states[i].use_f() )
+              {
+                assert(cond_no<coef.rows());
+                set_point_continuous_condition(rows, rhs_seg, seg_ind[i-1], seg_degree[i-1], seg_degree[i]);
+                coef.block(cond_no*dim__, 0, dim__, coef.cols())=rows;
+                rhs.block(cond_no*dim__, 0, dim__, 1)=rhs_seg;
+                ++cond_no;
+              }
+
               // set the 1st derivative continuous without specifying value
               if ( (joint_states[i].get_continuity()>C0) && !joint_states[i].use_left_fp() && !joint_states[i].use_right_fp() )
               {
@@ -988,6 +1019,31 @@ namespace eli
             rows.setConstant(0);
             rows.block(0, ind, dim__, dim__).setIdentity();
             rhs=p.transpose();
+          }
+
+          template<typename Derived1, typename Derived2>
+          void set_point_continuous_condition(Eigen::MatrixBase<Derived1> &rows, Eigen::MatrixBase<Derived2> &rhs,
+                                              const index_type start_index, const index_type &l_seg_degree,
+                                              const index_type &r_seg_degree) const
+          {
+            assert( ((l_seg_degree>1) && (r_seg_degree>=1)) || ((r_seg_degree>1) && (l_seg_degree>=1)) );
+
+            // set terms
+            index_type l_ind, r_ind;
+            Eigen::Matrix<data_type, dim__, dim__> coef;
+
+            // initialize rows & rhs to zero
+            rhs.setConstant(0);
+            rows.setConstant(0);
+
+            l_ind=(start_index+l_seg_degree)*dim__;
+            r_ind=(start_index+l_seg_degree+1)*dim__;
+
+            coef.setIdentity();
+            rows.setConstant(0);
+            rows.block(0, l_ind, dim__, dim__)=coef;
+            coef*=-1;
+            rows.block(0, r_ind, dim__, dim__)=coef;
           }
 
           template<typename Derived1, typename Derived2>

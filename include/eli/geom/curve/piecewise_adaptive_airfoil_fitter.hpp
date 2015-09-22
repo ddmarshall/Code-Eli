@@ -565,7 +565,7 @@ namespace eli
                                                              // collection that represent the joints
             general_creator_type gc;                         // creator used to create each attempted piecewise curve
             point_type te_slope_upper, te_slope_lower;       // trailing edge slopes for upper and lower surface
-            index_type max_splitting_iteration_count(12);    // maximum number of splitting iteration are allowed
+            index_type max_splitting_iteration_count(2);    // maximum number of splitting iteration are allowed
                                                              // worst case is have 2^max times more segments than
                                                              // was originally desired
 
@@ -636,7 +636,11 @@ namespace eli
               {
                 joint_data[i].reset();
                 joint_data[i].set_continuity(general_continuity_type::C2);
-                joint_data[i].set_f(*(jic_it->second));
+// FIX: NEED METHOD OF DETERMINING IF THIS IS LEADING EDGE
+                if (jic_it->second->norm()<1e-4)
+                {
+                  joint_data[i].set_f(*(jic_it->second));
+                }
               }
               joint_data[nsegs].reset();
               joint_data[nsegs].set_continuity(general_continuity_type::C0);
