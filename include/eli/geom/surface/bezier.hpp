@@ -759,6 +759,12 @@ namespace eli
             return n;
           }
 
+          void f_pt_normal(const data_type &u, const data_type &v, point_type &pt, point_type &norm ) const
+          {
+            pt = f( u, v );
+            norm = normal( u, v );
+          }
+
           void promote_u()
           {
             typedef Eigen::Matrix<data_type, Eigen::Dynamic, dim__> control_row_type;

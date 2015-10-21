@@ -1166,6 +1166,20 @@ namespace eli
             return patches[uk][vk].normal(uu, vv);
           }
 
+          void f_pt_normal(const data_type &u, const data_type &v, point_type &pt, point_type &norm ) const
+          {
+            // find patch that corresponds to given u & v
+            index_type uk, vk;
+            data_type uu(0), vv(0);
+
+            find_patch(uk, vk, uu, vv, u, v);
+
+            assert((uk != -1) && (vk != -1));
+
+            pt = patches[uk][vk].f(uu, vv);
+            norm = patches[uk][vk].normal(uu, vv);
+          }
+
           // TODO: NEED TO IMPLEMENT
           //       * fit
           //       * interpolate
