@@ -1229,6 +1229,98 @@ namespace eli
             norm = patches[uk][vk].normal(uu, vv);
           }
 
+          void f_pt_normal_grid(const std::vector < data_type > &uvec, const std::vector < data_type > &vvec, std::vector < std::vector < point_type > > &ptmat, std::vector < std::vector < point_type > > &normmat ) const
+          {
+            typedef std::vector < data_type > pvec_type;
+
+            pvec_type uuvec( uvec.size() );
+            std::vector < index_type > ukvec( uvec.size() );
+            pvec_type vvvec( vvec.size() );
+            std::vector < index_type > vkvec( vvec.size() );
+
+            int i, j;
+
+            for ( i = 0; i < uvec.size(); i++ )
+            {
+              typename keymap_type::const_iterator uit;
+              index_type uk;
+              data_type uu;
+              index_type code = ukey.find_segment( uk, uit, uu, uvec[i] );
+
+              if ( code == -1 && i == ( uvec.size() - 1 ) ) // u is at start of interval, uu = 0.
+              {
+                if ( uit != ukey.key.begin() )
+                {
+                  uit--;
+                  uk = uit->second;
+                  uu = 1.0;
+                }
+              }
+              else if ( code == 1 && i == 0 ) // u is at end of interval uu = 1;
+              {
+                typename keymap_type::const_iterator uitnext = uit;
+                uitnext++;
+
+                if ( uitnext != ukey.key.end() )
+                {
+                  uit = uitnext;
+                  uk = uit->second;
+                  uu = 0.0;
+                }
+              }
+
+              uuvec[i] = uu;
+              ukvec[i] = uk;
+            }
+
+            for ( i = 0; i < vvec.size(); i++ )
+            {
+              typename keymap_type::const_iterator vit;
+              index_type vk;
+              data_type vv;
+              index_type code = vkey.find_segment( vk, vit, vv, vvec[i] );
+
+              if ( code == -1 && i == ( vvec.size() - 1 ) ) // v is at start of interval, vv = 0.
+              {
+                if ( vit != vkey.key.begin() )
+                {
+                  vit--;
+                  vk = vit->second;
+                  vv = 1.0;
+                }
+              }
+              else if ( code == 1 && i == 0 ) // v is at end of interval vv = 1;
+              {
+                typename keymap_type::const_iterator vitnext = vit;
+                vitnext++;
+
+                if ( vitnext != vkey.key.end() )
+                {
+                  vit = vitnext;
+                  vk = vit->second;
+                  vv = 0.0;
+                }
+              }
+
+              vvvec[i] = vv;
+              vkvec[i] = vk;
+            }
+
+            ptmat.resize( uvec.size() );
+            normmat.resize( uvec.size() );
+            for ( i = 0; i < uvec.size(); i++ )
+            {
+              ptmat[i].resize( vvec.size() );
+              normmat[i].resize( vvec.size() );
+
+              for ( j = 0; j < vvec.size(); j++ )
+              {
+                ptmat[i][j] = patches[ukvec[i]][vkvec[j]].f(uuvec[i], vvvec[j]);
+                normmat[i][j] = patches[ukvec[i]][vkvec[j]].normal(uuvec[i], vvvec[j]);
+              }
+            }
+          }
+
           // TODO: NEED TO IMPLEMENT
           //       * fit
           //       * interpolate
