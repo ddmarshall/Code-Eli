@@ -1493,7 +1493,7 @@ namespace eli
               ikey=it->second;
             }
 
-            void find_segment(index_type &ikey, typename keymap_type::iterator &it, data_type &pp, const data_type &p_in)
+            index_type find_segment(index_type &ikey, typename keymap_type::iterator &it, data_type &pp, const data_type &p_in)
             {
               tol__ tol;
 
@@ -1501,7 +1501,7 @@ namespace eli
               {
                 it=key.end();
                 ikey = -1;
-                return;
+                return 0;
               }
 
               data_type pmin = get_pmin();
@@ -1510,7 +1510,7 @@ namespace eli
               {
                 it=key.end();
                 ikey = -1;
-                return;
+                return 0;
               }
 
               // Use map::upper_bound for fast lookup of segment after p_in
@@ -1526,7 +1526,7 @@ namespace eli
               if(tol.approximately_equal(p_in, it->first))
               {
                 pp=static_cast<data_type>(0);
-                return;
+                return -1;
               }
 
               data_type delta_p = get_delta_parm(it);
@@ -1535,7 +1535,7 @@ namespace eli
               if(tol.approximately_equal(p_in, it->first + delta_p))
               {
                 pp=static_cast<data_type>(1);
-                return;
+                return 1;
               }
 
               // Typical case
@@ -1546,9 +1546,11 @@ namespace eli
                 pp=static_cast<data_type>(1);
               if (pp<static_cast<data_type>(0))
                 pp=static_cast<data_type>(0);
+
+              return 0;
             }
 
-            void find_segment(index_type &ikey, typename keymap_type::const_iterator &it, data_type &pp, const data_type &p_in) const
+            index_type find_segment(index_type &ikey, typename keymap_type::const_iterator &it, data_type &pp, const data_type &p_in) const
             {
               tol__ tol;
 
@@ -1556,7 +1558,7 @@ namespace eli
               {
                 it=key.end();
                 ikey = -1;
-                return;
+                return 0;
               }
 
               data_type pmin = get_pmin();
@@ -1565,7 +1567,7 @@ namespace eli
               {
                 it=key.end();
                 ikey = -1;
-                return;
+                return 0;
               }
 
               // Use map::upper_bound for fast lookup of segment after p_in
@@ -1581,7 +1583,7 @@ namespace eli
               if(tol.approximately_equal(p_in, it->first))
               {
                 pp=static_cast<data_type>(0);
-                return;
+                return -1;
               }
 
               data_type delta_p = get_delta_parm(it);
@@ -1590,7 +1592,7 @@ namespace eli
               if(tol.approximately_equal(p_in, it->first + delta_p))
               {
                 pp=static_cast<data_type>(1);
-                return;
+                return 1;
               }
 
               // Typical case
@@ -1601,6 +1603,8 @@ namespace eli
                 pp=static_cast<data_type>(1);
               if (pp<static_cast<data_type>(0))
                 pp=static_cast<data_type>(0);
+
+              return 0;
             }
           };
 
