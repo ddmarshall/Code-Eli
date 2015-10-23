@@ -1168,15 +1168,62 @@ namespace eli
             return patches[uk][vk].normal(uu, vv);
           }
 
-          void f_pt_normal(const data_type &u, const data_type &v, point_type &pt, point_type &norm ) const
+          void f_pt_normal(const data_type &u, const data_type &v, point_type &pt, point_type &norm, const index_type &utie = 0, const index_type &vtie = 0 ) const
           {
             // find patch that corresponds to given u & v
             index_type uk, vk;
             data_type uu(0), vv(0);
+            typename keymap_type::const_iterator uit, vit;
 
-            find_patch(uk, vk, uu, vv, u, v);
+            patch_boundary_code_type bcode = find_patch(uk, vk, uit, vit, uu, vv, u, v);
 
             assert((uk != -1) && (vk != -1));
+
+            // Handle u boundary code
+            if ( bcode.first == -1 && utie == 1 ) // u is at start of interval, uu = 0.
+            {
+              if ( uit != ukey.key.begin() )
+              {
+                uit--;
+                uk = uit->second;
+                uu = 1.0;
+              }
+            }
+            else if ( bcode.first == 1 && utie == -1 ) // u is at end of interval uu = 1;
+            {
+              typename keymap_type::const_iterator uitnext = uit;
+              uitnext++;
+
+              if ( uitnext != ukey.key.end() )
+              {
+                uit = uitnext;
+                uk = uit->second;
+                uu = 0.0;
+              }
+            }
+
+            // Handle v boundary code
+            if ( bcode.second == -1 && vtie == 1 ) // v is at start of interval, vv = 0.
+            {
+              if ( vit != vkey.key.begin() )
+              {
+                vit--;
+                vk = vit->second;
+                vv = 1.0;
+              }
+            }
+            else if ( bcode.second == 1 && vtie == -1) // v is at end of interval vv = 1;
+            {
+              typename keymap_type::const_iterator vitnext = vit;
+              vitnext++;
+
+              if ( vitnext != vkey.key.end() )
+              {
+                vit = vitnext;
+                vk = vit->second;
+                vv = 0.0;
+              }
+            }
 
             pt = patches[uk][vk].f(uu, vv);
             norm = patches[uk][vk].normal(uu, vv);
