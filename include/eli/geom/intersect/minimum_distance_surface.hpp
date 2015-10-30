@@ -97,9 +97,7 @@ namespace eli
               count = 0;
               while ( count < maxit && abs_x_norm > xtol && !all_zero)
               {
-                q = s.f(x(0), x(1));
-                Su = s.f_u(x(0), x(1));
-                Sv = s.f_v(x(0), x(1));
+                s.f_pt_derivs( x(0), x(1), q, Su, Sv );
 
                 r = q - pt;
 
