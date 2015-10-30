@@ -14,6 +14,7 @@
 #define eli_geom_curve_piecewise_creator_hpp
 
 #include "eli/geom/curve/piecewise_creator_base.hpp"
+#include "eli/geom/curve/piecewise_binary_cubic_creator.hpp"
 #include "eli/geom/curve/piecewise_circle_creator.hpp"
 #include "eli/geom/curve/piecewise_point_creator.hpp"
 #include "eli/geom/curve/piecewise_linear_creator.hpp"
