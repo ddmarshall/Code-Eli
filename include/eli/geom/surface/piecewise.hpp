@@ -1321,6 +1321,28 @@ namespace eli
             }
           }
 
+          void f_pt_derivs(const data_type &u, const data_type &v, point_type &pt, point_type &pt_u, point_type &pt_v ) const
+          {
+            // find patch that corresponds to given u & v
+            index_type uk, vk;
+            typename keymap_type::const_iterator uit, vit;
+            data_type uu(0), vv(0);
+
+            find_patch(uk, vk, uit, vit, uu, vv, u, v);
+
+            assert((uk != -1) && (vk != -1));
+
+            pt = patches[uk][vk].f(uu, vv);
+
+            data_type delta_u = ukey.get_delta_parm(uit);
+
+            pt_u = patches[uk][vk].f_u(uu, vv)/delta_u;
+
+            data_type delta_v = vkey.get_delta_parm(vit);
+
+            pt_v = patches[uk][vk].f_v(uu, vv)/delta_v;
+          }
+
           // TODO: NEED TO IMPLEMENT
           //       * fit
           //       * interpolate
