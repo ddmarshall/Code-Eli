@@ -30,14 +30,14 @@ namespace eli
         assert(p.cols()==cp.cols());
 
         Eigen::Matrix<typename Derived2::Scalar, Eigen::Dynamic, Eigen::Dynamic> Q(cp);
-        typename Derived2::Scalar one(1);
+        typename Derived2::Scalar oneminust(1-t);
         typename Derived2::Index i, k;
 
         for (k=1; k<Q.rows(); ++k)
         {
           for (i=0; i<Q.rows()-k; ++i)
           {
-            Q.row(i)=(one-t)*Q.row(i)+t*Q.row(i+1);
+            Q.row(i)=oneminust*Q.row(i)+t*Q.row(i+1);
           }
         }
 
