@@ -516,7 +516,7 @@ namespace eli
               {
                 // NOTE: could probably get rid of the std::pow call by multiplying by -xi0 in loop
                 eli::mutil::dm::n_choose_k(temp, k, i);
-                cc(i)+=temp*std::pow(-xi0, k-i)*ctemp(k);
+                cc(i)+=temp*std::pow(-xi0, (int)(k-i) )*ctemp(k);
               }
             }
 

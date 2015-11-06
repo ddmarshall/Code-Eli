@@ -48,6 +48,8 @@ namespace eli
           typedef eli::geom::general::bounding_box<data_type, dim__, tolerance_type> bounding_box_type;
           typedef eli::geom::curve::bezier<data_type, dim__, tolerance_type> curve_type;
 
+          typedef bezier<data_type, 1, tolerance_type> onedbezsurf;
+
         private:
           typedef Eigen::Map<Eigen::Matrix<data_type, Eigen::Dynamic, dim__>,
                              Eigen::Unaligned,
@@ -64,13 +66,16 @@ namespace eli
           u_control_point_matrix_container B_u; /** vector of u-direction, i.e. direction where v is constant, curve control points in point_data */
           v_control_point_matrix_container B_v; /** vector of v-direction, i.e. direction where u is constant, curve control points in point_data */
 
+          mutable bezier<data_type, dim__, tol__> * deriv_u;
+          mutable bezier<data_type, dim__, tol__> * deriv_v;
+
         public:
-          bezier() : point_data(3, 0)
+          bezier() : point_data(3, 0), deriv_u( NULL ), deriv_v( NULL )
           {
             // set the B_u and B_v maps
             set_Bs(1, 1);
           }
-          bezier(const index_type &u_dim, const index_type &v_dim) : point_data(dim__*(u_dim+1)*(v_dim+1))
+          bezier(const index_type &u_dim, const index_type &v_dim) : point_data(dim__*(u_dim+1)*(v_dim+1)), deriv_u( NULL ), deriv_v( NULL )
           {
             // set the B_u and B_v maps
             set_Bs(u_dim, v_dim);
@@ -79,8 +84,30 @@ namespace eli
           {
             // set the B_u and B_v maps
             set_Bs(bs.degree_u(), bs.degree_v());
+
+            if (bs.deriv_u)
+            {
+              deriv_u = new bezier<data_type, dim__>( *(bs.deriv_u) );
+            }
+            else
+            {
+              deriv_u = NULL;
+            }
+
+            if (bs.deriv_v)
+            {
+              deriv_v = new bezier<data_type, dim__>( *(bs.deriv_v) );
+            }
+            else
+            {
+              deriv_v = NULL;
+            }
           }
-          ~bezier() {}
+
+          ~bezier()
+          {
+            invalidate_deriv();
+          }
 
           bezier & operator=(const bezier<data_type, dim__, tol__> &bs)
           {
@@ -88,6 +115,25 @@ namespace eli
             {
               point_data=bs.point_data;
               set_Bs(bs.degree_u(), bs.degree_v());
+
+              if (bs.deriv_u)
+              {
+                deriv_u = new bezier<data_type, dim__>( *(bs.deriv_u) );
+              }
+              else
+              {
+                deriv_u = NULL;
+              }
+
+              if (bs.deriv_v)
+              {
+                deriv_v = new bezier<data_type, dim__>( *(bs.deriv_v) );
+              }
+              else
+              {
+                deriv_v = NULL;
+              }
+
             }
 
             return (*this);
@@ -165,11 +211,8 @@ namespace eli
 
           void resize(const index_type &u_dim, const index_type &v_dim)
           {
-            // allocate the control points
-            point_data.resize(dim__*(u_dim+1)*(v_dim+1));
-
-            // set the B_u and B_v maps
-            set_Bs(u_dim, v_dim);
+            resize( B_u, B_v, point_data, u_dim, v_dim );
+            invalidate_deriv();
           }
 
           point_type get_control_point(const index_type &i, const index_type &j) const
@@ -208,6 +251,7 @@ namespace eli
             {
               B_u[j]*=rmat.transpose();
             }
+            invalidate_deriv();
           }
 
           void rotate(const rotation_matrix_type &rmat, const point_type &rorig)
@@ -215,6 +259,7 @@ namespace eli
             translate(-rorig);
             rotate(rmat);
             translate(rorig);
+            invalidate_deriv();
           }
 
           void translate(const point_type &trans)
@@ -227,6 +272,7 @@ namespace eli
                 B_u[j].row(i)+=trans;
               }
             }
+            invalidate_deriv();
           }
 
           void scale(const data_type &s)
@@ -239,6 +285,7 @@ namespace eli
                 B_u[j].row(i)*=s;
               }
             }
+            invalidate_deriv();
           }
 
           bool open_u() const {return !closed_u();}
@@ -272,6 +319,7 @@ namespace eli
             }
 
             B_u[j].row(i) = cp;
+            invalidate_deriv();
           }
 
           void reverse_u()
@@ -291,6 +339,7 @@ namespace eli
             {
               B_v[i]=current_col[n-i];
             }
+            invalidate_deriv();
           }
 
           void reverse_v()
@@ -310,6 +359,7 @@ namespace eli
             {
               B_u[i]=current_row[m-i];
             }
+            invalidate_deriv();
           }
 
           void swap_uv()
@@ -335,6 +385,7 @@ namespace eli
                 set_control_point(current_row[i].row(j), i, j);
               }
             }
+            invalidate_deriv();
           }
 
           void get_uconst_curve(curve_type &bc, const data_type &u) const
@@ -421,12 +472,9 @@ namespace eli
 
           point_type f_u(const data_type &u, const data_type &v) const
           {
-            point_type ans, tmp;
-            index_type i, n(degree_u()), m(degree_v());
-
             // check to make sure have valid curve
-            assert(n>=0);
-            assert(m>=0);
+            assert(degree_u()>=0);
+            assert(degree_v()>=0);
 
             // check to make sure given valid parametric value
             assert((u>=0) && (u<=1));
@@ -434,50 +482,39 @@ namespace eli
 
             if (this->degree_u()<1)
             {
+              point_type ans;
               ans.setZero();
               return ans;
             }
 
-            Eigen::Matrix<data_type, Eigen::Dynamic, dim__> temp_cp, B_up(n+1-1, dim__);
+            validate_u();
 
-            if ((n-1)<=m)
-            {
-              temp_cp.resize(m+1, dim__);
-              // build the temporary control points
-              for (i=0; i<=m; ++i)
-              {
-                // create the control points for first derivative curve
-                eli::geom::utility::bezier_p_control_point(B_up, B_u[i]);
-                eli::geom::utility::de_casteljau(tmp, B_up, u);
-                temp_cp.row(i)=tmp;
-              }
-              eli::geom::utility::de_casteljau(ans, temp_cp, v);
-            }
-            else
-            {
-              temp_cp.resize(n+1, dim__);
-              // build the temporary control points
-              for (i=0; i<=n; ++i)
-              {
-                eli::geom::utility::de_casteljau(tmp, B_v[i], v);
-                temp_cp.row(i)=tmp;
-              }
-              // create the control points for first derivative curve
-              eli::geom::utility::bezier_p_control_point(B_up, temp_cp);
-              eli::geom::utility::de_casteljau(ans, B_up, u);
-            }
-
-            return ans;
+            return deriv_u->f( u, v );
           }
 
-          point_type f_v(const data_type &u, const data_type &v) const
+          void f_u( bezier<data_type, dim__, tol__> &bs_fu ) const
           {
-            point_type ans, tmp;
             index_type i, n(degree_u()), m(degree_v());
 
             // check to make sure have valid curve
             assert(n>=0);
             assert(m>=0);
+
+            // resize the surfaces
+            bs_fu.resize(n-1, m);
+
+            for (i=0; i<=m; ++i)
+            {
+              // create the control points for first derivative curve
+              eli::geom::utility::bezier_p_control_point(bs_fu.B_u[i], B_u[i]);
+            }
+          }
+
+          point_type f_v(const data_type &u, const data_type &v) const
+          {
+            // check to make sure have valid curve
+            assert(degree_u()>=0);
+            assert(degree_v()>=0);
 
             // check to make sure given valid parametric value
             assert((u>=0) && (u<=1));
@@ -485,50 +522,39 @@ namespace eli
 
             if (this->degree_v()<1)
             {
+              point_type ans;
               ans.setZero();
               return ans;
             }
 
-            Eigen::Matrix<data_type, Eigen::Dynamic, dim__> temp_cp, B_vp(m+1-1, dim__);
+            validate_v();
 
-            if (n<=(m-1))
-            {
-              temp_cp.resize(m+1, dim__);
-              // build the temporary control points
-              for (i=0; i<=m; ++i)
-              {
-                eli::geom::utility::de_casteljau(tmp, B_u[i], u);
-                temp_cp.row(i)=tmp;
-              }
-              // create the control points for first derivative curve
-              eli::geom::utility::bezier_p_control_point(B_vp, temp_cp);
-              eli::geom::utility::de_casteljau(ans, B_vp, v);
-            }
-            else
-            {
-              temp_cp.resize(n+1, dim__);
-              // build the temporary control points
-              for (i=0; i<=n; ++i)
-              {
-                // create the control points for first derivative curve
-                eli::geom::utility::bezier_p_control_point(B_vp, B_v[i]);
-                eli::geom::utility::de_casteljau(tmp, B_vp, v);
-                temp_cp.row(i)=tmp;
-              }
-              eli::geom::utility::de_casteljau(ans, temp_cp, u);
-            }
-
-            return ans;
+            return deriv_v->f( u, v );
           }
 
-          point_type f_uu(const data_type &u, const data_type &v) const
+          void f_v( bezier<data_type, dim__, tol__> &bs_fv ) const
           {
-            point_type ans, tmp;
             index_type i, n(degree_u()), m(degree_v());
 
             // check to make sure have valid curve
             assert(n>=0);
             assert(m>=0);
+
+            // resize the surfaces
+            bs_fv.resize(n, m-1);
+
+            for (i=0; i<=n; ++i)
+            {
+              // create the control points for first derivative curve
+              eli::geom::utility::bezier_p_control_point(bs_fv.B_v[i], B_v[i]);
+            }
+          }
+
+          point_type f_uu(const data_type &u, const data_type &v) const
+          {
+            // check to make sure have valid curve
+            assert(degree_u()>=0);
+            assert(degree_v()>=0);
 
             // check to make sure given valid parametric value
             assert((u>=0) && (u<=1));
@@ -536,51 +562,21 @@ namespace eli
 
             if (this->degree_u()<2)
             {
+              point_type ans;
               ans.setZero();
               return ans;
             }
 
-            Eigen::Matrix<data_type, Eigen::Dynamic, dim__> temp_cp, B_upp(n+1-2, dim__);
+            validate_u();
 
-            if ((n-2)<=m)
-            {
-              temp_cp.resize(m+1, dim__);
-              // build the temporary control points
-              for (i=0; i<=m; ++i)
-              {
-                // create the control points for second derivative curve
-                eli::geom::utility::bezier_pp_control_point(B_upp, B_u[i]);
-                eli::geom::utility::de_casteljau(tmp, B_upp, u);
-                temp_cp.row(i)=tmp;
-              }
-              eli::geom::utility::de_casteljau(ans, temp_cp, v);
-            }
-            else
-            {
-              temp_cp.resize(n+1, dim__);
-              // build the temporary control points
-              for (i=0; i<=n; ++i)
-              {
-                eli::geom::utility::de_casteljau(tmp, B_v[i], v);
-                temp_cp.row(i)=tmp;
-              }
-
-              // create the control points for second derivative curve
-              eli::geom::utility::bezier_pp_control_point(B_upp, temp_cp);
-              eli::geom::utility::de_casteljau(ans, B_upp, u);
-            }
-
-            return ans;
+            return deriv_u->f_u( u, v );
           }
 
           point_type f_uv(const data_type &u, const data_type &v) const
           {
-            point_type ans, tmp;
-            index_type i, n(degree_u()), m(degree_v());
-
             // check to make sure have valid curve
-            assert(n>=0);
-            assert(m>=0);
+            assert(degree_u()>=0);
+            assert(degree_v()>=0);
 
             // check to make sure given valid parametric value
             assert((u>=0) && (u<=1));
@@ -588,54 +584,21 @@ namespace eli
 
             if ( (this->degree_u()<1) || (this->degree_v()<1) )
             {
+              point_type ans;
               ans.setZero();
               return ans;
             }
 
-            Eigen::Matrix<data_type, Eigen::Dynamic, dim__> temp_cp, B_up(n+1-1, dim__), B_vp(m+1-1, dim__);
+            validate_u();
 
-            if (n<=m)
-            {
-              temp_cp.resize(m+1, dim__);
-              // build the temporary control points
-              for (i=0; i<=m; ++i)
-              {
-                // create the control points for first u-derivative curve
-                eli::geom::utility::bezier_p_control_point(B_up, B_u[i]);
-                eli::geom::utility::de_casteljau(tmp, B_up, u);
-                temp_cp.row(i)=tmp;
-              }
-              // create the control points for first v-derivative curve
-              eli::geom::utility::bezier_p_control_point(B_vp, temp_cp);
-              eli::geom::utility::de_casteljau(ans, B_vp, v);
-            }
-            else
-            {
-              temp_cp.resize(n+1, dim__);
-              // build the temporary control points
-              for (i=0; i<=n; ++i)
-              {
-                // create the control points for first v-derivative curve
-                eli::geom::utility::bezier_p_control_point(B_vp, B_v[i]);
-                eli::geom::utility::de_casteljau(tmp, B_vp, v);
-                temp_cp.row(i)=tmp;
-              }
-              // create the control points for first u-derivative curve
-              eli::geom::utility::bezier_p_control_point(B_up, temp_cp);
-              eli::geom::utility::de_casteljau(ans, B_up, u);
-            }
-
-            return ans;
+            return deriv_u->f_v( u, v );
           }
 
           point_type f_vv(const data_type &u, const data_type &v) const
           {
-            point_type ans, tmp;
-            index_type i, n(degree_u()), m(degree_v());
-
             // check to make sure have valid curve
-            assert(n>=0);
-            assert(m>=0);
+            assert(degree_u()>=0);
+            assert(degree_v()>=0);
 
             // check to make sure given valid parametric value
             assert((u>=0) && (u<=1));
@@ -643,51 +606,21 @@ namespace eli
 
             if (this->degree_v()<2)
             {
+              point_type ans;
               ans.setZero();
               return ans;
             }
 
-            Eigen::Matrix<data_type, Eigen::Dynamic, dim__> temp_cp, B_vpp(m+1-2, dim__);
+            validate_v();
 
-            if (n<=(m-2))
-            {
-              temp_cp.resize(m+1, dim__);
-              // build the temporary control points
-              for (i=0; i<=m; ++i)
-              {
-                eli::geom::utility::de_casteljau(tmp, B_u[i], u);
-                temp_cp.row(i)=tmp;
-              }
-              // create the control points for second derivative curve
-              eli::geom::utility::bezier_pp_control_point(B_vpp, temp_cp);
-              eli::geom::utility::de_casteljau(ans, B_vpp, v);
-            }
-            else
-            {
-              temp_cp.resize(n+1, dim__);
-              // build the temporary control points
-              for (i=0; i<=n; ++i)
-              {
-                // create the control points for second derivative curve
-                eli::geom::utility::bezier_pp_control_point(B_vpp, B_v[i]);
-                eli::geom::utility::de_casteljau(tmp, B_vpp, v);
-                temp_cp.row(i)=tmp;
-              }
-              eli::geom::utility::de_casteljau(ans, temp_cp, u);
-            }
-
-            return ans;
+            return deriv_v->f_v( u, v );
           }
 
           point_type f_uuu(const data_type &u, const data_type &v) const
           {
-
-            point_type ans, tmp;
-            index_type i, n(degree_u()), m(degree_v());
-
             // check to make sure have valid curve
-            assert(n>=0);
-            assert(m>=0);
+            assert(degree_u()>=0);
+            assert(degree_v()>=0);
 
             // check to make sure given valid parametric value
             assert((u>=0) && (u<=1));
@@ -695,51 +628,21 @@ namespace eli
 
             if (this->degree_u()<3)
             {
+              point_type ans;
               ans.setZero();
               return ans;
             }
 
-            Eigen::Matrix<data_type, Eigen::Dynamic, dim__> temp_cp, B_uppp(n+1-3, dim__);
+            validate_u();
 
-            if ((n-3)<=m)
-            {
-              temp_cp.resize(m+1, dim__);
-              // build the temporary control points
-              for (i=0; i<=m; ++i)
-              {
-                // create the control points for third derivative curve
-                eli::geom::utility::bezier_ppp_control_point(B_uppp, B_u[i]);
-                eli::geom::utility::de_casteljau(tmp, B_uppp, u);
-                temp_cp.row(i)=tmp;
-              }
-              eli::geom::utility::de_casteljau(ans, temp_cp, v);
-            }
-            else
-            {
-              temp_cp.resize(n+1, dim__);
-              // build the temporary control points
-              for (i=0; i<=n; ++i)
-              {
-                eli::geom::utility::de_casteljau(tmp, B_v[i], v);
-                temp_cp.row(i)=tmp;
-              }
-
-              // create the control points for third derivative curve
-              eli::geom::utility::bezier_pp_control_point(B_uppp, temp_cp);
-              eli::geom::utility::de_casteljau(ans, B_uppp, u);
-            }
-
-            return ans;
+            return deriv_u->f_uu( u, v );
         }
 
           point_type f_uuv(const data_type &u, const data_type &v) const
           {
-            point_type ans, tmp;
-            index_type i, n(degree_u()), m(degree_v());
-
             // check to make sure have valid curve
-            assert(n>=0);
-            assert(m>=0);
+            assert(degree_u()>=0);
+            assert(degree_v()>=0);
 
             // check to make sure given valid parametric value
             assert((u>=0) && (u<=1));
@@ -747,54 +650,21 @@ namespace eli
 
             if ( (this->degree_u()<2) || (this->degree_v()<1) )
             {
+              point_type ans;
               ans.setZero();
               return ans;
             }
 
-            Eigen::Matrix<data_type, Eigen::Dynamic, dim__> temp_cp, B_upp(n+1-2, dim__), B_vp(m+1-1, dim__);
+            validate_u();
 
-            if ((n-1)<=m)
-            {
-              temp_cp.resize(m+1, dim__);
-              // build the temporary control points
-              for (i=0; i<=m; ++i)
-              {
-                // create the control points for second u-derivative curve
-                eli::geom::utility::bezier_pp_control_point(B_upp, B_u[i]);
-                eli::geom::utility::de_casteljau(tmp, B_upp, u);
-                temp_cp.row(i)=tmp;
-              }
-              // create the control points for first v-derivative curve
-              eli::geom::utility::bezier_p_control_point(B_vp, temp_cp);
-              eli::geom::utility::de_casteljau(ans, B_vp, v);
-            }
-            else
-            {
-              temp_cp.resize(n+1, dim__);
-              // build the temporary control points
-              for (i=0; i<=n; ++i)
-              {
-                // create the control points for first v-derivative curve
-                eli::geom::utility::bezier_p_control_point(B_vp, B_v[i]);
-                eli::geom::utility::de_casteljau(tmp, B_vp, v);
-                temp_cp.row(i)=tmp;
-              }
-              // create the control points for second u-derivative curve
-              eli::geom::utility::bezier_pp_control_point(B_upp, temp_cp);
-              eli::geom::utility::de_casteljau(ans, B_upp, u);
-            }
-
-            return ans;
+            return deriv_u->f_uv( u, v );
           }
 
           point_type f_uvv(const data_type &u, const data_type &v) const
           {
-            point_type ans, tmp;
-            index_type i, n(degree_u()), m(degree_v());
-
             // check to make sure have valid curve
-            assert(n>=0);
-            assert(m>=0);
+            assert(degree_u()>=0);
+            assert(degree_v()>=0);
 
             // check to make sure given valid parametric value
             assert((u>=0) && (u<=1));
@@ -802,54 +672,21 @@ namespace eli
 
             if ( (this->degree_u()<1) || (this->degree_v()<2) )
             {
+              point_type ans;
               ans.setZero();
               return ans;
             }
 
-            Eigen::Matrix<data_type, Eigen::Dynamic, dim__> temp_cp, B_up(n+1-1, dim__), B_vpp(m+1-2, dim__);
+            validate_u();
 
-            if (n<=(m-1))
-            {
-              temp_cp.resize(m+1, dim__);
-              // build the temporary control points
-              for (i=0; i<=m; ++i)
-              {
-                // create the control points for first u-derivative curve
-                eli::geom::utility::bezier_p_control_point(B_up, B_u[i]);
-                eli::geom::utility::de_casteljau(tmp, B_up, u);
-                temp_cp.row(i)=tmp;
-              }
-              // create the control points for second v-derivative curve
-              eli::geom::utility::bezier_pp_control_point(B_vpp, temp_cp);
-              eli::geom::utility::de_casteljau(ans, B_vpp, v);
-            }
-            else
-            {
-              temp_cp.resize(n+1, dim__);
-              // build the temporary control points
-              for (i=0; i<=n; ++i)
-              {
-                // create the control points for second v-derivative curve
-                eli::geom::utility::bezier_pp_control_point(B_vpp, B_v[i]);
-                eli::geom::utility::de_casteljau(tmp, B_vpp, v);
-                temp_cp.row(i)=tmp;
-              }
-              // create the control points for first u-derivative curve
-              eli::geom::utility::bezier_p_control_point(B_up, temp_cp);
-              eli::geom::utility::de_casteljau(ans, B_up, u);
-            }
-
-            return ans;
+            return deriv_u->f_vv( u, v );
           }
 
           point_type f_vvv(const data_type &u, const data_type &v) const
           {
-            point_type ans, tmp;
-            index_type i, n(degree_u()), m(degree_v());
-
             // check to make sure have valid curve
-            assert(n>=0);
-            assert(m>=0);
+            assert(degree_u()>=0);
+            assert(degree_v()>=0);
 
             // check to make sure given valid parametric value
             assert((u>=0) && (u<=1));
@@ -857,40 +694,14 @@ namespace eli
 
             if (this->degree_v()<3)
             {
+              point_type ans;
               ans.setZero();
               return ans;
             }
 
-            Eigen::Matrix<data_type, Eigen::Dynamic, dim__> temp_cp, B_vppp(m+1-3, dim__);
+            validate_v();
 
-            if (n<=(m-2))
-            {
-              temp_cp.resize(m+1, dim__);
-              // build the temporary control points
-              for (i=0; i<=m; ++i)
-              {
-                eli::geom::utility::de_casteljau(tmp, B_u[i], u);
-                temp_cp.row(i)=tmp;
-              }
-              // create the control points for third derivative curve
-              eli::geom::utility::bezier_ppp_control_point(B_vppp, temp_cp);
-              eli::geom::utility::de_casteljau(ans, B_vppp, v);
-            }
-            else
-            {
-              temp_cp.resize(n+1, dim__);
-              // build the temporary control points
-              for (i=0; i<=n; ++i)
-              {
-                // create the control points for third derivative curve
-                eli::geom::utility::bezier_ppp_control_point(B_vppp, B_v[i]);
-                eli::geom::utility::de_casteljau(tmp, B_vppp, v);
-                temp_cp.row(i)=tmp;
-              }
-              eli::geom::utility::de_casteljau(ans, temp_cp, u);
-            }
-
-            return ans;
+            return deriv_v->f_vv( u, v );
           }
 
           point_type normal(const data_type &u, const data_type &v) const
@@ -948,6 +759,19 @@ namespace eli
             return n;
           }
 
+          void f_pt_normal(const data_type &u, const data_type &v, point_type &pt, point_type &norm ) const
+          {
+            pt = f( u, v );
+            norm = normal( u, v );
+          }
+
+          void f_pt_derivs(const data_type &u, const data_type &v, point_type &pt, point_type &pt_u, point_type &pt_v ) const
+          {
+            pt = f( u, v );
+            pt_u = f_u( u, v );
+            pt_v = f_v( u, v );
+          }
+
           void promote_u()
           {
             typedef Eigen::Matrix<data_type, Eigen::Dynamic, dim__> control_row_type;
@@ -970,6 +794,7 @@ namespace eli
               eli::geom::utility::bezier_promote_control_points(tmp_cp, current_row[i]);
               B_u[i]=tmp_cp;
             }
+            invalidate_deriv();
           }
 
           void promote_u_to(index_type target_degree)
@@ -996,6 +821,7 @@ namespace eli
                 eli::geom::utility::bezier_promote_control_points_to(tmp_cp, current_row[i]);
                 B_u[i]=tmp_cp;
               }
+              invalidate_deriv();
           }
 
           void promote_v()
@@ -1022,6 +848,7 @@ namespace eli
               eli::geom::utility::bezier_promote_control_points(tmp_cp, current_col[i]);
               B_v[i]=tmp_cp;
             }
+            invalidate_deriv();
           }
 
           void promote_v_to(index_type target_degree)
@@ -1048,6 +875,7 @@ namespace eli
               eli::geom::utility::bezier_promote_control_points_to(tmp_cp, current_col[i]);
               B_v[i]=tmp_cp;
             }
+            invalidate_deriv();
           }
 
           bool demote_u(const geom::general::continuity &u_continuity_degree=geom::general::C0)
@@ -1096,7 +924,7 @@ namespace eli
               eli::geom::utility::bezier_demote_control_points(tmp_cp, current_row[i], ncon);
               B_u[i]=tmp_cp;
             }
-
+            invalidate_deriv();
             return true;
           }
 
@@ -1146,7 +974,7 @@ namespace eli
               eli::geom::utility::bezier_demote_control_points(tmp_cp, current_col[i], ncon);
               B_v[i]=tmp_cp;
             }
-
+            invalidate_deriv();
             return true;
           }
 
@@ -1174,6 +1002,7 @@ namespace eli
                 eli::geom::utility::bezier_control_points_to_cubic(tmp_cp, current_row[i]);
                 B_u[i]=tmp_cp;
               }
+              invalidate_deriv();
           }
 
           void to_cubic_v()
@@ -1200,6 +1029,7 @@ namespace eli
               eli::geom::utility::bezier_control_points_to_cubic(tmp_cp, current_col[i]);
               B_v[i]=tmp_cp;
             }
+            invalidate_deriv();
           }
 
           void split_u(bezier<data_type, dim__, tol__> &bs_lo, bezier<data_type, dim__, tol__> &bs_hi, const data_type &u0) const
@@ -1299,30 +1129,278 @@ namespace eli
             return maxd;
           }
 
+
+          void product( const bezier<data_type, dim__, tol__> &a, const bezier<data_type, dim__, tol__> &b)
+          {
+            index_type i, mu(a.degree_u()), mv(a.degree_v()), nu(b.degree_u()), nv(b.degree_v());
+
+            u_control_point_matrix_container a_u, b_u;
+            v_control_point_matrix_container a_v, b_v;
+            control_point_container a_data, b_data;
+
+            a_data = a.point_data;
+            set_Bs(a_u, a_v, a_data, mu, mv);
+            b_data = b.point_data;
+            set_Bs( b_u, b_v, b_data, nu, nv );
+
+            resize( mu + nu, mv + nv );
+
+            for ( size_t i=1; i<point_data.size(); i++)
+            {
+              point_data[i] = 0.0;
+            }
+
+            for (i=0; i<=mu; ++i)
+            {
+              eli::geom::utility::bezier_control_points_to_scaled_bezier( a_v[i] );
+            }
+
+            for (i=0; i<=mv; ++i)
+            {
+              eli::geom::utility::bezier_control_points_to_scaled_bezier( a_u[i] );
+            }
+
+            for (i=0; i<=nu; ++i)
+            {
+              eli::geom::utility::bezier_control_points_to_scaled_bezier( b_v[i] );
+            }
+
+            for (i=0; i<=nv; ++i)
+            {
+              eli::geom::utility::bezier_control_points_to_scaled_bezier( b_u[i] );
+            }
+
+            index_type ia, ib, ic;
+            index_type ja, jb, jc;
+
+            for (ia = 0; ia <= mu; ia++ )
+            {
+              for (ib = 0; ib <= nu; ib++ )
+              {
+                ic = ia + ib;
+
+                for (ja = 0; ja <= mv; ja++ )
+                {
+                  for (jb = 0; jb <= nv; jb++ )
+                  {
+                    jc = ja + jb;
+
+                    B_u[jc].row(ic) = B_u[jc].row(ic) + a_u[ja].row(ia).cwiseProduct( b_u[jb].row(ib) );
+                  }
+                }
+              }
+            }
+
+            for (i=0; i<=mu+nu; ++i)
+            {
+              eli::geom::utility::scaled_bezier_to_control_points_bezier( B_v[i] );
+            }
+
+            for (i=0; i<=mv+nv; ++i)
+            {
+              eli::geom::utility::scaled_bezier_to_control_points_bezier( B_u[i] );
+            }
+            invalidate_deriv();
+          }
+
+          void sum( const bezier<data_type, dim__, tol__> &a, const bezier<data_type, dim__, tol__> &b)
+          {
+            typedef bezier<data_type, dim__, tol__> surf_type;
+
+            // Make working copies of surfaces.
+            surf_type bsa(a);
+            surf_type bsb(b);
+
+            // Find maximum common order.
+            index_type n(bsa.degree_u()), m(bsa.degree_v());
+            if(bsb.degree_u() > n)
+            {
+              n = bsb.degree_u();
+            }
+
+            if(bsb.degree_v() > m)
+            {
+              m = bsb.degree_v();
+            }
+
+            // Promote both to max common order.
+            bsa.promote_u_to(n);
+            bsa.promote_v_to(m);
+
+            bsb.promote_u_to(n);
+            bsb.promote_v_to(m);
+
+            resize( n, m );
+
+            // Find maximum distance between control points.
+            index_type i, j;
+            for (i=0; i<=n; ++i)
+            {
+              for (j=0; j<=m; ++j)
+              {
+                set_control_point( bsa.get_control_point(i, j) + bsb.get_control_point(i, j), i, j );
+              }
+            }
+          }
+
+          onedbezsurf sumcompsurf() const
+          {
+            onedbezsurf retsurf;
+            index_type n(degree_u()), m(degree_v());
+
+            retsurf.resize( n, m );
+
+            index_type i, j, k;
+            for (i=0; i<=n; ++i)
+            {
+              for (j=0; j<=m; ++j)
+              {
+                data_type d = 0;
+                point_type p = get_control_point( i, j );
+
+                for (k=0; k<dim__; ++k)
+                {
+                  d += p(k);
+                }
+
+                typename onedbezsurf::point_type pd;
+                pd(0) = d;
+
+                retsurf.set_control_point( pd, i, j );
+              }
+            }
+
+            return retsurf;
+          }
+
+          onedbezsurf mindistsurf( const point_type & pt ) const
+          {
+            onedbezsurf retsurf;
+            typedef bezier<data_type, dim__, tol__> surf_type;
+
+            surf_type d(*this);
+
+            d.translate( -pt );
+
+            validate_u();
+
+            validate_v();
+
+            surf_type prod1, prod2;
+
+            prod1.product( *deriv_u, d );
+            prod2.product( *deriv_v, d );
+
+            onedbezsurf dot1, dot2;
+            dot1 = prod1.sumcompsurf();
+            dot2 = prod2.sumcompsurf();
+
+            onedbezsurf sq1, sq2;
+
+            sq1.product( dot1, dot1 );
+            sq2.product( dot2, dot2 );
+
+            retsurf.sum( sq1, sq2 );
+
+            return retsurf;
+          }
+
+          bool allpos( const data_type &smallpos ) const
+          {
+            index_type i, j, k;
+            index_type n(degree_u()), m(degree_v());
+
+            for (i=0; i<=n; ++i)
+            {
+              for (j=0; j<=m; ++j)
+              {
+                point_type p = get_control_point( i, j );
+
+                for (k=0; k<dim__; ++k)
+                {
+                  if ( p(k) <= smallpos )
+                  {
+                    return false;
+                  }
+                }
+              }
+            }
+            return true;
+          }
+
         private:
+
+          static void resize( u_control_point_matrix_container &uvec, v_control_point_matrix_container &vvec, control_point_container &data, const index_type &u_dim, const index_type &v_dim)
+          {
+            // allocate the control points
+            data.resize(dim__*(u_dim+1)*(v_dim+1));
+
+            // set the B_u and B_v maps
+            set_Bs( uvec, vvec, data, u_dim, v_dim);
+          }
+
           void set_Bs(index_type n, index_type m)
           {
+            set_Bs( B_u, B_v, point_data, n, m );
+          }
+
+          static void set_Bs( u_control_point_matrix_container &uvec, v_control_point_matrix_container &vvec, control_point_container &data, index_type n, index_type m)
+          {
             // allocate vectors of control point maps
-            B_u.resize(m+1, control_point_matrix_type(nullptr, m+1, dim__, Eigen::Stride<1, dim__>()));
+            uvec.resize(m+1, control_point_matrix_type(nullptr, m+1, dim__, Eigen::Stride<1, dim__>()));
             for (index_type j=0; j<=m; ++j)
             {
 #ifdef ELI_NO_VECTOR_DATA
-              new (&(B_u.at(0))+j) control_point_matrix_type(&(point_data.at(0))+j*(n+1)*dim__, n+1, dim__, Eigen::Stride<1, dim__>());
+              new (&(uvec.at(0))+j) control_point_matrix_type(&(data.at(0))+j*(n+1)*dim__, n+1, dim__, Eigen::Stride<1, dim__>());
 #else
-              new (B_u.data()+j) control_point_matrix_type(point_data.data()+j*(n+1)*dim__, n+1, dim__, Eigen::Stride<1, dim__>());
+              new (uvec.data()+j) control_point_matrix_type(data.data()+j*(n+1)*dim__, n+1, dim__, Eigen::Stride<1, dim__>());
 #endif
             }
 
-            B_v.resize(n+1, v_dir_control_point_matrix_type(nullptr, n+1, dim__, Eigen::Stride<1, Eigen::Dynamic>(1, (n+1)*dim__)));
+            vvec.resize(n+1, v_dir_control_point_matrix_type(nullptr, n+1, dim__, Eigen::Stride<1, Eigen::Dynamic>(1, (n+1)*dim__)));
             for (index_type i=0; i<=n; ++i)
             {
 #ifdef ELI_NO_VECTOR_DATA
-              new (&(B_v.at(0))+i) v_dir_control_point_matrix_type(&(point_data.at(0))+i*dim__, m+1, dim__, Eigen::Stride<1, Eigen::Dynamic>(1, (n+1)*dim__));
+              new (&(vvec.at(0))+i) v_dir_control_point_matrix_type(&(data.at(0))+i*dim__, m+1, dim__, Eigen::Stride<1, Eigen::Dynamic>(1, (n+1)*dim__));
 #else
-              new (B_v.data()+i) v_dir_control_point_matrix_type(point_data.data()+i*dim__, m+1, dim__, Eigen::Stride<1, Eigen::Dynamic>(1, (n+1)*dim__));
+              new (vvec.data()+i) v_dir_control_point_matrix_type(data.data()+i*dim__, m+1, dim__, Eigen::Stride<1, Eigen::Dynamic>(1, (n+1)*dim__));
 #endif
             }
           }
+
+          void invalidate_deriv()
+          {
+            if ( deriv_u )
+            {
+              delete deriv_u;
+              deriv_u = NULL;
+            }
+
+            if ( deriv_v )
+            {
+              delete deriv_v;
+              deriv_v = NULL;
+            }
+          }
+
+          void validate_u() const
+          {
+            if ( !deriv_u )
+            {
+              deriv_u = new bezier<data_type, dim__>();
+              f_u( *deriv_u );
+            }
+          }
+
+          void validate_v() const
+          {
+            if ( !deriv_v )
+            {
+              deriv_v = new bezier<data_type, dim__>();
+              f_v( *deriv_v );
+            }
+          }
+
       };
 
       typedef bezier<float, 3> bezier3f;

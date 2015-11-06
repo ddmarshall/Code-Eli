@@ -10,15 +10,15 @@
 *    David D. Marshall - initial code and implementation
 ********************************************************************************/
 
-#ifndef eli_mutil_nls_newton_raphson_constrained_system_method_hpp
-#define eli_mutil_nls_newton_raphson_constrained_system_method_hpp
+#ifndef eli_mutil_nls_iterative_system_root_base_constrained_hpp
+#define eli_mutil_nls_iterative_system_root_base_constrained_hpp
 
 #include <limits>
 #include <algorithm>
 
 #include "eli/code_eli.hpp"
 
-#include "eli/mutil/nls/newton_raphson_system_method.hpp"
+#include "eli/mutil/nls/iterative_system_root_base.hpp"
 
 namespace eli
 {
@@ -27,33 +27,33 @@ namespace eli
     namespace nls
     {
       template<typename data__, size_t N__, size_t NSOL__=1>
-      class newton_raphson_constrained_system_method : public newton_raphson_system_method<data__, N__, NSOL__>
+      class iterative_system_root_base_constrained : public iterative_system_root_base<data__, N__, NSOL__>
       {
         public:
           typedef data__ data_type;
           enum end_condition_usage
           {
-            NRC_NOT_USED  = -1,
-            NRC_EXCLUSIVE =  0,
-            NRC_INCLUSIVE =  1,
-            NRC_PERIODIC  =  2
+            IRC_NOT_USED  = -1,
+            IRC_EXCLUSIVE =  0,
+            IRC_INCLUSIVE =  1,
+            IRC_PERIODIC  =  2
           };
 
         public:
-          newton_raphson_constrained_system_method()
-            : newton_raphson_system_method<data_type, N__, NSOL__>()
+          iterative_system_root_base_constrained()
+            : iterative_system_root_base<data_type, N__, NSOL__>()
           {
             for (size_t i=0; i<N__; ++i)
             {
               xmin[i]=0;
               xmax[i]=0;
-              xmin_cond[i]=NRC_NOT_USED;
-              xmax_cond[i]=NRC_NOT_USED;
+              xmin_cond[i]=IRC_NOT_USED;
+              xmax_cond[i]=IRC_NOT_USED;
             }
           }
 
-          newton_raphson_constrained_system_method(const newton_raphson_constrained_system_method<data_type, N__, NSOL__> &nrm)
-            : newton_raphson_system_method<data_type, N__, NSOL__>(nrm)
+          iterative_system_root_base_constrained(const iterative_system_root_base_constrained<data_type, N__, NSOL__> &nrm)
+            : iterative_system_root_base<data_type, N__, NSOL__>(nrm)
           {
             for (size_t i=0; i<N__; ++i)
             {
@@ -64,7 +64,7 @@ namespace eli
             }
           }
 
-          ~newton_raphson_constrained_system_method()
+          ~iterative_system_root_base_constrained()
           {
           }
 
@@ -72,8 +72,8 @@ namespace eli
           {
             for (size_t i=0; i<N__; ++i)
             {
-              xmin_cond[i]=NRC_NOT_USED;
-              xmax_cond[i]=NRC_NOT_USED;
+              xmin_cond[i]=IRC_NOT_USED;
+              xmax_cond[i]=IRC_NOT_USED;
             }
           }
 
@@ -83,8 +83,8 @@ namespace eli
             {
               xmin[i]=dmin;
               xmax[i]=dmax;
-              xmin_cond[i]=NRC_PERIODIC;
-              xmax_cond[i]=NRC_PERIODIC;
+              xmin_cond[i]=IRC_PERIODIC;
+              xmax_cond[i]=IRC_PERIODIC;
             }
           }
 
@@ -92,27 +92,27 @@ namespace eli
           {
             for (size_t i=0; i<N__; ++i)
             {
-              xmin_cond[i]=NRC_NOT_USED;
+              xmin_cond[i]=IRC_NOT_USED;
             }
           }
           void unset_lower_condition(size_t i)
           {
             if (i<N__)
             {
-              xmin_cond[i]=NRC_NOT_USED;
+              xmin_cond[i]=IRC_NOT_USED;
             }
           }
           void set_lower_condition(size_t i, const data_type &d, end_condition_usage ec)
           {
             if (i<N__)
             {
-              if ( (xmin_cond[i]==NRC_PERIODIC) && (ec!=NRC_PERIODIC) )
+              if ( (xmin_cond[i]==IRC_PERIODIC) && (ec!=IRC_PERIODIC) )
               {
-                xmax_cond[i]=NRC_NOT_USED;
+                xmax_cond[i]=IRC_NOT_USED;
               }
-              if (ec==NRC_PERIODIC)
+              if (ec==IRC_PERIODIC)
               {
-                xmax_cond[i]=NRC_PERIODIC;
+                xmax_cond[i]=IRC_PERIODIC;
               }
 
               xmin[i]=d;
@@ -132,14 +132,14 @@ namespace eli
           {
             for (size_t i=0; i<N__; ++i)
             {
-              xmax_cond[i]=NRC_NOT_USED;
+              xmax_cond[i]=IRC_NOT_USED;
             }
           }
           void unset_upper_condition(size_t i)
           {
             if (i<N__)
             {
-              xmax_cond[i]=NRC_NOT_USED;
+              xmax_cond[i]=IRC_NOT_USED;
             }
           }
 
@@ -147,13 +147,13 @@ namespace eli
           {
             if (i<N__)
             {
-              if ( (xmax_cond[i]==NRC_PERIODIC) && (ec!=NRC_PERIODIC) )
+              if ( (xmax_cond[i]==IRC_PERIODIC) && (ec!=IRC_PERIODIC) )
               {
-                xmin_cond[i]=NRC_NOT_USED;
+                xmin_cond[i]=IRC_NOT_USED;
               }
-              if (ec==NRC_PERIODIC)
+              if (ec==IRC_PERIODIC)
               {
-                xmin_cond[i]=NRC_PERIODIC;
+                xmin_cond[i]=IRC_PERIODIC;
               }
 
               xmax[i]=d;
@@ -169,7 +169,7 @@ namespace eli
             }
           }
 
-        private:
+        protected:
           virtual typename iterative_system_root_base<data_type, N__, NSOL__>::solution_matrix
                   calculate_delta_factor(const typename iterative_system_root_base<data_type, N__, NSOL__>::solution_matrix &x,
                                          const typename iterative_system_root_base<data_type, N__, NSOL__>::solution_matrix &dx) const
@@ -185,7 +185,7 @@ namespace eli
               // check if min threshold is hit
               switch(xmin_cond[i])
               {
-                case(NRC_EXCLUSIVE):
+                case(IRC_EXCLUSIVE):
                 {
                   if (xinew<xmin[i])
                   {
@@ -193,7 +193,7 @@ namespace eli
                   }
                   break;
                 }
-                case(NRC_INCLUSIVE):
+                case(IRC_INCLUSIVE):
                 {
                   if (xinew<=xmin[i])
                   {
@@ -202,7 +202,7 @@ namespace eli
                   break;
                 }
                 default:
-                case(NRC_NOT_USED):
+                case(IRC_NOT_USED):
                 {
                   break;
                 }
@@ -211,7 +211,7 @@ namespace eli
               // check if max threshold is hit
               switch(xmax_cond[i])
               {
-                case(NRC_EXCLUSIVE):
+                case(IRC_EXCLUSIVE):
                 {
                   if (xinew>xmax[i])
                   {
@@ -219,7 +219,7 @@ namespace eli
                   }
                   break;
                 }
-                case(NRC_INCLUSIVE):
+                case(IRC_INCLUSIVE):
                 {
                   if (xinew>=xmax[i])
                   {
@@ -228,7 +228,7 @@ namespace eli
                   break;
                 }
                 default:
-                case(NRC_NOT_USED):
+                case(IRC_NOT_USED):
                 {
                   break;
                 }
@@ -238,7 +238,7 @@ namespace eli
             // Limit the new dx for periodic conditions.
             for (i=0; i<N__; ++i)
             {
-              if (xmin_cond[i]==NRC_PERIODIC)
+              if (xmin_cond[i]==IRC_PERIODIC)
               {
                 data_type xinew(x[i]+dx_new[i]), period(xmax[i]-xmin[i]);
 
@@ -256,7 +256,7 @@ namespace eli
                 }
               }
 
-              if (xmax_cond[i]==NRC_PERIODIC)
+              if (xmax_cond[i]==IRC_PERIODIC)
               {
                 data_type xinew(x[i]+dx_new[i]), period(xmax[i]-xmin[i]);
 

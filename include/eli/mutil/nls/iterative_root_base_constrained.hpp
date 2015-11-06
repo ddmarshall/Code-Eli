@@ -10,15 +10,15 @@
 *    David D. Marshall - initial code and implementation
 ********************************************************************************/
 
-#ifndef eli_mutil_nls_newton_raphson_constrained_method_hpp
-#define eli_mutil_nls_newton_raphson_constrained_method_hpp
+#ifndef eli_mutil_nls_iterative_root_base_constrained_hpp
+#define eli_mutil_nls_iterative_root_base_constrained_hpp
 
 #include <limits>
 #include <algorithm>
 
 #include "eli/code_eli.hpp"
 
-#include "eli/mutil/nls/newton_raphson_method.hpp"
+#include "eli/mutil/nls/iterative_root_base.hpp"
 
 namespace eli
 {
@@ -27,31 +27,31 @@ namespace eli
     namespace nls
     {
       template<typename data__>
-      class newton_raphson_constrained_method : public newton_raphson_method<data__>
+      class iterative_root_base_constrained : public iterative_root_base<data__>
       {
         public:
           typedef data__ data_type;
 
           enum end_condition_usage
           {
-            NRC_NOT_USED  = -1,
-            NRC_EXCLUSIVE =  0,
-            NRC_INCLUSIVE =  1,
-            NRC_PERIODIC  =  2
+            IRC_NOT_USED  = -1,
+            IRC_EXCLUSIVE =  0,
+            IRC_INCLUSIVE =  1,
+            IRC_PERIODIC  =  2
           };
 
         public:
-          newton_raphson_constrained_method()
-            : newton_raphson_method<data_type>(), xmin(0), xmax(0), xmin_cond(NRC_NOT_USED), xmax_cond(NRC_NOT_USED)
+          iterative_root_base_constrained()
+            : iterative_root_base<data_type>(), xmin(0), xmax(0), xmin_cond(IRC_NOT_USED), xmax_cond(IRC_NOT_USED)
           {
           }
 
-          newton_raphson_constrained_method(const newton_raphson_constrained_method<data_type> &nrm)
-            : newton_raphson_method<data_type>(nrm), xmin(nrm.xmin), xmax(nrm.xmax), xmin_cond(nrm.xmin_cond), xmax_cond(nrm.xmax_cond)
+          iterative_root_base_constrained(const iterative_root_base_constrained<data_type> &nrm)
+            : iterative_root_base<data_type>(nrm), xmin(nrm.xmin), xmax(nrm.xmax), xmin_cond(nrm.xmin_cond), xmax_cond(nrm.xmax_cond)
           {
           }
 
-          ~newton_raphson_constrained_method()
+          ~iterative_root_base_constrained()
           {
           }
 
@@ -59,25 +59,25 @@ namespace eli
           {
             xmin=dmin;
             xmax=dmax;
-            xmin_cond=NRC_PERIODIC;
-            xmax_cond=NRC_PERIODIC;
+            xmin_cond=IRC_PERIODIC;
+            xmax_cond=IRC_PERIODIC;
           }
           void unset_conditions()
           {
-            xmin_cond=NRC_NOT_USED;
-            xmax_cond=NRC_NOT_USED;
+            xmin_cond=IRC_NOT_USED;
+            xmax_cond=IRC_NOT_USED;
           }
 
-          void unset_lower_condition() {xmin_cond=NRC_NOT_USED;}
+          void unset_lower_condition() {xmin_cond=IRC_NOT_USED;}
           void set_lower_condition(const data_type &d, end_condition_usage ec)
           {
-            if ( (xmin_cond==NRC_PERIODIC) && (ec!=NRC_PERIODIC) )
+            if ( (xmin_cond==IRC_PERIODIC) && (ec!=IRC_PERIODIC) )
             {
-              xmax_cond=NRC_NOT_USED;
+              xmax_cond=IRC_NOT_USED;
             }
-            if (ec==NRC_PERIODIC)
+            if (ec==IRC_PERIODIC)
             {
-              xmax_cond=NRC_PERIODIC;
+              xmax_cond=IRC_PERIODIC;
             }
 
             xmin=d;
@@ -89,16 +89,16 @@ namespace eli
             ec=xmin_cond;
           }
 
-          void unset_upper_condition() {xmax_cond=NRC_NOT_USED;}
+          void unset_upper_condition() {xmax_cond=IRC_NOT_USED;}
           void set_upper_condition(const data_type &d, end_condition_usage ec)
           {
-            if ( (xmax_cond==NRC_PERIODIC) && (ec!=NRC_PERIODIC) )
+            if ( (xmax_cond==IRC_PERIODIC) && (ec!=IRC_PERIODIC) )
             {
-              xmin_cond=NRC_NOT_USED;
+              xmin_cond=IRC_NOT_USED;
             }
-            if (ec==NRC_PERIODIC)
+            if (ec==IRC_PERIODIC)
             {
-              xmin_cond=NRC_PERIODIC;
+              xmin_cond=IRC_PERIODIC;
             }
 
             xmax=d;
@@ -110,7 +110,7 @@ namespace eli
             ec=xmax_cond;
           }
 
-        private:
+        protected:
           virtual data_type calculate_delta_factor(const data_type &x, const data_type &dx) const
           {
             data_type xnew(x+dx);
@@ -118,7 +118,7 @@ namespace eli
             // check if min threshold is hit
             switch(xmin_cond)
             {
-              case(NRC_EXCLUSIVE):
+              case(IRC_EXCLUSIVE):
               {
                 if (xnew<xmin)
                 {
@@ -126,7 +126,7 @@ namespace eli
                 }
                 break;
               }
-              case(NRC_INCLUSIVE):
+              case(IRC_INCLUSIVE):
               {
                 if (xnew<=xmin)
                 {
@@ -134,7 +134,7 @@ namespace eli
                 }
                 break;
               }
-              case(NRC_PERIODIC):
+              case(IRC_PERIODIC):
               {
                 data_type period(xmax-xmin);
 
@@ -150,7 +150,7 @@ namespace eli
                 break;
               }
               default:
-              case(NRC_NOT_USED):
+              case(IRC_NOT_USED):
               {
                 break;
               }
@@ -159,7 +159,7 @@ namespace eli
             // check if max threshold is hit
             switch(xmax_cond)
             {
-              case(NRC_EXCLUSIVE):
+              case(IRC_EXCLUSIVE):
               {
                 if (xnew>xmax)
                 {
@@ -167,7 +167,7 @@ namespace eli
                 }
                 break;
               }
-              case(NRC_INCLUSIVE):
+              case(IRC_INCLUSIVE):
               {
                 if (xnew>=xmax)
                 {
@@ -175,7 +175,7 @@ namespace eli
                 }
                 break;
               }
-              case(NRC_PERIODIC):
+              case(IRC_PERIODIC):
               {
                 data_type period(xmax-xmin);
 
@@ -191,7 +191,7 @@ namespace eli
                 break;
               }
               default:
-              case(NRC_NOT_USED):
+              case(IRC_NOT_USED):
               {
                 break;
               }

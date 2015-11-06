@@ -63,6 +63,8 @@ namespace eli
           typedef typename surface_type::curve_type curve_type;
           typedef eli::geom::curve::piecewise<eli::geom::curve::bezier, data__, dim__, tol__> piecewise_curve_type;
 
+          typedef std::pair< index_type, index_type > patch_boundary_code_type;
+
           typedef data__ data_type;
           typedef unsigned short dimension_type;
           typedef tol__ tolerance_type;
@@ -1166,6 +1168,181 @@ namespace eli
             return patches[uk][vk].normal(uu, vv);
           }
 
+          void f_pt_normal(const data_type &u, const data_type &v, point_type &pt, point_type &norm, const index_type &utie = 0, const index_type &vtie = 0 ) const
+          {
+            // find patch that corresponds to given u & v
+            index_type uk, vk;
+            data_type uu(0), vv(0);
+            typename keymap_type::const_iterator uit, vit;
+
+            patch_boundary_code_type bcode = find_patch(uk, vk, uit, vit, uu, vv, u, v);
+
+            assert((uk != -1) && (vk != -1));
+
+            // Handle u boundary code
+            if ( bcode.first == -1 && utie == 1 ) // u is at start of interval, uu = 0.
+            {
+              if ( uit != ukey.key.begin() )
+              {
+                uit--;
+                uk = uit->second;
+                uu = 1.0;
+              }
+            }
+            else if ( bcode.first == 1 && utie == -1 ) // u is at end of interval uu = 1;
+            {
+              typename keymap_type::const_iterator uitnext = uit;
+              uitnext++;
+
+              if ( uitnext != ukey.key.end() )
+              {
+                uit = uitnext;
+                uk = uit->second;
+                uu = 0.0;
+              }
+            }
+
+            // Handle v boundary code
+            if ( bcode.second == -1 && vtie == 1 ) // v is at start of interval, vv = 0.
+            {
+              if ( vit != vkey.key.begin() )
+              {
+                vit--;
+                vk = vit->second;
+                vv = 1.0;
+              }
+            }
+            else if ( bcode.second == 1 && vtie == -1) // v is at end of interval vv = 1;
+            {
+              typename keymap_type::const_iterator vitnext = vit;
+              vitnext++;
+
+              if ( vitnext != vkey.key.end() )
+              {
+                vit = vitnext;
+                vk = vit->second;
+                vv = 0.0;
+              }
+            }
+
+            pt = patches[uk][vk].f(uu, vv);
+            norm = patches[uk][vk].normal(uu, vv);
+          }
+
+          void f_pt_normal_grid(const std::vector < data_type > &uvec, const std::vector < data_type > &vvec, std::vector < std::vector < point_type > > &ptmat, std::vector < std::vector < point_type > > &normmat ) const
+          {
+            typedef std::vector < data_type > pvec_type;
+
+            pvec_type uuvec( uvec.size() );
+            std::vector < index_type > ukvec( uvec.size() );
+            pvec_type vvvec( vvec.size() );
+            std::vector < index_type > vkvec( vvec.size() );
+
+            int i, j;
+
+            for ( i = 0; i < uvec.size(); i++ )
+            {
+              typename keymap_type::const_iterator uit;
+              index_type uk;
+              data_type uu;
+              index_type code = ukey.find_segment( uk, uit, uu, uvec[i] );
+
+              if ( code == -1 && i == ( uvec.size() - 1 ) ) // u is at start of interval, uu = 0.
+              {
+                if ( uit != ukey.key.begin() )
+                {
+                  uit--;
+                  uk = uit->second;
+                  uu = 1.0;
+                }
+              }
+              else if ( code == 1 && i == 0 ) // u is at end of interval uu = 1;
+              {
+                typename keymap_type::const_iterator uitnext = uit;
+                uitnext++;
+
+                if ( uitnext != ukey.key.end() )
+                {
+                  uit = uitnext;
+                  uk = uit->second;
+                  uu = 0.0;
+                }
+              }
+
+              uuvec[i] = uu;
+              ukvec[i] = uk;
+            }
+
+            for ( i = 0; i < vvec.size(); i++ )
+            {
+              typename keymap_type::const_iterator vit;
+              index_type vk;
+              data_type vv;
+              index_type code = vkey.find_segment( vk, vit, vv, vvec[i] );
+
+              if ( code == -1 && i == ( vvec.size() - 1 ) ) // v is at start of interval, vv = 0.
+              {
+                if ( vit != vkey.key.begin() )
+                {
+                  vit--;
+                  vk = vit->second;
+                  vv = 1.0;
+                }
+              }
+              else if ( code == 1 && i == 0 ) // v is at end of interval vv = 1;
+              {
+                typename keymap_type::const_iterator vitnext = vit;
+                vitnext++;
+
+                if ( vitnext != vkey.key.end() )
+                {
+                  vit = vitnext;
+                  vk = vit->second;
+                  vv = 0.0;
+                }
+              }
+
+              vvvec[i] = vv;
+              vkvec[i] = vk;
+            }
+
+            ptmat.resize( uvec.size() );
+            normmat.resize( uvec.size() );
+            for ( i = 0; i < uvec.size(); i++ )
+            {
+              ptmat[i].resize( vvec.size() );
+              normmat[i].resize( vvec.size() );
+
+              for ( j = 0; j < vvec.size(); j++ )
+              {
+                ptmat[i][j] = patches[ukvec[i]][vkvec[j]].f(uuvec[i], vvvec[j]);
+                normmat[i][j] = patches[ukvec[i]][vkvec[j]].normal(uuvec[i], vvvec[j]);
+              }
+            }
+          }
+
+          void f_pt_derivs(const data_type &u, const data_type &v, point_type &pt, point_type &pt_u, point_type &pt_v ) const
+          {
+            // find patch that corresponds to given u & v
+            index_type uk, vk;
+            typename keymap_type::const_iterator uit, vit;
+            data_type uu(0), vv(0);
+
+            find_patch(uk, vk, uit, vit, uu, vv, u, v);
+
+            assert((uk != -1) && (vk != -1));
+
+            pt = patches[uk][vk].f(uu, vv);
+
+            data_type delta_u = ukey.get_delta_parm(uit);
+
+            pt_u = patches[uk][vk].f_u(uu, vv)/delta_u;
+
+            data_type delta_v = vkey.get_delta_parm(vit);
+
+            pt_v = patches[uk][vk].f_v(uu, vv)/delta_v;
+          }
+
           // TODO: NEED TO IMPLEMENT
           //       * fit
           //       * interpolate
@@ -1480,7 +1657,7 @@ namespace eli
               ikey=it->second;
             }
 
-            void find_segment(index_type &ikey, typename keymap_type::iterator &it, data_type &pp, const data_type &p_in)
+            index_type find_segment(index_type &ikey, typename keymap_type::iterator &it, data_type &pp, const data_type &p_in)
             {
               tol__ tol;
 
@@ -1488,7 +1665,7 @@ namespace eli
               {
                 it=key.end();
                 ikey = -1;
-                return;
+                return 0;
               }
 
               data_type pmin = get_pmin();
@@ -1497,7 +1674,7 @@ namespace eli
               {
                 it=key.end();
                 ikey = -1;
-                return;
+                return 0;
               }
 
               // Use map::upper_bound for fast lookup of segment after p_in
@@ -1513,7 +1690,7 @@ namespace eli
               if(tol.approximately_equal(p_in, it->first))
               {
                 pp=static_cast<data_type>(0);
-                return;
+                return -1;
               }
 
               data_type delta_p = get_delta_parm(it);
@@ -1522,7 +1699,7 @@ namespace eli
               if(tol.approximately_equal(p_in, it->first + delta_p))
               {
                 pp=static_cast<data_type>(1);
-                return;
+                return 1;
               }
 
               // Typical case
@@ -1533,9 +1710,11 @@ namespace eli
                 pp=static_cast<data_type>(1);
               if (pp<static_cast<data_type>(0))
                 pp=static_cast<data_type>(0);
+
+              return 0;
             }
 
-            void find_segment(index_type &ikey, typename keymap_type::const_iterator &it, data_type &pp, const data_type &p_in) const
+            index_type find_segment(index_type &ikey, typename keymap_type::const_iterator &it, data_type &pp, const data_type &p_in) const
             {
               tol__ tol;
 
@@ -1543,7 +1722,7 @@ namespace eli
               {
                 it=key.end();
                 ikey = -1;
-                return;
+                return 0;
               }
 
               data_type pmin = get_pmin();
@@ -1552,7 +1731,7 @@ namespace eli
               {
                 it=key.end();
                 ikey = -1;
-                return;
+                return 0;
               }
 
               // Use map::upper_bound for fast lookup of segment after p_in
@@ -1568,7 +1747,7 @@ namespace eli
               if(tol.approximately_equal(p_in, it->first))
               {
                 pp=static_cast<data_type>(0);
-                return;
+                return -1;
               }
 
               data_type delta_p = get_delta_parm(it);
@@ -1577,7 +1756,7 @@ namespace eli
               if(tol.approximately_equal(p_in, it->first + delta_p))
               {
                 pp=static_cast<data_type>(1);
-                return;
+                return 1;
               }
 
               // Typical case
@@ -1588,6 +1767,8 @@ namespace eli
                 pp=static_cast<data_type>(1);
               if (pp<static_cast<data_type>(0))
                 pp=static_cast<data_type>(0);
+
+              return 0;
             }
           };
 
@@ -1765,46 +1946,50 @@ namespace eli
           }
 
           // Lookup based on u_in, v_in.
-          void find_patch(index_type &uk, index_type &vk,
+          patch_boundary_code_type find_patch(index_type &uk, index_type &vk,
                           typename keymap_type::iterator &uit, typename keymap_type::iterator &vit,
                           data_type &uu, data_type &vv,
                           const data_type &u_in, const data_type &v_in)
           {
-            ukey.find_segment(uk, uit, uu, u_in);
-            vkey.find_segment(vk, vit, vv, v_in);
+            index_type ucode, vcode;
+            ucode = ukey.find_segment(uk, uit, uu, u_in);
+            vcode = vkey.find_segment(vk, vit, vv, v_in);
+            return std::make_pair( ucode, vcode );
           }
 
-          void find_patch(typename keymap_type::iterator &uit, typename keymap_type::iterator &vit,
+          patch_boundary_code_type find_patch(typename keymap_type::iterator &uit, typename keymap_type::iterator &vit,
                           data_type &uu, data_type &vv,
                           const data_type &u_in, const data_type &v_in)
           {
             index_type uk, vk;
-            find_patch(uk, vk, uit, vit, uu, vv, u_in, v_in);
+            return find_patch(uk, vk, uit, vit, uu, vv, u_in, v_in);
           }
 
-          void find_patch(index_type &uk, index_type &vk,
+          patch_boundary_code_type find_patch(index_type &uk, index_type &vk,
                           typename keymap_type::const_iterator &uit, typename keymap_type::const_iterator &vit,
                           data_type &uu, data_type &vv,
                           const data_type &u_in, const data_type &v_in) const
           {
-            ukey.find_segment(uk, uit, uu, u_in);
-            vkey.find_segment(vk, vit, vv, v_in);
+            index_type ucode, vcode;
+            ucode = ukey.find_segment(uk, uit, uu, u_in);
+            vcode = vkey.find_segment(vk, vit, vv, v_in);
+            return std::make_pair( ucode, vcode );
           }
 
-          void find_patch(typename keymap_type::const_iterator &uit, typename keymap_type::const_iterator &vit,
+          patch_boundary_code_type find_patch(typename keymap_type::const_iterator &uit, typename keymap_type::const_iterator &vit,
                           data_type &uu, data_type &vv,
                           const data_type &u_in, const data_type &v_in) const
           {
             index_type uk, vk;
-            find_patch(uk, vk, uit, vit, uu, vv, u_in, v_in);
+            return find_patch(uk, vk, uit, vit, uu, vv, u_in, v_in);
           }
 
-          void find_patch(index_type &uk, index_type &vk,
+          patch_boundary_code_type find_patch(index_type &uk, index_type &vk,
                           data_type &uu, data_type &vv,
                           const data_type &u_in, const data_type &v_in) const
           {
             typename keymap_type::const_iterator uit, vit;
-            find_patch(uk, vk, uit, vit, uu, vv, u_in, v_in);
+            return find_patch(uk, vk, uit, vit, uu, vv, u_in, v_in);
           }
 
       };

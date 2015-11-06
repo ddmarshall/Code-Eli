@@ -319,7 +319,7 @@ class bezier_curve_fit_test_suite : public Test::Suite
         TEST_ASSERT(pts[0]==bez.f(t[0]));
         TEST_ASSERT(pts[pts.size()-1]!=bez.f(t[t.size()-1]));
         TEST_ASSERT(bez.f(0)==bez.f(1));
-        TEST_ASSERT((bez.f(t[5])-pts[5]).norm()<15*eps);
+        TEST_ASSERT((bez.f(t[5])-pts[5]).norm()<1000*eps);
 
 //         octave_print(5, pts, bez);
       }
@@ -565,8 +565,8 @@ class bezier_curve_fit_test_suite : public Test::Suite
         // check if went through points
         TEST_ASSERT(tol.approximately_equal(bez.f(0), bez.f(1)));
         TEST_ASSERT(tol.approximately_equal(pts[0], bez.f(t[0])));
-        TEST_ASSERT(tol.approximately_equal(fp1, bez.fp(t[0])));
-        TEST_ASSERT(tol.approximately_equal(fpp1, bez.fpp(t[0])));
+        TEST_ASSERT(tol.approximately_equal(fp1, bez.fp(0)));
+        TEST_ASSERT(tol.approximately_equal(fpp1, bez.fpp(0)));
         TEST_ASSERT(pts[pts.size()-1]!=bez.f(t[t.size()-1]));
 
 //         octave_print(10, pts, bez);
@@ -618,8 +618,8 @@ class bezier_curve_fit_test_suite : public Test::Suite
         // check if went through points
         TEST_ASSERT(tol.approximately_equal(bez.f(0), bez.f(1)));
         TEST_ASSERT(tol.approximately_equal(pts[0], bez.f(t[0])));
-        TEST_ASSERT(tol.approximately_equal(fp1, bez.fp(t[0])));
-        TEST_ASSERT(tol.approximately_equal(fpp1, bez.fpp(t[0])));
+        TEST_ASSERT(tol.approximately_equal(fp1, bez.fp(0)));
+        TEST_ASSERT(tol.approximately_equal(fpp1, bez.fpp(0)));
         TEST_ASSERT(tol.approximately_equal(pts[10], bez.f(t[10])));
         TEST_ASSERT(tol.approximately_equal(fp2, bez.fp(t[10])));
         TEST_ASSERT(tol.approximately_equal(fpp2, bez.fpp(t[10])));

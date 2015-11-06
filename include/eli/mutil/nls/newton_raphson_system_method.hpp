@@ -15,7 +15,7 @@
 
 #include "eli/code_eli.hpp"
 
-#include "eli/mutil/nls/iterative_system_root_base.hpp"
+#include "eli/mutil/nls/iterative_system_root_base_constrained.hpp"
 
 namespace eli
 {
@@ -24,20 +24,20 @@ namespace eli
     namespace nls
     {
       template<typename data__, size_t N__, size_t NSOL__=1>
-      class newton_raphson_system_method : public iterative_system_root_base<data__, N__, NSOL__>
+      class newton_raphson_system_method : public iterative_system_root_base_constrained<data__, N__, NSOL__>
       {
         public:
           static const int hit_constraint = 101;
 
         public:
           newton_raphson_system_method()
-          : iterative_system_root_base<data__, N__, NSOL__>()
+          : iterative_system_root_base_constrained<data__, N__, NSOL__>()
           {
             x0.setConstant(static_cast<data__>(0));
           }
 
           newton_raphson_system_method(const newton_raphson_system_method<data__, N__, NSOL__> &nrm)
-          : iterative_system_root_base<data__, N__, NSOL__>(nrm), x0(nrm.x0)
+          : iterative_system_root_base_constrained<data__, N__, NSOL__>(nrm), x0(nrm.x0)
           {
           }
 
@@ -140,7 +140,7 @@ namespace eli
                 dx=-fpx.lu().solve(eval1);
               }
 
-              dx=calculate_delta_factor(x, dx);
+              dx=this->calculate_delta_factor(x, dx);
               x+=dx;
               fx=fun(x);
               fpx=fprime(x);
@@ -190,14 +190,6 @@ namespace eli
               return this->hit_constraint; // constraints limited convergence
 
             return this->converged;
-          }
-
-        private:
-          virtual typename iterative_system_root_base<data__, N__, NSOL__>::solution_matrix
-                  calculate_delta_factor(const typename iterative_system_root_base<data__, N__, NSOL__>::solution_matrix &,
-                                         const typename iterative_system_root_base<data__, N__, NSOL__>::solution_matrix &dx) const
-          {
-            return dx;
           }
 
         private:

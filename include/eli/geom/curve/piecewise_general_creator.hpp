@@ -1093,7 +1093,7 @@ namespace eli
             rows.setConstant(0);
             coef.setIdentity();
             k=1;
-            tau=std::pow(1-t, seg_degree);
+            tau=std::pow(1-t, (int) seg_degree);
             rows.block(0, ind, dim__, dim__)=coef*k*tau;
             for (i=1; i<=n; ++i)
             {
