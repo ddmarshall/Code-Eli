@@ -201,7 +201,7 @@ namespace eli
         {
           // no interpolation on end points
           // note: this comes from "Degree Reduction of Bezier Curves" by Dave Morgan
-          data_type coef(1/static_cast<data_type>(1<<(2*n-1))), sum(1), tmp;
+          data_type coef(std::pow(2.0, 1-2*n)), sum(1), tmp;
           lambda(0)=coef*sum;
           for (i=1; i<n; ++i)
           {
