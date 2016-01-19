@@ -865,28 +865,7 @@ namespace eli
               ++iter_count;
             }
 
-
-            if (typeid(data_type)==typeid(float))
-            {
-              std::cout.flush();
-              eli::test::octave_start(1);
-              // print out the upper surface points
-              for (size_t n=0; n<upper_pt.size(); ++n)
-              {
-                std::string name("upt"); name+=std::to_string(n);
-                eli::test::octave_print(1, upper_pt[n], name);
-              }
-              // print out the lower surface points
-              for (size_t n=0; n<lower_pt.size(); ++n)
-              {
-                std::string name("lpt"); name+=std::to_string(n);
-                eli::test::octave_print(1, lower_pt[n], name);
-              }
-              eli::test::octave_print(1, pc, "af", false, true);
-              eli::test::octave_finish(1, true);
-            }
-
-            return false;
+            return true;
           }
 
         private:

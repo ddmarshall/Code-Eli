@@ -274,6 +274,88 @@ class piecewise_adaptive_airfoil_fitter_test_suite : public Test::Suite
 
     void fit_airfoil_simple_test()
     {
+      // Subdivide using MAX_ERROR algorithm
+      {
+        airfoil_fitter_type pcaf;
+        piecewise_curve_type af;
+        std::vector<point_type, Eigen::aligned_allocator<point_type>> upt, lpt;
+        point_type pt, pt_ref;
+        data_type t0, t1, t2, angle, scale_factor;
+        data_type fit_tol;
+        bool rtn_flag;
+
+        // get airfoil points
+        create_airfoil_points(upt, lpt, true);
+
+        // set the parameterization
+        t0=0;
+        t1=2;
+        t2=4;
+
+        // create curve
+        subdivide_method sm(airfoil_fitter_type::MAX_ERROR);
+
+        fit_tol=1e-4;
+        rtn_flag=pcaf.set_conditions(upt.begin(), static_cast<index_type>(upt.size()),
+                                     lpt.begin(), static_cast<index_type>(lpt.size()),
+                                     sm, fit_tol, false);
+        TEST_ASSERT(rtn_flag);
+        pcaf.set_t0(t0);
+        pcaf.set_segment_dt(t1-t0, 0);
+        pcaf.set_segment_dt(t2-t1, 1);
+        rtn_flag=pcaf.create(af);
+        TEST_ASSERT(rtn_flag);
+
+#if 0
+        // make sure got back correct angle and scale factor
+        pt_ref.setZero();
+        TEST_ASSERT(pt==pt_ref);
+        TEST_ASSERT(tol.approximately_equal(angle, 0));
+        TEST_ASSERT(tol.approximately_equal(scale_factor, 1));
+
+        // cycle through CST control points to compare to the reference values
+        cst_airfoil_control_point_type cp;
+        index_type i;
+
+        for (i=0; i<=cst.upper_degree(); ++i)
+        {
+          cp = cst.get_upper_control_point(i);
+          std::string str("Error for Upper Control Point "+std::to_string(i));
+          TEST_ASSERT_MSG(tol.approximately_equal(cp, cpu_ref[i]), str.data());
+//          std::cout << "diff=" << (cp-cpu_ref[i]).norm() << std::endl;
+        }
+
+        for (i=0; i<=cst.lower_degree(); ++i)
+        {
+          cp = cst.get_lower_control_point(i);
+          std::string str("Error for Lower Control Point "+std::to_string(i));
+          TEST_ASSERT_MSG(tol.approximately_equal(cp, cpl_ref[i]), str.data());
+//          std::cout << "diff=" << (cp-cpu_ref[i]).norm() << std::endl;
+        }
+#endif
+
+//        if (typeid(data_type)==typeid(float))
+//        {
+//          std::cout.flush();
+//          eli::test::octave_start(1);
+//          // print out the upper surface points
+//          for (size_t n=0; n<upt.size(); ++n)
+//          {
+//            std::string name("upt"); name+=std::to_string(n);
+//            eli::test::octave_print(1, upt[n], name);
+//          }
+//          // print out the lower surface points
+//          for (size_t n=0; n<lpt.size(); ++n)
+//          {
+//            std::string name("lpt"); name+=std::to_string(n);
+//            eli::test::octave_print(1, lpt[n], name);
+//          }
+//          eli::test::octave_print(1, af, "af");
+//          eli::test::octave_finish(1, true);
+//        }
+      }
+
+      // Subdivide using BISECTION algorithm
       {
         airfoil_fitter_type pcaf;
         piecewise_curve_type af;
@@ -293,7 +375,6 @@ class piecewise_adaptive_airfoil_fitter_test_suite : public Test::Suite
 
         // create curve
         subdivide_method sm(airfoil_fitter_type::BISECTION);
-//        subdivide_method sm(airfoil_fitter_type::MAX_ERROR);
 
         fit_tol=1e-4;
         rtn_flag=pcaf.set_conditions(upt.begin(), static_cast<index_type>(upt.size()),
