@@ -15,7 +15,7 @@
 
 #include "eli/code_eli.hpp"
 
-#include "eli/mutil/nls/iterative_root_base.hpp"
+#include "eli/mutil/nls/iterative_root_base_constrained.hpp"
 
 namespace eli
 {
@@ -24,7 +24,7 @@ namespace eli
     namespace nls
     {
       template<typename data__>
-      class newton_raphson_method : public iterative_root_base<data__>
+      class newton_raphson_method : public iterative_root_base_constrained<data__>
       {
         public:
           typedef data__ data_type;
@@ -32,12 +32,12 @@ namespace eli
           static const int hit_constraint = 101;
 
         public:
-          newton_raphson_method() : iterative_root_base<data_type>(), x0(0)
+          newton_raphson_method() : iterative_root_base_constrained<data_type>(), x0(0)
           {
           }
 
           newton_raphson_method(const newton_raphson_method<data_type> &nrm)
-          : iterative_root_base<data_type>(nrm), x0(nrm.x0)
+          : iterative_root_base_constrained<data_type>(nrm), x0(nrm.x0)
           {
           }
 
@@ -77,7 +77,7 @@ namespace eli
               if (fpx==0)
                 return iterative_root_base<data__>::no_root_found;
 
-              dx=calculate_delta_factor(x, -eval/fpx);
+              dx=this->calculate_delta_factor(x, -eval/fpx);
               x+=dx;
               fx=fun(x);
               fpx=fprime(x);
@@ -96,9 +96,6 @@ namespace eli
 
             return this->converged;
           }
-
-        private:
-          virtual data_type calculate_delta_factor(const data_type &, const data_type &dx) const {return dx;}
 
         private:
           data_type x0;

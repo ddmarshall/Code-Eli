@@ -17,10 +17,12 @@
 #include <vector>
 #include <list>
 #include <algorithm>
+#include <limits>
 
 #include "eli/code_eli.hpp"
 
-#include "eli/mutil/nls/newton_raphson_constrained_system_method.hpp"
+#include "eli/mutil/nls/iterative_system_root_base_constrained.hpp"
+#include "eli/mutil/nls/newton_raphson_system_method.hpp"
 
 #include "eli/geom/intersect/minimum_distance_curve.hpp"
 #include "eli/geom/point/distance.hpp"
@@ -34,6 +36,143 @@ namespace eli
     {
       namespace internal
       {
+
+        template<typename surface__, size_t N__, size_t NSOL__=1>
+        class tangent_plane_method : public mutil::nls::iterative_system_root_base_constrained<typename surface__::data_type, N__, NSOL__>
+        {
+          public:
+            static const int hit_constraint = 101;
+            surface__ s;
+            typename surface__::point_type pt;
+            typename surface__::data_type xtol;
+            typename surface__::index_type maxit;
+
+          public:
+            tangent_plane_method()
+            : mutil::nls::iterative_system_root_base_constrained<typename surface__::data_type, N__, NSOL__>()
+            {
+              x0.setConstant(static_cast<typename surface__::data_type>(0));
+            }
+
+            tangent_plane_method(const tangent_plane_method<surface__, N__, NSOL__> &tpm)
+            : mutil::nls::iterative_system_root_base_constrained<typename surface__::data_type, N__, NSOL__>(tpm), x0(tpm.x0)
+            {
+            }
+
+            ~tangent_plane_method()
+            {
+            }
+
+            void set_initial_guess(const typename mutil::nls::iterative_system_root_base<typename surface__::data_type, N__, NSOL__>::solution_matrix &xg)
+            {
+              x0=xg;
+            }
+
+            const typename mutil::nls::iterative_system_root_base<typename surface__::data_type, N__, NSOL__>::solution_matrix & get_initial_guess() const
+            {
+              return x0;
+            }
+
+            int find_root(typename mutil::nls::iterative_system_root_base<typename surface__::data_type, N__, NSOL__>::solution_matrix &root) const
+            {
+              typename mutil::nls::iterative_system_root_base<typename surface__::data_type, N__, NSOL__>::solution_matrix dx, x(x0);
+              typename surface__::data_type abs_x_norm, prev_dx;
+              typename surface__::index_type count;
+
+              typename surface__::point_type q;
+              typename surface__::point_type Su, Sv, r, A, B, norm;
+
+              typename surface__::tolerance_type tol;
+
+              typename surface__::data_type umin, umax, vmin, vmax;
+              s.get_parameter_min(umin,vmin);
+              s.get_parameter_max(umax,vmax);
+
+              bool divflag = false;
+
+              bool all_zero = false;
+
+              abs_x_norm = std::numeric_limits<typename surface__::data_type>::max();
+              prev_dx = abs_x_norm;
+              count = 0;
+              while ( count < maxit && abs_x_norm > xtol && !all_zero)
+              {
+                s.f_pt_derivs( x(0), x(1), q, Su, Sv );
+
+                r = q - pt;
+
+                A = Sv.cross( r );
+                B = Su.cross( r );
+                norm = Su.cross( Sv );
+
+                typename surface__::data_type N = norm.dot( norm );
+
+                if( fabs( N ) > tol.get_absolute_tolerance() )
+                {
+                    dx(0) = A.dot( norm ) / N;
+                    dx(1) = -B.dot( norm ) / N;
+                }
+                else
+                {
+                    dx(0) = 0.0;
+                    dx(1) = 0.0;
+                }
+
+                dx = this->calculate_delta_factor(x, dx);
+                x+=dx;
+
+                prev_dx = abs_x_norm;
+                abs_x_norm = this->calculate_norm(dx);
+
+                if ( divflag && abs_x_norm > prev_dx ) // Diverging twice in a row.
+                {
+                  // Solution diverging, return initial guess.
+                  root = x0;
+                  return this->no_root_found;
+                }
+                else if ( abs_x_norm > prev_dx ) // Diverging first time
+                {
+                  divflag = true;
+                }
+                else // Not diverging.
+                {
+                  divflag = false;
+                }
+
+                all_zero = true;
+                for (size_t i=0; i<N__; ++i)
+                {
+                  // check if stuck and cannot move x anymore
+                  if ( std::abs( dx(i) ) > std::numeric_limits<typename surface__::data_type>::epsilon() )
+                  {
+                    all_zero = false;
+                    break;
+                  }
+                }
+
+                ++count;
+              }
+
+              // Current solution good enough to keep.
+              root = x;
+
+              if ( all_zero )
+              {
+                return this->hit_constraint;
+              }
+
+              if ( count >= maxit )
+              {
+                return this->max_iteration;
+              }
+
+              return this->converged;
+            }
+
+          private:
+            typename mutil::nls::iterative_system_root_base<typename surface__::data_type, N__, NSOL__>::solution_matrix x0;
+        };
+
         template <typename surface__>
         struct surface_g_functor
         {
@@ -154,13 +293,87 @@ namespace eli
       }
 
       template<typename surface__>
-      typename surface__::data_type minimum_distance(typename surface__::data_type &u, typename surface__::data_type &v, const surface__ &s, const typename surface__::point_type &pt,
-                                                     const typename surface__::data_type &u0, const typename surface__::data_type &v0,
-                                                     bool ulbnded = false, bool uubnded = false, bool vlbnded = false, bool vubnded = false,
-                                                     const typename surface__::data_type &ulb = 0, const typename surface__::data_type &uub = 0,
-                                                     const typename surface__::data_type &vlb = 0, const typename surface__::data_type &vub = 0)
+      typename surface__::data_type minimum_distance_tan(typename surface__::data_type &u, typename surface__::data_type &v, const surface__ &s, const typename surface__::point_type &pt,
+                                                     const typename surface__::data_type &u0, const typename surface__::data_type &v0, int & ret)
       {
-        typedef eli::mutil::nls::newton_raphson_constrained_system_method<typename surface__::data_type, 2, 1> nonlinear_solver_type;
+        typedef internal::tangent_plane_method<surface__, 2, 1> nonlinear_solver_type;
+
+        typename surface__::data_type umin, umax, vmin, vmax;
+        s.get_parameter_min(umin,vmin);
+        s.get_parameter_max(umax,vmax);
+
+        nonlinear_solver_type tpsolve;
+
+        typename surface__::tolerance_type tol;
+
+
+        if (s.open_u())
+        {
+          tpsolve.set_lower_condition(0, umin, nonlinear_solver_type::IRC_EXCLUSIVE);
+          tpsolve.set_upper_condition(0, umax, nonlinear_solver_type::IRC_EXCLUSIVE);
+        }
+        else
+        {
+          tpsolve.set_periodic_condition(0, umin, umax);
+        }
+
+        if (s.open_v())
+        {
+          tpsolve.set_lower_condition(1, vmin, nonlinear_solver_type::IRC_EXCLUSIVE);
+          tpsolve.set_upper_condition(1, vmax, nonlinear_solver_type::IRC_EXCLUSIVE);
+        }
+        else
+        {
+          tpsolve.set_periodic_condition(1, vmin, vmax);
+        }
+
+        // setup the solver
+        tpsolve.set_absolute_f_tolerance(tol.get_absolute_tolerance());
+        tpsolve.set_max_iteration(20);
+        tpsolve.set_norm_type(nonlinear_solver_type::max_norm);
+
+        typename nonlinear_solver_type::solution_matrix x, x0;
+
+        typename surface__::point_type q;
+        typename surface__::data_type dist, dist0;
+
+
+
+        assert((u0>=umin) && (u0<=umax));
+        assert((v0>=vmin) && (v0<=vmax));
+
+        x0(0) = u0;
+        x0(1) = v0;
+        tpsolve.set_initial_guess( x0 );
+        tpsolve.pt = pt;
+        tpsolve.s = s;
+        tpsolve.maxit = 20;
+        tpsolve.xtol = tol.get_absolute_tolerance();
+
+        q = s.f(x0(0), x0(1));
+        dist0 = eli::geom::point::distance(q, pt);
+
+        ret = tpsolve.find_root( x );
+
+        q = s.f(x(0), x(1));
+        dist = eli::geom::point::distance(q, pt);
+
+        if ( dist > dist0 )
+        {
+          x = x0; // No progress made, restore initial guess.
+          dist = dist0;
+        }
+
+        u = x(0);
+        v = x(1);
+        return dist;
+      }
+
+      template<typename surface__>
+      typename surface__::data_type minimum_distance_nrm(typename surface__::data_type &u, typename surface__::data_type &v, const surface__ &s, const typename surface__::point_type &pt,
+                                                     const typename surface__::data_type &u0, const typename surface__::data_type &v0, int & ret)
+      {
+        typedef eli::mutil::nls::newton_raphson_system_method<typename surface__::data_type, 2, 1> nonlinear_solver_type;
         nonlinear_solver_type nrm;
         internal::surface_g_functor<surface__> g;
         internal::surface_gp_functor<surface__> gp;
@@ -182,60 +395,24 @@ namespace eli
         nrm.set_max_iteration(20);
         nrm.set_norm_type(nonlinear_solver_type::max_norm);
 
-        if (!ulbnded && !uubnded)
+        if (s.open_u())
         {
-          if (s.open_u())
-          {
-            nrm.set_lower_condition(0, umin, nonlinear_solver_type::NRC_EXCLUSIVE);
-            nrm.set_upper_condition(0, umax, nonlinear_solver_type::NRC_EXCLUSIVE);
-          }
-          else
-          {
-            nrm.set_periodic_condition(0, umin, umax);
-          }
-        }
-        else if (!ulbnded && uubnded)
-        {
-          nrm.set_lower_condition(0, umin, nonlinear_solver_type::NRC_EXCLUSIVE);
-          nrm.set_upper_condition(0, uub, nonlinear_solver_type::NRC_EXCLUSIVE);
-        }
-        else if (ulbnded && !uubnded)
-        {
-          nrm.set_lower_condition(0, ulb, nonlinear_solver_type::NRC_EXCLUSIVE);
-          nrm.set_upper_condition(0, umax, nonlinear_solver_type::NRC_EXCLUSIVE);
+          nrm.set_lower_condition(0, umin, nonlinear_solver_type::IRC_EXCLUSIVE);
+          nrm.set_upper_condition(0, umax, nonlinear_solver_type::IRC_EXCLUSIVE);
         }
         else
         {
-          nrm.set_lower_condition(0, ulb, nonlinear_solver_type::NRC_EXCLUSIVE);
-          nrm.set_upper_condition(0, uub, nonlinear_solver_type::NRC_EXCLUSIVE);
+          nrm.set_periodic_condition(0, umin, umax);
         }
 
-        if (!vlbnded && !vubnded)
+        if (s.open_v())
         {
-          if (s.open_v())
-          {
-            nrm.set_lower_condition(1, vmin, nonlinear_solver_type::NRC_EXCLUSIVE);
-            nrm.set_upper_condition(1, vmax, nonlinear_solver_type::NRC_EXCLUSIVE);
-          }
-          else
-          {
-            nrm.set_periodic_condition(1, vmin, vmax);
-          }
-        }
-        else if (!vlbnded && vubnded)
-        {
-          nrm.set_lower_condition(1, vmin, nonlinear_solver_type::NRC_EXCLUSIVE);
-          nrm.set_upper_condition(1, vub, nonlinear_solver_type::NRC_EXCLUSIVE);
-        }
-        else if (vlbnded && !vubnded)
-        {
-          nrm.set_lower_condition(1, vlb, nonlinear_solver_type::NRC_EXCLUSIVE);
-          nrm.set_upper_condition(1, vmax, nonlinear_solver_type::NRC_EXCLUSIVE);
+          nrm.set_lower_condition(1, vmin, nonlinear_solver_type::IRC_EXCLUSIVE);
+          nrm.set_upper_condition(1, vmax, nonlinear_solver_type::IRC_EXCLUSIVE);
         }
         else
         {
-          nrm.set_lower_condition(1, vlb, nonlinear_solver_type::NRC_EXCLUSIVE);
-          nrm.set_upper_condition(1, vub, nonlinear_solver_type::NRC_EXCLUSIVE);
+          nrm.set_periodic_condition(1, vmin, vmax);
         }
 
         // set the initial guess
@@ -248,7 +425,7 @@ namespace eli
         dist0=eli::geom::point::distance(s.f(u0, v0), pt);
 
         // find the root
-        nrm.find_root(ans, g, gp, rhs);
+        ret = nrm.find_root(ans, g, gp, rhs);
         u=ans(0);
         v=ans(1);
 
@@ -281,7 +458,60 @@ namespace eli
       }
 
       template<typename surface__>
-      typename surface__::data_type minimum_distance(typename surface__::data_type &u, typename surface__::data_type &v, const surface__ &s, const typename surface__::point_type &pt)
+      typename surface__::data_type minimum_distance(typename surface__::data_type &u, typename surface__::data_type &v, const surface__ &s, const typename surface__::point_type &pt,
+                                                     const typename surface__::data_type &u0, const typename surface__::data_type &v0)
+      {
+        internal::tangent_plane_method<surface__, 2, 1> tan_solver;
+        typename surface__::data_type dist_tan, dist_nrmt, dist_nrm0;
+
+        int rett = -1;
+        dist_tan = minimum_distance_tan( u, v, s, pt, u0, v0, rett );
+
+        if ( rett == tan_solver.converged || rett == tan_solver.hit_constraint )
+        {
+          return dist_tan;
+        }
+
+        typename surface__::data_type u0t, v0t;
+        u0t = u;
+        v0t = v;
+
+        int retn = -1;
+        dist_nrmt = minimum_distance_nrm( u, v, s, pt, u0t, v0t, retn );
+
+        if ( retn == tan_solver.converged )
+        {
+          if ( dist_nrmt <= dist_tan )
+          {
+            return dist_nrmt;
+          }
+        }
+
+        dist_nrm0 = minimum_distance_nrm( u, v, s, pt, u0, v0, retn );
+
+//        if ( retn != tan_solver.converged )
+//        {
+//          printf("Nothing converged.\n" );
+//          printf("%g %g %g\n", dist_tan, dist_nrmt, dist_nrm0 );
+//        }
+//        else
+//        {
+//          printf("Newton x0 converged.\n" );
+//          printf("%g %g %g\n", dist_tan, dist_nrmt, dist_nrm0 );
+//        }
+
+        if ( dist_nrm0 < dist_tan )
+        {
+            return dist_nrm0;
+        }
+
+        u = u0t;
+        v = v0t;
+        return dist_tan;
+      }
+
+      template<typename surface__>
+      typename surface__::data_type minimum_distance_old(typename surface__::data_type &u, typename surface__::data_type &v, const surface__ &s, const typename surface__::point_type &pt)
       {
         typename surface__::tolerance_type tol;
 
@@ -420,6 +650,183 @@ namespace eli
 
         return dist;
 
+      }
+
+      template<typename onedsurf__>
+      void findnonpos( std::vector< std::pair< typename onedsurf__::data_type, typename onedsurf__::data_type > > & optpts,
+              const std::pair< typename onedsurf__::data_type, typename onedsurf__::data_type > &uvstart,
+              const std::pair< typename onedsurf__::data_type, typename onedsurf__::data_type > &uvend,
+              const onedsurf__ &objsurf, const typename onedsurf__::index_type &nsplit )
+      {
+        typedef typename onedsurf__::data_type data_type;
+        typedef std::pair< data_type, data_type > uvpair;
+
+        uvpair uvmid = std::make_pair( (uvstart.first + uvend.first) * 0.5, (uvstart.second + uvend.second) * 0.5 );
+
+        data_type smallpos = 10000 * std::numeric_limits< data_type >::epsilon();
+
+        onedsurf__ ulow, uhigh;
+        onedsurf__ ulowvlow, ulowvhigh, uhighvlow, uhighvhigh;
+
+        objsurf.split_u( ulow, uhigh, 0.5 );
+        ulow.split_v( ulowvlow, ulowvhigh, 0.5 );
+        uhigh.split_v( uhighvlow, uhighvhigh, 0.5 );
+
+        if ( !ulowvlow.allpos( smallpos ) )
+        {
+          if ( nsplit <= 0 )
+          {
+            uvpair uv = std::make_pair( (uvstart.first + uvmid.first) * 0.5, (uvstart.second + uvmid.second) * 0.5 );
+            optpts.push_back( uv );
+          }
+          else
+          {
+            findnonpos( optpts, uvstart, uvmid, ulowvlow, nsplit - 1 );
+          }
+        }
+
+        if ( !ulowvhigh.allpos( smallpos ) )
+        {
+          if ( nsplit <= 0 )
+          {
+            uvpair uv = std::make_pair( (uvstart.first + uvmid.first) * 0.5, (uvmid.second + uvend.second) * 0.5 );
+            optpts.push_back( uv );
+          }
+          else
+          {
+            uvpair uvone = std::make_pair( uvstart.first, uvmid.second );
+            uvpair uvtwo = std::make_pair( uvmid.first, uvend.second );
+
+            findnonpos( optpts, uvone, uvtwo, ulowvhigh, nsplit - 1 );
+          }
+        }
+
+        if ( !uhighvlow.allpos( smallpos ) )
+        {
+          if ( nsplit <= 0 )
+          {
+            uvpair uv = std::make_pair( (uvmid.first + uvend.first) * 0.5, (uvstart.second + uvmid.second) * 0.5 );
+            optpts.push_back( uv );
+          }
+          else
+          {
+            uvpair uvone = std::make_pair( uvmid.first, uvstart.second );
+            uvpair uvtwo = std::make_pair( uvend.first, uvmid.second );
+
+            findnonpos( optpts, uvone, uvtwo, uhighvlow, nsplit - 1 );
+          }
+        }
+
+        if ( !uhighvhigh.allpos( smallpos ) )
+        {
+          if ( nsplit <= 0 )
+          {
+            uvpair uv = std::make_pair( (uvmid.first + uvend.first) * 0.5, (uvmid.second + uvend.second) * 0.5 );
+            optpts.push_back( uv );
+          }
+          else
+          {
+            findnonpos( optpts, uvmid, uvend, uhighvhigh, nsplit - 1 );
+          }
+        }
+
+      }
+
+      template<typename surface__>
+      typename surface__::data_type minimum_distance_new(typename surface__::data_type &u, typename surface__::data_type &v, const surface__ &s, const typename surface__::point_type &pt)
+      {
+        typedef typename surface__::onedbezsurf objsurf;
+        typedef typename surface__::data_type data_type;
+        typedef std::pair< data_type, data_type > uvpair;
+        typename std::vector< uvpair >::size_type i;
+        data_type uu, vv, dd;
+
+        data_type dist = std::numeric_limits<data_type>::max();
+
+        uvpair start = std::make_pair( 0, 0 );
+        uvpair end = std::make_pair( 1, 1 );
+
+        objsurf obj = s.mindistsurf( pt );
+
+        std::vector< uvpair > optpts;
+        findnonpos( optpts, start, end, obj, 6 );
+
+        if ( optpts.empty() )
+        {
+          optpts.push_back( std::make_pair( 0.5, 0.5 ) );
+        }
+
+        for ( i = 0; i < optpts.size(); i++ )
+        {
+          uvpair uv = optpts[i];
+          int ret = -1;
+
+          dd = minimum_distance_nrm( uu, vv, s, pt, uv.first, uv.second, ret );
+
+          if ( dd < dist )
+          {
+            dist = dd;
+            u = uu;
+            v = vv;
+          }
+        }
+
+        // next check edges
+        // Since these are always edges, we could implement an edge curve extraction routine
+        // that returned the control points directly instead of performing an arbitrary curve
+        // extraction calculation.
+
+        typename surface__::data_type umin(0), umax(1), vmin(0), vmax(1);
+
+        typename surface__::curve_type bc;
+
+        s.get_uconst_curve(bc, umin);
+        dd=eli::geom::intersect::minimum_distance(vv, bc, pt);
+
+        if ( dd < dist )
+        {
+          u = umin;
+          v = vv;
+          dist = dd;
+        }
+
+        s.get_uconst_curve(bc, umax);
+        dd=eli::geom::intersect::minimum_distance(vv, bc, pt);
+
+        if ( dd < dist )
+        {
+          u = umax;
+          v  =vv;
+          dist = dd;
+        }
+
+        s.get_vconst_curve(bc, vmin);
+        dd=eli::geom::intersect::minimum_distance(uu, bc, pt);
+
+        if ( dd < dist )
+        {
+          u = uu;
+          v = vmin;
+          dist = dd;
+        }
+
+        s.get_vconst_curve(bc, vmax);
+        dd=eli::geom::intersect::minimum_distance(uu, bc, pt);
+
+        if ( dd < dist )
+        {
+          u = uu;
+          v = vmax;
+          dist = dd;
+        }
+
+        return dist;
+      }
+
+      template<typename surface__>
+      typename surface__::data_type minimum_distance(typename surface__::data_type &u, typename surface__::data_type &v, const surface__ &s, const typename surface__::point_type &pt)
+      {
+        return minimum_distance_new( u, v, s, pt );
       }
 
 // Defined for minimum_distance_curve.  Could be moved to util somewhere.

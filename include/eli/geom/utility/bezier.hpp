@@ -30,14 +30,14 @@ namespace eli
         assert(p.cols()==cp.cols());
 
         Eigen::Matrix<typename Derived2::Scalar, Eigen::Dynamic, Eigen::Dynamic> Q(cp);
-        typename Derived2::Scalar one(1);
+        typename Derived2::Scalar oneminust(1-t);
         typename Derived2::Index i, k;
 
         for (k=1; k<Q.rows(); ++k)
         {
           for (i=0; i<Q.rows()-k; ++i)
           {
-            Q.row(i)=(one-t)*Q.row(i)+t*Q.row(i+1);
+            Q.row(i)=oneminust*Q.row(i)+t*Q.row(i+1);
           }
         }
 
@@ -201,7 +201,7 @@ namespace eli
         {
           // no interpolation on end points
           // note: this comes from "Degree Reduction of Bezier Curves" by Dave Morgan
-          data_type coef(1/static_cast<data_type>(1<<(2*n-1))), sum(1), tmp;
+          data_type coef(std::pow(2.0, 1-2*n)), sum(1), tmp;
           lambda(0)=coef*sum;
           for (i=1; i<n; ++i)
           {
@@ -469,6 +469,88 @@ namespace eli
           }
         }
       }
+
+      template<typename Derived1, typename Derived2>
+      void bezier_control_points_to_scaled_bezier(Eigen::MatrixBase<Derived1> &scp, const Eigen::MatrixBase<Derived2> &cp)
+      {
+        // dimension check
+        assert(cp.cols()==scp.cols());
+        assert(cp.rows()==scp.rows());
+
+        typename Derived1::Index i, n(cp.rows()-1);
+        typename Derived1::Scalar bc;
+
+        for (i=0; i<=n; ++i)
+        {
+          eli::mutil::dm::binomial_coefficient(bc, n, i);
+          scp.row(i) = cp.row(i) * bc;
+        }
+      }
+
+      template<typename Derived1>
+      void bezier_control_points_to_scaled_bezier(Eigen::MatrixBase<Derived1> &cp)
+      {
+        typename Derived1::Index i, n(cp.rows()-1);
+        typename Derived1::Scalar bc;
+
+        for (i=0; i<=n; ++i)
+        {
+          eli::mutil::dm::binomial_coefficient(bc, n, i);
+          cp.row(i) = cp.row(i) * bc;
+        }
+      }
+
+      template<typename Derived1, typename Derived2>
+      void scaled_bezier_to_control_points_bezier(Eigen::MatrixBase<Derived1> &cp, const Eigen::MatrixBase<Derived2> &scp)
+      {
+        // dimension check
+        assert(scp.cols()==cp.cols());
+        assert(scp.rows()==cp.rows());
+
+        typename Derived1::Index i, n(scp.rows()-1);
+        typename Derived1::Scalar bc;
+
+        for (i=0; i<=n; ++i)
+        {
+          eli::mutil::dm::binomial_coefficient(bc, n, i);
+          cp.row(i) = scp.row(i) / bc;
+        }
+      }
+
+      template<typename Derived1>
+      void scaled_bezier_to_control_points_bezier(Eigen::MatrixBase<Derived1> &cp)
+      {
+        typename Derived1::Index i, n(cp.rows()-1);
+        typename Derived1::Scalar bc;
+
+        for (i=0; i<=n; ++i)
+        {
+          eli::mutil::dm::binomial_coefficient(bc, n, i);
+          cp.row(i) = cp.row(i) / bc;
+        }
+      }
+
+      template<typename Derived1, typename Derived2>
+      void multiply_scaled_bezier(Eigen::MatrixBase<Derived1> &c, const Eigen::MatrixBase<Derived2> &a, const Eigen::MatrixBase<Derived2> &b)
+      {
+        typename Derived1::Index i, j, k, m( a.rows() - 1 ), n( b.rows() - 1 );
+
+        // dimension check
+        assert( a.cols() == b.cols() );
+        assert( a.cols() == c.cols() );
+
+        assert( c.rows() == m + n + 1 );
+
+        for ( j = 0; j <= n; ++j )
+        {
+          for ( i = 0; i <= m; i++ )
+          {
+            k = i + j;
+            c.row(k) = c.row(k) + a.row(i).cwiseProduct(b.row(j));
+          }
+        }
+      }
+
     }
   }
 }

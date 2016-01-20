@@ -23,7 +23,7 @@ set (MINIMUM_DISTANCE_TEST_HEADER ${PROJECT_SOURCE_DIR}/minimum_distance_point_t
                                   ${PROJECT_SOURCE_DIR}/minimum_distance_surface_test_suite.hpp
                                   ${ELI_SOURCE_DIR}/include/eli/constants/math.hpp
                                   ${ELI_SOURCE_DIR}/include/eli/util/tolerance.hpp
-                                  ${ELI_SOURCE_DIR}/include/eli/mutil/nls/newton_raphson_constrained_method.hpp
+                                  ${ELI_SOURCE_DIR}/include/eli/mutil/nls/newton_raphson_method.hpp
                                   ${ELI_SOURCE_DIR}/include/eli/geom/general/bounding_box.hpp
                                   ${ELI_SOURCE_DIR}/include/eli/geom/point/distance.hpp
                                   ${ELI_SOURCE_DIR}/include/eli/geom/curve/bezier.hpp

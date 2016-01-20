@@ -52,6 +52,7 @@ set (PIECEWISE_CURVE_CREATOR_TEST_HEADER ${_ELI_TEST_INCLUDE_DIR}/octave_helpers
                                          ${ELI_SOURCE_DIR}/include/eli/geom/curve/piecewise.hpp
                                          ${ELI_SOURCE_DIR}/include/eli/geom/curve/utility.hpp
                                          ${ELI_SOURCE_DIR}/include/eli/geom/curve/piecewise_creator_base.hpp
+                                         ${ELI_SOURCE_DIR}/include/eli/geom/curve/piecewise_binary_cubic_creator.hpp
                                          ${ELI_SOURCE_DIR}/include/eli/geom/curve/piecewise_point_creator.hpp
                                          ${ELI_SOURCE_DIR}/include/eli/geom/curve/piecewise_linear_creator.hpp
                                          ${ELI_SOURCE_DIR}/include/eli/geom/curve/piecewise_polygon_creator.hpp

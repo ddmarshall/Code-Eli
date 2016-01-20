@@ -252,7 +252,7 @@ namespace eli
           }
           data_type get_radius() const
           {
-            assert(this->get_x_radius()==this->get_y_radius());
+            // assert(this->get_x_radius()==this->get_y_radius());
             return this->get_x_radius();
           }
 

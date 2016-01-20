@@ -120,17 +120,42 @@ namespace eli
           typedef eli::geom::general::bounding_box<data_type, dim__, tolerance_type> bounding_box_type;
           typedef Eigen::Matrix<data_type, Eigen::Dynamic, dim__> monomial_coefficient_type;
 
+          typedef bezier<data_type, 1, tolerance_type> onedbezcurve;
+
         public:
-          bezier() : B(1, dim__) {}
-          bezier(const index_type &n) : B((n<=0)?(1):(n+1), dim__) {}
-          bezier(const bezier<data_type, dim__, tolerance_type> &bc) : B(bc.B) {}
-          ~bezier() {}
+          bezier() : B(1, dim__), deriv( NULL ) {}
+          bezier(const index_type &n) : B((n<=0)?(1):(n+1), dim__), deriv( NULL ) {}
+
+          bezier(const bezier<data_type, dim__, tolerance_type> &bc) : B(bc.B)
+          {
+            if (bc.deriv)
+            {
+              deriv = new bezier<data_type, dim__>( *(bc.deriv) );
+            }
+            else
+            {
+              deriv = NULL;
+            }
+          }
+
+          ~bezier()
+          {
+            invalidate_deriv();
+          }
 
           bezier & operator=(const bezier<data_type, dim__, tolerance_type> &bc)
           {
             if (this != &bc)
             {
               B=bc.B;
+              if (bc.deriv)
+              {
+                deriv = new bezier<data_type, dim__>( *(bc.deriv) );
+              }
+              else
+              {
+                deriv = NULL;
+              }
             }
             return *this;
           }
@@ -139,7 +164,7 @@ namespace eli
           {
             if (this == &bc)
               return true;
-            if ((B.rows()!=B.rows()) || (B.cols()!=B.cols()))
+            if ((B.rows()!=bc.B.rows()) || (B.cols()!=bc.B.cols()))
               return false;
             if (B!=bc.B)
               return false;
@@ -158,7 +183,7 @@ namespace eli
             if (this==&bc)
               return true;
 
-            if ((B.rows()!=B.rows()) || (B.cols()!=B.cols()))
+            if ((B.rows()!=bc.B.rows()) || (B.cols()!=bc.B.cols()))
               return false;
 
             for (index_type i=0; i<=degree(); ++i)
@@ -177,7 +202,7 @@ namespace eli
             if (this==&bc)
               return true;
 
-            if ((B.rows()!=B.rows()) || (B.cols()!=B.cols()))
+            if ((B.rows()!=bc.B.rows()) || (B.cols()!=bc.B.cols()))
               return false;
 
             for (index_type i=0; i<=degree(); ++i)
@@ -206,6 +231,7 @@ namespace eli
           void resize(const index_type &t_dim)
           {
             B.resize(t_dim+1, dim__);
+            invalidate_deriv();
           }
 
           index_type degree() const
@@ -228,6 +254,7 @@ namespace eli
             }
 
             B.row(i)=cp;
+            invalidate_deriv();
           }
 
           control_point_type get_control_point(const index_type &i) const
@@ -251,16 +278,19 @@ namespace eli
           void reflect_xy()
           {
             B.col(2)=-B.col(2);
+            invalidate_deriv();
           }
 
           void reflect_xz()
           {
             B.col(1)=-B.col(1);
+            invalidate_deriv();
           }
 
           void reflect_yz()
           {
             B.col(0)=-B.col(0);
+            invalidate_deriv();
           }
 
           void reflect(const point_type &normal)
@@ -269,6 +299,7 @@ namespace eli
 
             n.normalize();
             B=B-2*(B*n.transpose())*n;
+            invalidate_deriv();
           }
 
           void reflect(const point_type &normal, const data_type &d)
@@ -277,6 +308,7 @@ namespace eli
 
             n.normalize();
             B=B-2*(B*n.transpose()-d*Eigen::Matrix<data_type, Eigen::Dynamic, 1>::Ones(degree()+1, 1))*n;
+            invalidate_deriv();
           }
 
           void reverse()
@@ -291,6 +323,7 @@ namespace eli
 
             // set the new control points
             B=B_new;
+            invalidate_deriv();
           }
 
           void get_bounding_box(bounding_box_type &bb) const
@@ -307,6 +340,7 @@ namespace eli
           void rotate(const rotation_matrix_type &rmat)
           {
             B*=rmat.transpose();
+            invalidate_deriv();
           }
 
           void rotate(const rotation_matrix_type &rmat, const point_type &rorig)
@@ -323,6 +357,7 @@ namespace eli
             {
               B.row(i)+=trans;
             }
+            invalidate_deriv();
           }
 
           void scale(const data_type &s)
@@ -332,6 +367,7 @@ namespace eli
             {
               B.row(i)*=s;
             }
+            invalidate_deriv();
           }
 
           bool open() const {return !closed();}
@@ -375,21 +411,27 @@ namespace eli
             // check to make sure given valid parametric value
             assert((t>=0) && (t<=1));
 
-            point_type rtn;
-
             // short circuit if degree not high enough
             if (degree()<1)
             {
+              point_type rtn;
               rtn.setZero();
               return rtn;
             }
 
-            control_point_matrix_type B_p(degree()+1-1, dim__);
+            validate_deriv();
 
-            eli::geom::utility::bezier_p_control_point(B_p, B);
-            eli::geom::utility::de_casteljau(rtn, B_p, t);
+            return deriv->f( t );
+          }
 
-            return rtn;
+          void fp(bezier<data_type, dim__> &bc_fp) const
+          {
+            // check to make sure have valid curve
+            assert(degree()>=0);
+
+            bc_fp.resize( degree()-1 );
+
+            eli::geom::utility::bezier_p_control_point(bc_fp.B, B);
           }
 
           point_type fpp(const data_type &t) const
@@ -409,12 +451,9 @@ namespace eli
               return rtn;
             }
 
-            control_point_matrix_type B_pp(degree()+1-2, dim__);
+            validate_deriv();
 
-            eli::geom::utility::bezier_pp_control_point(B_pp, B);
-            eli::geom::utility::de_casteljau(rtn, B_pp, t);
-
-            return rtn;
+            return deriv->fp( t );
           }
 
           point_type fppp(const data_type &t) const
@@ -434,12 +473,9 @@ namespace eli
               return rtn;
             }
 
-            control_point_matrix_type B_ppp(degree()+1-3, dim__);
+            validate_deriv();
 
-            eli::geom::utility::bezier_ppp_control_point(B_ppp, B);
-            eli::geom::utility::de_casteljau(rtn, B_ppp, t);
-
-            return rtn;
+            return deriv->fpp( t );
           }
 
           point_type tangent(const data_type &t) const
@@ -469,6 +505,7 @@ namespace eli
 
             // set the new control points
             B=B_new;
+            invalidate_deriv();
           }
 
           void degree_promote_to(const index_type target_degree)
@@ -481,6 +518,7 @@ namespace eli
 
             // set the new control points
             B=B_new;
+            invalidate_deriv();
           }
 
           bool degree_demote(const geom::general::continuity &continuity_degree=geom::general::C0)
@@ -513,6 +551,7 @@ namespace eli
             control_point_matrix_type B_new(degree(), dim__);
             eli::geom::utility::bezier_demote_control_points(B_new, B, ncon);
             B=B_new;
+            invalidate_deriv();
 
             return true;
           }
@@ -523,6 +562,7 @@ namespace eli
               control_point_matrix_type B_new(4, dim__);
               eli::geom::utility::bezier_control_points_to_cubic(B_new, B);
               B=B_new;
+              invalidate_deriv();
           }
 
           void split(bezier<data_type, dim__> &bc_l, bezier<data_type, dim__> &bc_r, const data_type &t0) const
@@ -718,6 +758,115 @@ namespace eli
               ctrl.row(n)=ctrl.row(0);
 
             B=ctrl;
+            invalidate_deriv();
+          }
+
+          void product( const bezier<data_type, dim__> &a, const bezier<data_type, dim__> &b)
+          {
+            assert( a.B.cols() == dim__ );
+            assert( b.B.cols() == dim__ );
+
+            index_type m( a.degree() ), n( b.degree() );
+            control_point_matrix_type scaleda, scaledb, scaledc;
+
+            scaleda.resize( m + 1, dim__ );
+            eli::geom::utility::bezier_control_points_to_scaled_bezier( scaleda, a.B );
+
+            scaledb.resize( n + 1, dim__ );
+            eli::geom::utility::bezier_control_points_to_scaled_bezier( scaledb, b.B );
+
+            scaledc.resize( m + n + 1, dim__ );
+            scaledc.setZero();
+            eli::geom::utility::multiply_scaled_bezier( scaledc, scaleda, scaledb );
+
+            resize( m + n );
+            eli::geom::utility::scaled_bezier_to_control_points_bezier( B, scaledc );
+            invalidate_deriv();
+          }
+
+          void sum( const bezier<data_type, dim__> &a, const bezier<data_type, dim__> &b)
+          {
+            typedef bezier<data_type, dim__> curve_type;
+
+            curve_type ca( a );
+            curve_type cb( b );
+
+            index_type n;
+            n = std::max( ca.degree(), cb.degree() );
+
+            ca.degree_promote_to( n );
+            cb.degree_promote_to( n );
+
+            B = ca.B + cb.B;
+
+            invalidate_deriv();
+          }
+
+          onedbezcurve sumcompcurve() const
+          {
+            onedbezcurve retcurve;
+
+            index_type n(degree()), i, j;
+
+            retcurve.resize(n);
+            for (i=0; i<=n; ++i)
+            {
+              data_type d = 0;
+              point_type p = get_control_point( i );
+              for (j=0; j<dim__; ++j)
+              {
+                d += p(j);
+              }
+              typename onedbezcurve::point_type pd;
+              pd(0) = d;
+
+              retcurve.set_control_point( pd, i );
+            }
+
+            return retcurve;
+          }
+
+          onedbezcurve mindistcurve( const point_type & pt ) const
+          {
+            onedbezcurve retcurve;
+            typedef bezier<data_type, dim__> curve_type;
+
+            curve_type c(*this);
+
+            c.translate( -pt );
+
+            validate_deriv();
+
+            curve_type prod;
+
+            prod.product( *deriv, c );
+
+            onedbezcurve dot;
+            dot = prod.sumcompcurve();
+
+            retcurve.product( dot, dot );
+
+            return retcurve;
+          }
+
+          bool allpos( const data_type &smallpos ) const
+          {
+            index_type i, j;
+            index_type n(degree());
+
+            for (i=0; i<=n; ++i)
+            {
+              point_type p = get_control_point( i );
+
+              for (j=0; j<dim__; ++j)
+              {
+                if ( p(j) <= smallpos )
+                {
+                  return false;
+                }
+              }
+            }
+            return true;
           }
 
         private:
@@ -729,6 +878,7 @@ namespace eli
 
         private:
           control_point_matrix_type B;      /** control polygon coordinates */
+          mutable bezier<data_type, dim__> * deriv;
 
         private:
           void determine_t(std::vector<data_type> &t, const std::vector<point_type, Eigen::aligned_allocator<point_type> > &pts, bool closed) const
@@ -926,6 +1076,7 @@ namespace eli
               ctrl.row(n)=ctrl.row(0);
 
             B=ctrl;
+            invalidate_deriv();
           }
 
           data_type est_fit_error(std::vector<data_type> &t, const fit_container_type &fcon)
@@ -944,6 +1095,24 @@ namespace eli
             }
 
             return err;
+          }
+
+          void invalidate_deriv()
+          {
+            if ( deriv )
+            {
+              delete deriv;
+              deriv = NULL;
+            }
+          }
+
+          void validate_deriv() const
+          {
+            if ( !deriv )
+            {
+              deriv = new bezier<data_type, dim__>();
+              fp( *deriv );
+            }
           }
 
       };

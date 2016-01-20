@@ -297,129 +297,168 @@ namespace eli
           // airfoil points are not in that range, then the results CST airfoil will
           // represent the original airfoil but translated, rotated, & scaled to get to CST's
           // cannonical representation.
-          bool create(cst_airfoil_type &cst, point_type &le_pt, data_type &theta, data_type &scale_factor) const
+          bool create(cst_airfoil_type &cst, Eigen::Matrix<data_type, dim__, dim__> &transform_out, point_type &translate_out, data_type &actual_leading_edge_t) const
           {
-            const int LOWER(0), UPPER(1);
+            const index_type LOWER(0), UPPER(1);
             tolerance_type tol;
 
-            // store the trailing edge points for later use
-            point_type te_pt[2], te_pt_ave;
+            Eigen::Matrix<data_type, Eigen::Dynamic, dim__> fit_point;
+            index_type i, n, n_te[2], n_le_des, n_le_act;
 
-            te_pt[LOWER].resize(1,dim__);
-            te_pt[UPPER].resize(1,dim__);
-            te_pt[LOWER]=lower_pt.back();
-            te_pt[UPPER]=upper_pt.back();
-            te_pt_ave=0.5*(te_pt[LOWER]+te_pt[UPPER]);
-            le_pt=lower_pt[LOWER];
-            if (!tol.approximately_equal(le_pt, upper_pt[0]))
+            // fill matrix with points
+            // * store the index for lower trailing edge, upper trailing edge, and designated leading edge
+            // * might need to specify actual leading edge later if points near leading edge are negative
+            fit_point.resize(static_cast<index_type>(lower_pt.size()+upper_pt.size()-1), dim__);
+            n_te[LOWER]=0;
+            n_te[UPPER]=fit_point.rows()-1;
+            n_le_des=static_cast<index_type>(lower_pt.size()-1);
+            for (n=0, i=lower_pt.size()-1; i>0; --i, ++n)
             {
-              // upper and lower surface have to have same leading edge point
-              assert(false);
-              return false;
+              fit_point.row(n)=lower_pt[i];
+            }
+            for (i=0; i<upper_pt.size(); ++i, ++n)
+            {
+              fit_point.row(n)=upper_pt[i];
             }
 
-            // fill sample point matrix
-            index_type i, iupper(lower_pt.size()-2), npts(upper_pt.size()-2+lower_pt.size()-2);
-            Eigen::Matrix<data_type, Eigen::Dynamic, dim__> S(npts,dim__);
+            assert(n==fit_point.rows());
 
-            for (i=1; i<static_cast<index_type>(lower_pt.size())-1; ++i)
+            // find transformation parameters
+            point_type te_pt_ave;
+
+            te_pt_ave=0.5*(fit_point.row(n_te[LOWER])+fit_point.row(n_te[UPPER]));
+
+            // build transformation matrix and vector and apply
             {
-              for (index_type j=0; j<dim__; ++j)
+              Eigen::Matrix<data_type, Eigen::Dynamic, dim__> trans_vec(fit_point.rows(), dim__);
+              point_type le_pt(fit_point.row(n_le_des));
+              data_type scale_factor, theta, ct, st;
+
+              scale_factor=(te_pt_ave-le_pt).norm();
+              theta=atan2(te_pt_ave.y()-le_pt.y(), te_pt_ave.x()-le_pt.x());
+
+              // any theta less than ~0.5730 deg. will be considered zero
+              if (std::abs(theta) < 0.01)
               {
-                S(i-1, j) = lower_pt[i](j);
+                theta=0;
+              }
+
+              // scale factors within between 0.999 and 1.001 will be considered one
+              if (std::abs(scale_factor-1) < 0.001)
+              {
+                scale_factor=1;
+              }
+              ct=std::cos(-theta);
+              st=std::sin(-theta);
+
+
+              transform_out << ct/scale_factor, -st/scale_factor, 0,
+                               st/scale_factor,  ct/scale_factor, 0,
+                               0,                0,               1/scale_factor;
+              translate_out=-le_pt*transform_out.transpose();
+              trans_vec.col(0)=Eigen::Matrix<data_type, Eigen::Dynamic, 1>::Constant(fit_point.rows(), 1, translate_out.x());
+              trans_vec.col(1)=Eigen::Matrix<data_type, Eigen::Dynamic, 1>::Constant(fit_point.rows(), 1, translate_out.y());
+              trans_vec.col(2)=Eigen::Matrix<data_type, Eigen::Dynamic, 1>::Constant(fit_point.rows(), 1, translate_out.z());
+
+              fit_point=fit_point*transform_out.transpose()+trans_vec;
+            }
+
+//            if (typeid(data_type)==typeid(float))
+//            {
+//              std::cout.flush();
+//              eli::test::octave_start(1);
+//              for (i=0; i<fit_point.rows(); ++i)
+//              {
+//                std::string name("upt"); name+=std::to_string(i);
+//                eli::test::octave_print(1, fit_point.row(i), name);
+//              }
+//
+//              eli::test::octave_finish(1, true);
+//              std::cout << std::endl << std::endl;
+//            }
+
+            // find actual leading edge (point furthest from trailing edge)
+            data_type xmin(fit_point.row(0).x());
+            bool manual_leading_edge, extra_points_lower;
+
+            n_le_act=0;
+            for (n=0; n<static_cast<index_type>(fit_point.rows()-1); ++n)
+            {
+              if (fit_point.row(n).x()<=xmin)
+              {
+                xmin=fit_point.row(n).x();
+                n_le_act=n;
               }
             }
 
-            for (i=1; i<static_cast<index_type>(upper_pt.size())-1; ++i)
+            // need to translate, rotate, and scale to get actual leading edge at zero
+            manual_leading_edge=n_le_act!=n_le_des;
+            extra_points_lower=n_le_act>n_le_des;
+            actual_leading_edge_t=0;
+            if (manual_leading_edge)
             {
-              for (index_type j=0; j<dim__; ++j)
-              {
-                S(iupper+i-1, j) = upper_pt[i](j);
-              }
+              point_type le_act_pt;
+              data_type tscale, ttheta;
+
+              te_pt_ave=0.5*(fit_point.row(n_te[LOWER])+fit_point.row(n_te[UPPER]));
+              le_act_pt=fit_point.row(n_le_act);
+              ttheta=atan2(te_pt_ave.y()-le_act_pt.y(), te_pt_ave.x()-le_act_pt.x());
+              tscale=(te_pt_ave-le_act_pt).norm();
+
+              Eigen::Matrix<data_type, dim__, dim__> rot_mat;
+              Eigen::Matrix<data_type, Eigen::Dynamic, dim__> trans_vec(fit_point.rows(), dim__);
+              data_type ct(std::cos(-ttheta)), st(std::sin(-ttheta));
+
+              rot_mat << ct/tscale, -st/tscale, 0,
+                         st/tscale,  ct/tscale, 0,
+                         0,                0,   1/tscale;
+              trans_vec.col(0)=Eigen::Matrix<data_type, Eigen::Dynamic, 1>::Constant(fit_point.rows(), 1, -le_act_pt.x());
+              trans_vec.col(1)=Eigen::Matrix<data_type, Eigen::Dynamic, 1>::Constant(fit_point.rows(), 1, -le_act_pt.y());
+              trans_vec.col(2)=Eigen::Matrix<data_type, Eigen::Dynamic, 1>::Constant(fit_point.rows(), 1, -le_act_pt.z());
+
+              fit_point=(fit_point+trans_vec)*rot_mat.transpose();
+
+              transform_out=rot_mat*transform_out;
+              translate_out=(translate_out-le_act_pt)*rot_mat.transpose();
+              actual_leading_edge_t=((extra_points_lower)?(-1):(1))*fit_point.row(n_le_des).x();
+//              std::cout <<   "actual_leading_edge_t=" << actual_leading_edge_t;
+//              std::cout << "\tleading_edge_desired =" << fit_point.row(n_le_des);
+//              std::cout << "\tleading_edge_desired =" << (fit_point.row(n_le_des)-translate_out)*transform_out.transpose().inverse();
+//              std::cout << std::endl;
             }
-
-            // * Find chord line (leading edge and trailing edge)
-            // * translate, rotate, & scale so that points go from (0,0) to x=1
-            //   (don't forget te_pt[] which holds the trailing edge
-            // Need to store the translation, rotation, and scaling in member variables
-            theta=-atan2(te_pt_ave.y()-le_pt.y(), te_pt_ave.x()-le_pt.x());
-            scale_factor=(te_pt_ave-le_pt).norm();
-
-            // translate leading edge to origin
-            data_type ct(std::cos(theta)), st(std::sin(theta));
-
-            // any theta less than ~0.5730 deg. will be considered zero and scale factors
-            // within between 0.999 and 1.001 will be considered one
-            if ((std::abs(theta) < 0.01) && (std::abs(scale_factor-1) < 0.001))
-            {
-              theta=0;
-              scale_factor=1;
-            }
-            else
-            {
-              point_type pt;
-
-              for (i=0; i<npts; ++i)
-              {
-                // translate to get leading edge at origin
-                S.row(i)-=le_pt;
-
-                // rotate back to chord line along x-axis
-                pt = S.row(i);
-                S.row(i) << (pt.x()*ct-pt.y()*st), (pt.x()*st+pt.y()*ct), pt.z();
-
-                // scale
-                S.row(i) /= scale_factor;
-
-//                std::cout << "pt[" << std::setw(2) << i << "]=" << S.row(i) << std::endl;
-              }
-
-              // need to transform trailing edge points
-              te_pt[LOWER]-=le_pt;
-              te_pt[UPPER]-=le_pt;
-              pt=te_pt[LOWER]; te_pt[LOWER] << (pt.x()*ct-pt.y()*st), (pt.x()*st+pt.y()*ct), pt.z();
-              pt=te_pt[UPPER]; te_pt[UPPER] << (pt.x()*ct-pt.y()*st), (pt.x()*st+pt.y()*ct), pt.z();
-              te_pt[LOWER]/= scale_factor;
-              te_pt[UPPER]/= scale_factor;
-            }
-
-            // need to return the angle needed to rotate a canonical airfoil to this orientation
-            theta=-theta;
 
             // extract trailing edge thicknesses and slopes for fitting
             data_type dte[2], te_slope[2];
 
-            dte[LOWER]=te_pt[LOWER].y();
-            dte[UPPER]=te_pt[UPPER].y();
-            te_slope[LOWER]=(te_pt[LOWER].y()-S(iupper-1,1))/(te_pt[LOWER].x()-S(iupper-1,0));
-            te_slope[UPPER]=(te_pt[UPPER].y()-S(npts-1  ,1))/(te_pt[UPPER].x()-S(npts-1  ,0));
+            dte[LOWER]=fit_point.row(n_te[LOWER]).y();
+            dte[UPPER]=fit_point.row(n_te[UPPER]).y();
+            te_slope[LOWER]=(dte[LOWER]-fit_point.row(n_te[LOWER]+1).y())/(fit_point.row(n_te[LOWER]).x()-fit_point.row(n_te[LOWER]+1).x());
+            te_slope[UPPER]=(dte[UPPER]-fit_point.row(n_te[UPPER]-1).y())/(fit_point.row(n_te[UPPER]).x()-fit_point.row(n_te[UPPER]-1).x());
 
-            // record the indices for the control point vector
-            index_type n[2], ile[2], ite[2], ncp;
+//            std::cout << "theta_out=" << theta << " te_slope_upper=" << te_slope[UPPER] << " te_slope_lower=" << te_slope[LOWER] << std::endl;
 
-            n[LOWER] = get_lower_shape_degree();
-            n[UPPER] = get_upper_shape_degree();
-            ile[LOWER] = 0;
-            ile[UPPER] = n[LOWER]+1;
-            ite[LOWER] = n[LOWER];
-            ite[UPPER] = n[LOWER]+n[UPPER]+1;
-            ncp        = ite[UPPER]+1;
-
-            // Transform airfoil y-coordinates to the Shape function form
-            for (i=0; i<npts; ++i)
-            {
-              data_type x;
-              index_type itemp((i<iupper)?(LOWER):(UPPER));
-
-              x=S(i,0);
-              S(i,1)=(S(i,1)-x*dte[itemp])/(sqrt(x)*(1-x));
-            }
 
             // Fit points to 1-D control points
+            index_type ncp, deg[2], ile[2], ite[2];
+            deg[LOWER] = get_lower_shape_degree();
+            deg[UPPER] = get_upper_shape_degree();
+            ile[LOWER] = 0;
+            ile[UPPER] = deg[LOWER]+1;
+            ite[LOWER] = deg[LOWER];
+            ite[UPPER] = deg[LOWER]+deg[UPPER]+1;
+            ncp        = ite[UPPER]+1;
+
             // * Make sure that the two Shape functions satisfy the curvature continuity relation P0,u=-P0,l
-            // * Make sure that the two Shape functions satisfy the trailing edge slope condition
-            index_type neqcond;
-            neqcond=(approx_te_slope) ? (3) : (1);
+            // * (Optional) Make sure that the two Shape functions satisfy the trailing edge slope condition
+            // * (Optional) Make sure that desired leading edge is on curve if not where actual leading edge is
+            index_type neqcond, npts;
+            neqcond=(approx_te_slope) ? (3) : (1); // if approximating trailing edge slopes then adds two equality conditions
+            npts=fit_point.rows()-3; // do not use lead edge (1) or trailing edges (2)
+            if (manual_leading_edge)
+            {
+              ++neqcond; // one more equality condition for going through desired leading edge point
+              --npts;    // one less fitting point because it is an equality condition
+            }
 
             // create new coefficient matrices and rhs vectors
             Eigen::Matrix<data_type, Eigen::Dynamic, Eigen::Dynamic> A(npts,    ncp);
@@ -437,51 +476,107 @@ namespace eli
               B(1,ite[LOWER])=1; d_rhs(1)=dte[LOWER]-te_slope[LOWER];
               B(2,ite[UPPER])=1; d_rhs(2)=dte[UPPER]-te_slope[UPPER];
             }
+            if (manual_leading_edge)
+            {
+              index_type itemp, ind_offset;
+
+              // if desired leading edge is on lower surface
+              if (extra_points_lower)
+              {
+                itemp=LOWER;
+                ind_offset=0;
+              }
+              // else desired leading edge is on uppers surface
+              else
+              {
+                itemp=UPPER;
+                ind_offset=deg[LOWER]+1;
+              }
+
+              data_type t(fit_point.row(n_le_des).x());
+              Eigen::Matrix<data_type, Eigen::Dynamic, 1> co;
+
+              eli::geom::utility::bezier_coefficient_factors(co, t, deg[itemp]);
+              for (index_type j=0; j<=deg[itemp]; ++j)
+              {
+                B(3,j+ind_offset)=co(j);
+              }
+              d_rhs(3)=(fit_point.row(n_le_des).y()-t*dte[itemp])/(sqrt(t)*(1-t));
+
+//              std::cout << "B.row(3)=" << B.row(3) << std::endl << "d_rhs(3)=" << d_rhs(3) << std::endl;
+            }
 
             // fill the least squares constraints
             {
-              data_type coef, k, tau, t;
-
               A.setZero();
               b_rhs.setZero();
-              for (i=0; i<iupper; ++i)
+              for (i=1; i<static_cast<index_type>(fit_point.rows()-1); ++i)
               {
-                coef=1;
-                k=1;
-                t=S(i,0);
-                tau=std::pow(1-t, n[LOWER]);
-                A(i,0)=coef*k*tau;
-                for (index_type j=1; j<=n[LOWER]; ++j)
+                if ((i!=n_le_act) && (i!=n_le_des))
                 {
-                  k*=static_cast<data_type>(n[LOWER]-j+1)/j;
-                  tau*=t/(1-t);
-                  A(i,j)=coef*k*tau;
+                  index_type itemp, ind_offset, row_offset;
+
+                  if (i<n_le_act)
+                  {
+                    itemp=LOWER;
+                    ind_offset=0;
+                    row_offset=1;
+                  }
+                  else
+                  {
+                    itemp=UPPER;
+                    ind_offset=deg[LOWER]+1;
+                    row_offset=2;
+                  }
+                  if (manual_leading_edge && (i>n_le_des))
+                  {
+                    ++row_offset;
+                  }
+
+                  data_type t(fit_point.row(i).x());
+                  Eigen::Matrix<data_type, Eigen::Dynamic, 1> co;
+
+                  eli::geom::utility::bezier_coefficient_factors(co, t, deg[itemp]);
+                  for (index_type j=0; j<=deg[itemp]; ++j)
+                  {
+                    A(i-row_offset,j+ind_offset)=co(j);
+                  }
+
+                  // hack for rare cases when still get negative t
+                  if (t<=0)
+                  {
+//                    std::cout << "negative t at point " << i << " :" << fit_point.row(i) << std::endl;
+//                    std::cout << "fit points:" << fit_point << std::endl;
+                    A.row(i-row_offset)=A.row(i-row_offset-1);
+                    b_rhs(i-row_offset)=b_rhs(i-row_offset-1);
+                  }
+                  else
+                  {
+                    b_rhs(i-row_offset)=(fit_point.row(i).y()-t*dte[itemp])/(sqrt(t)*(1-t));
+//                    std::cout << "i=" << std::setw(3) << i << "\tt=" << t << "\tb_rhs(" << std::setw(3) << i << ")=" << b_rhs(i-row_offset) << std::endl;
+                  }
                 }
-                b_rhs(i)=S(i,1);
-              }
-              for (i=iupper; i<npts; ++i)
-              {
-                coef=1;
-                k=1;
-                t=S(i,0);
-                tau=std::pow(1-t, n[UPPER]);
-                A(i,n[LOWER]+1)=coef*k*tau;
-                for (index_type j=1; j<=n[UPPER]; ++j)
-                {
-                  k*=static_cast<data_type>(n[UPPER]-j+1)/j;
-                  tau*=t/(1-t);
-                  A(i,j+n[LOWER]+1)=coef*k*tau;
-                }
-                b_rhs(i)=S(i,1);
               }
             }
 
             eli::mutil::opt::least_squares_eqcon(cp, A, b_rhs, B, d_rhs);
 
+//            std::cout << "A=" << A << std::endl;
+//            {
+//              Eigen::JacobiSVD<Eigen::Matrix<data_type, Eigen::Dynamic, Eigen::Dynamic>> svd(A);
+//              std::cout << "Cond(A)=" << svd.singularValues()(0) / svd.singularValues()(svd.singularValues().size()-1) << std::endl;
+//            }
+//            std::cout << "b_rhs=" << b_rhs << std::endl;
+//            std::cout << "B=" << B << std::endl;
+//            {
+//              Eigen::JacobiSVD<Eigen::Matrix<data_type, Eigen::Dynamic, Eigen::Dynamic>> svd(B);
+//              std::cout << "Cond(B)=" << svd.singularValues()(0) / svd.singularValues()(svd.singularValues().size()-1) << std::endl;
+//            }
+//            std::cout << "d_rhs=" << d_rhs << std::endl;
 //            std::cout << "cp=" << cp << std::endl;
 
             // Create CST airfoil from control points
-            cst.resize(n[UPPER], n[LOWER]);
+            cst.resize(deg[UPPER], deg[LOWER]);
             {
               typedef typename cst_airfoil_type::control_point_type cst_control_point_type;
 
@@ -494,12 +589,26 @@ namespace eli
               }
               for (i=0; i<=cst.upper_degree(); ++i)
               {
-                cp_temp[0] << cp(i+n[LOWER]+1);
+                cp_temp[0] << cp(i+deg[LOWER]+1);
                 cst.set_upper_control_point(cp_temp[0], i);
               }
 
               // set the trailing edge thickness of CST airfoil
               cst.set_trailing_edge_thickness(dte[UPPER], -dte[LOWER]);
+
+//              if (manual_leading_edge && (typeid(data_type)==typeid(float)))
+//              {
+//                std::cout.flush();
+//                eli::test::octave_start(1);
+//                // print out the upper surface points
+//                for (size_t n=0; n<fit_point.rows(); ++n)
+//                {
+//                  std::string name("pt"); name+=std::to_string(n);
+//                  eli::test::octave_print(1, fit_point.row(n), name);
+//                }
+//                eli::test::octave_print(1, cst, "cst");
+//                eli::test::octave_finish(1, true);
+//              }
             }
 
             return true;
@@ -508,20 +617,32 @@ namespace eli
           virtual bool create(piecewise<bezier, data_type, dim__, tolerance_type> &pc) const
           {
             cst_airfoil_type cst;
-            point_type le;
-            data_type theta, scale_factor;
+            point_type translate_out;
+            Eigen::Matrix<data_type, dim__, dim__> tranform_out;
+            data_type actual_leading_edge_t;
 
             // create the CST airfoil
-            if (!create(cst, le, theta, scale_factor))
+            if (!create(cst, tranform_out, translate_out, actual_leading_edge_t))
             {
               assert(false);
               return false;
             }
 
+//            if (typeid(data_type)==typeid(float))
+//            {
+//              std::cout.flush();
+//              eli::test::octave_start(1);
+//              // print out the upper surface points
+//              eli::test::octave_print(1, cst, "cst");
+//              eli::test::octave_finish(1, true);
+//            }
+
             // build piecewise bezier curve using CST Airfoil creator
             {
               typedef eli::geom::curve::piecewise_cst_airfoil_creator<data__, 3, tolerance_type> airfoil_creator_type;
 
+              piecewise<bezier, data_type, dim__, tolerance_type> pc_temp;
+              typename piecewise<bezier, data_type, dim__, tolerance_type>::curve_type curve_temp;
               airfoil_creator_type pcst;
               bool rtn_flag;
 
@@ -534,24 +655,55 @@ namespace eli
               pcst.set_t0(this->get_t0());
               pcst.set_segment_dt(this->get_segment_dt(0), 0);
               pcst.set_segment_dt(this->get_segment_dt(1), 1);
-              rtn_flag=pcst.create(pc);
+              rtn_flag=pcst.create(pc_temp);
               if (!rtn_flag)
               {
                 return false;
+              }
+
+              // split based on desired leading edge & redo indexing
+              tolerance_type tol;
+              if (!tol.approximately_equal(actual_leading_edge_t,0))
+              {
+                data_type t_split, tsqrt(std::sqrt(std::abs(actual_leading_edge_t))), dt[3];
+
+                // since actual Bezier parameterization of CST curve is x=t^2, need to take sqrt() of CST t
+                if (actual_leading_edge_t<0)
+                {
+                  t_split=this->get_t0()+(1-tsqrt)*this->get_segment_dt(0);
+                  dt[0]=this->get_segment_dt(0);
+                  dt[1]=tsqrt*this->get_segment_dt(1);
+                  dt[2]=(1-tsqrt)*this->get_segment_dt(1);
+                }
+                else
+                {
+                  t_split=this->get_t0()+this->get_segment_dt(0)+tsqrt*this->get_segment_dt(1);
+                  dt[0]=(1-tsqrt)*this->get_segment_dt(0);
+                  dt[1]=tsqrt*this->get_segment_dt(0);
+                  dt[2]=this->get_segment_dt(1);
+                }
+//                std::cout << "split index=" << t_split << "\tf(t_split)=" << pc_temp.f(t_split) << std::endl;
+                pc_temp.split(t_split);
+
+                pc.set_t0(this->get_t0());
+                pc_temp.get(curve_temp, 0);
+                pc.push_back(curve_temp, dt[0]);
+                pc_temp.get(curve_temp, 1);
+                pc.push_back(curve_temp, dt[1]);
+                pc_temp.get(curve_temp, 2);
+                pc.push_back(curve_temp, dt[2]);
+              }
+              else
+              {
+                pc=pc_temp;
               }
             }
 
             // scale, rotate, & translate back to original
             // Need to use the translation, rotation, and scaling as member variables. Get
             // them from the get operators.
-            typename piecewise<bezier, data_type, dim__, tolerance_type>::rotation_matrix_type rmat;
-
-            rmat.setIdentity();
-            rmat(0,0)=std::cos(theta); rmat(0,1)=-std::sin(theta);
-            rmat(1,0)=-rmat(0,1);      rmat(1,1)=rmat(0,0);
-            pc.scale(scale_factor);
-            pc.rotate(rmat);
-            pc.translate(le);
+            pc.translate(-translate_out);
+            pc.rotate(tranform_out.inverse());
 
             return true;
           }

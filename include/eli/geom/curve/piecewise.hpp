@@ -620,7 +620,7 @@ namespace eli
             segments.swap(rseg);
 
             // Parametric length should stay the same.
-            assert(t == tmax);
+            // assert(t == tmax);
 
             // check if still connected
             assert(check_continuity(eli::geom::general::C0));
@@ -975,77 +975,24 @@ namespace eli
             if (index>=number_segments())
               return INVALID_INDEX;
 
-            typename segment_collection_type::iterator scit, scito;
+            typename segment_collection_type::iterator scit;
             find_segment(scit, index);
 
-            // Find parameter span to insert
-            data_type pt0(p.get_parameter_min()), ptmax(p.get_parameter_max()), ptspan(ptmax - pt0);
-
-            // get the first and last curve to insert
-            typename segment_collection_type::const_iterator itps, itpe;
-            curve_type cs, ce;
-            data_type dts, dte;
-
-            itps = p.segments.begin();
-            cs = itps->second;
-            dts = p.get_delta_t(itps);
-
-            itpe = p.segments.end(); --itpe;
-            ce = itpe->second;
-            dte = p.get_delta_t(itpe);
-
-            // Find parameter span of segment to replace
-            data_type dti, dto;
-            dti = get_delta_t(scit);
-
-            // Ratio of parameter lengths, replace/insert
-            data_type pratio = dti/ptspan;
-
-            // check the connectivity on adjacent nodes (if available)
-            if (index>0)
-            {
-              scito=scit;
-              --scito;
-              dto = get_delta_t(scito);
-              if (!eli::geom::utility::check_point_continuity(scito->second, dto, cs, dts*pratio, eli::geom::general::C0, tol))
-              {
-                return SEGMENT_NOT_CONNECTED;
-              }
-            }
-            if ((index+1)<number_segments())
-            {
-              scito=scit;
-              ++scito;
-              dto = get_delta_t(scito);
-              if (!eli::geom::utility::check_point_continuity(ce, dte*pratio, scito->second, dto, eli::geom::general::C0, tol))
-              {
-                return SEGMENT_NOT_CONNECTED;
-              }
-            }
-
-            typename segment_collection_type::const_iterator it=itps;
-            typename segment_collection_type::iterator itguess = scit;
-
-            data_type dtp = dts;
-
-            data_type t = scit->first;
-
-            // Substitute first curve
-            scit->second = it->second;
-
-            t += dtp*pratio;
-
-            for(++it; it != p.segments.end(); ++it)
-            {
-              itguess = segments.insert(itguess, std::make_pair(t, it->second));
-              dtp = p.get_delta_t(it);
-              t += dtp*pratio;
-            }
-
-            assert(check_continuity(eli::geom::general::C0));
-
-            return NO_ERRORS;
+            return replace_it( p, scit );
           }
+
+          error_code replace_t(const piecewise<curve__, data_type, dim__> &p, const data_type &t0)
+          {
+            data_type tt;
+            typename segment_collection_type::iterator scit;
+            find_segment(scit, tt, t0 );
+
+            return replace_it( p, scit );
+          }
+
+
+
+
 
           /** index0 - start index of segments to replace
             * index1 - index of the first segment after the ones to be replaced
@@ -2235,6 +2182,83 @@ namespace eli
             }
 
           }
+
+          error_code replace_it(const piecewise<curve__, data_type, dim__> &p, typename segment_collection_type::iterator &scit)
+          {
+            typename segment_collection_type::iterator scito;
+
+            // Find parameter span to insert
+            data_type pt0(p.get_parameter_min()), ptmax(p.get_parameter_max()), ptspan(ptmax - pt0);
+
+            // get the first and last curve to insert
+            typename segment_collection_type::const_iterator itps, itpe;
+            curve_type cs, ce;
+            data_type dts, dte;
+
+            itps = p.segments.begin();
+            cs = itps->second;
+            dts = p.get_delta_t(itps);
+
+            itpe = p.segments.end(); --itpe;
+            ce = itpe->second;
+            dte = p.get_delta_t(itpe);
+
+            // Find parameter span of segment to replace
+            data_type dti, dto;
+            dti = get_delta_t(scit);
+
+            // Ratio of parameter lengths, replace/insert
+            data_type pratio = dti/ptspan;
+
+            // check the connectivity on adjacent nodes (if available)
+            if (scit != segments.begin())
+            {
+              scito=scit;
+              --scito;
+              dto = get_delta_t(scito);
+              if (!eli::geom::utility::check_point_continuity(scito->second, dto, cs, dts*pratio, eli::geom::general::C0, tol))
+              {
+                return SEGMENT_NOT_CONNECTED;
+              }
+            }
+            if (scit != segments.end() )
+            {
+              scito=scit;
+              ++scito;
+              if (scito != segments.end() )
+              {
+                dto = get_delta_t(scito);
+                if (!eli::geom::utility::check_point_continuity(ce, dte*pratio, scito->second, dto, eli::geom::general::C0, tol))
+                {
+                  return SEGMENT_NOT_CONNECTED;
+                }
+              }
+            }
+
+            typename segment_collection_type::const_iterator it=itps;
+            typename segment_collection_type::iterator itguess = scit;
+
+            data_type dtp = dts;
+
+            data_type t = scit->first;
+
+            // Substitute first curve
+            scit->second = it->second;
+
+            t += dtp*pratio;
+
+            for(++it; it != p.segments.end(); ++it)
+            {
+              itguess = segments.insert(itguess, std::make_pair(t, it->second));
+              dtp = p.get_delta_t(it);
+              t += dtp*pratio;
+            }
+
+            assert(check_continuity(eli::geom::general::C0));
+
+            return NO_ERRORS;
+          }
+
       };
     }
   }
