@@ -551,6 +551,50 @@ namespace eli
         }
       }
 
+      template<typename Derived1, typename Derived2, typename Derived3>
+      void multiply_scaled_bezier1d(Eigen::MatrixBase<Derived1> &c, const Eigen::MatrixBase<Derived2> &a, const Eigen::MatrixBase<Derived3> &b)
+      {
+        typename Derived1::Index i, j, k, m( a.rows() - 1 ), n( b.rows() - 1 );
+
+        // dimension check
+        assert( b.cols() == 1 );
+        assert( a.cols() == c.cols() );
+
+        assert( c.rows() == m + n + 1 );
+
+        for ( j = 0; j <= n; ++j )
+        {
+          for ( i = 0; i <= m; i++ )
+          {
+            k = i + j;
+            c.row(k) = c.row(k) + b.row(j).col(0) * a.row(i);
+          }
+        }
+      }
+
+      template<typename Derived1, typename Derived2>
+      void sqrt_scaled_bezier(Eigen::MatrixBase<Derived1> &c, const Eigen::MatrixBase<Derived2> &a)
+      {
+        typename Derived1::Index i, j, k, m( c.rows() - 1 );
+
+        // dimension check
+        assert( a.cols() == c.cols() );
+        assert( a.rows() == m + m + 1 );
+
+        c.row(0) = a.row(0).cwiseSqrt();
+        for ( k = 1; k <= m; ++k )
+        {
+          c.row(k) = a.row(k); // Initialize to compute coeff in place.
+          for ( j = 1; j < k; ++j ) // Coeffs before k are known.  Start subtraction at 1.
+          {
+            i = k - j; // Only interested in k = i + j boundary case.
+            c.row(k) = c.row(k) - c.row(j).cwiseProduct(c.row(i));  // Subtract off known terms
+          }
+
+          c.row(k) = ( 0.5 * c.row(k) ).cwiseQuotient( c.row(0) );  // Divide off known zero coeff.
+        }
+      }
+
     }
   }
 }

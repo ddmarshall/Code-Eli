@@ -276,6 +276,18 @@ namespace eli
           typedef data__ data_type;
           typedef unsigned short dimension_type;
           typedef tol__ tolerance_type;
+
+          typedef typename curve_type::onedbezcurve onedbezcurve;
+          typedef piecewise<curve__, data_type, 1, tol__> onedpiecewisecurve;
+          typedef piecewise<curve__, data_type, 2, tol__> twodpiecewisecurve;
+          typedef piecewise<curve__, data_type, 3, tol__> threedpiecewisecurve;
+          typedef piecewise<curve__, data_type, 4, tol__> fourdpiecewisecurve;
+
+          friend onedpiecewisecurve;
+          friend twodpiecewisecurve;
+          friend threedpiecewisecurve;
+          friend fourdpiecewisecurve;
+
           enum error_code
           {
             NO_ERRORS=0,
@@ -1854,6 +1866,120 @@ namespace eli
             }
 
             it->second.frenet_serret_frame(t, n, b, tt);
+          }
+
+          void product(const piecewise<curve__, data_type, dim__> &a, const piecewise<curve__, data_type, dim__> &b)
+          {
+            set_t0( a.get_t0() );
+
+            typename segment_collection_type::const_iterator scita, scitb;
+            scita=a.segments.begin();
+            scitb=b.segments.begin();
+            for ( ; scita!=a.segments.end(); ++scita, ++scitb)
+            {
+              curve_type c;
+
+              c.product( scita->second, scitb->second );
+
+              push_back( c, a.get_delta_t(scita) );
+            }
+          }
+
+          void product1d(const piecewise<curve__, data_type, dim__> &a, const piecewise<curve__, data_type, 1> &b)
+          {
+            set_t0( a.get_t0() );
+
+            typename segment_collection_type::const_iterator scita;
+            typename onedpiecewisecurve::segment_collection_type::const_iterator scitb;
+            scita=a.segments.begin();
+            scitb=b.segments.begin();
+            for ( ; scita!=a.segments.end(); ++scita, ++scitb)
+            {
+              curve_type c;
+
+              c.product1d( scita->second, scitb->second );
+
+              push_back( c, a.get_delta_t(scita) );
+            }
+          }
+
+          void square(const piecewise<curve__, data_type, dim__> &a)
+          {
+            set_t0( a.get_t0() );
+
+            typename segment_collection_type::const_iterator scita;
+            for ( scita=a.segments.begin(); scita!=a.segments.end(); ++scita)
+            {
+              curve_type c;
+
+              c.square( scita->second );
+
+              push_back( c, a.get_delta_t(scita) );
+            }
+          }
+
+          void sqrt(const piecewise<curve__, data_type, dim__> &a)
+          {
+            set_t0( a.get_t0() );
+
+            typename segment_collection_type::const_iterator scita;
+            for ( scita=a.segments.begin(); scita!=a.segments.end(); ++scita)
+            {
+              curve_type c, b( scita->second );
+
+              bool flip = false;
+
+              if ( b.f(0).x() < 1e-12 )
+              {
+                b.reverse();
+                flip = true;
+              }
+
+              c.sqrt( b );
+
+              if ( flip )
+              {
+                c.reverse();
+              }
+
+              push_back( c, a.get_delta_t(scita) );
+            }
+          }
+
+          void sum(const piecewise<curve__, data_type, dim__> &a, const piecewise<curve__, data_type, dim__> &b)
+          {
+            set_t0( a.get_t0() );
+
+            typename segment_collection_type::const_iterator scita, scitb;
+            scita=a.segments.begin();
+            scitb=b.segments.begin();
+            for ( ; scita!=a.segments.end(); ++scita, ++scitb)
+            {
+              curve_type c;
+
+              c.sum( scita->second, scitb->second );
+
+              push_back( c, a.get_delta_t(scita) );
+            }
+          }
+
+          onedpiecewisecurve sumcompcurve()
+          {
+            onedpiecewisecurve retcurve;
+
+            retcurve.set_t0( get_t0() );
+
+            typename segment_collection_type::const_iterator scit;
+            for ( scit = segments.begin(); scit!=segments.end(); ++scit)
+            {
+              typename curve_type::onedbezcurve c;
+
+              c = scit->second.sumcompcurve();
+
+              retcurve.push_back( c, get_delta_t(scit) );
+            }
+
+            return retcurve;
           }
 
           // TODO: NEED TO IMPLEMENT
