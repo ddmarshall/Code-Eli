@@ -21,6 +21,7 @@
 #include "eli/code_eli.hpp"
 
 #include "eli/mutil/nls/iterative_root_base_constrained.hpp"
+#include "eli/mutil/nls/bisection_method.hpp"
 
 #include "eli/geom/point/distance.hpp"
 #include "eli/geom/curve/piecewise.hpp"
@@ -138,6 +139,47 @@ namespace eli
 
         // find the root
         nrm.find_root(t, g, gp, 0);
+
+        // if root is within bounds and is closer than initial guess
+        {
+          assert((t>=c.get_t0()) && (t<=c.get_tmax()));
+
+          dist = eli::geom::point::distance(c.f(t), pt)-r0;
+          if ( abs(dist) <= abs(dist0) )
+          {
+            return dist;
+          }
+        }
+
+        // couldn't find better answer so return initial guess
+        t=t0;
+        return dist0;
+      }
+
+      template<typename curve__>
+      typename curve__::data_type specified_distance(typename curve__::data_type &t, const curve__ &c, const typename curve__::point_type &pt, const typename curve__::data_type &r0)
+      {
+        eli::mutil::nls::bisection_method<typename curve__::data_type> bm;
+        internal::curve_spec_g_functor<curve__> g;
+        typename curve__::data_type t0, dist0, dist;
+        typename curve__::tolerance_type tol;
+
+        // setup the functors
+        g.pc=&c;
+        g.pt=pt;
+        g.r0=r0;
+
+        // setup the solver
+        bm.set_absolute_f_tolerance(tol.get_absolute_tolerance());
+        bm.set_max_iteration(20);
+        bm.set_bounds( c.get_t0(), c.get_tmax() );
+
+        // set the initial guess
+        t0 = 0.5 * ( c.get_t0() + c.get_tmax() );
+        dist0=eli::geom::point::distance(c.f(t0), pt)-r0;
+
+        // find the root
+        bm.find_root(t, g, 0);
 
         // if root is within bounds and is closer than initial guess
         {
