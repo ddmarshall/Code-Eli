@@ -1204,6 +1204,33 @@ namespace eli
             return NO_ERRORS;
           }
 
+          void match_pmap( piecewise<curve__, data_type, dim__> &other )
+          {
+            std::vector < data_type > pmap, omap, cmap;
+
+            get_pmap( pmap );
+            other.get_pmap( omap );
+
+
+            tolerance_type ttol(tol);
+
+            // Comparison function for set_union.
+            auto comp = [&ttol](const data_type &x1, const data_type &x2)->bool
+            {
+              return ttol.approximately_less_than(x1, x2);
+            };
+
+            // Place union of pmap and omap into cmap.
+            std::set_union( pmap.begin(), pmap.end(), omap.begin(), omap.end(), std::back_inserter(cmap), comp );
+
+            for ( int i = 0; i < cmap.size(); i++ )
+            {
+              split( cmap[i] );
+              other.split( cmap[i] );
+            }
+          }
+
+
           void to_cubic(const data_type &ttol)
           {
             typename segment_collection_type::iterator it;
