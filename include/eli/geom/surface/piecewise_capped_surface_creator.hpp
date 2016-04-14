@@ -96,22 +96,22 @@ namespace eli
             {
               case (CAP_UMIN):
               {
-                orig_surface.get_uconst_curve(edge, orig_surface.get_u0());
+                orig_surface.get_umin_bndy_curve( edge );
                 break;
               }
               case (CAP_UMAX):
               {
-                orig_surface.get_uconst_curve(edge, orig_surface.get_umax());
+                orig_surface.get_umax_bndy_curve( edge );
                 break;
               }
               case (CAP_VMIN):
               {
-                orig_surface.get_vconst_curve(edge, orig_surface.get_v0());
+                orig_surface.get_vmin_bndy_curve( edge );
                 break;
               }
               case (CAP_VMAX):
               {
-                orig_surface.get_vconst_curve(edge, orig_surface.get_vmax());
+                orig_surface.get_vmax_bndy_curve( edge );
                 break;
               }
               default:
