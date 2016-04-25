@@ -157,7 +157,7 @@ namespace eli
       }
 
       template<typename curve__>
-      typename curve__::data_type specified_distance(typename curve__::data_type &t, const curve__ &c, const typename curve__::point_type &pt, const typename curve__::data_type &r0)
+      typename curve__::data_type specified_distance(typename curve__::data_type &t, const curve__ &c, const typename curve__::point_type &pt, const typename curve__::data_type &r0, const typename curve__::data_type &tmin, const typename curve__::data_type &tmax )
       {
         eli::mutil::nls::bisection_method<typename curve__::data_type> bm;
         internal::curve_spec_g_functor<curve__> g;
@@ -172,7 +172,7 @@ namespace eli
         // setup the solver
         bm.set_absolute_f_tolerance(tol.get_absolute_tolerance());
         bm.set_max_iteration(20);
-        bm.set_bounds( c.get_t0(), c.get_tmax() );
+        bm.set_bounds( tmin, tmax );
 
         // set the initial guess
         t0 = 0.5 * ( c.get_t0() + c.get_tmax() );
@@ -195,6 +195,12 @@ namespace eli
         // couldn't find better answer so return initial guess
         t=t0;
         return dist0;
+      }
+
+      template<typename curve__>
+      typename curve__::data_type specified_distance(typename curve__::data_type &t, const curve__ &c, const typename curve__::point_type &pt, const typename curve__::data_type &r0)
+      {
+        return specified_distance( t, c, pt, r0, c.get_t0(), c.get_tmax() );
       }
 
     }
