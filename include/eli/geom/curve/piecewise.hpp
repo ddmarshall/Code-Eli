@@ -277,6 +277,8 @@ namespace eli
           typedef unsigned short dimension_type;
           typedef tol__ tolerance_type;
 
+          typedef piecewise<curve__, data_type, dim__> piecewise_curve_type;
+
           typedef typename curve_type::onedbezcurve onedbezcurve;
           typedef piecewise<curve__, data_type, 1, tol__> onedpiecewisecurve;
           typedef piecewise<curve__, data_type, 2, tol__> twodpiecewisecurve;
@@ -297,6 +299,14 @@ namespace eli
             INVALID_PARAM_DIFFERENCE=51,
             SEGMENT_NOT_CONNECTED=100,
             UNKNOWN_ERROR=999
+          };
+
+          enum mod_type
+          {
+            FLAT,
+            ROUND,
+            EDGE,
+            SHARP
           };
 
         public:
@@ -1478,6 +1488,203 @@ namespace eli
 
             return true;
           }
+
+          // Modify a curve around parameter t.  Remove +-dt and replace with generated curve segment.
+          void modify( const index_type &mod, const data_type &t, const data_type &dt, const data_type &len_factor, const data_type &off_factor, const data_type &str_factor )
+          {
+            data_type tmin = get_parameter_min();
+            data_type tmax_save = tmax;
+
+            data_type tstart, tend;
+
+            bool mod_ends = false;
+
+            if ( tol.approximately_equal( tmin, t ) || tol.approximately_equal( tmax, t ) )
+            {
+              tstart = tmax - dt;
+              tend = tmin + dt;
+              mod_ends = true;
+            }
+            else
+            {
+              tstart = t - dt;
+              tend = t + dt;
+              mod_ends = false;
+            }
+
+            point_type pstart, pend, tanstart, tanend, tjunk;
+
+            // Evaluate point and tangents as needed.
+            pstart = f( tstart );
+            tangents( tstart, tanstart, tjunk );
+            pend = f ( tend );
+            tangents( tend, tjunk, tanend );
+            tanend = -1.0 * tanend;
+
+            // Variable to store new curve segments.
+            curve_type cstart, cend;
+
+            // Distance to close.
+            data_type d = dist( pstart, pend );
+
+            if ( tol.approximately_equal( d, 0 ) )
+            {
+              return;
+            }
+
+            switch ( mod )
+            {
+            case ROUND:
+              {
+                point_type disp = pstart - pend;
+                disp.normalize();
+
+                // Find angles between tangents and displacement
+                data_type dottanstart = disp.dot( tanstart );
+                data_type thetastart = acos( dottanstart );
+
+                data_type dottanend = disp.dot( tanend );
+                data_type thetaend = acos( dottanend );
+
+                // Find circular arc to include
+                data_type theta = eli::constants::math<data__>::pi() + thetaend - thetastart;
+
+                if ( tol.approximately_equal( theta, 0 ) )
+                {
+                  return;
+                }
+
+                // Find radius from chord length.
+                data_type radius = d / ( 2.0 * sin( theta / 2.0 ) );
+
+                // Distance to quad Bezier construction point.
+                data_type b = radius * tan( theta / 4.0 );
+
+                // Extrapolated tip up/down points.
+                point_type ptstart, ptend;
+                ptstart = pstart + tanstart * b * len_factor;
+                ptend = pend + tanend * b * len_factor;
+
+                // Displacement vector at extrapolated tip
+                point_type dispt = ptstart - ptend;
+
+                // Point on center of circle.
+                point_type psplit = ( ptstart + ptend ) * 0.5 + dispt * off_factor;
+
+                // Fraction of radius to place cubic control point
+                data_type f = (4.0/3.0) * tan(theta / 8.0);
+
+                cstart.resize(3);
+                cend.resize(3);
+
+                cstart.set_control_point( pstart, 0 );
+                cstart.set_control_point( pstart + tanstart * radius * f * len_factor, 1 );
+                cstart.set_control_point( psplit + disp * radius * f, 2 );
+                cstart.set_control_point( psplit, 3 );
+
+                cend.set_control_point( psplit, 0 );
+                cend.set_control_point( psplit - disp * radius * f, 1 );
+                cend.set_control_point( pend + tanend * radius * f * len_factor, 2 );
+                cend.set_control_point( pend, 3 );
+              }
+              break;
+            case EDGE:
+              {
+                point_type pt1 = pstart + d * tanstart * len_factor * 0.5;
+                point_type pt2 = pend + d * tanend * len_factor * 0.5;
+
+                point_type disp = pstart - pend;
+                disp.normalize();
+
+                point_type dispt = pt1 - pt2;
+                data_type tipht = dispt.norm();
+
+                point_type psplit = ( pt1 + pt2 ) * 0.5 + disp * tipht * off_factor;
+
+                cstart.resize(1);
+                cend.resize(1);
+
+                cstart.set_control_point( pstart, 0 );
+                cstart.set_control_point( psplit, 1 );
+
+                cend.set_control_point( psplit, 0 );
+                cend.set_control_point( pend, 1 );
+              }
+              break;
+            case SHARP:
+              {
+                point_type pt1 = pstart + d * tanstart * len_factor * 0.5;
+                point_type pt2 = pend + d * tanend * len_factor * 0.5;
+
+                point_type disp = pstart - pend;
+                disp.normalize();
+
+                point_type dispt = pt1 - pt2;
+                data_type tipht = dispt.norm();
+
+                point_type psplit = ( pt1 + pt2 ) * 0.5 + disp * tipht * off_factor;
+
+                point_type cp1 = pstart + d * tanstart * len_factor * 0.5 * str_factor;
+                point_type cp2 = pend + d * tanend * len_factor * 0.5 * str_factor;
+
+                cstart.resize(2);
+                cend.resize(2);
+
+                cstart.set_control_point( pstart, 0 );
+                cstart.set_control_point( cp1, 1 );
+                cstart.set_control_point( psplit, 2 );
+
+                cend.set_control_point( psplit, 0 );
+                cend.set_control_point( cp2, 1 );
+                cend.set_control_point( pend, 2 );
+              }
+              break;
+            case FLAT:
+            default:
+              {
+                point_type padd = ( pstart + pend ) * 0.5;
+
+                cstart.resize(1);
+                cend.resize(1);
+
+                cstart.set_control_point( pstart, 0 );
+                cstart.set_control_point( padd, 1 );
+
+                cend.set_control_point( padd, 0 );
+                cend.set_control_point( pend, 1 );
+                break;
+              }
+            }
+
+            if ( mod_ends )
+            {
+              // Make sure curves are split at modification points.
+              split( tstart );
+              split( tend );
+
+              replace( cend, 0 );
+              replace( cstart, number_segments() - 1 );
+            }
+            else
+            {
+              piecewise_curve_type cbefore, cjunk, cafter;
+
+              split( cbefore, cjunk, tstart );
+              split( cjunk, cafter, tend );
+
+              cbefore.push_back( cstart, dt );
+              cbefore.push_back( cend, dt );
+              cbefore.push_back( cafter );
+
+              clear();
+              set_t0( tmin );
+              push_back( cbefore );
+
+              set_tmax( tmax_save ); // Just to be sure.
+
+            }
+          }
+
 
           bool continuous(eli::geom::general::continuity cont, const data_type &t) const
           {
