@@ -1863,7 +1863,7 @@ namespace eli
             return it->second.fppp(tt)/(delta_t*delta_t*delta_t);
           }
 
-          point_type tanget(const data_type &t) const
+          point_type tangent(const data_type &t) const
           {
             // find segment that corresponds to given t
             typename segment_collection_type::const_iterator it;
@@ -1877,6 +1877,53 @@ namespace eli
             }
 
             return it->second.tangent(tt);
+          }
+
+          void tangents(const data_type &t, point_type &t1, point_type &t2) const
+          {
+            // find segment that corresponds to given t
+            typename segment_collection_type::const_iterator it;
+            data_type tt(0);
+            find_segment(it, tt, t);
+
+            if (it==segments.end())
+            {
+              assert(false);
+              --it;
+            }
+
+            if ( tol.approximately_equal( tt, 0 ) )
+            {
+              t2 = it->second.tangent( tt );
+
+              if ( it == segments.begin() )
+              {
+                t1 = t2;
+              }
+              else
+              {
+                --it;
+                t1 = it->second.tangent( 1 );
+              }
+            }
+            else if ( tol.approximately_equal( tt, 1 ) )
+            {
+              t1 = it->second.tangent( tt );
+              ++it;
+              if ( it == segments.end() )
+              {
+                t2 = t1;
+              }
+              else
+              {
+                t2 = it->second.tangent( 0 );
+              }
+            }
+            else
+            {
+              t1 = it->second.tangent(tt);
+              t2 = t1;
+            }
           }
 
           void frenet_serret_frame(point_type &t, point_type &n, point_type &b, const data_type &t0)
