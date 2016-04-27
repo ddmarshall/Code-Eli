@@ -477,6 +477,122 @@ namespace eli
             }
           }
 
+          void get_umin_ndelta_pcurve( curve_type &bc ) const
+          {
+            index_type j, m(degree_v());
+
+            tolerance_type tol;
+
+            // check to make sure have valid curve
+            assert(m>=0);
+
+            // build curve
+            point_type cp;
+
+            bc.resize(m);
+            for (j=0; j<=m; ++j)
+            {
+              point_type p = B_v[0].row(j) - B_v[1].row(j);
+              data_type len = p.norm();
+              if ( tol.approximately_equal(len, 0) )
+              {
+                p << 0, 0, 0;
+              }
+              else
+              {
+                p = p / len;
+              }
+              bc.set_control_point( p, j);
+            }
+          }
+
+          void get_umax_ndelta_pcurve( curve_type &bc ) const
+          {
+            index_type j, m(degree_v()), n(degree_u());
+
+            tolerance_type tol;
+
+            // check to make sure have valid curve
+            assert(m>=0);
+
+            // build curve
+            point_type cp;
+
+            bc.resize(m);
+            for (j=0; j<=m; ++j)
+            {
+              point_type p = B_v[n].row(j) - B_v[n-1].row(j);
+              data_type len = p.norm();
+              if ( tol.approximately_equal(len, 0) )
+              {
+                p << 0, 0, 0;
+              }
+              else
+              {
+                p = p / len;
+              }
+              bc.set_control_point( p, j);
+            }
+          }
+
+          void get_vmin_ndelta_pcurve( curve_type &bc ) const
+          {
+            index_type i, n(degree_u());
+
+            tolerance_type tol;
+
+            // check to make sure have valid curve
+            assert(n>=0);
+
+            // build curve
+            point_type cp;
+
+            bc.resize(n);
+            for (i=0; i<=n; ++i)
+            {
+              point_type p = B_u[0].row(i) - B_u[1].row(i);
+              data_type len = p.norm();
+              if ( tol.approximately_equal(len, 0) )
+              {
+                p << 0, 0, 0;
+              }
+              else
+              {
+                p = p / len;
+              }
+              bc.set_control_point( p, i);
+            }
+          }
+
+          void get_vmax_ndelta_pcurve( curve_type &bc ) const
+          {
+            index_type i, n(degree_u()), m(degree_v());
+
+            tolerance_type tol;
+
+            // check to make sure have valid curve
+            assert(n>=0);
+
+            // build curve
+            point_type cp;
+
+            bc.resize(n);
+            for (i=0; i<=n; ++i)
+            {
+              point_type p = B_u[m].row(i) - B_u[m-1].row(i);
+              data_type len = p.norm();
+              if ( tol.approximately_equal(len, 0) )
+              {
+                p << 0, 0, 0;
+              }
+              else
+              {
+                p = p / len;
+              }
+              bc.set_control_point( p, i);
+            }
+          }
+
           void get_uconst_f_u_curve(curve_type &bc, const data_type &u) const
           {
             validate_u();
