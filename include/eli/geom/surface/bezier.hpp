@@ -409,6 +409,34 @@ namespace eli
             }
           }
 
+          void get_uconst_f_u_curve(curve_type &bc, const data_type &u) const
+          {
+            validate_u();
+
+            return deriv_u->get_uconst_curve( bc, u );
+          }
+
+          void get_uconst_f_v_curve(curve_type &bc, const data_type &u) const
+          {
+            validate_v();
+
+            return deriv_v->get_uconst_curve( bc, u );
+          }
+
+          void get_vconst_f_u_curve(curve_type &bc, const data_type &v) const
+          {
+            validate_u();
+
+            return deriv_u->get_vconst_curve( bc, v );
+          }
+
+          void get_vconst_f_v_curve(curve_type &bc, const data_type &v) const
+          {
+            validate_v();
+
+            return deriv_v->get_vconst_curve( bc, v );
+          }
+
           void get_vconst_curve(curve_type &bc, const data_type &v) const
           {
             index_type i, n(degree_u());

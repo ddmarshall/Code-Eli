@@ -853,6 +853,66 @@ namespace eli
             }
           }
 
+          void get_uconst_f_u_curve(piecewise_curve_type &pwc, const data_type &u) const
+          {
+            index_type uk, vk;
+            typename keymap_type::const_iterator uit, vit;
+            data_type uu(0), vv(0);
+            data_type vmin = vkey.get_pmin();
+
+            find_patch(uk, vk, uit, vit, uu, vv, u, vmin);
+
+            assert ((uk != -1) && (vk != -1));
+
+            pwc.clear();
+            pwc.set_t0(vmin);
+
+            for ( vit = vkey.key.begin(); vit != vkey.key.end(); ++vit )
+            {
+              vk = vit->second;
+
+              data_type dv=vkey.get_delta_parm(vit);
+
+              surface_type s=patches[uk][vk];
+
+              curve_type c;
+
+              s.get_uconst_f_u_curve(c, uu);
+
+              pwc.push_back(c,dv);
+            }
+          }
+
+          void get_uconst_f_v_curve(piecewise_curve_type &pwc, const data_type &u) const
+          {
+            index_type uk, vk;
+            typename keymap_type::const_iterator uit, vit;
+            data_type uu(0), vv(0);
+            data_type vmin = vkey.get_pmin();
+
+            find_patch(uk, vk, uit, vit, uu, vv, u, vmin);
+
+            assert ((uk != -1) && (vk != -1));
+
+            pwc.clear();
+            pwc.set_t0(vmin);
+
+            for ( vit = vkey.key.begin(); vit != vkey.key.end(); ++vit )
+            {
+              vk = vit->second;
+
+              data_type dv=vkey.get_delta_parm(vit);
+
+              surface_type s=patches[uk][vk];
+
+              curve_type c;
+
+              s.get_uconst_f_v_curve(c, uu);
+
+              pwc.push_back(c,dv);
+            }
+          }
+
           void get_vconst_curve(piecewise_curve_type &pwc, const data_type &v) const
           {
             index_type uk, vk;
@@ -883,6 +943,65 @@ namespace eli
             }
           }
 
+          void get_vconst_f_u_curve(piecewise_curve_type &pwc, const data_type &v) const
+          {
+            index_type uk, vk;
+            typename keymap_type::const_iterator uit, vit;
+            data_type uu(0), vv(0);
+            data_type umin = ukey.get_pmin();
+
+            find_patch(uk, vk, uit, vit, uu, vv, umin, v);
+
+            assert ((uk != -1) && (vk != -1));
+
+            pwc.clear();
+            pwc.set_t0(umin);
+
+            for ( uit = ukey.key.begin(); uit != ukey.key.end(); ++uit )
+            {
+              uk = uit->second;
+
+              data_type du=ukey.get_delta_parm(uit);
+
+              surface_type s=patches[uk][vk];
+
+              curve_type c;
+
+              s.get_vconst_f_u_curve(c, vv);
+
+              pwc.push_back(c,du);
+            }
+          }
+
+          void get_vconst_f_v_curve(piecewise_curve_type &pwc, const data_type &v) const
+          {
+            index_type uk, vk;
+            typename keymap_type::const_iterator uit, vit;
+            data_type uu(0), vv(0);
+            data_type umin = ukey.get_pmin();
+
+            find_patch(uk, vk, uit, vit, uu, vv, umin, v);
+
+            assert ((uk != -1) && (vk != -1));
+
+            pwc.clear();
+            pwc.set_t0(umin);
+
+            for ( uit = ukey.key.begin(); uit != ukey.key.end(); ++uit )
+            {
+              uk = uit->second;
+
+              data_type du=ukey.get_delta_parm(uit);
+
+              surface_type s=patches[uk][vk];
+
+              curve_type c;
+
+              s.get_vconst_f_v_curve(c, vv);
+
+              pwc.push_back(c,du);
+            }
+          }
           void find_interior_feature_edges(std::vector<data_type> &uconst, std::vector<data_type> &vconst, const data_type &angle_tol) const
           {
             index_type nu, nv, iu, iv;
