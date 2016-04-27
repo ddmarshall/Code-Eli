@@ -388,6 +388,21 @@ namespace eli
             }
           }
 
+          void degree_u( std::vector<index_type> &deg)
+          {
+            index_type vk, j;
+            typename keymap_type::const_iterator vit;
+
+            deg.resize( nv );
+
+            for ( j = 0, vit = vkey.key.begin(); vit != vkey.key.end(); ++vit, ++j )
+            {
+              vk = vit->second;
+
+              deg[j] = patches[0][vk].degree_u();
+            }
+          }
+
           void degree_v(index_type &mind, index_type &maxd)
           {
             typename patch_collection_type::iterator uit;
@@ -415,6 +430,21 @@ namespace eli
                   maxd=d;
                 }
               }
+            }
+          }
+
+          void degree_v( std::vector<index_type> &deg)
+          {
+            index_type uk, i;
+            typename keymap_type::const_iterator uit;
+
+            deg.resize( nu );
+
+            for ( i = 0, uit = ukey.key.begin(); uit != ukey.key.end(); ++uit, ++i )
+            {
+              uk = uit->second;
+
+              deg[i] = patches[uk][0].degree_v();
             }
           }
 
