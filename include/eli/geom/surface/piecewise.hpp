@@ -928,6 +928,50 @@ namespace eli
             to_cubic_v(ttol);
           }
 
+          void promote_u_to( const std::vector< index_type > ord )
+          {
+            assert ( ord.size() == nu );
+
+            index_type uk;
+            typename keymap_type::const_iterator uit;
+
+            index_type i;
+
+            for ( i = 0, uit = ukey.key.begin(); uit != ukey.key.end(); ++uit, ++i )
+            {
+              uk = uit->second;
+
+              for (index_type j=0; j<nv; ++j)
+              {
+                surface_type s=patches[uk][j];
+
+                s.promote_u_to( ord[i] );
+              }
+            }
+          }
+
+          void promote_v_to( const std::vector< index_type > ord )
+          {
+            assert ( ord.size() == nv );
+
+            index_type vk;
+            typename keymap_type::const_iterator vit;
+
+            index_type j;
+
+            for ( j = 0, vit = vkey.key.begin(); vit != vkey.key.end(); ++vit, ++j )
+            {
+              vk = vit->second;
+
+              for (index_type i=0; i<nu; ++i)
+              {
+                surface_type s=patches[i][vk];
+
+                s.promote_v_to( ord[j] );
+              }
+            }
+          }
+
           void get_uconst_curve(piecewise_curve_type &pwc, const data_type &u) const
           {
             index_type uk, vk;
