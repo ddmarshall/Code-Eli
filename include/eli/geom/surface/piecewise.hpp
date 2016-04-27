@@ -928,6 +928,114 @@ namespace eli
             }
           }
 
+          void get_umin_bndy_curve( piecewise_curve_type &pwc ) const
+          {
+            index_type uk, vk;
+            typename keymap_type::const_iterator vit;
+            data_type vmin = vkey.get_pmin();
+
+            uk = ukey.key.begin()->second;
+
+            pwc.clear();
+            pwc.set_t0(vmin);
+
+            for ( vit = vkey.key.begin(); vit != vkey.key.end(); ++vit )
+            {
+              vk = vit->second;
+
+              data_type dv=vkey.get_delta_parm(vit);
+
+              surface_type s=patches[uk][vk];
+
+              curve_type c;
+
+              s.get_umin_bndy_curve(c);
+
+              pwc.push_back(c,dv);
+            }
+          }
+
+          void get_umax_bndy_curve( piecewise_curve_type &pwc ) const
+          {
+            index_type uk, vk;
+            typename keymap_type::const_iterator vit;
+            data_type vmin = vkey.get_pmin();
+
+            uk = ukey.key.rbegin()->second;
+
+            pwc.clear();
+            pwc.set_t0(vmin);
+
+            for ( vit = vkey.key.begin(); vit != vkey.key.end(); ++vit )
+            {
+              vk = vit->second;
+
+              data_type dv=vkey.get_delta_parm(vit);
+
+              surface_type s=patches[uk][vk];
+
+              curve_type c;
+
+              s.get_umax_bndy_curve(c);
+
+              pwc.push_back(c,dv);
+            }
+          }
+
+          void get_vmin_bndy_curve( piecewise_curve_type &pwc ) const
+          {
+            index_type uk, vk;
+            typename keymap_type::const_iterator uit;
+            data_type umin = ukey.get_pmin();
+
+            vk = vkey.key.begin()->second;
+
+            pwc.clear();
+            pwc.set_t0(umin);
+
+            for ( uit = ukey.key.begin(); uit != ukey.key.end(); ++uit )
+            {
+              uk = uit->second;
+
+              data_type du=ukey.get_delta_parm(uit);
+
+              surface_type s=patches[uk][vk];
+
+              curve_type c;
+
+              s.get_vmin_bndy_curve(c);
+
+              pwc.push_back(c,du);
+            }
+          }
+
+          void get_vmax_bndy_curve( piecewise_curve_type &pwc ) const
+          {
+            index_type uk, vk;
+            typename keymap_type::const_iterator uit;
+            data_type umin = ukey.get_pmin();
+
+            vk = vkey.key.rbegin()->second;
+
+            pwc.clear();
+            pwc.set_t0(umin);
+
+            for ( uit = ukey.key.begin(); uit != ukey.key.end(); ++uit )
+            {
+              uk = uit->second;
+
+              data_type du=ukey.get_delta_parm(uit);
+
+              surface_type s=patches[uk][vk];
+
+              curve_type c;
+
+              s.get_vmax_bndy_curve(c);
+
+              pwc.push_back(c,du);
+            }
+          }
+
           void get_uconst_f_u_curve(piecewise_curve_type &pwc, const data_type &u) const
           {
             index_type uk, vk;

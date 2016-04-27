@@ -409,6 +409,74 @@ namespace eli
             }
           }
 
+          void get_umin_bndy_curve( curve_type &bc ) const
+          {
+            index_type j, m(degree_v());
+
+            // check to make sure have valid curve
+            assert(m>=0);
+
+            // build curve
+            point_type cp;
+
+            bc.resize(m);
+            for (j=0; j<=m; ++j)
+            {
+              bc.set_control_point(B_v[0].row(j), j);
+            }
+          }
+
+          void get_umax_bndy_curve( curve_type &bc ) const
+          {
+            index_type j, m(degree_v()), n(degree_u());
+
+            // check to make sure have valid curve
+            assert(m>=0);
+
+            // build curve
+            point_type cp;
+
+            bc.resize(m);
+            for (j=0; j<=m; ++j)
+            {
+              bc.set_control_point(B_v[n].row(j), j);
+            }
+          }
+
+          void get_vmin_bndy_curve( curve_type &bc ) const
+          {
+            index_type i, n(degree_u());
+
+            // check to make sure have valid curve
+            assert(n>=0);
+
+            // build curve
+            point_type cp;
+
+            bc.resize(n);
+            for (i=0; i<=n; ++i)
+            {
+              bc.set_control_point(B_u[0].row(i), i);
+            }
+          }
+
+          void get_vmax_bndy_curve( curve_type &bc ) const
+          {
+            index_type i, n(degree_u()), m(degree_v());
+
+            // check to make sure have valid curve
+            assert(n>=0);
+
+            // build curve
+            point_type cp;
+
+            bc.resize(n);
+            for (i=0; i<=n; ++i)
+            {
+              bc.set_control_point(B_u[m].row(i), i);
+            }
+          }
+
           void get_uconst_f_u_curve(curve_type &bc, const data_type &u) const
           {
             validate_u();
