@@ -837,9 +837,9 @@ namespace eli
             pwc.clear();
             pwc.set_t0(vmin);
 
-            for( index_type i=0; i<nv; i++)
+            for ( vit = vkey.key.begin(); vit != vkey.key.end(); ++vit )
             {
-              vkey.find_segment(vk, vit, i);
+              vk = vit->second;
 
               data_type dv=vkey.get_delta_parm(vit);
 
@@ -867,9 +867,9 @@ namespace eli
             pwc.clear();
             pwc.set_t0(umin);
 
-            for( index_type i=0; i<nu; i++)
+            for ( uit = ukey.key.begin(); uit != ukey.key.end(); ++uit )
             {
-              ukey.find_segment(uk, uit, i);
+              uk = uit->second;
 
               data_type du=ukey.get_delta_parm(uit);
 
