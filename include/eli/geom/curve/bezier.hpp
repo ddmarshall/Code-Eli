@@ -125,12 +125,6 @@ namespace eli
           typedef bezier<data_type, 3, tolerance_type> threedbezcurve;
           typedef bezier<data_type, 4, tolerance_type> fourdbezcurve;
 
-          friend onedbezcurve;
-          friend twodbezcurve;
-          friend threedbezcurve;
-          friend fourdbezcurve;
-
-
         public:
           bezier() : B(1, dim__), deriv( NULL ) {}
           bezier(const index_type &n) : B((n<=0)?(1):(n+1), dim__), deriv( NULL ) {}
