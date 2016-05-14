@@ -48,9 +48,59 @@ namespace eli
             parent_curve.get_pmap( parent_pmap );
 
             ttol = t;
+            atol = -1.0;
 
             min_depth = dmin;
             max_depth = dmax;
+          }
+
+          void setup(const piecewise_curve_type &pc, const data_type &t, const data_type &a, const index_type &dmin, const index_type &dmax)
+          {
+            setup( pc, t, dmin, dmax );
+            atol = a;
+          }
+
+          virtual bool corner_create(piecewise<bezier, data_type, dim__, tolerance_type> &pc) const
+          {
+            std::vector<data_type> tdisc;
+            point_type p0, m01, m02, p1, m11, m12;
+
+            parent_curve.find_discontinuities( atol, tdisc );
+
+            data_type t0, tmax, t1;
+            t0 = parent_curve.get_t0();
+            tmax = parent_curve.get_tmax();
+
+            tdisc.push_back( tmax );
+
+            pc.clear();
+
+            // set the start parameter
+            pc.set_t0( t0 );
+
+            p0 = parent_curve.f(t0);
+            parent_curve.fps(t0, m01, m02);
+
+            for ( typename std::vector< data_type>::size_type i = 0; i < tdisc.size(); i++ )
+            {
+              t1 = tdisc[i];
+              p1 = parent_curve.f(t1);
+              parent_curve.fps(t1, m11, m12);
+
+              // Build approximate curve.
+              curve_type c;
+              c = make_curve_point_slope(p0, m02, p1, m11, t1-t0);
+
+              pc.push_back(c, t1-t0);
+
+              adapt_pc( pc, t0, p0, m02, t1, p1, m11);
+
+              t0 = t1;
+              p0 = p1;
+              m01 = m11;
+              m02 = m12;
+            }
+            return true;
           }
 
           virtual bool create(piecewise<bezier, data_type, dim__, tolerance_type> &pc) const
@@ -186,6 +236,7 @@ namespace eli
           std::vector < data_type > parent_pmap;
 
           data_type ttol;
+          data_type atol;
 
           index_type min_depth;
           index_type max_depth;
