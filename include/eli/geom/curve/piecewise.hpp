@@ -2031,6 +2031,58 @@ namespace eli
             return it->second.fp(tt)/delta_t;
           }
 
+          void fps(const data_type &t, point_type &fp1, point_type &fp2) const
+          {
+            // find segment that corresponds to given t
+            typename segment_collection_type::const_iterator it;
+            data_type tt(0), delta_t;
+            find_segment(it, tt, t);
+
+            if (it==segments.end())
+            {
+              assert(false);
+              --it;
+            }
+
+            if ( tol.approximately_equal( tt, 0 ) )
+            {
+              delta_t = get_delta_t(it);
+              fp2 = it->second.fp( tt )/delta_t;
+
+              if ( it == segments.begin() )
+              {
+                fp1 = fp2;
+              }
+              else
+              {
+                --it;
+                delta_t = get_delta_t(it);
+                fp1 = it->second.fp( 1 )/delta_t;
+              }
+            }
+            else if ( tol.approximately_equal( tt, 1 ) )
+            {
+              delta_t = get_delta_t(it);
+              fp1 = it->second.fp( tt )/delta_t;
+              ++it;
+              if ( it == segments.end() )
+              {
+                fp2 = fp1;
+              }
+              else
+              {
+                delta_t = get_delta_t(it);
+                fp2 = it->second.fp( 0 )/delta_t;
+              }
+            }
+            else
+            {
+              delta_t = get_delta_t(it);
+              fp1 = it->second.fp(tt)/delta_t;
+              fp2 = fp1;
+            }
+          }
+
           point_type fpp(const data_type &t) const
           {
             // find segment that corresponds to given t
