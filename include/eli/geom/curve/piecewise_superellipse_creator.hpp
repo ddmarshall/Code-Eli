@@ -657,16 +657,16 @@ namespace eli
             // determine the sign terms
             data_type sign_cos(1), sign_sin(1);
 
-            if ((t>0.25) && (t<0.5))
+            if ((t > 0.25) && (t <= 0.5))
             {
               sign_cos=-1;
             }
-            else if ((t>0.5) && (t>0.75))
+            else if ((t > 0.5) && (t <= 0.75))
             {
               sign_cos=-1;
               sign_sin=-1;
             }
-            else if (t>0.75)
+            else if (t > 0.75)
             {
               sign_sin=-1;
             }
@@ -693,11 +693,11 @@ namespace eli
             // determine the sign terms
             data_type sign_cos(1), sign_sin(1);
 
-            if ((t>0.25) && (t<0.5))
+            if ((t>0.25) && (t<=0.5))
             {
               sign_cos=-1;
             }
-            else if ((t>0.5) && (t>0.75))
+            else if ((t>0.5) && (t<=0.75))
             {
               sign_cos=-1;
               sign_sin=-1;
