@@ -103,16 +103,6 @@ namespace eli
           }
           const data_type & get_b_axis() const {return b;}
 
-          void set_top_bot_sym(const data_type &tbsym)
-          {
-            top_bot_sym = tbsym;
-          }
-
-          void get_top_bot_sym(data_type &tbsym)
-          {
-            tbsym = top_bot_sym;
-          }
-
           void set_exponents(const data_type &mm, const data_type &nn)
           {
             set_m_exponent(mm);
@@ -473,33 +463,6 @@ namespace eli
                 }
               }
 
-              // if top_bot_sym is true, reflect top curve
-              if (top_bot_sym)
-              {
-                // mirror for bottom half
-                pc_bottom = pc;
-                pc_bottom.reflect_xz();
-                pc_bottom.reverse();
-
-                // push back the bottom curve
-                curve_type c;
-                index_type rtseg(pc.number_segments());
-                for (iseg = 0; iseg < pc_bottom.number_segments(); ++iseg)
-                {
-                  pc_bottom.get(c, iseg);
-                  err = pc.push_back(c, this->get_segment_dt(rtseg + iseg));
-                  if (err != piecewise_curve_type::NO_ERRORS)
-                  {
-                    std::cout << "error number: " << err << std::endl;
-                    assert(false);
-                    pc.clear();
-                    pc.set_t0(0);
-                    return false;
-                  }
-                }
-              }
-              else
-              {
                 // otherwise, generate bot curve separately
                 index_type nseg_bot(nsegs - nseg_top), nsample_pts_bot(nseg_bot * (max_degree) + 1), nhalf_bot(nsample_pts_bot / 2);
 
@@ -613,7 +576,6 @@ namespace eli
                     return false;
                   }
                 }
-              }
             }
             // else odd number of segments
             else
@@ -747,7 +709,6 @@ namespace eli
           data_type a, b, m, n;
           data_type m_bot, n_bot;
           data_type max_width_loc;
-          data_type top_bot_sym;
           index_type max_degree;
       };
     }
