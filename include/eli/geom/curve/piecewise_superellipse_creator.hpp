@@ -68,10 +68,10 @@ namespace eli
           typedef typename piecewise_2d_curve_creator<data__, dim__, tol__>::point_type point_type;
           typedef typename piecewise_2d_curve_creator<data__, dim__, tol__>::tolerance_type tolerance_type;
 
-          piecewise_superellipse_creator() : piecewise_2d_curve_creator<data_type, dim__, tolerance_type>(4, 0), a(1), b(1), m(2), n(2), max_degree(3) {}
-          piecewise_superellipse_creator(const index_type &ns) : piecewise_2d_curve_creator<data_type, dim__, tolerance_type>(ns, 0), a(1), b(1), m(2), n(2), max_degree(3) {}
+          piecewise_superellipse_creator() : piecewise_2d_curve_creator<data_type, dim__, tolerance_type>(4, 0), a(1), b(1), m(2), n(2), m_bot(2), n_bot(2), max_degree(3) {}
+          piecewise_superellipse_creator(const index_type &ns) : piecewise_2d_curve_creator<data_type, dim__, tolerance_type>(ns, 0), a(1), b(1), m(2), n(2), m_bot(2), n_bot(2), max_degree(3) {}
           piecewise_superellipse_creator(const piecewise_superellipse_creator<data_type, dim__, tolerance_type> &ppc)
-            : piecewise_2d_curve_creator<data_type, dim__, tolerance_type>(ppc), a(ppc.a), b(ppc.b), m(ppc.m), n(ppc.n), max_degree(ppc.max_degree) {}
+            : piecewise_2d_curve_creator<data_type, dim__, tolerance_type>(ppc), a(ppc.a), b(ppc.b), m(ppc.m), n(ppc.n), m_bot(ppc.m_bot), n_bot(ppc.n_bot), max_degree(ppc.max_degree) {}
           ~piecewise_superellipse_creator() {}
 
           void set_axis(const data_type &aa, const data_type &bb)
@@ -103,15 +103,38 @@ namespace eli
           }
           const data_type & get_b_axis() const {return b;}
 
+          void set_top_bot_sym(const data_type &tbsym)
+          {
+            top_bot_sym = tbsym;
+          }
+
+          void get_top_bot_sym(data_type &tbsym)
+          {
+            tbsym = top_bot_sym;
+          }
+
           void set_exponents(const data_type &mm, const data_type &nn)
           {
             set_m_exponent(mm);
             set_n_exponent(nn);
           }
+
+          void set_exponents_bot(const data_type &mm, const data_type &nn)
+          {
+            set_m_exponent_bot(mm);
+            set_n_exponent_bot(nn);
+          }
+
           void get_exponents(data_type &mm, data_type &nn) const
           {
             mm = m;
             nn = n;
+          }
+
+          void get_exponents_bot(data_type &mm, data_type &nn) const
+          {
+            mm = m_bot;
+            nn = n_bot;
           }
 
           void set_m_exponent(const data_type &mm)
@@ -123,6 +146,19 @@ namespace eli
           }
           const data_type & get_m_exponent() const {return m;}
 
+          void set_m_exponent_bot(const data_type &mm)
+          {
+            if (mm > 0)
+            {
+              m_bot = mm;
+            }
+          }
+
+          const data_type & get_m_exponent_bot() const
+          {
+            return m_bot;
+          }
+
           void set_n_exponent(const data_type &nn)
           {
             if (nn>0)
@@ -132,6 +168,19 @@ namespace eli
           }
           const data_type & get_n_exponent() const {return n;}
 
+          void set_n_exponent_bot(const data_type &nn)
+          {
+            if (nn > 0)
+            {
+              n_bot = nn;
+            }
+          }
+
+          const data_type & get_n_exponent_bot() const
+          {
+            return n_bot;
+          }
+
           void set_max_degree(const index_type &md)
           {
             if (md>2)
@@ -140,6 +189,16 @@ namespace eli
             }
           }
           index_type get_max_degree() const {return max_degree;}
+
+          void set_max_width_loc(const data_type &mw)
+          {
+            max_width_loc = mw;
+          }
+
+          const data_type & get_max_width_loc() const
+          {
+            return max_width_loc;
+          }
 
           virtual bool create(piecewise<bezier, data_type, dim__, tolerance_type> &pc) const
           {
@@ -179,6 +238,7 @@ namespace eli
                 // ensure that the first and last points are set appropriately
                 f[0].setZero();
                 f[0].x()=a;
+                f[0].y() = max_width_loc;
                 f[nsample_pts-1].setZero();
                 f[nsample_pts-1].y()=b;
 
@@ -220,9 +280,9 @@ namespace eli
                     bool need_set(false);
                     control_point_type cp(crv.get_control_point(1));
 
-                    if (cp.y()<0)
+                    if (cp.y() < max_width_loc)
                     {
-                      cp.y()=0;
+                      cp.y() = max_width_loc;
                       need_set=true;
                     }
                     if (cp.x()>a)
@@ -274,13 +334,6 @@ namespace eli
                 pc_left.reflect_yz();
                 pc_left.reverse();
 
-//                   for (int ii=0; ii<=max_degree; ++ii)
-//                   {
-//                     std::cout << "ii = " << ii << "\tf_r=" << pc.f(ii/(1.0*max_degree))
-//                                                << "\tf_l=" << pc_left.f(1-ii/(1.0*max_degree)) << std::endl;
-//                   }
-//                   assert(false);
-
                 // push back left side
                 curve_type c;
                 index_type rnseg(pc.number_segments());
@@ -306,9 +359,12 @@ namespace eli
 
                 // ensure that the first and last points are set appropriately
                 f[0].setZero();
-                f[0].x()=a;
-                f[nsample_pts-1].setZero();
-                f[nsample_pts-1].x()=-a;
+                f[0].x() = a;
+                f[0].y() = max_width_loc;
+                f[nsample_pts - 1].setZero();
+                f[nsample_pts - 1].x() = -a;
+                f[nsample_pts - 1].y() = max_width_loc;
+
                 if (nsample_pts%2==1)
                 {
                   f[nhalf].setZero();
@@ -338,14 +394,6 @@ namespace eli
                   fun(f[nsample_pts-i-1], static_cast<data_type>(0.5)-t);
                 }
 
-//                 if (max_degree==6)
-//                 {
-//                   for (index_type i=0; i<nsample_pts; ++i)
-//                   {
-//                     std::cout << "f[" << i << "] = " << f[i] << std::endl;
-//                   }
-//                 }
-
                 // create first quarter
                 for (iseg=0; iseg<nseg_top; ++iseg)
                 {
@@ -363,15 +411,15 @@ namespace eli
                     bool need_set(false);
                     control_point_type cp(crv.get_control_point(1));
 
-                    if (cp.y()<0)
+                    if (cp.y()<max_width_loc)
                     {
-                      cp.y()=0;
-                      need_set=true;
+                      cp.y() = max_width_loc;
+                      need_set = true;
                     }
                     if (cp.x()>a)
                     {
                       cp.x()=a;
-                      need_set=true;
+                      need_set = true;
                     }
                     if (need_set)
                     {
@@ -385,9 +433,9 @@ namespace eli
                     bool need_set(false);
                     control_point_type cp(crv.get_control_point(max_degree-1));
 
-                    if (cp.y()<0)
+                    if (cp.y() < max_width_loc)
                     {
-                      cp.y()=0;
+                      cp.y() = max_width_loc;
                       need_set=true;
                     }
                     if (cp.x()<-a)
@@ -413,25 +461,145 @@ namespace eli
                 }
               }
 
-              // mirror for bottom half
-              pc_bottom=pc;
-              pc_bottom.reflect_xz();
-              pc_bottom.reverse();
-
-              // push back the bottom curve
-              curve_type c;
-              index_type rtseg(pc.number_segments());
-              for (iseg=0; iseg<pc_bottom.number_segments(); ++iseg)
+              // if top_bot_sym is true, reflect top curve
+              if (top_bot_sym)
               {
-                pc_bottom.get(c, iseg);
-                err=pc.push_back(c, this->get_segment_dt(rtseg+iseg));
-                if (err!=piecewise_curve_type::NO_ERRORS)
+                // mirror for bottom half
+                pc_bottom = pc;
+                pc_bottom.reflect_xz();
+                pc_bottom.reverse();
+
+                // push back the bottom curve
+                curve_type c;
+                index_type rtseg(pc.number_segments());
+                for (iseg = 0; iseg < pc_bottom.number_segments(); ++iseg)
                 {
-                  std::cout << "error number: " << err << std::endl;
-                  assert(false);
-                  pc.clear();
-                  pc.set_t0(0);
-                  return false;
+                  pc_bottom.get(c, iseg);
+                  err = pc.push_back(c, this->get_segment_dt(rtseg + iseg));
+                  if (err != piecewise_curve_type::NO_ERRORS)
+                  {
+                    std::cout << "error number: " << err << std::endl;
+                    assert(false);
+                    pc.clear();
+                    pc.set_t0(0);
+                    return false;
+                  }
+                }
+              }
+              else
+              {
+                // otherwise, generate bot curve separately
+                index_type nseg_bot(nsegs - nseg_top), nsample_pts_bot(nseg_bot * (max_degree) + 1), nhalf_bot(nsample_pts_bot / 2);
+
+                std::vector<point_type> f_bot(nsample_pts_bot);
+
+                f_bot[0].setZero();
+                f_bot[0].x() = -a;
+                f_bot[0].y() = max_width_loc;
+
+                //final point should be at origin
+                f_bot[nsample_pts_bot - 1].setZero();
+                f_bot[nsample_pts_bot - 1].x() = a;
+                f_bot[nsample_pts_bot - 1].y() = max_width_loc;
+
+                if (nsample_pts_bot % 2 == 1)
+                {
+                  f_bot[nhalf_bot].setZero();
+
+                   //half way will be at -b
+                  f_bot[nhalf_bot].y() = -b;
+                }
+
+                for (index_type i = 1; i < nhalf_bot; ++i)
+                {
+                  data_type t, argx, argy, tmp;
+
+                  // to get the rapid parameterization variation, find the parameters that
+                  // produce uniform spacing in x and y and then average the two
+                  tmp = static_cast<data_type> (i) / (nhalf_bot);
+
+                  argx = std::pow(1 - tmp, m_bot / 2);
+                  argx = std::min(argx, static_cast<data_type> (1));
+                  argx = std::max(argx, static_cast<data_type> (0));
+                  argy = std::pow(tmp, n_bot / 2);
+                  argy = std::min(argy, static_cast<data_type> (1));
+                  argy = std::max(argy, static_cast<data_type> (0));
+
+                  // TODO: Fix this to get the parameter that better captures extreme n and m cases
+                  t = (std::acos(argx) + std::asin(argy)) / (2 * eli::constants::math<data__>::two_pi());
+                  //std::cout << "argx=" << argx << "\targy=" << argy << "\tt=" << t << std::endl;
+
+                  // parameterization will need to change as shown below
+                  fun_bot(f_bot[i], static_cast<data_type> (0.5) + t);
+                  fun_bot(f_bot[nsample_pts_bot - i - 1], static_cast<data_type> (1.0) - t);
+
+                }
+                //Create bottom half
+                for (iseg = 0; iseg < nseg_bot; ++iseg)
+                {
+                  control_point_type cp;
+                  fit_container_type fcon_bot;
+
+                  crv.clear(); //crv is a max_degree bezier curve here
+
+                  //sets the control points in segments of max_degree (so for a 3rd degree, 4 points per)
+                  fcon_bot.set_points(f_bot.begin()+(iseg * max_degree), f_bot.begin()+((iseg + 1) * max_degree + 1));
+
+                  //this applies the blending function to interpolate and produce a smooth curve
+                  crv.interpolate(fcon_bot);
+
+                  // check the first slope to make sure it is reasonable
+                  if (iseg == 0)
+                  {
+                    bool need_set(false);
+                    control_point_type cp_bot(crv.get_control_point(0));
+
+                    if (cp_bot.y() < max_width_loc)
+                    {
+                      cp_bot.y() = max_width_loc;
+                      need_set = true;
+                    }
+                    if (cp_bot.x() < -a)
+                    {
+                      cp_bot.x() = -a;
+                      need_set = true;
+                    }
+                    if (need_set) {
+                      crv.set_control_point(cp_bot, 1);
+                    }
+                  }
+
+                  // check the last slope to make sure it is reasonable
+                  if (iseg == (nseg_bot - 1))
+                  {
+                    bool need_set(false);
+                    control_point_type cp_bot(crv.get_control_point(max_degree));
+
+                    if (cp_bot.y() < max_width_loc)
+                    {
+                      cp_bot.y() = max_width_loc;
+                      need_set = true;
+                    }
+                    if (cp_bot.x() > a)
+                    {
+                      cp_bot.x() = a;
+                       need_set = true;
+                    }
+                    if (need_set)
+                    {
+                      crv.set_control_point(cp_bot, max_degree - 1);
+                    }
+                  }
+
+                  err = pc.push_back(crv, this->get_segment_dt(iseg));
+                  if (err != piecewise_curve_type::NO_ERRORS)
+                  {
+                    std::cout << "error number: " << err << std::endl;
+                    assert(false);
+                    pc.clear();
+                    pc.set_t0(0);
+                    return false;
+                  }
                 }
               }
             }
@@ -508,8 +676,8 @@ namespace eli
             data_type abs_sin(std::abs(std::sin(theta)));
 
             // calculate the function
-            f.x()=a*sign_cos*std::pow(abs_cos, 2/m);
-            f.y()=b*sign_sin*std::pow(abs_sin, 2/n);
+            f.x() = a * sign_cos * std::pow(abs_cos, 2 / m);
+            f.y() = max_width_loc + (b - max_width_loc) * sign_sin * std::pow(abs_sin, 2 / n);
           }
 
           virtual void fun(point_type &f, point_type &fp, const data_type &t) const
@@ -552,10 +720,51 @@ namespace eli
             fp.y()=(2*eli::constants::math<data__>::two_pi()*b/n)*std::cos(theta)*std::pow(abs_sin, 2/n-1);
           }
 
-        private:
-          data_type xradius, yradius;
+          virtual void fun_bot(point_type &f, const data_type &t) const
+          {
+            // short circuit if given bad parameter
+            if ((t < 0) || (t > 1))
+            {
+              return;
+            }
 
+            // zero out point
+            f.setZero();
+
+            // determine the sign terms
+            data_type sign_cos(1), sign_sin(1);
+
+            if ((t>0.25) && (t<=0.5))
+            {
+              sign_cos=-1;
+            }
+            else  if ((t>0.5) && (t<=0.75))
+            {
+              sign_cos=-1;
+              sign_sin=-1;
+            }
+            else if (t>0.75)
+            {
+              sign_sin=-1;
+            }
+
+            data_type theta(eli::constants::math<data__>::two_pi() * t);
+            data_type abs_cos(std::abs(std::cos(theta)));
+            data_type abs_sin(std::abs(std::sin(theta)));
+
+            // calculate the function
+            f.x() = a * sign_cos * std::pow(abs_cos, 2 / m_bot);
+            f.y() = max_width_loc + (b + max_width_loc) * sign_sin * std::pow(abs_sin, 2 / n_bot);
+            //std::cout << "f.x=" << f.x() << "\tf.y=" << f.y() << std::endl;
+          }
+
+        private:
+
+          data_type xradius, yradius;
           data_type a, b, m, n;
+          data_type m_bot, n_bot;
+          data_type max_width_loc;
+          data_type top_bot_sym;
           index_type max_degree;
       };
     }
