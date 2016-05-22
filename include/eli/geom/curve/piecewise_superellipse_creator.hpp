@@ -629,34 +629,6 @@ namespace eli
           }
 
         protected:
-          // TODO: These should be in the base class that is shared with circle, ellipse, and other 2D curves
-          void set_x_radius(const data_type &xr)
-          {
-            if(xr>=0)
-            {
-              xradius=xr;
-            }
-            else
-            {
-              assert(false);
-            }
-          }
-          const data_type & get_x_radius() const {return xradius;}
-          void set_y_radius(const data_type &yr)
-          {
-            if (yr>=0)
-            {
-              yradius=yr;
-            }
-            else
-            {
-              assert(false);
-            }
-          }
-          const data_type & get_y_radius() const {return yradius;}
-          // TODO: end note
-
-        protected:
           virtual void fun(point_type &f, const data_type &t) const
           {
             // short circuit if given bad parameter
@@ -772,7 +744,6 @@ namespace eli
 
         private:
 
-          data_type xradius, yradius;
           data_type a, b, m, n;
           data_type m_bot, n_bot;
           data_type max_width_loc;
