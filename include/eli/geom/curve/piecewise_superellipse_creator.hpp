@@ -144,7 +144,6 @@ namespace eli
               m=mm;
             }
           }
-          const data_type & get_m_exponent() const {return m;}
 
           void set_m_exponent_bot(const data_type &mm)
           {
@@ -152,6 +151,11 @@ namespace eli
             {
               m_bot = mm;
             }
+          }
+
+          const data_type & get_m_exponent() const
+          {
+            return m;
           }
 
           const data_type & get_m_exponent_bot() const
@@ -166,7 +170,6 @@ namespace eli
               n=nn;
             }
           }
-          const data_type & get_n_exponent() const {return n;}
 
           void set_n_exponent_bot(const data_type &nn)
           {
@@ -174,6 +177,11 @@ namespace eli
             {
               n_bot = nn;
             }
+          }
+
+          const data_type & get_n_exponent() const
+          {
+            return n;
           }
 
           const data_type & get_n_exponent_bot() const
@@ -188,7 +196,11 @@ namespace eli
               max_degree=md;
             }
           }
-          index_type get_max_degree() const {return max_degree;}
+
+          index_type get_max_degree() const
+          {
+            return max_degree;
+          }
 
           void set_max_width_loc(const data_type &mw)
           {
@@ -606,8 +618,8 @@ namespace eli
             // else odd number of segments
             else
             {
-                assert(false);
-                return false;
+              assert(false);
+              return false;
             }
 
             // translate to center on origin
