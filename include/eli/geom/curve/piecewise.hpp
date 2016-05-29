@@ -1402,17 +1402,23 @@ namespace eli
               arc.split(arc1, arc2, static_cast<data_type>(0.5));
 
               // put the ith segment and arc2 onto the end of the list of curves
-              ec=pct0.push_back(cim1, dtim1*tim1_split);
-              if (ec!=NO_ERRORS)
+              if ( tim1_split > 0 )
               {
-                assert(false);
-                return false;
+                ec=pct0.push_back(cim1, dtim1*tim1_split);
+                if (ec!=NO_ERRORS)
+                {
+                  assert(false);
+                  return false;
+                }
               }
-              ec=pct0.push_back(arc1, dtim1*(static_cast<data_type>(1)-tim1_split));
-              if (ec!=NO_ERRORS)
+              if ( tim1_split < 1 )
               {
-                assert(false);
-                return false;
+                ec=pct0.push_back(arc1, dtim1*(static_cast<data_type>(1)-tim1_split));
+                if (ec!=NO_ERRORS)
+                {
+                  assert(false);
+                  return false;
+                }
               }
 
               ec=replace(pct0, number_segments()-1);
@@ -1423,17 +1429,23 @@ namespace eli
               }
 
               // put arc1 and the (i-1)st segment onto the front of the list of curves
-              ec=pct1.push_front(ci, dti*(1-ti_split));
-              if (ec!=NO_ERRORS)
+              if ( ti_split < 1 )
               {
-                assert(false);
-                return false;
+                ec=pct1.push_front(ci, dti*(1-ti_split));
+                if (ec!=NO_ERRORS)
+                {
+                  assert(false);
+                  return false;
+                }
               }
-              ec=pct1.push_front(arc2, dti*ti_split);
-              if (ec!=NO_ERRORS)
+              if ( ti_split > 0 )
               {
-                assert(false);
-                return false;
+                ec=pct1.push_front(arc2, dti*ti_split);
+                if (ec!=NO_ERRORS)
+                {
+                  assert(false);
+                  return false;
+                }
               }
 
               ec=replace(pct1, 0);
