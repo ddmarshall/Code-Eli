@@ -492,6 +492,108 @@ namespace eli
             printf("End report\n");
           }
 
+          void octave_print(int figno) const
+          {
+            index_type i, pp, ns;
+
+            data_type tmin(get_parameter_min()), tmax(get_parameter_max());
+
+            ns=number_segments();
+
+            std::cout << "figure(" << figno << ");" << std::endl;
+
+            // get control points and print
+            std::cout << "cp_x=[";
+            for (pp=0; pp<ns; ++pp)
+            {
+              curve_type bez;
+              get(bez, pp);
+              for (i=0; i<=bez.degree(); ++i)
+              {
+                std::cout << bez.get_control_point(i).x();
+                if (i<bez.degree())
+                  std::cout << ", ";
+                else if (pp<ns-1)
+                  std::cout << ", ";
+              }
+            }
+            std::cout << "];" << std::endl;
+
+            std::cout << "cp_y=[";
+            for (pp=0; pp<ns; ++pp)
+            {
+              curve_type bez;
+              get(bez, pp);
+              for (i=0; i<=bez.degree(); ++i)
+              {
+                std::cout << bez.get_control_point(i).y();
+                if (i<bez.degree())
+                  std::cout << ", ";
+                else if (pp<ns-1)
+                  std::cout << ", ";
+              }
+            }
+            std::cout << "];" << std::endl;
+
+            std::cout << "cp_z=[";
+            for (pp=0; pp<ns; ++pp)
+            {
+              curve_type bez;
+              get(bez, pp);
+              for (i=0; i<=bez.degree(); ++i)
+              {
+                std::cout << bez.get_control_point(i).z();
+                if (i<bez.degree())
+                  std::cout << ", ";
+                else if (pp<ns-1)
+                  std::cout << ", ";
+              }
+            }
+            std::cout << "];" << std::endl;
+
+            // initialize the t parameters
+            std::vector<data_type> t(129);
+            for (i=0; i<static_cast<index_type>(t.size()); ++i)
+            {
+              t[i]=tmin+(tmax-tmin)*static_cast<data_type>(i)/(t.size()-1);
+            }
+
+            // set the surface points
+            std::cout << "surf_x=[";
+            for (i=0; i<static_cast<index_type>(t.size()); ++i)
+            {
+              std::cout << f(t[i]).x();
+              if (i<static_cast<index_type>(t.size()-1))
+                std::cout << ", ";
+            }
+            std::cout << "];" << std::endl;
+
+            std::cout << "surf_y=[";
+            for (i=0; i<static_cast<index_type>(t.size()); ++i)
+            {
+              std::cout << f(t[i]).y();
+              if (i<static_cast<index_type>(t.size()-1))
+                std::cout << ", ";
+            }
+            std::cout << "];" << std::endl;
+
+            std::cout << "surf_z=[";
+            for (i=0; i<static_cast<index_type>(t.size()); ++i)
+            {
+              std::cout << f(t[i]).z();
+              if (i<static_cast<index_type>(t.size()-1))
+                std::cout << ", ";
+            }
+            std::cout << "];" << std::endl;
+
+            std::cout << "setenv('GNUTERM', 'x11');" << std::endl;
+            std::cout << "plot3(surf_x, surf_y, surf_z, '-k');" << std::endl;
+            std::cout << "hold on;" << std::endl;
+            std::cout << "plot3(cp_x', cp_y', cp_z', '-ok', 'MarkerFaceColor', [0 0 0]);" << std::endl;
+            std::cout << "hold off;" << std::endl;
+          }
+
+
           void get_pmap( std::vector < data_type > &pmap )
           {
             pmap.clear();
