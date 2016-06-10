@@ -84,21 +84,24 @@ namespace eli
             for ( typename std::vector< data_type>::size_type i = 0; i < tdisc.size(); i++ )
             {
               t1 = tdisc[i];
-              p1 = parent_curve.f(t1);
-              parent_curve.fps(t1, m11, m12);
+              if ( t1 > t0 )
+              {
+                p1 = parent_curve.f(t1);
+                parent_curve.fps(t1, m11, m12);
 
-              // Build approximate curve.
-              curve_type c;
-              c = make_curve_point_slope(p0, m02, p1, m11, t1-t0);
+                // Build approximate curve.
+                curve_type c;
+                c = make_curve_point_slope(p0, m02, p1, m11, t1-t0);
 
-              pc.push_back(c, t1-t0);
+                pc.push_back(c, t1-t0);
 
-              adapt_pc( pc, t0, p0, m02, t1, p1, m11);
+                adapt_pc( pc, t0, p0, m02, t1, p1, m11);
 
-              t0 = t1;
-              p0 = p1;
-              m01 = m11;
-              m02 = m12;
+                t0 = t1;
+                p0 = p1;
+                m01 = m11;
+                m02 = m12;
+              }
             }
             return true;
           }
