@@ -63,15 +63,22 @@ namespace eli
           virtual bool corner_create(piecewise<bezier, data_type, dim__, tolerance_type> &pc) const
           {
             std::vector<data_type> tdisc;
+
+            // Sometimes includes first/last point.  Sometimes doesn't.
+            parent_curve.find_discontinuities( atol, tdisc );
+            // Always append last point, repeated points don't hurt corner_create.
+            // also doesn't matter whether corner_create has first point or not.
+            tdisc.push_back( parent_curve.get_tmax() );
+
+            return corner_create( pc, tdisc );
+          }
+
+          virtual bool corner_create(piecewise<bezier, data_type, dim__, tolerance_type> &pc, const std::vector<data_type> &tdisc ) const
+          {
             point_type p0, m01, m02, p1, m11, m12;
 
-            parent_curve.find_discontinuities( atol, tdisc );
-
-            data_type t0, tmax, t1;
+            data_type t0, t1;
             t0 = parent_curve.get_t0();
-            tmax = parent_curve.get_tmax();
-
-            tdisc.push_back( tmax );
 
             pc.clear();
 
