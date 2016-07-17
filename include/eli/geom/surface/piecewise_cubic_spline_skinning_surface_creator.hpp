@@ -220,6 +220,26 @@ namespace eli
 
             ps.init_uv(this->du_begin(), this->du_end(), this->dv_begin(), this->dv_end(), this->get_u0(), this->get_v0());
 
+            std::vector<index_type> idisc( tdisc.size() );
+            std::vector<data_type> uvalvec( nu + 1 );
+            uvalvec[0] = this->get_u0();
+            for ( u = 0; u < nu; ++u)
+            {
+              uvalvec[u+1] = uvalvec[u] + this->get_segment_du( u );
+            }
+
+            u = 0;
+            for ( i = 0; i < tdisc.size(); i++ )
+            {
+              while ( u <= nu && uvalvec[u] < tdisc[i] )
+              {
+                u++;
+              }
+              idisc[i] = u;
+              u++;
+            }
+
+
             // build segments based on rib information
             // here should have everything to make an nribs x njoints piecewise surface with all
             // of the j-degrees matching in the u-direction so that can use general curve creator
@@ -232,7 +252,7 @@ namespace eli
 
               std::vector < point_type > pts( nu+1 );
               piecewise_curve_creator_type gc;
-              piecewise_curve_type c;
+              piecewise_curve_type c, cseg;
 
               std::vector<surface_type> surfs(nu);
 
@@ -248,34 +268,38 @@ namespace eli
                   pts[u] = jcrv.get_control_point(j);
                 }
 
-                int nseg( pts.size() - 1 );
-                if ( closed )
-                {
-                    ++nseg;
-                }
+                c.clear();
+                c.set_t0(this->get_u0());
 
-                gc.set_number_segments( nseg );
+                for ( i = 0; i < idisc.size()-1; i++ )
+                {
+                  int nseg( idisc[i+1] - idisc[i] );
 
-                // set the parameterizations and create curve
-                gc.set_t0(this->get_u0());
-                for (u=0; u<nu; ++u)
-                {
-                  gc.set_segment_dt(this->get_segment_du(u), u);
-                }
+                  std::vector < point_type > subpts( nseg+1 );
 
-                if ( closed )
-                {
-                    gc.set_chip( pts.begin(), eli::geom::general::C1 );
-                }
-                else
-                {
-                    gc.set_chip( pts.begin(), eli::geom::general::NOT_CONNECTED );
-                }
+                  gc.set_number_segments( nseg );
+                  gc.set_t0( tdisc[i] );
 
-                bool rtn_flag=gc.create(c);
-                if (!rtn_flag)
-                {
-                  return false;
+                  // set the parameterizations and create curve
+                  index_type iseg = 0;
+                  for ( u = idisc[i]; u < idisc[i+1]; ++u)
+                  {
+                    gc.set_segment_dt( this->get_segment_du( u ), iseg);
+                    subpts[iseg] = pts[u];
+                    iseg++;
+                  }
+                  subpts[iseg] = pts[u];
+
+
+                  gc.set_chip( subpts.begin(), eli::geom::general::NOT_CONNECTED );
+
+                  bool rtn_flag=gc.create(cseg);
+                  if (!rtn_flag)
+                  {
+                    return false;
+                  }
+
+                  c.push_back( cseg );
                 }
 
                 // extract the control points from piecewise curve and set the surface control points
