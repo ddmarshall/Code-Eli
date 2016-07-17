@@ -81,6 +81,11 @@ namespace eli
             this->set_du(duu, i);
           }
 
+          void set_tdisc( const std::vector<data_type> &td )
+          {
+            tdisc = td;
+          }
+
           bool set_conditions(const std::vector<rib_data_type> &rbs, const std::vector<index_type> &maxd, bool cl=false)
           {
             index_type i, j, nsegs(static_cast<index_type>(maxd.size())), nribs(rbs.size());
@@ -312,6 +317,7 @@ namespace eli
         private:
           std::vector<rib_data_type> ribs;
           std::vector<index_type> max_degree;
+          std::vector<data_type> tdisc;
           bool closed;
       };
     }
