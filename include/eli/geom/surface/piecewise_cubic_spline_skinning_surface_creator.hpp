@@ -292,6 +292,7 @@ namespace eli
                   subpts[iseg] = pts[u];
 
 
+//                  gc.set_cubic_spline( subpts.begin() );
                   gc.set_chip( subpts.begin(), eli::geom::general::NOT_CONNECTED );
 
                   bool rtn_flag=gc.create(cseg);
