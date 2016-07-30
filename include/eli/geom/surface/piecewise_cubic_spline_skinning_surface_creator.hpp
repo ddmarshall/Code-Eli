@@ -227,6 +227,7 @@ namespace eli
             {
               uvalvec[u+1] = uvalvec[u] + this->get_segment_du( u );
             }
+            uvalvec.back()=tdisc.back();
 
             u = 0;
             for ( i = 0; i < tdisc.size(); i++ )
